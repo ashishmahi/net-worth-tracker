@@ -39,3 +39,21 @@ export function createId(): string {
 export function nowIso(): string {
   return new Date().toISOString()
 }
+
+// ── Retirement projection ─────────────────────────────────────────────────────
+
+/**
+ * Compound growth: balance × (1 + annualRatePct/100) ^ years
+ * Returns 0 if any input is zero or negative (guards against missing Settings data).
+ * Used by RetirementPage to compute projected NPS/EPF corpus at target retirement age.
+ *
+ * Example: calcProjectedCorpus(1_000_000, 10, 25) → 10,834,705.53
+ */
+export function calcProjectedCorpus(
+  balance: number,
+  annualRatePct: number,
+  years: number
+): number {
+  if (balance <= 0 || annualRatePct <= 0 || years <= 0) return 0
+  return roundCurrency(balance * Math.pow(1 + annualRatePct / 100, years))
+}
