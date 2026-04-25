@@ -16,59 +16,67 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { useAppData } from '@/context/AppDataContext'
+import { useLivePrices } from '@/context/LivePricesContext'
 import { createId, nowIso, parseFinancialInput, roundCurrency } from '@/lib/financials'
 import type { BankAccount } from '@/types/data'
 
-// ── Form schema ───────────────────────────────────────────────────────────────
-
 const bankFormSchema = z.object({
   label: z.string().min(1, 'This field is required.'),
-  balanceInr: z.string().min(1, 'This field is required.'),
+  currency: z.enum(['INR', 'AED']),
+  balance: z.string().min(1, 'This field is required.'),
 })
 type BankFormValues = z.infer<typeof bankFormSchema>
 
-// ── Component ─────────────────────────────────────────────────────────────────
-
 export function BankSavingsPage() {
   const { data, saveData } = useAppData()
+  const { aedInr, forexLoading, forexError } = useLivePrices()
   const [sheetOpen, setSheetOpen] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [saveError, setSaveError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
 
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<BankFormValues>({
+  const { register, handleSubmit, reset, watch, formState: { errors } } = useForm<BankFormValues>({
     resolver: zodResolver(bankFormSchema),
+    defaultValues: { currency: 'INR' },
   })
 
-  // ── Sheet open handlers ───────────────────────────────────────────────────
+  const currencyWatch = watch('currency')
 
   function openAdd() {
     setEditingId(null)
     setSaveError(null)
-    reset({ label: '', balanceInr: '' })
+    reset({ label: '', currency: 'INR', balance: '' })
     setSheetOpen(true)
   }
 
   function openEdit(item: BankAccount) {
     setEditingId(item.id)
     setSaveError(null)
-    reset({ label: item.label, balanceInr: String(item.balanceInr) })
+    reset({
+      label: item.label,
+      currency: item.currency,
+      balance: String(item.balance),
+    })
     setSheetOpen(true)
   }
-
-  // ── Save handler ──────────────────────────────────────────────────────────
 
   const onSubmit = async (values: BankFormValues) => {
     setSaveError(null)
     setSaving(true)
     try {
       const now = nowIso()
-      const balanceInr = parseFinancialInput(values.balanceInr)
+      const balance = roundCurrency(parseFinancialInput(values.balance))
       const accounts = data.assets.bankSavings.accounts
       const updatedAccounts = editingId
         ? accounts.map(a =>
             a.id === editingId
-              ? { ...a, label: values.label, balanceInr, updatedAt: now }
+              ? {
+                  ...a,
+                  label: values.label,
+                  currency: values.currency,
+                  balance,
+                  updatedAt: now,
+                }
               : a
           )
         : [
@@ -78,7 +86,8 @@ export function BankSavingsPage() {
               createdAt: now,
               updatedAt: now,
               label: values.label,
-              balanceInr,
+              currency: values.currency,
+              balance,
             },
           ]
       await saveData({
@@ -99,8 +108,6 @@ export function BankSavingsPage() {
       setSaving(false)
     }
   }
-
-  // ── Delete handler ────────────────────────────────────────────────────────
 
   async function handleDelete(id: string) {
     const now = nowIso()
@@ -124,16 +131,20 @@ export function BankSavingsPage() {
     setSheetOpen(false)
   }
 
-  // ── Section total (D-11: sum of balanceInr) ───────────────────────────────
-
-  const sectionTotal = data.assets.bankSavings.accounts.reduce(
-    (sum, a) => roundCurrency(sum + a.balanceInr),
-    0
-  )
-
   const accounts = data.assets.bankSavings.accounts
 
-  // ── Render ────────────────────────────────────────────────────────────────
+  const hasAed = accounts.some(a => a.currency === 'AED')
+  const aedNeedsRate = hasAed && aedInr == null
+
+  const sectionTotal = accounts.reduce((sum, a) => {
+    if (a.currency === 'INR') {
+      return roundCurrency(sum + roundCurrency(a.balance))
+    }
+    if (aedInr == null) {
+      return sum
+    }
+    return roundCurrency(sum + roundCurrency(a.balance * aedInr))
+  }, 0)
 
   return (
     <>
@@ -148,6 +159,15 @@ export function BankSavingsPage() {
                 maximumFractionDigits: 0,
               })}
             </output>
+            {aedNeedsRate && (
+              <p role="alert" className="text-sm text-destructive mt-2">
+                AED accounts need a live or session AED→INR rate to include in the total.
+                {forexError ? ` (${forexError})` : ''}
+              </p>
+            )}
+            {forexLoading && hasAed && (
+              <p className="text-sm text-muted-foreground mt-1">Loading conversion rates…</p>
+            )}
           </div>
           <Button onClick={openAdd} aria-label="Add bank account">
             <Plus className="mr-2 h-4 w-4" />
@@ -161,29 +181,56 @@ export function BankSavingsPage() {
               <div className="py-12 text-center">
                 <p className="text-sm font-semibold text-foreground">No accounts added</p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Add an account to track your INR savings.
+                  Add an account to track your INR or AED savings.
                 </p>
               </div>
             ) : (
-              accounts.map((item, index) => (
-                <div key={item.id}>
-                  <button
-                    className="flex items-center justify-between w-full px-4 py-3 cursor-pointer hover:bg-muted/50 transition-colors text-left"
-                    aria-label={`Edit ${item.label} account`}
-                    onClick={() => openEdit(item)}
-                  >
-                    <span className="text-sm font-semibold">{item.label}</span>
-                    <span className="text-sm text-muted-foreground font-normal">
-                      {item.balanceInr.toLocaleString('en-IN', {
-                        style: 'currency',
-                        currency: 'INR',
-                        maximumFractionDigits: 0,
-                      })}
-                    </span>
-                  </button>
-                  {index < accounts.length - 1 && <Separator />}
-                </div>
-              ))
+              accounts.map((item, index) => {
+                const inrEquiv =
+                  item.currency === 'AED' && aedInr != null
+                    ? roundCurrency(item.balance * aedInr)
+                    : null
+                return (
+                  <div key={item.id}>
+                    <button
+                      className="flex items-center justify-between w-full px-4 py-3 cursor-pointer hover:bg-muted/50 transition-colors text-left"
+                      aria-label={`Edit ${item.label} account`}
+                      onClick={() => openEdit(item)}
+                    >
+                      <div>
+                        <span className="text-sm font-semibold block">{item.label}</span>
+                        <span className="text-xs text-muted-foreground">{item.currency}</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-sm text-muted-foreground font-normal block">
+                          {item.currency === 'INR'
+                            ? item.balance.toLocaleString('en-IN', {
+                                style: 'currency',
+                                currency: 'INR',
+                                maximumFractionDigits: 0,
+                              })
+                            : item.balance.toLocaleString('en-IN', {
+                                style: 'currency',
+                                currency: 'AED',
+                                maximumFractionDigits: 0,
+                              })}
+                        </span>
+                        {inrEquiv != null && (
+                          <span className="text-xs text-muted-foreground block">
+                            ≈{' '}
+                            {inrEquiv.toLocaleString('en-IN', {
+                              style: 'currency',
+                              currency: 'INR',
+                              maximumFractionDigits: 0,
+                            })}
+                          </span>
+                        )}
+                      </div>
+                    </button>
+                    {index < accounts.length - 1 && <Separator />}
+                  </div>
+                )
+              })
             )}
           </CardContent>
         </Card>
@@ -212,20 +259,41 @@ export function BankSavingsPage() {
               )}
             </div>
 
+            <fieldset className="space-y-2">
+              <legend className="text-sm font-medium">Currency</legend>
+              <div className="flex gap-6">
+                <label className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input type="radio" value="INR" {...register('currency')} />
+                  INR
+                </label>
+                <label className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input type="radio" value="AED" {...register('currency')} />
+                  AED
+                </label>
+              </div>
+              {errors.currency && (
+                <p role="alert" className="text-sm text-destructive">
+                  {errors.currency.message}
+                </p>
+              )}
+            </fieldset>
+
             <div>
-              <Label htmlFor="balanceInr">Balance (₹)</Label>
+              <Label htmlFor="balance">
+                {currencyWatch === 'AED' ? 'Balance (AED)' : 'Balance (₹)'}
+              </Label>
               <Input
-                id="balanceInr"
+                id="balance"
                 type="text"
                 inputMode="decimal"
-                placeholder="e.g. 2,50,000"
-                {...register('balanceInr')}
-                aria-invalid={!!errors.balanceInr}
-                className={errors.balanceInr ? 'border-destructive' : ''}
+                placeholder={currencyWatch === 'AED' ? 'e.g. 25,000' : 'e.g. 2,50,000'}
+                {...register('balance')}
+                aria-invalid={!!errors.balance}
+                className={errors.balance ? 'border-destructive' : ''}
               />
-              {errors.balanceInr && (
+              {errors.balance && (
                 <p role="alert" className="text-sm text-destructive mt-1">
-                  {errors.balanceInr.message}
+                  {errors.balance.message}
                 </p>
               )}
             </div>
