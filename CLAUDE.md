@@ -36,6 +36,6 @@ Run `/gsd-discuss-phase 1` to gather context and clarify approach for Phase 1.
 1. **Never store computed totals in `data.json`** — recompute from raw inputs at render time in `calculations.js`
 2. **Floating-point safety** — round to 2 decimal places after every multiplication; use `parseFinancialInput()` for all user input
 3. **Currency inputs** — use `type="text" inputmode="decimal"` (not `type="number"`) to support Indian formatting like "1,50,000"
-4. **Live price caching** — always go through `priceApi.js`; never fetch inside individual components; BTC TTL = 5 min, forex TTL = 24 hr
+4. **Live price caching** — all market `fetch` calls go through `src/lib/priceApi.ts`; pages consume **`useLivePrices()`** (no ad-hoc `fetch` in `src/pages/`). **BTC/USD** cache TTL **5 min**; **forex (USD/INR, AED/INR)** **~1 hour** (Phase 3 hourly forex, D-02).
 5. **Schema versioning** — `data.json` root must have `"version": 1` from day one; check on load and warn if unknown
 6. **UUIDs and timestamps** — all list items (accounts, milestones, etc.) have `id` (UUID), `createdAt`, `updatedAt` from the start
