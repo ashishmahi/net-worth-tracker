@@ -18,9 +18,9 @@ progress:
 
 ## Current Position
 
-- **Phase:** 02
+- **Phase:** 02 (execution complete); **Phase 03** — context gathered 2026-04-25 (`03-CONTEXT.md`)
 - **Plans:** 5/5 executed (02-01 through 02-05 with SUMMARY files)
-- **Next:** Run `/gsd-execute-phase` verification follow-up, or `gsd-sdk query phase.complete` after manual UAT
+- **Next:** `/gsd-plan-phase 3` (then research/execute per GSD). Phase 02 verification/UAT still available via `/gsd-execute-phase` / `phase.complete` if needed.
 
 ## What shipped (phase 2)
 
