@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: unknown
-last_updated: "2026-04-25T19:03:44.610Z"
+status: active
+last_updated: "2026-04-25T20:00:00.000Z"
 progress:
-  total_phases: 3
-  completed_phases: 1
-  total_plans: 5
-  completed_plans: 5
-  percent: 100
+  total_phases: 5
+  completed_phases: 3
+  total_plans: 11
+  completed_plans: 8
+  percent: 73
 ---
 
 ## Project
@@ -18,14 +18,16 @@ progress:
 
 ## Current Position
 
-- **Phase:** 02 (execution complete); **Phase 03** — context gathered 2026-04-25 (`03-CONTEXT.md`)
-- **Plans:** 5/5 executed (02-01 through 02-05 with SUMMARY files)
-- **Next:** `/gsd-plan-phase 3` (then research/execute per GSD). Phase 02 verification/UAT still available via `/gsd-execute-phase` / `phase.complete` if needed.
+- **Phase:** 03 complete — **Phase 04** (Property) next
+- **Phase 03 plans:** 03-01, 03-02, 03-03 executed (SUMMARY + VERIFICATION)
+- **Next:** `/gsd-discuss-phase 4` or `/gsd-plan-phase 4` then `/gsd-execute-phase 4`
 
-## What shipped (phase 2)
+## What shipped (phase 3)
 
-- 02-01: deps, Zod schema expansion, shadcn Card/Label/Badge, `calcProjectedCorpus`
-- 02-02: Settings (gold prices + retirement assumptions) + Export
-- 02-03: Retirement balances + projected corpus card
-- 02-04: Gold + MF list/Sheet pages
-- 02-05: Stocks + Bank Savings list/Sheet pages
+- 03-01: `priceApi.ts`, `LivePricesProvider` / `useLivePrices`, TTL + session override clearing, `main.tsx` wiring
+- 03-02: Settings live rates + session-only inputs; Bitcoin inline form with INR/USD holding
+- 03-03: Bank `currency` + native `balance`, `balanceInr` migration, AED totals via `aedInr`
+
+## Earlier phases (reference)
+
+- Phase 02: Gold, MF, Stocks, Bank (pre-AED), Retirement, Settings, Export

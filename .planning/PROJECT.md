@@ -12,7 +12,9 @@ See your total net worth at a glance with minimal manual effort — live prices 
 
 ### Validated
 
-(None yet — ship to validate)
+- [x] **Phase 03:** Bitcoin quantity with live BTC/USD and USD/INR via `useLivePrices()`; INR and USD value of holding
+- [x] **Phase 03:** Bank savings — INR and AED accounts (native balance; INR total using live or session AED/INR)
+- [x] **Phase 03:** Central `priceApi` + session-only manual rates (Settings) when feeds fail
 
 ### Active
 
@@ -20,11 +22,9 @@ See your total net worth at a glance with minimal manual effort — live prices 
 - [ ] Gold holdings — enter weight (grams) per type (24K/22K), price per gram (manual), value calculated
 - [ ] Mutual funds — enter current value and monthly SIP per platform
 - [ ] Stocks — enter current portfolio value per platform (e.g. Zerodha)
-- [ ] Bitcoin — enter quantity held; BTC/USD price and USD/INR rate fetched live
 - [ ] Property — enter agreement value, amount paid, balance due, payment milestone schedule with status
-- [ ] Bank savings — INR accounts and AED accounts (balance in native currency, converted to INR)
 - [ ] Retirement — NPS and EPF current balance; projected corpus at retirement age (configurable)
-- [ ] Settings — store AED/INR rate (live fetch), gold prices (manual), retirement assumptions
+- [ ] Settings — gold prices (manual), retirement assumptions; live forex/BTC readouts and session overrides (Phase 3)
 - [ ] All data persisted to a local JSON file; editable through the app UI
 - [ ] INR as primary display currency throughout
 
@@ -68,6 +68,8 @@ See your total net worth at a glance with minimal manual effort — live prices 
 ## Evolution
 
 This document evolves at phase transitions and milestone boundaries.
+
+**Last updated:** 2026-04-25 (Phase 03 complete)
 
 **After each phase transition** (via `/gsd-transition`):
 1. Requirements invalidated? → Move to Out of Scope with reason

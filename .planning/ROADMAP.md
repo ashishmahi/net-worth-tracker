@@ -10,7 +10,7 @@
 |-------|------|--------|-------|
 | 01 | Foundation | 🔄 In Progress | 0/3 complete |
 | 02 | Manual Asset Sections | Complete | 5/5 · 2026-04-25 |
-| 03 | Live Prices + Bitcoin | ⬜ Planned | — |
+| 03 | Live Prices + Bitcoin | Complete | 3/3 · 2026-04-25 |
 | 04 | Property Section | ⬜ Planned | — |
 | 05 | Dashboard | ⬜ Planned | — |
 
@@ -48,6 +48,12 @@ Plans:
 ## Phase 03 — Live Prices + Bitcoin
 
 **Goal:** BTC/USD + USD/INR + AED/INR live price fetching via useLivePrices() hook; Bitcoin section wired; AED bank accounts in Bank Savings.
+
+**Plans:** 3/3 complete (2026-04-25)
+
+- [x] 03-01-PLAN.md — priceApi, LivePricesContext, main wiring, CLAUDE TTL
+- [x] 03-02-PLAN.md — Settings live + session rates; Bitcoin page
+- [x] 03-03-PLAN.md — Bank AED/INR schema, migration, BankSavingsPage
 
 ---
 
