@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: active
-last_updated: "2026-04-25T20:00:00.000Z"
+status: unknown
+last_updated: "2026-04-26T00:00:00.000Z"
 progress:
   total_phases: 5
-  completed_phases: 3
-  total_plans: 11
-  completed_plans: 8
-  percent: 73
+  completed_phases: 4
+  total_plans: 12
+  completed_plans: 10
+  percent: 83
 ---
 
 ## Project
@@ -18,9 +18,13 @@ progress:
 
 ## Current Position
 
-- **Phase:** 03 complete — **Phase 04** (Property) next
-- **Phase 03 plans:** 03-01, 03-02, 03-03 executed (SUMMARY + VERIFICATION)
-- **Next:** `/gsd-discuss-phase 4` or `/gsd-plan-phase 4` then `/gsd-execute-phase 4`
+- **Phase 04 (Property) complete** — 04-01, 04-02 executed; verification recorded in `04-VERIFICATION.md`
+- **Next:** `/gsd-discuss-phase 5` or `/gsd-plan-phase 5` (Dashboard) then execute
+
+## What shipped (phase 4)
+
+- 04-01: `PropertyItemSchema`, `PropertyMilestoneRowSchema`, `Property` types in `data.ts`
+- 04-02: shadcn Checkbox, Switch, Table; `PropertyPage` (list, Sheet, milestones, liability, reconciliation warning, empty state)
 
 ## What shipped (phase 3)
 
@@ -31,3 +35,5 @@ progress:
 ## Earlier phases (reference)
 
 - Phase 02: Gold, MF, Stocks, Bank (pre-AED), Retirement, Settings, Export
+
+**Milestone v1.0 next focus:** Phase 05 — Dashboard.

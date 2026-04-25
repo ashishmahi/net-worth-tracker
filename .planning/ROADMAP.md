@@ -11,7 +11,7 @@
 | 01 | Foundation | 🔄 In Progress | 0/3 complete |
 | 02 | Manual Asset Sections | Complete | 5/5 · 2026-04-25 |
 | 03 | Live Prices + Bitcoin | Complete | 3/3 · 2026-04-25 |
-| 04 | Property Section | ⬜ Planned | — |
+| 04 | Property Section | Complete | 2/2 · 2026-04-26 |
 | 05 | Dashboard | ⬜ Planned | — |
 
 ---
@@ -60,6 +60,11 @@ Plans:
 ## Phase 04 — Property Section
 
 **Goal:** Property milestone tracking table with agreement value, amount paid, balance, payment milestones, and liability toggle.
+
+**Plans:** 2/2 complete (2026-04-26)
+
+- [x] 04-01-PLAN.md — Zod `PropertyItem` / milestone schemas in `data.ts`
+- [x] 04-02-PLAN.md — shadcn Checkbox, Switch, Table; full `PropertyPage` list + Sheet
 
 ---
 

@@ -15,6 +15,7 @@ See your total net worth at a glance with minimal manual effort — live prices 
 - [x] **Phase 03:** Bitcoin quantity with live BTC/USD and USD/INR via `useLivePrices()`; INR and USD value of holding
 - [x] **Phase 03:** Bank savings — INR and AED accounts (native balance; INR total using live or session AED/INR)
 - [x] **Phase 03:** Central `priceApi` + session-only manual rates (Settings) when feeds fail
+- [x] **Phase 04:** Property — agreement (INR), variable milestones (paid, amounts), balance due to builder (derived in UI), optional home loan (liability)
 
 ### Active
 
@@ -22,7 +23,6 @@ See your total net worth at a glance with minimal manual effort — live prices 
 - [ ] Gold holdings — enter weight (grams) per type (24K/22K), price per gram (manual), value calculated
 - [ ] Mutual funds — enter current value and monthly SIP per platform
 - [ ] Stocks — enter current portfolio value per platform (e.g. Zerodha)
-- [ ] Property — enter agreement value, amount paid, balance due, payment milestone schedule with status
 - [ ] Retirement — NPS and EPF current balance; projected corpus at retirement age (configurable)
 - [ ] Settings — gold prices (manual), retirement assumptions; live forex/BTC readouts and session overrides (Phase 3)
 - [ ] All data persisted to a local JSON file; editable through the app UI
@@ -69,7 +69,7 @@ See your total net worth at a glance with minimal manual effort — live prices 
 
 This document evolves at phase transitions and milestone boundaries.
 
-**Last updated:** 2026-04-25 (Phase 03 complete)
+**Last updated:** 2026-04-26 (Phase 04 complete)
 
 **After each phase transition** (via `/gsd-transition`):
 1. Requirements invalidated? → Move to Out of Scope with reason
@@ -85,4 +85,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-25 after initialization*
+*Last updated: 2026-04-26 after phase 04 execution*
