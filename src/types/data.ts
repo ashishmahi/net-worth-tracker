@@ -49,9 +49,24 @@ const BitcoinSchema = z.object({
   quantity: z.number().nonnegative(),
 })
 
-const PropertySchema = z.object({
+export const PropertyMilestoneRowSchema = z.object({
+  id: z.string().uuid(),
+  label: z.string(),
+  amountInr: z.number().nonnegative(),
+  isPaid: z.boolean(),
+})
+
+export const PropertyItemSchema = BaseItemSchema.extend({
+  label: z.string().min(1),
+  agreementInr: z.number().nonnegative(),
+  milestones: z.array(PropertyMilestoneRowSchema),
+  hasLiability: z.boolean(),
+  outstandingLoanInr: z.number().nonnegative().optional(),
+})
+
+export const PropertySchema = z.object({
   updatedAt: z.string().datetime(),
-  items: z.array(z.unknown()), // Phase 4 fills this in
+  items: z.array(PropertyItemSchema),
 })
 
 // D-23: Bank accounts — native balance in INR or AED (Phase 3). Legacy `balanceInr` is migrated on load.
@@ -119,3 +134,6 @@ export type GoldItem = z.infer<typeof GoldItemSchema>
 export type MfPlatform = z.infer<typeof MfPlatformSchema>
 export type StockPlatform = z.infer<typeof StockPlatformSchema>
 export type BankAccount = z.infer<typeof BankAccountSchema>
+export type PropertyMilestoneRow = z.infer<typeof PropertyMilestoneRowSchema>
+export type PropertyItem = z.infer<typeof PropertyItemSchema>
+export type Property = z.infer<typeof PropertySchema>
