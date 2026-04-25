@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "settings": {
+    "updatedAt": "2026-04-25T00:00:00.000Z"
+  },
+  "assets": {
+    "gold": { "updatedAt": "2026-04-25T00:00:00.000Z", "items": [] },
+    "mutualFunds": { "updatedAt": "2026-04-25T00:00:00.000Z", "platforms": [] },
+    "stocks": { "updatedAt": "2026-04-25T00:00:00.000Z", "platforms": [] },
+    "bitcoin": { "updatedAt": "2026-04-25T00:00:00.000Z", "quantity": 0 },
+    "property": { "updatedAt": "2026-04-25T00:00:00.000Z", "items": [] },
+    "bankSavings": { "updatedAt": "2026-04-25T00:00:00.000Z", "accounts": [] },
+    "retirement": { "updatedAt": "2026-04-25T00:00:00.000Z", "nps": 0, "epf": 0 }
+  }
+}
