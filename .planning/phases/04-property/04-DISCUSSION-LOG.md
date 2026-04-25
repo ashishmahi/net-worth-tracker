@@ -30,4 +30,4 @@
 
 ## Deferred ideas
 
-See `04-CONTEXT.md` &lt;deferred&gt;.
+See the **Deferred ideas** section in `04-CONTEXT.md`.
