@@ -44,10 +44,10 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
           setData(result.data)
         } else {
           console.warn('data.json schema mismatch:', result.error.issues)
-          setLoadError('data.json version unknown or schema invalid — using defaults')
+          setLoadError('Saved data format is unrecognized. Starting with defaults to avoid data loss.')
         }
       })
-      .catch(() => setLoadError('Could not load data.json — using defaults'))
+      .catch(() => setLoadError('Could not load saved data. Starting with defaults.'))
   }, [])
 
   async function saveData(newData: AppData): Promise<void> {

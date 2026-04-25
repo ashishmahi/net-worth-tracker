@@ -22,8 +22,8 @@ export function SettingsPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold">Settings</h1>
-        <Button variant="outline" onClick={() => handleExport(data)}>
-          Export JSON
+        <Button variant="outline" aria-label="Export data as JSON" onClick={() => handleExport(data)}>
+          Export Data
         </Button>
       </div>
       <p className="text-muted-foreground">Settings — coming soon</p>

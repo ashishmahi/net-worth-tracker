@@ -42,18 +42,22 @@ export function AppSidebar({ activeSection, onSelect }: Props) {
         <span className="font-semibold text-sm">Wealth Tracker</span>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarMenu>
-          {NAV_ITEMS.map(item => (
-            <SidebarMenuItem key={item.key}>
-              <SidebarMenuButton
-                isActive={activeSection === item.key}
-                onClick={() => onSelect(item.key)}
-              >
-                {item.label}
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
-        </SidebarMenu>
+        <nav aria-label="Main navigation">
+          <SidebarMenu>
+            {NAV_ITEMS.map(item => (
+              <SidebarMenuItem key={item.key}>
+                <SidebarMenuButton
+                  isActive={activeSection === item.key}
+                  aria-current={activeSection === item.key ? 'page' : undefined}
+                  className="min-h-[44px]"
+                  onClick={() => onSelect(item.key)}
+                >
+                  {item.label}
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </nav>
       </SidebarContent>
     </Sidebar>
   )

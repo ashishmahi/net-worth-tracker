@@ -2,6 +2,7 @@ import { useState } from 'react'
 import React from 'react'
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
 import { AppSidebar, type SectionKey } from '@/components/AppSidebar'
+import { useAppData } from '@/context/AppDataContext'
 import { DashboardPage } from '@/pages/DashboardPage'
 import { GoldPage } from '@/pages/GoldPage'
 import { MutualFundsPage } from '@/pages/MutualFundsPage'
@@ -26,7 +27,7 @@ const SECTION_COMPONENTS: Record<SectionKey, React.ComponentType> = {
 
 export default function App() {
   const [activeSection, setActiveSection] = useState<SectionKey>('dashboard') // D-05
-
+  const { loadError } = useAppData()
   const ActivePage = SECTION_COMPONENTS[activeSection]
 
   return (
@@ -34,6 +35,11 @@ export default function App() {
       <AppSidebar activeSection={activeSection} onSelect={setActiveSection} />
       <SidebarInset>
         <main className="p-6">
+          {loadError && (
+            <div className="mb-6 rounded border bg-muted p-4 text-sm text-foreground">
+              {loadError}
+            </div>
+          )}
           <ActivePage />
         </main>
       </SidebarInset>
