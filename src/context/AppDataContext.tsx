@@ -1,6 +1,41 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { DataSchema, AppData } from '../types/data'
 
+/** Map legacy Phase-2 `balanceInr` rows to `{ currency: 'INR', balance }` before Zod parse. */
+function migrateLegacyBankAccounts(raw: unknown): unknown {
+  if (raw === null || typeof raw !== 'object') return raw
+  const root = raw as Record<string, unknown>
+  const assets = root.assets
+  if (!assets || typeof assets !== 'object') return raw
+  const a = assets as Record<string, unknown>
+  const bankSavings = a.bankSavings
+  if (!bankSavings || typeof bankSavings !== 'object') return raw
+  const bs = bankSavings as Record<string, unknown>
+  const accounts = bs.accounts
+  if (!Array.isArray(accounts)) return raw
+  const nextAccounts = accounts.map(entry => {
+    if (!entry || typeof entry !== 'object') return entry
+    const acc = entry as Record<string, unknown>
+    if ('balanceInr' in acc && typeof acc.balanceInr === 'number') {
+      const legacy = acc.balanceInr as number
+      const next = { ...acc } as Record<string, unknown>
+      delete next.balanceInr
+      return { ...next, currency: 'INR', balance: legacy }
+    }
+    return entry
+  })
+  return {
+    ...root,
+    assets: {
+      ...a,
+      bankSavings: {
+        ...bs,
+        accounts: nextAccounts,
+      },
+    },
+  }
+}
+
 // ── Initial empty data structure (used when data.json is absent or invalid) ──
 
 const now = new Date().toISOString()
@@ -39,7 +74,8 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     fetch('/api/data')
       .then(r => r.json())
       .then(raw => {
-        const result = DataSchema.safeParse(raw)
+        const migrated = migrateLegacyBankAccounts(raw)
+        const result = DataSchema.safeParse(migrated)
         if (result.success) {
           setData(result.data)
         } else {

@@ -54,10 +54,11 @@ const PropertySchema = z.object({
   items: z.array(z.unknown()), // Phase 4 fills this in
 })
 
-// D-23: Bank accounts with label and balanceInr (INR only in Phase 2, AED in Phase 3)
+// D-23: Bank accounts — native balance in INR or AED (Phase 3). Legacy `balanceInr` is migrated on load.
 const BankAccountSchema = BaseItemSchema.extend({
   label: z.string(),
-  balanceInr: z.number().nonnegative(),
+  currency: z.enum(['INR', 'AED']),
+  balance: z.number().nonnegative(),
 })
 
 const BankSavingsSchema = z.object({
