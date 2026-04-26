@@ -12,7 +12,7 @@
 | 02 | Manual Asset Sections | Complete | 5/5 · 2026-04-25 |
 | 03 | Live Prices + Bitcoin | Complete | 3/3 · 2026-04-25 |
 | 04 | Property Section | Complete | 2/2 · 2026-04-26 |
-| 05 | Dashboard | ⬜ Planned | — |
+| 05 | Dashboard | Complete | 2/2 · 2026-04-26 |
 
 ---
 
@@ -71,3 +71,8 @@ Plans:
 ## Phase 05 — Dashboard
 
 **Goal:** Net worth summary aggregating all 7 asset sections with per-category breakdown and total in INR.
+
+**Plans:** 2/2 complete (2026-04-26)
+
+- [x] 05-01-PLAN.md — `dashboardCalcs` pure totals + `DASHBOARD_CATEGORY_ORDER`
+- [x] 05-02-PLAN.md — `DashboardPage` net worth + rows; `App.tsx` `onNavigate`

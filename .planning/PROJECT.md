@@ -16,10 +16,10 @@ See your total net worth at a glance with minimal manual effort — live prices 
 - [x] **Phase 03:** Bank savings — INR and AED accounts (native balance; INR total using live or session AED/INR)
 - [x] **Phase 03:** Central `priceApi` + session-only manual rates (Settings) when feeds fail
 - [x] **Phase 04:** Property — agreement (INR), variable milestones (paid, amounts), balance due to builder (derived in UI), optional home loan (liability)
+- [x] **Phase 05:** Dashboard — total net worth in INR with per-category breakdown (read-only; `dashboardCalcs` + `DashboardPage`)
 
 ### Active
 
-- [ ] Dashboard showing total net worth in INR with per-category breakdown
 - [ ] Gold holdings — enter weight (grams) per type (24K/22K), price per gram (manual), value calculated
 - [ ] Mutual funds — enter current value and monthly SIP per platform
 - [ ] Stocks — enter current portfolio value per platform (e.g. Zerodha)
@@ -69,7 +69,7 @@ See your total net worth at a glance with minimal manual effort — live prices 
 
 This document evolves at phase transitions and milestone boundaries.
 
-**Last updated:** 2026-04-26 (Phase 04 complete)
+**Last updated:** 2026-04-26 (Phase 05 complete — v1.0 milestone)
 
 **After each phase transition** (via `/gsd-transition`):
 1. Requirements invalidated? → Move to Out of Scope with reason

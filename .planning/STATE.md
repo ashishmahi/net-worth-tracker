@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: unknown
-last_updated: "2026-04-25T20:48:57.791Z"
+status: milestone_complete
+last_updated: "2026-04-26T07:40:16.043Z"
 progress:
   total_phases: 5
-  completed_phases: 3
+  completed_phases: 5
   total_plans: 12
-  completed_plans: 10
-  percent: 83
+  completed_plans: 12
+  percent: 100
 ---
 
 ## Project
@@ -18,8 +18,9 @@ progress:
 
 ## Current Position
 
-- **Phase 04 (Property) complete** — 04-01, 04-02 executed; verification recorded in `04-VERIFICATION.md`
-- **Next:** `/gsd-discuss-phase 5` or `/gsd-plan-phase 5` (Dashboard) then execute
+- **Milestone v1.0 — all 5 phases complete** (2026-04-26)
+- **Phase 05 (Dashboard) complete** — 05-01, 05-02 executed; see `05-VERIFICATION.md`
+- **Next:** optional UAT, then archive milestone or add v1.1 / backlog as needed
 
 ## What shipped (phase 4)
 
@@ -36,6 +37,4 @@ progress:
 
 - Phase 02: Gold, MF, Stocks, Bank (pre-AED), Retirement, Settings, Export
 
-**Milestone v1.0 next focus:** Phase 05 — Dashboard.
-
-**Planned Phase:** 05 (Dashboard) — 2 plans — 2026-04-25T20:48:57.778Z
+**Milestone v1.0** — Phases 01–05 done (Dashboard `dashboardCalcs` + `DashboardPage` + `App` navigation wiring).

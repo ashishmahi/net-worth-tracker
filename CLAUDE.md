@@ -26,10 +26,10 @@ This project uses GSD for phased planning and execution.
 2. Manual Asset Sections — Gold, MF, Stocks, INR Bank, Retirement, Settings
 3. Live Prices + Bitcoin — price fetch hook, BTC section, AED bank extension
 4. Property Section — milestone table, liability toggle
-5. Dashboard — net worth summary aggregating all sections
+5. Dashboard — net worth summary aggregating all sections (implemented: `src/lib/dashboardCalcs.ts`, `src/pages/DashboardPage.tsx`)
 
 ### Next Step
-Run `/gsd-discuss-phase 1` to gather context and clarify approach for Phase 1.
+Milestone v1.0 planning phases are complete. Run `npm run dev` to use the app; use `/gsd-progress` to review state or start a new milestone with `/gsd-new-milestone` when ready.
 
 ## Critical Conventions (must follow in all phases)
 
