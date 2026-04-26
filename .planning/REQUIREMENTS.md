@@ -44,11 +44,9 @@
 
 | REQ-ID | Description | Phase | Status |
 |--------|-------------|-------|--------|
-| DM-01  | Dark mode toggle button | — | pending |
-| DM-02  | localStorage persistence | — | pending |
-| MB-01  | Sidebar offcanvas drawer | — | pending |
-| MB-02  | Page header reflow | — | pending |
-| MB-03  | Sheet scroll on mobile | — | pending |
-| MB-04  | Property table on mobile | — | pending |
-
-_Traceability phase column filled by roadmapper._
+| DM-01  | Dark mode toggle button | Phase 6 | pending |
+| DM-02  | localStorage persistence | Phase 6 | pending |
+| MB-01  | Sidebar offcanvas drawer | Phase 7 | pending |
+| MB-02  | Page header reflow | Phase 8 | pending |
+| MB-03  | Sheet scroll on mobile | Phase 8 | pending |
+| MB-04  | Property table on mobile | Phase 8 | pending |

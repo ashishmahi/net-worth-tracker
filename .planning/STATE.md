@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: UX Polish
-status: defining_requirements
+status: ready_to_plan
 last_updated: "2026-04-26T00:00:00.000Z"
 progress:
-  total_phases: 0
+  total_phases: 3
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -18,27 +18,62 @@ progress:
 
 ## Current position
 
-Phase: Not started (defining requirements)
+Phase: 6 of 8 (Dark Mode) — ready to plan
 Plan: —
-Status: Defining requirements
-Last activity: 2026-04-26 — Milestone v1.1 started
+Status: Ready to plan Phase 6
+Last activity: 2026-04-26 — Roadmap created for v1.1 (Phases 6-8)
+
+Progress: [░░░░░░░░░░] 0%
 
 ## Project reference
 
-See: `.planning/PROJECT.md` (post–v1.0 evolution)  
-**Core value:** See total net worth at a glance with minimal effort — live BTC/forex, manual gold, all else in-app.  
-**Current focus:** Planning the next milestone (or closing deferred items).
+See: `.planning/PROJECT.md` (updated 2026-04-26)
+**Core value:** See total net worth at a glance with minimal effort — live BTC/forex, manual gold, all else in-app.
+**Current focus:** Phase 6 — Dark Mode
+
+## Performance Metrics
+
+**Velocity:**
+- Total plans completed: 0 (v1.1)
+- Average duration: —
+- Total execution time: —
+
+**By Phase:**
+
+| Phase | Plans | Total | Avg/Plan |
+|-------|-------|-------|----------|
+| - | - | - | - |
+
+*Updated after each plan completion*
+
+## Accumulated Context
+
+### Decisions
+
+- v1.1 research: Dark mode CSS tokens already in `index.css`; `tailwind.config.js` already has `darkMode: ["class"]` — no new packages needed
+- v1.1 research: Mobile sidebar fix is a single prop change (`collapsible="none"` → `"offcanvas"`) in `AppSidebar.tsx`
+- v1.1 arch: Theme preference stored in `localStorage` only — not in `data.json` (no schema version bump)
+- v1.1 arch: FOUC prevention requires inline `<script>` in `index.html` before React loads — ThemeProvider reads existing DOM class, does not apply via useEffect
+
+### Pending Todos
+
+None.
+
+### Blockers/Concerns
+
+- iOS Safari keyboard viewport resize (MB-03) — requires real device or BrowserStack test; cannot validate in Chrome DevTools emulation
 
 ## Deferred items
 
-Items acknowledged at v1.0 milestone close (non-blocking; resolve when convenient):
+Items acknowledged at v1.0 milestone close (non-blocking):
 
 | Category | Item | Status |
 |----------|------|--------|
 | uat | Phase 05 — `.planning/phases/05-dashboard/05-UAT.md` | `testing` — 6 scenarios pending |
 | verification | Phase 01 — `.planning/phases/01-foundation/01-VERIFICATION.md` | `human_needed` |
 
-## Historical (v1.0)
+## Session Continuity
 
-- **Phases 02–05** delivered all major app features (assets, live prices, property, dashboard).  
-- GSD **Phase 01** plan checkboxes in the archive remain `0/3` even though the codebase includes scaffold, `data.json` plugin, and app shell (planning drift only).
+Last session: 2026-04-26
+Stopped at: Roadmap created — ready to run `/gsd-plan-phase 6`
+Resume file: None
