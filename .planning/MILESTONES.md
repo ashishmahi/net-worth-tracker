@@ -18,6 +18,8 @@
 - A shared `PageHeader` unifies section titles, optional `meta` (totals, alerts), and primary actions so narrow viewports stack a full-width CTA without horizontal header overflow, matching `08-UI-SPEC` D-01–D-03.
 - Add/Edit `Sheet` panels use a capped viewport height, a scrollable field stack, and a non-scrolling header/footer; the property milestone grid scrolls horizontally on very narrow widths instead of clipping columns.
 
+**Roadmap / requirements:** `.planning/milestones/v1.1-ROADMAP.md`, `v1.1-REQUIREMENTS.md`
+
 ---
 
 ## v1.0 — Local wealth tracker
@@ -43,8 +45,6 @@
 
 - Phase 05 UAT in progress (`05-UAT.md`, testing).
 - Phase 01 verification file lists `human_needed` (`01-VERIFICATION.md`).
-
-**Roadmap / requirements:** `.planning/milestones/v1.1-ROADMAP.md`, `v1.1-REQUIREMENTS.md`  
 
 **Known deferred (unchanged from v1.0 close):** Phase 05 UAT, Phase 01 `human_needed` — see `STATE.md` **Deferred items**.
 
