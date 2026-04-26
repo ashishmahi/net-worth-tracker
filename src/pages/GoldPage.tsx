@@ -206,55 +206,66 @@ export function GoldPage() {
 
       {/* Sheet — add/edit overlay (D-01) */}
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-        <SheetContent>
-          <SheetHeader>
-            <SheetTitle>{editingId ? 'Edit Gold Item' : 'Add Gold Item'}</SheetTitle>
-          </SheetHeader>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-4">
-            {/* Karat selector — native select with shadcn-matching styles (RESEARCH.md Pattern 4) */}
-            <div>
-              <Label htmlFor="karat">Karat</Label>
-              <select
-                id="karat"
-                {...register('karat')}
-                className={cn(
-                  'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2',
-                  'text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2'
+        <SheetContent
+          className={cn(
+            'flex w-full flex-col gap-0 overflow-hidden p-0',
+            'max-h-[100dvh] min-h-0 sm:max-w-lg'
+          )}
+        >
+          <div className="shrink-0 px-6 pt-6">
+            <SheetHeader>
+              <SheetTitle>{editingId ? 'Edit Gold Item' : 'Add Gold Item'}</SheetTitle>
+            </SheetHeader>
+          </div>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="flex flex-1 min-h-0 flex-col"
+          >
+            <div className="flex-1 min-h-0 space-y-4 overflow-y-auto px-6">
+              {/* Karat selector — native select with shadcn-matching styles (RESEARCH.md Pattern 4) */}
+              <div>
+                <Label htmlFor="karat">Karat</Label>
+                <select
+                  id="karat"
+                  {...register('karat')}
+                  className={cn(
+                    'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2',
+                    'text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2'
+                  )}
+                >
+                  <option value="24">24K</option>
+                  <option value="22">22K</option>
+                  <option value="18">18K</option>
+                </select>
+                {errors.karat && (
+                  <p role="alert" className="text-sm text-destructive mt-1">
+                    {errors.karat.message}
+                  </p>
                 )}
-              >
-                <option value="24">24K</option>
-                <option value="22">22K</option>
-                <option value="18">18K</option>
-              </select>
-              {errors.karat && (
-                <p role="alert" className="text-sm text-destructive mt-1">
-                  {errors.karat.message}
-                </p>
-              )}
-            </div>
+              </div>
 
-            {/* Weight field */}
-            <div>
-              <Label htmlFor="grams">Weight (grams)</Label>
-              <Input
-                id="grams"
-                type="text"
-                inputMode="decimal"
-                placeholder="e.g. 10.5"
-                {...register('grams')}
-                aria-invalid={!!errors.grams}
-                className={errors.grams ? 'border-destructive' : ''}
-              />
-              {errors.grams && (
-                <p role="alert" className="text-sm text-destructive mt-1">
-                  {errors.grams.message}
-                </p>
-              )}
+              {/* Weight field */}
+              <div>
+                <Label htmlFor="grams">Weight (grams)</Label>
+                <Input
+                  id="grams"
+                  type="text"
+                  inputMode="decimal"
+                  placeholder="e.g. 10.5"
+                  {...register('grams')}
+                  aria-invalid={!!errors.grams}
+                  className={errors.grams ? 'border-destructive' : ''}
+                />
+                {errors.grams && (
+                  <p role="alert" className="text-sm text-destructive mt-1">
+                    {errors.grams.message}
+                  </p>
+                )}
+              </div>
             </div>
-
-            <SheetFooter className="flex-col gap-2 sm:flex-col">
+            <SheetFooter className="shrink-0 flex-col gap-2 border-t px-6 pb-6 pt-2 sm:flex-col">
               {saveError && (
-                <p role="alert" className="text-sm text-destructive mt-2">
+                <p role="alert" className="text-sm text-destructive">
                   {saveError}
                 </p>
               )}
