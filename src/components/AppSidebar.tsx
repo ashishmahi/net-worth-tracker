@@ -1,11 +1,15 @@
+import { Sun, Moon } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
 } from '@/components/ui/sidebar'
+import { useTheme } from '@/context/ThemeContext'
 
 export type SectionKey =
   | 'dashboard'
@@ -36,6 +40,7 @@ interface Props {
 }
 
 export function AppSidebar({ activeSection, onSelect }: Props) {
+  const { theme, setTheme } = useTheme()
   return (
     <Sidebar collapsible="none" className="border-r">
       <SidebarHeader className="px-4 py-3">
@@ -59,6 +64,26 @@ export function AppSidebar({ activeSection, onSelect }: Props) {
           </SidebarMenu>
         </nav>
       </SidebarContent>
+      <SidebarFooter className="p-4">
+        <Button
+          type="button"
+          variant="ghost"
+          className="min-h-[44px] w-full min-w-[44px] justify-start gap-2"
+          onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+          aria-label={
+            theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'
+          }
+        >
+          {theme === 'light' ? (
+            <Moon className="size-5 shrink-0" aria-hidden />
+          ) : (
+            <Sun className="size-5 shrink-0" aria-hidden />
+          )}
+          <span>
+            {theme === 'light' ? 'Light' : 'Dark'}
+          </span>
+        </Button>
+      </SidebarFooter>
     </Sidebar>
   )
 }
