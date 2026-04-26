@@ -26,7 +26,7 @@ All phase goals, plan checklists, and progress table are preserved in:
 **Milestone Goal:** Make the app comfortable to use on mobile devices and add a manual dark mode toggle.
 
 - [x] **Phase 6: Dark Mode** - Theme toggle with localStorage persistence — 2026-04-26
-- [ ] **Phase 7: Mobile Foundation** - Offcanvas sidebar drawer and mobile top bar
+- [x] **Phase 7: Mobile Foundation** - Offcanvas sidebar drawer and mobile top bar (completed 2026-04-26)
 - [ ] **Phase 8: Mobile Page Fixes** - Page header reflow, sheet scroll, and property table
 
 ---
@@ -53,7 +53,7 @@ All phase goals, plan checklists, and progress table are preserved in:
   2. Tapping any nav item in the mobile drawer navigates to that page and closes the drawer
   3. The Moon/Sun theme toggle is accessible from the mobile top bar without opening the sidebar
   4. On desktop (768px+), the layout is unchanged — sidebar renders inline, no top bar visible
-**Plans**: TBD
+**Plans**: 1 (`07-01-PLAN` offcanvas, top bar, sheet copy)
 **UI hint**: yes
 
 ### Phase 8: Mobile Page Fixes
@@ -79,5 +79,5 @@ All phase goals, plan checklists, and progress table are preserved in:
 | 4. Property Section | v1.0 | — | Complete | 2026-04-26 |
 | 5. Dashboard | v1.0 | — | Complete | 2026-04-26 |
 | 6. Dark Mode | v1.1 | 2/2 | Complete | 2026-04-26 |
-| 7. Mobile Foundation | v1.1 | 0/? | Not started | - |
+| 7. Mobile Foundation | v1.1 | 1/1 | Complete    | 2026-04-26 |
 | 8. Mobile Page Fixes | v1.1 | 0/? | Not started | - |

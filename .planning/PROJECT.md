@@ -54,9 +54,10 @@ See **total net worth in INR** at a glance, with **live BTC and FX** where appli
 - **Stack:** React 18, Vite 5, TypeScript, shadcn/ui, Tailwind, RHF + Zod  
 - **Persistence:** Vite plugin: `GET`/`POST` `/api/data` → `data.json`  
 - **Prices:** `src/lib/priceApi.ts` + `LivePricesProvider` / `useLivePrices()`  
-- **Theme:** `localStorage` key `theme` (`light` | `dark`); FOUC script in `index.html`; `ThemeProvider` in `src/main.tsx`; toggle in `AppSidebar` footer  
+- **Theme:** `localStorage` key `theme` (`light` | `dark`); FOUC script in `index.html`; `ThemeProvider` in `src/main.tsx`; toggles in `AppSidebar` footer and `MobileTopBar` (mobile)  
+- **Shell (v1.1):** `AppSidebar` `collapsible="offcanvas"`; `MobileTopBar` only below 768px; `Sidebar` mobile Sheet a11y copy in `src/components/ui/sidebar.tsx`  
 - **Milestone v1.0** archived: `.planning/milestones/v1.0-ROADMAP.md`, `v1.0-REQUIREMENTS.md`, `MILESTONES.md`  
-- **Milestone v1.1 (in progress):** Phase 6 (Dark mode) complete 2026-04-26; next: Phase 7 (Mobile Foundation)  
+- **Milestone v1.1 (in progress):** Phases 6–7 complete 2026-04-26 (dark mode, mobile offcanvas + top bar); next: Phase 8 (Mobile Page Fixes)  
 
 ## Constraints
 
@@ -82,4 +83,4 @@ This file was fully reviewed at **v1.0 milestone close** (2026-04-26).
 **After each milestone** (`/gsd-complete-milestone`): validate “What this is,” core value, and Out of scope; roll shipped items into **Validated**; set **Active** to empty or next milestone placeholders.
 
 ---
-*Last updated: 2026-04-26 — Phase 6 (dark mode) complete; mobile phases next*
+*Last updated: 2026-04-26 — Phase 7 (Mobile Foundation) complete; Phase 8 next*
