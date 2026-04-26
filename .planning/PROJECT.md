@@ -28,6 +28,7 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.2-ROADMAP.md` and matc
 - **Record snapshot** — user-triggered action (e.g. on Dashboard) to save the current computed total.  
 - **Chart** — simple line (or area) view of history on the dashboard; empty state when there is not enough data to draw a trend.  
 - **Schema evolution** — extend the data model in a way that **migrates** existing `data.json` (no data loss for users upgrading from v1.2).  
+- **JSON import** (Phase 10.1) — import a wealth JSON file from disk (paired with **Export**); see **IMP-01** / **IMP-02** in `REQUIREMENTS.md`.  
 
 ## Current state (milestone in planning)
 

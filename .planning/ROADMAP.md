@@ -7,17 +7,18 @@
 - ✅ **v1.2 — Data reset** — Shipped 2026-04-26 — [full snapshot](milestones/v1.2-ROADMAP.md)  
 - **v1.3 — Net worth history** — *In planning* — this file  
 
-**Phase numbering:** v1.2 ended at **Phase 9**. v1.3 uses **Phases 10–11** (no `--reset-phase-numbers`).
+**Phase numbering:** v1.2 ended at **Phase 9**. v1.3 uses **Phases 10, 10.1, 11** (no `--reset-phase-numbers`); **10.1** was inserted after Phase 10 for **JSON import** before the chart.
 
 ---
 
-## v1.3 — Net worth history (Phases 10–11)
+## v1.3 — Net worth history (Phases 10, 10.1, 11)
 
 **Goal:** Persist **net worth snapshots** (INR + timestamp) in `data.json`, let the user **record** the current total from the **Dashboard**, and show a **line/area chart** of history; **full data reset** clears history; **migrate** old files without the new field.
 
 | Phase | Name                 | Summary goal | Requirements   |
 |-------|----------------------|--------------|---------------|
 | 10    | **History & schema** | Extend `DataSchema`, migration, `createInitialData`, `record` flow + **Reset** clears history, POST validates | NWH-01, NWH-02, NWH-03, NWH-05 |
+| 10.1  | **JSON import** *(INSERTED)* | Quick import from a chosen JSON file; validate with `DataSchema` + `saveData` (pair with existing Export) | IMP-01, IMP-02 (see [REQUIREMENTS](REQUIREMENTS.md)) |
 | 11    | **Net worth chart**  | Recharts(ish) line/area on Dashboard, NWH-04 empty state, **dark**/**light** | NWH-04 |
 
 ### Phase 10: History & schema
@@ -36,6 +37,18 @@
 
 **Plans:** TBD — `/gsd-plan-phase 10`  
 
+### Phase 10.1: JSON import — quick import from file to match existing JSON export (INSERTED)
+
+**Goal:** The app already **exports** wealth `AppData` as JSON from Settings; add a **Import JSON** (or equivalent) path so users can **load** a file, validate it against the same `DataSchema`, and **persist** via `saveData` / `POST` `/api/data` — with clear **error** if the file is invalid or the save fails.
+
+**Focus:** `input type="file"`, `FileReader` or `fetch` blob, `DataSchema.safeParse` + `migrateLegacyBankAccounts` (or same path as initial load), `saveData`; place near **Export** in **Settings**; **non-destructive** by default? (confirm: replace in-memory + disk in one go vs preview — in planning.)
+
+**Requirements:** **IMP-01**, **IMP-02** in `REQUIREMENTS.md`  
+
+**Depends on:** Phase 10 (recommended so data-model changes for history land first; if import is independent, planner may adjust).
+
+**Plans:** TBD — `/gsd-discuss-phase 10.1` or `/gsd-plan-phase 10.1`  
+
 ### Phase 11: Net worth chart
 
 - **Focus:** Install **recharts** (or agreed lightweight chart), **line/area** of `recordedAt` x `totalInr`, responsive width, `ChartContainer` / shadcn chart pattern if project adopts it; **NWH-04** when `<2` points.  
@@ -46,7 +59,7 @@
 1. With **≥2** snapshots, the Dashboard shows a legible **time series** in **dark** and **light** theme.  
 2. With **0–1** snapshots, user sees the **insufficient data** / empty state (no fake trend line).  
 
-**Depends on:** Phase 10.  
+**Depends on:** Phase 10.1 (import can ship before history in theory, but v1.3 order is 10 → 10.1 → 11; chart must follow any schema field added in 10/10.1).  
 
 **Plans:** TBD — `/gsd-plan-phase 11`  
 
@@ -86,8 +99,9 @@
 | 6–8     | v1.1       | (see snapshot)  | Complete     | 2026-04-26 |
 | 9       | v1.2       | 2/2            | Complete     | 2026-04-26 |
 | **10. History & schema** | **v1.3**  | TBD  | *Not started* | —  |
+| **10.1. JSON import**  | **v1.3**  | 0/0 (INSERTED)  | *Not started* | —  |
 | **11. Net worth chart**  | **v1.3**  | TBD  | *Not started* | —  |
 
 ---
 
-_Milestone v1.2 archives remain under `milestones/`. v1.3 in-flight detail accumulates under `.planning/phases/10-*/` and `11-*/` after planning._  
+_Milestone v1.2 archives remain under `milestones/`. v1.3 in-flight detail: `.planning/phases/10-*/` (e.g. `10.1-*/`), `11-*/` after planning._  

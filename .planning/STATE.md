@@ -31,7 +31,7 @@ See: [`.planning/PROJECT.md`](PROJECT.md) (Current Milestone: v1.3)
 
 **Core value:** total net worth in INR at a glance; v1.3 adds **trend** visibility via snapshots + chart.  
 
-**Current focus:** implement Phase 10 (data model + record snapshot) then Phase 11 (chart UI) per roadmap.  
+**Current focus:** v1.3 order: **10** (history & schema) → **10.1** (JSON import, INSERTED) → **11** (chart) per [ROADMAP](ROADMAP.md).  
 
 ## Performance metrics
 
@@ -44,9 +44,13 @@ Velocity: v1.3 TBD.
 - v1.3: append-only **netWorthSnapshots** in `data.json` (or equivalent) with Zod; **clear all** in v1.2 style must reset history; **migration** for existing v1.2 files without history key.  
 - **Research** for v1.3: skipped in `new-milestone` (GSD subagents not installed; scope is local app + common chart pattern). Revisit in `/gsd-plan-phase` if needed.  
 
+### Roadmap evolution
+
+- **Phase 10.1** inserted after Phase **10** (URGENT/INSERTED): **JSON import** from file, paired with existing **Export** — [`.planning/phases/10.1-json-import-quick-import-from-file-to-match-existing-json-ex/`](phases/10.1-json-import-quick-import-from-file-to-match-existing-json-ex/) (slug truncated by tool). **IMP-01** / **IMP-02** in `REQUIREMENTS.md`.  
+
 ### Pending todos
 
-- Implement Phase 10, then 11.  
+- Implement Phase **10** → **10.1** (import) → **11** (chart).  
 
 ### Blockers / concerns
 
