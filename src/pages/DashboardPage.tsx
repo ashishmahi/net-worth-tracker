@@ -1,8 +1,218 @@
-export function DashboardPage() {
+import { useMemo } from 'react'
+import { AlertCircle } from 'lucide-react'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Separator } from '@/components/ui/separator'
+import { Skeleton } from '@/components/ui/skeleton'
+import type { SectionKey } from '@/components/AppSidebar'
+import { useAppData } from '@/context/AppDataContext'
+import { useLivePrices } from '@/context/LivePricesContext'
+import {
+  DASHBOARD_CATEGORY_ORDER,
+  calcCategoryTotals,
+  hasAedAccountsWithMissingRate,
+  percentOfTotal,
+  sumForNetWorth,
+  type DashboardCategoryKey,
+} from '@/lib/dashboardCalcs'
+import type { AppData } from '@/types/data'
+
+const ROW_LABEL: Record<DashboardCategoryKey, string> = {
+  gold: 'Gold',
+  mutualFunds: 'Mutual Funds',
+  stocks: 'Stocks',
+  bitcoin: 'Bitcoin',
+  property: 'Property',
+  bankSavings: 'Bank Savings',
+  retirement: 'Retirement',
+}
+
+const NAV_KEY: Record<DashboardCategoryKey, SectionKey> = {
+  gold: 'gold',
+  mutualFunds: 'mutualFunds',
+  stocks: 'stocks',
+  bitcoin: 'bitcoin',
+  property: 'property',
+  bankSavings: 'bankSavings',
+  retirement: 'retirement',
+}
+
+function inrNoDecimals(n: number) {
+  return n.toLocaleString('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    maximumFractionDigits: 0,
+  })
+}
+
+function noHoldingsYet(data: AppData): boolean {
   return (
-    <div className="space-y-4">
-      <h1 className="text-xl font-semibold">Dashboard</h1>
-      <p className="text-muted-foreground">Dashboard — coming soon</p>
+    data.assets.gold.items.length === 0 &&
+    data.assets.mutualFunds.platforms.length === 0 &&
+    data.assets.stocks.platforms.length === 0 &&
+    data.assets.bitcoin.quantity === 0 &&
+    data.assets.property.items.length === 0 &&
+    data.assets.bankSavings.accounts.length === 0 &&
+    data.assets.retirement.nps === 0 &&
+    data.assets.retirement.epf === 0
+  )
+}
+
+export function DashboardPage({
+  onNavigate,
+}: {
+  onNavigate: (key: SectionKey) => void
+}) {
+  const { data } = useAppData()
+  const {
+    btcUsd,
+    usdInr,
+    aedInr,
+    btcLoading,
+    forexLoading,
+  } = useLivePrices()
+
+  const totals = useMemo(
+    () => calcCategoryTotals(data, { btcUsd, usdInr, aedInr }),
+    [data, btcUsd, usdInr, aedInr]
+  )
+  const grandTotal = useMemo(() => sumForNetWorth(totals), [totals])
+  const hasBtcHolding = data.assets.bitcoin.quantity > 0
+  const hasAed =
+    data.assets.bankSavings.accounts.some(a => a.currency === 'AED')
+  const showNetWorthSkeleton =
+    (hasBtcHolding && btcLoading) || (hasAed && forexLoading)
+  const aedRateMissing = hasAedAccountsWithMissingRate(data, aedInr)
+
+  const excludedNames: string[] = []
+  if (totals.gold === null && data.assets.gold.items.length > 0) {
+    excludedNames.push('Gold')
+  }
+  if (totals.bitcoin === null && hasBtcHolding) {
+    excludedNames.push('Bitcoin')
+  }
+
+  const showExclusionNote = excludedNames.length > 0
+
+  const empty = noHoldingsYet(data)
+
+  return (
+    <div className="space-y-4" aria-live="polite">
+      <div>
+        <h1 className="text-xl font-semibold">Dashboard</h1>
+      </div>
+
+      {empty ? (
+        <div className="space-y-2">
+          <p className="text-sm font-semibold">No holdings yet</p>
+          <p className="text-sm text-muted-foreground">
+            Add assets in each section; your total will show here.
+          </p>
+        </div>
+      ) : (
+        <>
+          <Card>
+            <CardHeader className="space-y-1 p-6">
+              <CardDescription className="text-sm text-muted-foreground">
+                Net worth
+              </CardDescription>
+              {showNetWorthSkeleton ? (
+                <Skeleton className="h-8 w-40" />
+              ) : (
+                <CardTitle className="text-2xl font-semibold">
+                  {inrNoDecimals(grandTotal)}
+                </CardTitle>
+              )}
+            </CardHeader>
+            {showExclusionNote && (
+              <CardContent className="px-6 pt-0 pb-6 text-sm text-muted-foreground">
+                Total excludes {excludedNames.join(' and ')} because a rate or
+                price is missing. Open{' '}
+                <span className="font-medium text-foreground">Settings</span> to
+                set gold prices or check live rates, or try again later.
+              </CardContent>
+            )}
+          </Card>
+
+          <Card>
+            <CardContent className="p-0">
+              {DASHBOARD_CATEGORY_ORDER.map((key, index) => {
+                const label = ROW_LABEL[key]
+                const v = totals[key]
+                const pct = percentOfTotal(
+                  v === null ? 0 : v,
+                  grandTotal
+                )
+                const isGoldRow = key === 'gold'
+                const isBtcRow = key === 'bitcoin'
+                const isBankRow = key === 'bankSavings'
+
+                const valueSkeleton = isBtcRow
+                  ? btcLoading || (forexLoading && hasBtcHolding)
+                  : isBankRow && forexLoading && hasAed
+                const showEmDash = v === null
+                return (
+                  <div key={key}>
+                    {index > 0 && <Separator />}
+                    <button
+                      type="button"
+                      className="hover:bg-muted/50 flex w-full items-center justify-between gap-2 px-4 py-3 text-left transition-colors"
+                      onClick={() => onNavigate(NAV_KEY[key])}
+                      aria-label={`Open ${label} section`}
+                    >
+                      <div className="min-w-0">
+                        <span className="text-sm font-semibold block">{label}</span>
+                        {isBankRow && aedRateMissing && (
+                          <span className="text-xs text-muted-foreground block mt-0.5">
+                            AED balances excluded — rate unavailable
+                          </span>
+                        )}
+                        {isGoldRow && totals.gold === null && !empty && (
+                          <span className="text-xs text-muted-foreground block mt-0.5">
+                            Set gold prices in Settings
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-3 shrink-0 text-right">
+                        {valueSkeleton ? (
+                          <Skeleton className="h-5 w-24 inline-block" />
+                        ) : showEmDash ? (
+                          <span
+                            className="text-sm font-normal inline-flex items-center gap-1 tabular-nums"
+                            aria-label={`${label} value unavailable`}
+                          >
+                            <span>—</span>
+                            <AlertCircle
+                              className="h-3.5 w-3.5 text-muted-foreground"
+                              aria-hidden
+                            />
+                          </span>
+                        ) : (
+                          <span className="text-sm font-normal tabular-nums">
+                            {inrNoDecimals(v as number)}
+                          </span>
+                        )}
+                        <span className="text-sm text-muted-foreground w-10 text-right">
+                          {grandTotal <= 0
+                            ? '—'
+                            : v === null
+                              ? '—'
+                              : `${Math.round(pct)}%`}
+                        </span>
+                      </div>
+                    </button>
+                  </div>
+                )
+              })}
+            </CardContent>
+          </Card>
+        </>
+      )}
     </div>
   )
 }
