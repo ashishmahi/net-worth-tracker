@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
+import { nowIso } from '@/lib/financials'
 import { DataSchema, AppData } from '../types/data'
 
 /** Map legacy Phase-2 `balanceInr` rows to `{ currency: 'INR', balance }` before Zod parse. */
@@ -38,21 +39,25 @@ function migrateLegacyBankAccounts(raw: unknown): unknown {
 
 // ── Initial empty data structure (used when data.json is absent or invalid) ──
 
-const now = new Date().toISOString()
-
-export const INITIAL_DATA: AppData = {
-  version: 1,
-  settings: { updatedAt: now },
-  assets: {
-    gold: { updatedAt: now, items: [] },
-    mutualFunds: { updatedAt: now, platforms: [] },
-    stocks: { updatedAt: now, platforms: [] },
-    bitcoin: { updatedAt: now, quantity: 0 },
-    property: { updatedAt: now, items: [] },
-    bankSavings: { updatedAt: now, accounts: [] },
-    retirement: { updatedAt: now, nps: 0, epf: 0 },
-  },
+/** Full empty slate for first load, failed parse, or user-initiated reset. */
+export function createInitialData(): AppData {
+  const now = nowIso()
+  return {
+    version: 1,
+    settings: { updatedAt: now },
+    assets: {
+      gold: { updatedAt: now, items: [] },
+      mutualFunds: { updatedAt: now, platforms: [] },
+      stocks: { updatedAt: now, platforms: [] },
+      bitcoin: { updatedAt: now, quantity: 0 },
+      property: { updatedAt: now, items: [] },
+      bankSavings: { updatedAt: now, accounts: [] },
+      retirement: { updatedAt: now, nps: 0, epf: 0 },
+    },
+  }
 }
+
+export const INITIAL_DATA: AppData = createInitialData()
 
 // ── Context type ──────────────────────────────────────────────────────────────
 

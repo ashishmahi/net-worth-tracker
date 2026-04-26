@@ -8,7 +8,19 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Card, CardContent } from '@/components/ui/card'
-import { useAppData } from '@/context/AppDataContext'
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
+import { buttonVariants } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+import { createInitialData, useAppData } from '@/context/AppDataContext'
 import { useLivePrices } from '@/context/LivePricesContext'
 import { parseFinancialInput, nowIso } from '@/lib/financials'
 import type { AppData } from '@/types/data'
@@ -84,6 +96,11 @@ export function SettingsPage() {
   const [retirementSaving, setRetirementSaving] = useState(false)
   const [retirementSaveError, setRetirementSaveError] = useState<string | null>(null)
 
+  const [clearDialogOpen, setClearDialogOpen] = useState(false)
+  const [clearingData, setClearingData] = useState(false)
+  const [clearDataError, setClearDataError] = useState<string | null>(null)
+  const [clearDataSuccess, setClearDataSuccess] = useState(false)
+
   // Block 1: Gold Prices form (D-16)
   const goldForm = useForm<GoldPricesValues>({
     resolver: zodResolver(goldPricesSchema),
@@ -105,6 +122,8 @@ export function SettingsPage() {
         k22: String(gp.k22),
         k18: String(gp.k18),
       })
+    } else {
+      goldForm.reset({ k24: '', k22: '', k18: '' })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only re-sync when persisted gold prices change
   }, [data.settings.goldPrices])
@@ -117,6 +136,13 @@ export function SettingsPage() {
         targetAge: String(ra.targetAge),
         npsReturnPct: String(ra.npsReturnPct),
         epfRatePct: String(ra.epfRatePct),
+      })
+    } else {
+      retirementForm.reset({
+        currentAge: '',
+        targetAge: '',
+        npsReturnPct: '',
+        epfRatePct: '',
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only re-sync when persisted retirement block changes
@@ -462,6 +488,86 @@ export function SettingsPage() {
           Export Data
         </Button>
       </div>
+
+      <Separator />
+
+      {/* Block 4: Danger zone — clear all saved wealth data (DATA-01–03) */}
+      <Card className="border-destructive/40 bg-destructive/5">
+        <CardContent className="pt-6 space-y-4">
+          <p className="text-sm font-semibold">Danger zone</p>
+          <p className="text-sm text-muted-foreground">
+            This permanently removes all net-worth and asset data stored in your local <code>data.json</code> file.
+            This is not a normal save and cannot be undone in the app.
+          </p>
+          {clearDataError && (
+            <p role="alert" className="text-sm text-destructive">
+              {clearDataError}
+            </p>
+          )}
+          {clearDataSuccess && !clearDataError && (
+            <p className="text-sm text-muted-foreground" role="status">
+              All data has been cleared.
+            </p>
+          )}
+
+          <AlertDialog
+            open={clearDialogOpen}
+            onOpenChange={open => {
+              setClearDialogOpen(open)
+              if (open) {
+                setClearDataError(null)
+                setClearDataSuccess(false)
+              }
+            }}
+          >
+            <AlertDialogTrigger asChild>
+              <Button type="button" variant="destructive" aria-label="Open clear all data confirmation">
+                Clear all data
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Clear all data?</AlertDialogTitle>
+                <AlertDialogDescription asChild>
+                  <div className="text-left text-sm text-muted-foreground">
+                    <span className="block text-foreground">
+                      This is irreversible. All saved net-worth and asset entries in your local data file will be
+                      removed.
+                    </span>
+                    <span className="mt-2 block text-muted-foreground">
+                      Use <strong className="text-foreground">Export Data</strong> in the Data section above
+                      first if you need a backup copy.
+                    </span>
+                  </div>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel disabled={clearingData}>Cancel</AlertDialogCancel>
+                <button
+                  type="button"
+                  disabled={clearingData}
+                  className={cn(buttonVariants({ variant: 'destructive' }))}
+                  onClick={async () => {
+                    setClearDataError(null)
+                    setClearingData(true)
+                    try {
+                      await saveData(createInitialData())
+                      setClearDataSuccess(true)
+                      setClearDialogOpen(false)
+                    } catch {
+                      setClearDataError('Could not clear data. Check that the app is running and try again.')
+                    } finally {
+                      setClearingData(false)
+                    }
+                  }}
+                >
+                  {clearingData ? 'Clearing…' : 'Yes, clear all data'}
+                </button>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </CardContent>
+      </Card>
     </div>
   )
 }
