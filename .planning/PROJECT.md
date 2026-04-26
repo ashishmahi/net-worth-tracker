@@ -18,10 +18,21 @@ See **total net worth in INR** at a glance, with **live BTC and FX** where appli
 
 Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.2-ROADMAP.md` and matching `*-REQUIREMENTS.md` archives. Phase work: `v1.0-phases/`, `v1.1-phases/`, `v1.2-phases/` under [`.planning/milestones/`](milestones/).  
 
-## Current state (post–v1.2)
+## Current Milestone: v1.3 Net worth history
 
-- **Milestone delivered:** v1.2 (Phase 9). **Next:** define the following milestone with `/gsd-new-milestone` (creates a fresh `.planning/REQUIREMENTS.md` and updates roadmap).  
-- **App:** `npm run dev` — v1.0, v1.1, and v1.2 capabilities shipped.  
+**Goal:** Let users **see how total net worth changes over time** with stored **snapshots** and a **chart** on the dashboard — still local-only, same `data.json` persistence.
+
+**Target features:**
+
+- **Persisted history** — append-only list of point-in-time totals in INR (with timestamps), validated in the `AppData` / Zod schema, cleared on full data reset.  
+- **Record snapshot** — user-triggered action (e.g. on Dashboard) to save the current computed total.  
+- **Chart** — simple line (or area) view of history on the dashboard; empty state when there is not enough data to draw a trend.  
+- **Schema evolution** — extend the data model in a way that **migrates** existing `data.json` (no data loss for users upgrading from v1.2).  
+
+## Current state (milestone in planning)
+
+- **Active work:** v1.3 (requirements and roadmap in `.planning/REQUIREMENTS.md`, `.planning/ROADMAP.md`).  
+- **App:** `npm run dev` — v1.0–v1.2 capabilities shipped; v1.3 not yet implemented.  
 
 ## Requirements
 
@@ -45,16 +56,16 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.2-ROADMAP.md` and matc
 - [x] **DATA-02** — Irreversibility + backup hint + non-accidental confirm (AlertDialog)  
 - [x] **DATA-03** — `createInitialData()` + `saveData` / `POST` `/api/data`; in-memory + forms re-sync  
 
-### Active (next milestone)
+### Active (v1.3)
 
-- [ ] *TBD* — use `/gsd-new-milestone` to capture the next set (e.g. charts, export—see **Deferred** below).  
+See [REQUIREMENTS.md](REQUIREMENTS.md) in `.planning/` — **NWH-01** through **NWH-05** (net worth history, chart, reset, migration).    
 
-### Deferred (typical follow-ons)
+### Deferred (post–v1.3 unless pulled in)
 
-- [ ] Charts & historical net worth (unless reprioritized)  
-- [ ] Export / reports — PDF or CSV  
+- [ ] Export / reports — PDF or CSV (JSON export exists; richer formats later)  
 - [ ] Navigation overhaul, richer inline editing (future)  
 - [ ] Align GSD Phase 01 planning artifacts with repo (optional)  
+- [ ] Optional: automatic periodic snapshots (cron-like) — not required for v1.3  
 
 ### Out of scope (unchanged)
 
@@ -70,6 +81,7 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.2-ROADMAP.md` and matc
 - **Theme:** `localStorage` `theme` (`light` | `dark`); FOUC script in `index.html`  
 - **Layout:** `AppSidebar` offcanvas on mobile; `MobileTopBar`; `PageHeader` on section pages; asset sheets with scroll regions + property milestone horizontal scroll on narrow widths  
 - **Data reset (v1.2):** `createInitialData()` in `AppDataContext`; shadcn `AlertDialog` in Settings danger zone  
+- **Planned (v1.3):** net worth snapshot list + chart (e.g. Recharts) on dashboard — details in `REQUIREMENTS.md` / `ROADMAP.md`  
 
 ## Constraints
 
@@ -86,17 +98,20 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.2-ROADMAP.md` and matc
 | GSD planning | Phased delivery in `.planning/` | Ongoing |
 | v1.1 scope | `localStorage` only for theme; no `data.json` version bump for theme | ✓ Shipped |
 | v1.2 data reset | Danger zone + dialog + `createInitialData` + `saveData`; no theme wipe | ✓ v1.2 2026-04-26 |
+| v1.3 (planned) | Snapshot list + chart on dashboard; INR total from existing `dashboardCalcs`; migration for existing files | *In progress* |  
 
 ## Evolution
 
 This file is updated at **milestone completion** to avoid drift between plans and the running app.
 
+**After each milestone** (via `/gsd-complete-milestone`): full review, validated requirements, key decisions, context.
+
 <details>
-<summary>Previous “Current milestone” blurb (v1.2 in planning — superseded 2026-04-26)</summary>
+<summary>Previous “Current milestone” blurb (v1.2 in planning — superseded 2026-04-26)</summary>  
 
 *Former text referred to v1.2 as in planning with DATA-01–03 in **Active**; those are now in **Validated (v1.2)**.*  
 
 </details>  
 
 ---
-*Last updated: 2026-04-26 after **v1.2 — Data reset** milestone complete (archive + tag).*  
+*Last updated: 2026-04-26 — **v1.3 — Net worth history** milestone started (`/gsd-new-milestone`).*  
