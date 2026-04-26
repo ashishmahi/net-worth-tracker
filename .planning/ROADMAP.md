@@ -33,7 +33,7 @@
 
 **Depends on:** v1.0–v1.1 shipped; `AppDataContext`, `SettingsPage`, Vite `data` plugin.  
 
-**Plans:** TBD in `/gsd-plan-phase 9` (e.g. UI, wiring, UAT, verification).  
+**Plans:** `09-01-PLAN` (data factory + alert-dialog) · `09-02-PLAN` (Settings danger zone) — under `.planning/phases/09-data-reset/`.  
 
 ---
 
@@ -70,7 +70,7 @@ Goal: comfortable mobile use + manual dark mode. Phases 6–8 (dark mode, mobile
 | 6. Dark Mode | v1.1  | 2/2            | Complete| 2026-04-26 |
 | 7. Mobile Foundation | v1.1 | 1/1  | Complete| 2026-04-26 |
 | 8. Mobile Page Fixes | v1.1 | 2/2 | Complete| 2026-04-26 |
-| **9. Data reset**    | **v1.2**  | TBD  | _Not started_ | —         |
+| **9. Data reset**    | **v1.2**  | 2/2  | _Implemented_ | 2026-04-26 |
 
 ---
 
