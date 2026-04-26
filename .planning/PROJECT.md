@@ -32,7 +32,7 @@ See **total net worth in INR** at a glance, with **live BTC and FX** where appli
 
 ### Active (v1.1)
 
-- [ ] **UX-01**: Responsive mobile layout — all asset pages and dashboard usable on small screens (view + edit)
+- [x] **UX-01**: Responsive mobile layout — all asset pages and dashboard usable on small screens (view + edit) — validated in Phases 7–8
 - [x] **UX-02**: Dark mode — in-app manual toggle (persisted across sessions) — validated in Phase 6
 
 ### Deferred (v1.2+)
@@ -57,7 +57,7 @@ See **total net worth in INR** at a glance, with **live BTC and FX** where appli
 - **Theme:** `localStorage` key `theme` (`light` | `dark`); FOUC script in `index.html`; `ThemeProvider` in `src/main.tsx`; toggles in `AppSidebar` footer and `MobileTopBar` (mobile)  
 - **Shell (v1.1):** `AppSidebar` `collapsible="offcanvas"`; `MobileTopBar` only below 768px; `Sidebar` mobile Sheet a11y copy in `src/components/ui/sidebar.tsx`  
 - **Milestone v1.0** archived: `.planning/milestones/v1.0-ROADMAP.md`, `v1.0-REQUIREMENTS.md`, `MILESTONES.md`  
-- **Milestone v1.1 (in progress):** Phases 6–7 complete 2026-04-26 (dark mode, mobile offcanvas + top bar); next: Phase 8 (Mobile Page Fixes)  
+- **Milestone v1.1:** Phases 6–8 complete 2026-04-26 — dark mode, mobile shell, page headers + scrollable sheets + property table (MB-01–MB-04)  
 
 ## Constraints
 
@@ -83,4 +83,4 @@ This file was fully reviewed at **v1.0 milestone close** (2026-04-26).
 **After each milestone** (`/gsd-complete-milestone`): validate “What this is,” core value, and Out of scope; roll shipped items into **Validated**; set **Active** to empty or next milestone placeholders.
 
 ---
-*Last updated: 2026-04-26 — Phase 7 (Mobile Foundation) complete; Phase 8 next*
+*Last updated: 2026-04-26 — v1.1 Phases 6–8 (UX polish + mobile) complete*
