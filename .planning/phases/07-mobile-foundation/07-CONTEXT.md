@@ -57,7 +57,7 @@ On **viewports under 768px** (same threshold as `useIsMobile` / `MOBILE_BREAKPOI
 - `src/App.tsx` — `SidebarProvider`, `SidebarInset` layout; place **mobile top bar** adjacent to the shell pattern (planner to choose exact tree — often a bar above `SidebarInset` that only renders when `isMobile`)
 - `src/components/ui/sidebar.tsx` — `SidebarProvider`, `useSidebar`, `SidebarTrigger`, mobile Sheet, cookies for desktop `sidebar:state` (separate from theme)
 - `src/hooks/use-mobile.tsx` — `MOBILE_BREAKPOINT = 768`
-- `src/context/ThemeContext.tsx` (or current theme path) — reuse for top bar icon-only toggle
+- `src/context/ThemeContext.tsx` — reuse for top bar icon-only toggle
 
 </canonical_refs>
 
