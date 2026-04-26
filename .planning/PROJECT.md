@@ -17,10 +17,20 @@ See **total net worth in INR** at a glance, with **live BTC and FX** where appli
 
 Snapshots: `.planning/milestones/v1.0-ROADMAP.md`, `v1.1-ROADMAP.md` and matching `*-REQUIREMENTS.md` archives. Phase work is under `v1.0-phases/`, `v1.1-phases/`.
 
-## Current state (post–v1.1)
+## Current Milestone: v1.2 Data reset & clean slate
 
-- **Milestone in planning:** _none_ — run `/gsd-new-milestone` to define the next version (e.g. charts, export), requirements, and roadmap.
-- **App:** `npm run dev` — all v1.0 and v1.1 capabilities available locally.
+**Goal:** User can **clear all wealth data** and **start from an empty, schema-valid state** with a **strong warning** and **explicit confirmation** (no one-click data loss).
+
+**Target features:**
+
+- A **discoverable** place for a destructive “clear all” action (e.g. Settings — danger / data area).
+- **Warning copy** that the action is **irreversible** and **removes all saved net-worth data**; **confirmation** that is hard to trigger by accident (e.g. dedicated dialog with explicit confirm, not a single unlabeled OK).
+- **On success:** `data.json` and **React state** match the same **empty** shape the app already uses for a fresh run (`INITIAL_DATA` / `data.example.json` — version 1, empty collections, zero balances).
+
+## Current state (v1.2 in planning)
+
+- **Milestone in planning:** v1.2 (requirements and roadmap in `.planning/REQUIREMENTS.md`, `.planning/ROADMAP.md`). Execute with `/gsd-discuss-phase 9` or `/gsd-plan-phase 9`.
+- **App:** `npm run dev` — v1.0 and v1.1 capabilities shipped; v1.2 not yet implemented.
 
 ## Requirements
 
@@ -38,14 +48,16 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md`, `v1.1-ROADMAP.md` and matchin
 - [x] **UX-02** — Dark mode: manual toggle + `localStorage` (Phase 6)  
 - [x] **DM-01, DM-02, MB-01…MB-04** — per `.planning/milestones/v1.1-REQUIREMENTS.md`  
 
-### Active (next milestone)
+### Active (v1.2 — in planning; see `REQUIREMENTS.md`)
 
-_Add with `/gsd-new-milestone` (placeholder REQ-IDs, traceability table, roadmap phases)._
+- [ ] **DATA-01** — Entry for “clear all” / reset data (see requirements file)  
+- [ ] **DATA-02** — Irreversibility warning + non-accidental confirm  
+- [ ] **DATA-03** — Persisted + in-memory data reset to `INITIAL_DATA`-equivalent  
 
-### Deferred (v1.2+)
+### Deferred (post–v1.2)
 
-- [ ] Charts & historical net worth (v1.2)  
-- [ ] Export / reports — PDF or CSV (v1.3)  
+- [ ] Charts & historical net worth (next after v1.2 unless reprioritized)  
+- [ ] Export / reports — PDF or CSV  
 - [ ] Navigation overhaul, richer inline editing (future)  
 - [ ] Align GSD Phase 01 planning artifacts with repo (optional)  
 
@@ -77,10 +89,11 @@ _Add with `/gsd-new-milestone` (placeholder REQ-IDs, traceability table, roadmap
 | v1.1 mobile | Phases 6–8: theme, offcanvas, headers, sheets, table | ✓ v1.1 2026-04-26 |
 | GSD planning | Phased delivery in `.planning/` | Ongoing |
 | v1.1 scope | `localStorage` only for theme; no `data.json` version bump for theme | ✓ Shipped |
+| v1.2 | Full data reset: warning + confirm + `INITIAL_DATA` via `saveData` / POST `/api/data` | In planning |
 
 ## Evolution
 
 This file is updated at **milestone completion** to avoid drift between plans and the running app.
 
 ---
-*Last updated: 2026-04-26 after **v1.1 — UX Polish** milestone archive (complete-milestone).*
+*Last updated: 2026-04-26 — **v1.2 — Data reset** milestone started (new-milestone).*
