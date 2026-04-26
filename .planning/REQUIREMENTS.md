@@ -10,8 +10,8 @@
 
 ### Dark Mode
 
-- [ ] **DM-01**: User can toggle between light and dark mode via a button in the app UI
-- [ ] **DM-02**: Dark/light mode preference is saved to `localStorage` and restored on next page load
+- [x] **DM-01**: User can toggle between light and dark mode via a button in the app UI
+- [x] **DM-02**: Dark/light mode preference is saved to `localStorage` and restored on next page load
 
 ### Mobile Responsive
 
@@ -44,8 +44,8 @@
 
 | REQ-ID | Description | Phase | Status |
 |--------|-------------|-------|--------|
-| DM-01  | Dark mode toggle button | Phase 6 | pending |
-| DM-02  | localStorage persistence | Phase 6 | pending |
+| DM-01  | Dark mode toggle button | Phase 6 | complete |
+| DM-02  | localStorage persistence | Phase 6 | complete |
 | MB-01  | Sidebar offcanvas drawer | Phase 7 | pending |
 | MB-02  | Page header reflow | Phase 8 | pending |
 | MB-03  | Sheet scroll on mobile | Phase 8 | pending |
