@@ -23,7 +23,7 @@ Users can switch the entire app between **light and dark** via an in-app control
 - **D-03:** Place the Sun/Moon (or equivalent) control in the **sidebar footer** (`SidebarFooter` pattern), not only under Settings. Phase 7 will add the **mobile top bar** requirement to expose the toggle without opening the drawer; this decision is desktop/sidebar for v1.1 phase 6 delivery.
 
 ### Persistence contract
-- **D-04:** `localStorage` key: **`theme`**. Values: **`light`** | **`dark`** only. The inline `index.html` script and the React theme layer must use the **same** key and strings. Invalid or unknown values** → treat as no preference → **light** (aligned with D-01).
+- **D-04:** `localStorage` key: **`theme`**. Values: **`light`** | **`dark`** only. The inline `index.html` script and the React theme layer must use the **same** key and strings. Invalid or unknown values → treat as no preference → **light** (aligned with D-01).
 
 ### FOUC / first paint
 - **D-05:** Keep the **`STATE.md` pattern**: a small **inline `<script>` in `index.html`** (before the module bundle) that reads `localStorage` and sets `class="dark"` on `<html>` when and only when the value is exactly **`dark`**. The React `ThemeProvider` (or equivalent) must **read** the class already on `<html>` for initial state and keep `class` and storage in sync on toggle — the provider must not be the **sole** mechanism that applies the correct class on first load.
