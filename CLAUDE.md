@@ -19,7 +19,7 @@ This project uses GSD for phased planning and execution.
 
 - Planning docs: `.planning/`
 - Roadmap: `.planning/ROADMAP.md` (v1.0 detail: `.planning/milestones/v1.0-ROADMAP.md`)
-- Requirements: `.planning/REQUIREMENTS.md` (v1.0 snapshot: `.planning/milestones/v1.0-REQUIREMENTS.md`)
+- Requirements: *live* `.planning/REQUIREMENTS.md` is created/updated by `/gsd-new-milestone` (between milestones it may be absent). Archives: e.g. `.planning/milestones/v1.2-REQUIREMENTS.md` (v1.2), `v1.1-REQUIREMENTS.md`, `v1.0-REQUIREMENTS.md`
 - Milestone history: `.planning/MILESTONES.md`
 
 ### Phase Execution Order
