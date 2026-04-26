@@ -13,8 +13,7 @@ import { BankSavingsPage } from '@/pages/BankSavingsPage'
 import { RetirementPage } from '@/pages/RetirementPage'
 import { SettingsPage } from '@/pages/SettingsPage'
 
-const SECTION_COMPONENTS: Record<SectionKey, React.ComponentType> = {
-  dashboard: DashboardPage,
+const SECTION_COMPONENTS: Record<Exclude<SectionKey, 'dashboard'>, React.ComponentType> = {
   gold: GoldPage,
   mutualFunds: MutualFundsPage,
   stocks: StocksPage,
@@ -28,7 +27,6 @@ const SECTION_COMPONENTS: Record<SectionKey, React.ComponentType> = {
 export default function App() {
   const [activeSection, setActiveSection] = useState<SectionKey>('dashboard') // D-05
   const { loadError } = useAppData()
-  const ActivePage = SECTION_COMPONENTS[activeSection]
 
   return (
     <SidebarProvider>
@@ -40,7 +38,14 @@ export default function App() {
               {loadError}
             </div>
           )}
-          <ActivePage />
+          {activeSection === 'dashboard' ? (
+            <DashboardPage onNavigate={setActiveSection} />
+          ) : (
+            (() => {
+              const Page = SECTION_COMPONENTS[activeSection]
+              return <Page />
+            })()
+          )}
         </main>
       </SidebarInset>
     </SidebarProvider>
