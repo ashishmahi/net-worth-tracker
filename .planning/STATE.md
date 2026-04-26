@@ -1,10 +1,10 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.3
-milestone_name: Net worth history
-status: context_ready_10_1
-last_updated: "2026-04-26T20:00:00.000Z"
-last_activity: 2026-04-26 — /gsd-discuss-phase 10.1 (CONTEXT.md written)
+milestone_name: — Net worth history
+status: completed
+last_updated: "2026-04-26T13:16:34.484Z"
+last_activity: 2026-04-26 — `/gsd-ui-phase 10.1` — `10.1-UI-SPEC.md`
 progress:
   total_phases: 3
   completed_phases: 0
@@ -20,10 +20,10 @@ progress:
 
 **Milestone:** v1.3 — **Net worth history** (in planning)  
 **Phase:** **10.1** — *context gathered*; **10** *not started* (see [ROADMAP](ROADMAP.md))  
-**Status:** `context_ready_10_1` — Phase 10.1 discuss complete; plan **10** first, then 10.1, then 11.  
-**Last activity:** 2026-04-26 — `/gsd-discuss-phase 10.1` — `10.1-CONTEXT.md`  
+**Status:** `context_ready_10_1` — Phase 10.1 discuss + **UI design contract** complete; plan **10** first, then 10.1, then 11.  
+**Last activity:** 2026-04-26 — `/gsd-ui-phase 10.1` — `10.1-UI-SPEC.md`  
 
-**Resume from:** [`.planning/phases/10.1-json-import-quick-import-from-file-to-match-existing-json-ex/10.1-CONTEXT.md`](phases/10.1-json-import-quick-import-from-file-to-match-existing-json-ex/10.1-CONTEXT.md) (for 10.1 planning)  
+**Resume from:** [`.planning/phases/10.1-json-import-quick-import-from-file-to-match-existing-json-ex/10.1-UI-SPEC.md`](phases/10.1-json-import-quick-import-from-file-to-match-existing-json-ex/10.1-UI-SPEC.md) (design for 10.1 implementation planning) and [10.1-CONTEXT.md](phases/10.1-json-import-quick-import-from-file-to-match-existing-json-ex/10.1-CONTEXT.md)  
 
 ## Project reference
 
@@ -48,6 +48,7 @@ Velocity: v1.3 TBD.
 
 - **Phase 10.1** inserted after Phase **10** (INSERTED): **JSON import** from file, paired with **Export** — see `.planning/phases/10.1-json-import-quick-import-from-file-to-match-existing-json-ex/README.md` (GSD may truncate long folder slugs). **IMP-01** / **IMP-02** in `REQUIREMENTS.md`.  
 - **10.1 discuss (2026-04-26):** AlertDialog after validate, before `saveData`; Import beside Export; inline success; friendly error + short Zod hint; save errors match Settings; any schema-valid file; allow empty-like import — see `10.1-CONTEXT.md`.  
+- **10.1 UI-SPEC (2026-04-26):** locked spacing/typography/color, copy, Data row + dialog hierarchy, registry — see `10.1-UI-SPEC.md`.  
 
 ### Pending todos
 
