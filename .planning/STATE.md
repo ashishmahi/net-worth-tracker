@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: — Net worth history
-status: v1.3 work continues with **10** (schema + record snapshot) then **11** (chart).
-last_updated: "2026-04-26T17:35:33.734Z"
-last_activity: "2026-04-26 — `/gsd-discuss-phase 10` → [10-CONTEXT.md](phases/10-history-schema/10-CONTEXT.md) (netWorthHistory, record + migration + reset + import alignment)"
+status: "v1.3: **plan/execute** Phase 10, then **11** (chart)."
+last_updated: "2026-04-26T17:38:49.005Z"
+last_activity: "2026-04-26 — [`10-CONTEXT.md`](phases/10-history-schema/10-CONTEXT.md) (discuss phase); `netWorthHistory: { recordedAt, totalInr }[]` + guards per context."
 progress:
   total_phases: 3
   completed_phases: 1
-  total_plans: 1
+  total_plans: 2
   completed_plans: 1
-  percent: 100
+  percent: 50
 ---
 
 ## Project
@@ -72,3 +72,5 @@ Velocity: v1.3 TBD.
 **Next:** `/gsd-plan-phase 10` (history & schema + record on Dashboard), then `11` (chart).  
 
 ---
+
+**Planned Phase:** 10 (History & schema) — 1 plans — 2026-04-26T17:38:48.994Z
