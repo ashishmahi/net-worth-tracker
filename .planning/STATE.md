@@ -1,10 +1,10 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.3
-milestone_name: — Net worth history
-status: `requirements_ready` — run `/gsd-discuss-phase 10` or `/gsd-plan-phase 10`
-last_updated: "2026-04-26T13:12:27.285Z"
-last_activity: 2026-04-26 — `REQUIREMENTS.md` and `ROADMAP.md` created for v1.3
+milestone_name: Net worth history
+status: context_ready_10_1
+last_updated: "2026-04-26T20:00:00.000Z"
+last_activity: 2026-04-26 — /gsd-discuss-phase 10.1 (CONTEXT.md written)
 progress:
   total_phases: 3
   completed_phases: 0
@@ -19,11 +19,11 @@ progress:
 ## Current position
 
 **Milestone:** v1.3 — **Net worth history** (in planning)  
-**Phase:** 10+ — *Not started* (see `ROADMAP.md` in `.planning/`)  
-**Status:** `requirements_ready` — run `/gsd-discuss-phase 10` or `/gsd-plan-phase 10`  
-**Last activity:** 2026-04-26 — `REQUIREMENTS.md` and `ROADMAP.md` created for v1.3  
+**Phase:** **10.1** — *context gathered*; **10** *not started* (see [ROADMAP](ROADMAP.md))  
+**Status:** `context_ready_10_1` — Phase 10.1 discuss complete; plan **10** first, then 10.1, then 11.  
+**Last activity:** 2026-04-26 — `/gsd-discuss-phase 10.1` — `10.1-CONTEXT.md`  
 
-**Resume from:** `REQUIREMENTS.md` (in `.planning/`)  
+**Resume from:** [`.planning/phases/10.1-json-import-quick-import-from-file-to-match-existing-json-ex/10.1-CONTEXT.md`](phases/10.1-json-import-quick-import-from-file-to-match-existing-json-ex/10.1-CONTEXT.md) (for 10.1 planning)  
 
 ## Project reference
 
@@ -47,6 +47,7 @@ Velocity: v1.3 TBD.
 ### Roadmap evolution
 
 - **Phase 10.1** inserted after Phase **10** (INSERTED): **JSON import** from file, paired with **Export** — see `.planning/phases/10.1-json-import-quick-import-from-file-to-match-existing-json-ex/README.md` (GSD may truncate long folder slugs). **IMP-01** / **IMP-02** in `REQUIREMENTS.md`.  
+- **10.1 discuss (2026-04-26):** AlertDialog after validate, before `saveData`; Import beside Export; inline success; friendly error + short Zod hint; save errors match Settings; any schema-valid file; allow empty-like import — see `10.1-CONTEXT.md`.  
 
 ### Pending todos
 
@@ -68,4 +69,4 @@ Velocity: v1.3 TBD.
 
 **Completed:** v1.0, v1.1, v1.2 (shipped)  
 
-**Next:** `/gsd-discuss-phase 10` or `/gsd-plan-phase 10` for **net worth history — data + snapshots**  
+**Next:** `/gsd-discuss-phase 10` (if not done) or `/gsd-plan-phase 10` for **history & schema**; then `/gsd-plan-phase 10.1` for JSON import.  
