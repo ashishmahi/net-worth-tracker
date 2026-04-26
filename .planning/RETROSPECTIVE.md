@@ -1,5 +1,40 @@
 # Project retrospective — Personal Wealth Tracker
 
+## Milestone: v1.2 — Data reset
+
+**Shipped:** 2026-04-26  
+**Phases:** 9 (1 phase) | **Plans:** 2  
+
+### What was built
+
+- **Phase 9:** `createInitialData()` / `INITIAL_DATA` factory, Settings **Danger zone** with controlled **AlertDialog**, destructive confirm wired to `saveData`, RHF `else` branches when `goldPrices` / `retirement` absent.  
+
+### What worked
+
+- Reusing **existing** `saveData` rollback for failed POST — only UI needed to surface errors.  
+- **Single factory** for empty `AppData` keeps `POST` body and first-load defaults aligned.  
+- **shadcn** CLI for `alert-dialog` matched the stack (Radix + Tailwind).  
+
+### What was inefficient
+
+- `gsd-sdk query milestone.complete` failed (`version required for phases archive`); milestone close was **finished manually** (archives + `git rm` + tag).  
+- `roadmap.analyze` did not mark Phase 9 “complete” until `09-SUMMARY.md` existed — created at close.  
+
+### Patterns established
+
+- **Async destructive** flow: **Cancel** + separate **Button** + `buttonVariants({ destructive })` in `AlertDialogFooter` (not `AlertDialogAction` alone) for `await saveData`.  
+- **Settings** forms: sync when optional **nested** `settings` keys go **undefined** after reset, not only when present.  
+
+### Key lessons
+
+- For **data loss** UX, **two-step** intent (open dialog → confirm) plus **irreversible** copy in the dialog meets the product bar without a typed phrase.  
+
+### Cost observations
+
+- Not recorded.  
+
+---
+
 ## Milestone: v1.1 — UX Polish
 
 **Shipped:** 2026-04-26  
@@ -44,3 +79,4 @@
 |-----------|------------------|--------|
 | v1.0 | 1–5 | Core app + v1.0 requirements snapshot |
 | v1.1 | 6–8 | UX and mobile; no `data.json` schema change for theme |
+| v1.2 | 9 | Data reset; `createInitialData` + AlertDialog; no new API routes |

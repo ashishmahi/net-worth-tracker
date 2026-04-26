@@ -8,29 +8,20 @@ A local-only **React + Vite** app for tracking personal net worth across **gold,
 
 See **total net worth in INR** at a glance, with **live BTC and FX** where applicable and **manual** gold prices — minimal repeated data entry, everything else editable in the app.
 
-## Shipped: v1.0 + v1.1
+## Shipped versions
 
 | Version | Focus | Shipped |
 |---------|--------|---------|
 | **v1.0** | Core wealth tracker: assets, property, dashboard, data model, live prices | 2026-04-26 |
 | **v1.1** | **UX Polish** — manual dark mode; mobile offcanvas + top bar; page headers; scrollable sheets; property table on small screens | 2026-04-26 |
+| **v1.2** | **Data reset** — Settings danger zone, AlertDialog, `createInitialData()` + `saveData` full clear, inline error/success; `localStorage` theme unchanged | 2026-04-26 |
 
-Snapshots: `.planning/milestones/v1.0-ROADMAP.md`, `v1.1-ROADMAP.md` and matching `*-REQUIREMENTS.md` archives. Phase work is under `v1.0-phases/`, `v1.1-phases/`.
+Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.2-ROADMAP.md` and matching `*-REQUIREMENTS.md` archives. Phase work: `v1.0-phases/`, `v1.1-phases/`, `v1.2-phases/` under [`.planning/milestones/`](milestones/).  
 
-## Current Milestone: v1.2 Data reset & clean slate
+## Current state (post–v1.2)
 
-**Goal:** User can **clear all wealth data** and **start from an empty, schema-valid state** with a **strong warning** and **explicit confirmation** (no one-click data loss).
-
-**Target features:**
-
-- A **discoverable** place for a destructive “clear all” action (e.g. Settings — danger / data area).
-- **Warning copy** that the action is **irreversible** and **removes all saved net-worth data**; **confirmation** that is hard to trigger by accident (e.g. dedicated dialog with explicit confirm, not a single unlabeled OK).
-- **On success:** `data.json` and **React state** match the same **empty** shape the app already uses for a fresh run (`INITIAL_DATA` / `data.example.json` — version 1, empty collections, zero balances).
-
-## Current state (v1.2 in planning)
-
-- **Milestone in planning:** v1.2 (requirements and roadmap in `.planning/REQUIREMENTS.md`, `.planning/ROADMAP.md`). Execute with `/gsd-discuss-phase 9` or `/gsd-plan-phase 9`.
-- **App:** `npm run dev` — v1.0 and v1.1 capabilities shipped; v1.2 not yet implemented.
+- **Milestone delivered:** v1.2 (Phase 9). **Next:** define the following milestone with `/gsd-new-milestone` (creates a fresh `.planning/REQUIREMENTS.md` and updates roadmap).  
+- **App:** `npm run dev` — v1.0, v1.1, and v1.2 capabilities shipped.  
 
 ## Requirements
 
@@ -48,15 +39,19 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md`, `v1.1-ROADMAP.md` and matchin
 - [x] **UX-02** — Dark mode: manual toggle + `localStorage` (Phase 6)  
 - [x] **DM-01, DM-02, MB-01…MB-04** — per `.planning/milestones/v1.1-REQUIREMENTS.md`  
 
-### Active (v1.2 — in planning; see `REQUIREMENTS.md`)
+### Validated (v1.2)
 
-- [ ] **DATA-01** — Entry for “clear all” / reset data (see requirements file)  
-- [ ] **DATA-02** — Irreversibility warning + non-accidental confirm  
-- [ ] **DATA-03** — Persisted + in-memory data reset to `INITIAL_DATA`-equivalent  
+- [x] **DATA-01** — Discoverable “clear all” / danger zone in Settings (below Export)  
+- [x] **DATA-02** — Irreversibility + backup hint + non-accidental confirm (AlertDialog)  
+- [x] **DATA-03** — `createInitialData()` + `saveData` / `POST` `/api/data`; in-memory + forms re-sync  
 
-### Deferred (post–v1.2)
+### Active (next milestone)
 
-- [ ] Charts & historical net worth (next after v1.2 unless reprioritized)  
+- [ ] *TBD* — use `/gsd-new-milestone` to capture the next set (e.g. charts, export—see **Deferred** below).  
+
+### Deferred (typical follow-ons)
+
+- [ ] Charts & historical net worth (unless reprioritized)  
 - [ ] Export / reports — PDF or CSV  
 - [ ] Navigation overhaul, richer inline editing (future)  
 - [ ] Align GSD Phase 01 planning artifacts with repo (optional)  
@@ -74,6 +69,7 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md`, `v1.1-ROADMAP.md` and matchin
 - **Prices:** `priceApi` + `useLivePrices()`  
 - **Theme:** `localStorage` `theme` (`light` | `dark`); FOUC script in `index.html`  
 - **Layout:** `AppSidebar` offcanvas on mobile; `MobileTopBar`; `PageHeader` on section pages; asset sheets with scroll regions + property milestone horizontal scroll on narrow widths  
+- **Data reset (v1.2):** `createInitialData()` in `AppDataContext`; shadcn `AlertDialog` in Settings danger zone  
 
 ## Constraints
 
@@ -89,11 +85,18 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md`, `v1.1-ROADMAP.md` and matchin
 | v1.1 mobile | Phases 6–8: theme, offcanvas, headers, sheets, table | ✓ v1.1 2026-04-26 |
 | GSD planning | Phased delivery in `.planning/` | Ongoing |
 | v1.1 scope | `localStorage` only for theme; no `data.json` version bump for theme | ✓ Shipped |
-| v1.2 | Full data reset: warning + confirm + `INITIAL_DATA` via `saveData` / POST `/api/data` | In planning |
+| v1.2 data reset | Danger zone + dialog + `createInitialData` + `saveData`; no theme wipe | ✓ v1.2 2026-04-26 |
 
 ## Evolution
 
 This file is updated at **milestone completion** to avoid drift between plans and the running app.
 
+<details>
+<summary>Previous “Current milestone” blurb (v1.2 in planning — superseded 2026-04-26)</summary>
+
+*Former text referred to v1.2 as in planning with DATA-01–03 in **Active**; those are now in **Validated (v1.2)**.*  
+
+</details>  
+
 ---
-*Last updated: 2026-04-26 — **v1.2 — Data reset** milestone started (new-milestone).*
+*Last updated: 2026-04-26 after **v1.2 — Data reset** milestone complete (archive + tag).*  

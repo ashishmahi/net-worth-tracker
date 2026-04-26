@@ -1,7 +1,26 @@
 # Milestone history — Personal Wealth Tracker
 
-**Pre-ship audit:** No `v1.1-MILESTONE-AUDIT.md` on file — optional `/gsd-audit-milestone` is still a good idea before high-stakes releases.  
-**Open-artifact audit at close:** all clear (2026-04-26).
+**Pre-ship audit (v1.2):** No `v1.2-MILESTONE-AUDIT.md` on file — optional `/gsd-audit-milestone` before high-stakes releases.  
+**Open-artifact audit at v1.2 close:** all clear (2026-04-26).
+
+## v1.2 Data reset (Shipped: 2026-04-26)
+
+**Scope:** Phase 9.  
+**Phase directory:** [`.planning/milestones/v1.2-phases/09-data-reset/`](milestones/v1.2-phases/09-data-reset/)
+
+**Phases completed:** 1 phase, 2 plans
+
+**Key accomplishments:**
+
+- `export function createInitialData()` in `AppDataContext` with `nowIso()` for all `updatedAt` fields; `INITIAL_DATA` derived from the factory to avoid drift.
+- shadcn **AlertDialog** + **danger zone** `Card` on Settings (below **Export Data**): **Cancel** + **Yes, clear all data**; async `saveData(createInitialData())` with inline error/success; no `localStorage` theme wipe.
+- Gold and retirement RHF forms reset to empty when optional `settings` slices are removed after a full clear.
+
+**Roadmap / requirements:** [`.planning/milestones/v1.2-ROADMAP.md`](milestones/v1.2-ROADMAP.md), [`v1.2-REQUIREMENTS.md`](milestones/v1.2-REQUIREMENTS.md)
+
+**Known deferred (unchanged):** Phase 05 UAT, Phase 01 `human_needed` — see `STATE.md` **Deferred items**.
+
+---
 
 ## v1.1 UX Polish (Shipped: 2026-04-26)
 
@@ -48,4 +67,4 @@
 
 **Known deferred (unchanged from v1.0 close):** Phase 05 UAT, Phase 01 `human_needed` — see `STATE.md` **Deferred items**.
 
-_Next: `/gsd-new-milestone` to plan the following version (e.g. v1.2)._
+_Next: `/gsd-new-milestone` to plan the following version (e.g. v1.3)._
