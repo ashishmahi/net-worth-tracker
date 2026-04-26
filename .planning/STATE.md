@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: — UX Polish
-status: complete
+status: milestone_complete
 stopped_at: Phase 8 complete — 2026-04-26
 last_updated: "2026-04-26T12:15:00.000Z"
 last_activity: 2026-04-26
 progress:
   total_phases: 3
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 5
   completed_plans: 5
-  percent: 100
+  percent: 133
 ---
 
 ## Project
@@ -20,9 +20,9 @@ progress:
 
 ## Current position
 
-Phase: 8 (complete)
-Plan: 08-01, 08-02 done
-Status: Phase 8 complete — v1.1 mobile page fixes
+Phase: 8
+Plan: Not started
+Status: Milestone complete
 Last activity: 2026-04-26
 
 Progress: [███████░░░] 67%
@@ -37,7 +37,7 @@ See: `.planning/PROJECT.md` (updated 2026-04-26)
 
 **Velocity:**
 
-- Total plans completed: 3 (v1.1; Phases 6–7)
+- Total plans completed: 5 (v1.1; Phases 6–7)
 - Average duration: —
 - Total execution time: —
 
@@ -47,6 +47,7 @@ See: `.planning/PROJECT.md` (updated 2026-04-26)
 |-------|-------|-------|----------|
 | 06 | 2 | - | - |
 | 7 | 1 | - | - |
+| 8 | 2 | - | - |
 
 *Updated after each plan completion*
 

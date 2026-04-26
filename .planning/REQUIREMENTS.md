@@ -16,9 +16,9 @@
 ### Mobile Responsive
 
 - [x] **MB-01**: Sidebar collapses to an offcanvas drawer on mobile with a visible hamburger trigger
-- [ ] **MB-02**: All 7 asset page headers reflow vertically on narrow screens (title and action button stack instead of overflow)
-- [ ] **MB-03**: Add/edit forms (Sheets) scroll correctly on mobile when the keyboard is open
-- [ ] **MB-04**: Property milestone table is usable on mobile (horizontal scroll or stacked card layout at 375px)
+- [x] **MB-02**: All 7 asset page headers reflow vertically on narrow screens (title and action button stack instead of overflow)
+- [x] **MB-03**: Add/edit forms (Sheets) scroll correctly on mobile when the keyboard is open
+- [x] **MB-04**: Property milestone table is usable on mobile (horizontal scroll or stacked card layout at 375px)
 
 ---
 

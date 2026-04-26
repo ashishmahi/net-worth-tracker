@@ -27,7 +27,7 @@ All phase goals, plan checklists, and progress table are preserved in:
 
 - [x] **Phase 6: Dark Mode** - Theme toggle with localStorage persistence — 2026-04-26
 - [x] **Phase 7: Mobile Foundation** - Offcanvas sidebar drawer and mobile top bar (completed 2026-04-26)
-- [ ] **Phase 8: Mobile Page Fixes** - Page header reflow, sheet scroll, and property table
+- [x] **Phase 8: Mobile Page Fixes** - Page header reflow, sheet scroll, and property table (completed 2026-04-26)
 
 ---
 
@@ -80,4 +80,4 @@ All phase goals, plan checklists, and progress table are preserved in:
 | 5. Dashboard | v1.0 | — | Complete | 2026-04-26 |
 | 6. Dark Mode | v1.1 | 2/2 | Complete | 2026-04-26 |
 | 7. Mobile Foundation | v1.1 | 1/1 | Complete    | 2026-04-26 |
-| 8. Mobile Page Fixes | v1.1 | 0/? | Not started | - |
+| 8. Mobile Page Fixes | v1.1 | 2/2 | Complete    | 2026-04-26 |
