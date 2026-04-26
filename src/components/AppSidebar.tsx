@@ -8,6 +8,7 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  useSidebar,
 } from '@/components/ui/sidebar'
 import { useTheme } from '@/context/ThemeContext'
 
@@ -40,9 +41,10 @@ interface Props {
 }
 
 export function AppSidebar({ activeSection, onSelect }: Props) {
+  const { isMobile, setOpenMobile } = useSidebar()
   const { theme, setTheme } = useTheme()
   return (
-    <Sidebar collapsible="none" className="border-r">
+    <Sidebar collapsible="offcanvas" className="border-r">
       <SidebarHeader className="px-4 py-3">
         <span className="font-semibold text-sm">Wealth Tracker</span>
       </SidebarHeader>
@@ -55,7 +57,10 @@ export function AppSidebar({ activeSection, onSelect }: Props) {
                   isActive={activeSection === item.key}
                   aria-current={activeSection === item.key ? 'page' : undefined}
                   className="min-h-[44px]"
-                  onClick={() => onSelect(item.key)}
+                  onClick={() => {
+                    onSelect(item.key)
+                    if (isMobile) setOpenMobile(false)
+                  }}
                 >
                   {item.label}
                 </SidebarMenuButton>

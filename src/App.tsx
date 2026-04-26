@@ -2,6 +2,7 @@ import { useState } from 'react'
 import React from 'react'
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
 import { AppSidebar, type SectionKey } from '@/components/AppSidebar'
+import { MobileTopBar } from '@/components/MobileTopBar'
 import { useAppData } from '@/context/AppDataContext'
 import { DashboardPage } from '@/pages/DashboardPage'
 import { GoldPage } from '@/pages/GoldPage'
@@ -32,6 +33,7 @@ export default function App() {
     <SidebarProvider>
       <AppSidebar activeSection={activeSection} onSelect={setActiveSection} />
       <SidebarInset>
+        <MobileTopBar />
         <main className="p-6">
           {loadError && (
             <div className="mb-6 rounded border bg-muted p-4 text-sm text-foreground">
