@@ -1,17 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.1
-milestone_name: — UX Polish
-status: milestone_complete
-stopped_at: Phase 8 complete — 2026-04-26
-last_updated: "2026-04-26T12:15:00.000Z"
+milestone: —
+milestone_name: Next (undefined)
+status: planning
+last_updated: "2026-04-26T00:00:00.000Z"
 last_activity: 2026-04-26
 progress:
-  total_phases: 3
-  completed_phases: 4
-  total_plans: 5
-  completed_plans: 5
-  percent: 133
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 ## Project
@@ -20,70 +19,46 @@ progress:
 
 ## Current position
 
-Phase: 8
-Plan: Not started
-Status: Milestone complete
-Last activity: 2026-04-26
+**Milestone:** v1.1 shipped and archived; **next** not started  
+**Status:** Use `/gsd-new-milestone` to define the next version  
+**Last activity:** 2026-04-26 (v1.1 milestone close)
 
-Progress: [███████░░░] 67%
+**Progress (next milestone):** _not started_
 
 ## Project reference
 
-See: `.planning/PROJECT.md` (updated 2026-04-26)
-**Core value:** See total net worth at a glance with minimal effort — live BTC/forex, manual gold, all else in-app.
-**Current focus:** v1.1 Phase 8 complete; next: `/gsd-new-milestone` or manual polish
+See: `.planning/PROJECT.md` (updated 2026-04-26)  
+**Core value:** See total net worth at a glance — live BTC/forex, manual gold, the rest in-app.  
+**Current focus:** Plan the next milestone (e.g. charts, export) or continue local use as-is.
 
-## Performance Metrics
+## Performance metrics
 
-**Velocity:**
+Velocity and phase tables reset when the next milestone begins. Historical counts live in `.planning/MILESTONES.md` and `milestones/v1.0-*.md` / `v1.1-*.md`.
 
-- Total plans completed: 5 (v1.1; Phases 6–7)
-- Average duration: —
-- Total execution time: —
-
-**By Phase:**
-
-| Phase | Plans | Total | Avg/Plan |
-|-------|-------|-------|----------|
-| 06 | 2 | - | - |
-| 7 | 1 | - | - |
-| 8 | 2 | - | - |
-
-*Updated after each plan completion*
-
-## Accumulated Context
+## Accumulated context
 
 ### Decisions
 
-- v1.1 research: Dark mode CSS tokens already in `index.css`; `tailwind.config.js` already has `darkMode: ["class"]` — no new packages needed
-- v1.1 research: Mobile sidebar fix is a single prop change (`collapsible="none"` → `"offcanvas"`) in `AppSidebar.tsx`
-- v1.1 arch: Theme preference stored in `localStorage` only — not in `data.json` (no schema version bump)
-- v1.1 arch: FOUC prevention requires inline `<script>` in `index.html` before React loads — ThemeProvider reads existing DOM class, does not apply via useEffect
-- Phase 6 context: First visit = light; binary `localStorage` key `theme` (`light` \| `dark`); Sun/Moon in **sidebar footer**; no stored `system` mode — see `.planning/phases/06-dark-mode/06-CONTEXT.md`
+- v1.1 shipped: dark mode, offcanvas + `MobileTopBar`, `PageHeader`, scrollable sheets, property table narrow layout. See `milestones/v1.1-ROADMAP.md`.
 
-### Pending Todos
+### Pending todos
 
 None.
 
-### Blockers/Concerns
+### Blockers / concerns
 
-- iOS Safari keyboard viewport resize (MB-03) — requires real device or BrowserStack test; cannot validate in Chrome DevTools emulation
+- Optional: iOS Safari keyboard + viewport (MB-03) — best verified on a real device (`08-VERIFICATION.md` human items).
 
 ## Deferred items
 
-Items acknowledged at v1.0 milestone close (non-blocking):
-
 | Category | Item | Status |
 |----------|------|--------|
-| uat | Phase 05 — `.planning/phases/05-dashboard/05-UAT.md` | `testing` — 6 scenarios pending |
-| verification | Phase 01 — `.planning/phases/01-foundation/01-VERIFICATION.md` | `human_needed` |
+| uat | Phase 05 — `.planning/phases/05-dashboard/05-UAT.md` | `testing` |
+| verification | Phase 01 — `01-VERIFICATION.md` | `human_needed` |
+| planning | v1.1 formal milestone audit | not run (optional) |
 
-## Session Continuity
+## Session continuity
 
-Last session: --stopped-at
-Stopped at: Phase 8 context gathered
-Resume file: --resume-file
+**Completed:** v1.0 (2026-04-26), v1.1 — UX Polish (2026-04-26)  
 
-**Completed:** Phase 07 (mobile-foundation) — plan 07-01 — 2026-04-26
-
-**Completed:** Phase 08 (mobile-page-fixes) — plans 08-01, 08-02 — 2026-04-26
+**Next:** `/gsd-new-milestone`

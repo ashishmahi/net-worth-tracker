@@ -1,5 +1,22 @@
 # Milestone history — Personal Wealth Tracker
 
+**Pre-ship audit:** No `v1.1-MILESTONE-AUDIT.md` on file — optional `/gsd-audit-milestone` is still a good idea before high-stakes releases.  
+**Open-artifact audit at close:** all clear (2026-04-26).
+
+## v1.1 UX Polish (Shipped: 2026-04-26)
+
+**Phases completed:** 3 phases, 5 plans, 23 tasks
+
+**Key accomplishments:**
+
+- FOUC-safe inline `theme` read in `index.html` plus `ThemeProvider` / `useTheme` wrapping the app above data providers.
+- Sun/Moon `ghost` control in the sidebar footer with `useTheme` and a clean grep audit for raw light-only Tailwind/hex in `src`.
+- Offcanvas main navigation on small viewports, a `MobileTopBar` with hamburger and icon-only theme toggle, and screen-reader copy for the mobile Sheet—desktop layout unchanged at 768px+.
+- A shared `PageHeader` unifies section titles, optional `meta` (totals, alerts), and primary actions so narrow viewports stack a full-width CTA without horizontal header overflow, matching `08-UI-SPEC` D-01–D-03.
+- Add/Edit `Sheet` panels use a capped viewport height, a scrollable field stack, and a non-scrolling header/footer; the property milestone grid scrolls horizontally on very narrow widths instead of clipping columns.
+
+---
+
 ## v1.0 — Local wealth tracker
 
 **Status:** Shipped (2026-04-26)  
@@ -24,4 +41,8 @@
 - Phase 05 UAT in progress (`05-UAT.md`, testing).
 - Phase 01 verification file lists `human_needed` (`01-VERIFICATION.md`).
 
-_Next: `/gsd-new-milestone` to plan v1.1 (or next version)._
+**Roadmap / requirements:** `.planning/milestones/v1.1-ROADMAP.md`, `v1.1-REQUIREMENTS.md`  
+
+**Known deferred (unchanged from v1.0 close):** Phase 05 UAT, Phase 01 `human_needed` — see `STATE.md` **Deferred items**.
+
+_Next: `/gsd-new-milestone` to plan the following version (e.g. v1.2)._

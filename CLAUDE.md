@@ -30,7 +30,7 @@ This project uses GSD for phased planning and execution.
 5. Dashboard — net worth summary aggregating all sections (implemented: `src/lib/dashboardCalcs.ts`, `src/pages/DashboardPage.tsx`)
 
 ### Next step
-Milestone **v1.0 is shipped and archived**; **v1.1** Phases 6–8 (UX polish + mobile) are implemented. Run the app with `npm run dev`. To close the milestone: `/gsd-complete-milestone`. For status: `/gsd-progress`.
+Milestones **v1.0** and **v1.1** are shipped and archived under `.planning/milestones/`. Run the app with `npm run dev`. To plan the next version: `/gsd-new-milestone`. For status: `/gsd-progress`.
 
 ## Critical Conventions (must follow in all phases)
 
