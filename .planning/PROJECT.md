@@ -15,7 +15,7 @@ See **total net worth in INR** at a glance, with **live BTC and FX** where appli
 | **v1.0** | Core wealth tracker: assets, property, dashboard, data model, live prices | 2026-04-26 |
 | **v1.1** | **UX Polish** — manual dark mode; mobile offcanvas + top bar; page headers; scrollable sheets; property table on small screens | 2026-04-26 |
 
-Snapshots: `.planning/milestones/v1.0-ROADMAP.md`, `v1.1-ROADMAP.md` and matching `*-REQUIREMENTS.md` archives.
+Snapshots: `.planning/milestones/v1.0-ROADMAP.md`, `v1.1-ROADMAP.md` and matching `*-REQUIREMENTS.md` archives. Phase work is under `v1.0-phases/`, `v1.1-phases/`.
 
 ## Current state (post–v1.1)
 

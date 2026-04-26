@@ -5,6 +5,9 @@
 
 ## v1.1 UX Polish (Shipped: 2026-04-26)
 
+**Scope:** Phases 6–8.  
+**Phase directories:** `.planning/milestones/v1.1-phases/`
+
 **Phases completed:** 3 phases, 5 plans, 23 tasks
 
 **Key accomplishments:**
