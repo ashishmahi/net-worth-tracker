@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { AlertCircle } from 'lucide-react'
+import { PageHeader } from '@/components/PageHeader'
 import {
   Card,
   CardContent,
@@ -103,9 +104,7 @@ export function DashboardPage({
 
   return (
     <div className="space-y-4" aria-live="polite">
-      <div>
-        <h1 className="text-xl font-semibold">Dashboard</h1>
-      </div>
+      <PageHeader title="Dashboard" />
 
       {empty ? (
         <div className="space-y-2">

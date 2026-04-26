@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Loader2 } from 'lucide-react'
+import { PageHeader } from '@/components/PageHeader'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -67,7 +68,7 @@ export function BitcoinPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-xl font-semibold">Bitcoin</h1>
+      <PageHeader title="Bitcoin" />
 
       <Card>
         <CardContent className="pt-6 space-y-4">

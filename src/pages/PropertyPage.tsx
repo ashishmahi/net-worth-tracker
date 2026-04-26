@@ -10,6 +10,7 @@ import {
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { PageHeader } from '@/components/PageHeader'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -190,13 +191,19 @@ export function PropertyPage() {
   return (
     <>
       <div className="space-y-4">
-        <div className="flex items-start justify-between">
-          <h1 className="text-xl font-semibold">Property</h1>
-          <Button onClick={openAdd} aria-label="Add property">
-            <Plus className="mr-2 h-4 w-4" />
-            Add property
-          </Button>
-        </div>
+        <PageHeader
+          title="Property"
+          action={
+            <Button
+              className="w-full min-[768px]:w-auto"
+              onClick={openAdd}
+              aria-label="Add property"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Add property
+            </Button>
+          }
+        />
 
         <Card>
           <CardContent className="p-0">

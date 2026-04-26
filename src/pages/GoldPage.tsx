@@ -18,6 +18,7 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { useAppData } from '@/context/AppDataContext'
 import { createId, nowIso, parseFinancialInput, roundCurrency } from '@/lib/financials'
+import { PageHeader } from '@/components/PageHeader'
 import { cn } from '@/lib/utils'
 import type { GoldItem } from '@/types/data'
 
@@ -135,30 +136,37 @@ export function GoldPage() {
   return (
     <>
       <div className="space-y-4">
-        {/* Page heading + section total + Add button */}
-        <div className="flex items-start justify-between">
-          <div>
-            <h1 className="text-xl font-semibold">Gold</h1>
-            <output aria-live="polite" className="text-2xl font-semibold block mt-1">
-              {goldTotal !== null
-                ? goldTotal.toLocaleString('en-IN', {
-                    style: 'currency',
-                    currency: 'INR',
-                    maximumFractionDigits: 0,
-                  })
-                : '₹0'}
-            </output>
-            {goldTotal === null && (
-              <p className="text-sm text-muted-foreground mt-1">
-                Set gold prices in Settings
-              </p>
-            )}
-          </div>
-          <Button onClick={openAdd} aria-label="Add gold item">
-            <Plus className="mr-2 h-4 w-4" />
-            Add Item
-          </Button>
-        </div>
+        <PageHeader
+          title="Gold"
+          meta={
+            <>
+              <output aria-live="polite" className="text-2xl font-semibold block mt-1">
+                {goldTotal !== null
+                  ? goldTotal.toLocaleString('en-IN', {
+                      style: 'currency',
+                      currency: 'INR',
+                      maximumFractionDigits: 0,
+                    })
+                  : '₹0'}
+              </output>
+              {goldTotal === null && (
+                <p className="text-sm text-muted-foreground mt-1">
+                  Set gold prices in Settings
+                </p>
+              )}
+            </>
+          }
+          action={
+            <Button
+              className="w-full min-[768px]:w-auto"
+              onClick={openAdd}
+              aria-label="Add gold item"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Add Item
+            </Button>
+          }
+        />
 
         {/* List card */}
         <Card>

@@ -13,6 +13,7 @@ import {
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { PageHeader } from '@/components/PageHeader'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { useAppData } from '@/context/AppDataContext'
@@ -138,9 +139,9 @@ export function StocksPage() {
   return (
     <>
       <div className="space-y-4">
-        <div className="flex items-start justify-between">
-          <div>
-            <h1 className="text-xl font-semibold">Stocks</h1>
+        <PageHeader
+          title="Stocks"
+          meta={
             <output aria-live="polite" className="text-2xl font-semibold block mt-1">
               {sectionTotal.toLocaleString('en-IN', {
                 style: 'currency',
@@ -148,12 +149,18 @@ export function StocksPage() {
                 maximumFractionDigits: 0,
               })}
             </output>
-          </div>
-          <Button onClick={openAdd} aria-label="Add stock platform">
-            <Plus className="mr-2 h-4 w-4" />
-            Add Platform
-          </Button>
-        </div>
+          }
+          action={
+            <Button
+              className="w-full min-[768px]:w-auto"
+              onClick={openAdd}
+              aria-label="Add stock platform"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Add Platform
+            </Button>
+          }
+        />
 
         <Card>
           <CardContent className="p-0">

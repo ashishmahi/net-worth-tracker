@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { PageHeader } from '@/components/PageHeader'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -87,7 +88,7 @@ export function RetirementPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-xl font-semibold">Retirement</h1>
+      <PageHeader title="Retirement" />
 
       {/* Inline form — NPS and EPF current balances (D-13) */}
       <Card>

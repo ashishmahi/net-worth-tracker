@@ -13,6 +13,7 @@ import {
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { PageHeader } from '@/components/PageHeader'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { useAppData } from '@/context/AppDataContext'
@@ -149,31 +150,39 @@ export function BankSavingsPage() {
   return (
     <>
       <div className="space-y-4">
-        <div className="flex items-start justify-between">
-          <div>
-            <h1 className="text-xl font-semibold">Bank Savings</h1>
-            <output aria-live="polite" className="text-2xl font-semibold block mt-1">
-              {sectionTotal.toLocaleString('en-IN', {
-                style: 'currency',
-                currency: 'INR',
-                maximumFractionDigits: 0,
-              })}
-            </output>
-            {aedNeedsRate && (
-              <p role="alert" className="text-sm text-destructive mt-2">
-                AED accounts need a live or session AED→INR rate to include in the total.
-                {forexError ? ` (${forexError})` : ''}
-              </p>
-            )}
-            {forexLoading && hasAed && (
-              <p className="text-sm text-muted-foreground mt-1">Loading conversion rates…</p>
-            )}
-          </div>
-          <Button onClick={openAdd} aria-label="Add bank account">
-            <Plus className="mr-2 h-4 w-4" />
-            Add Account
-          </Button>
-        </div>
+        <PageHeader
+          title="Bank Savings"
+          meta={
+            <>
+              <output aria-live="polite" className="text-2xl font-semibold block mt-1">
+                {sectionTotal.toLocaleString('en-IN', {
+                  style: 'currency',
+                  currency: 'INR',
+                  maximumFractionDigits: 0,
+                })}
+              </output>
+              {aedNeedsRate && (
+                <p role="alert" className="text-sm text-destructive mt-2">
+                  AED accounts need a live or session AED→INR rate to include in the total.
+                  {forexError ? ` (${forexError})` : ''}
+                </p>
+              )}
+              {forexLoading && hasAed && (
+                <p className="text-sm text-muted-foreground mt-1">Loading conversion rates…</p>
+              )}
+            </>
+          }
+          action={
+            <Button
+              className="w-full min-[768px]:w-auto"
+              onClick={openAdd}
+              aria-label="Add bank account"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Add Account
+            </Button>
+          }
+        />
 
         <Card>
           <CardContent className="p-0">
