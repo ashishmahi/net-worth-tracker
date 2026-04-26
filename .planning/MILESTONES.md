@@ -5,7 +5,8 @@
 **Status:** Shipped (2026-04-26)  
 **Scope:** Phases 02–05 in GSD (12 plans, all with `*-SUMMARY.md`); Vite + React + JSON persistence, seven asset areas, live prices, property, dashboard.  
 **Roadmap snapshot:** `.planning/milestones/v1.0-ROADMAP.md`  
-**Requirements snapshot:** `.planning/milestones/v1.0-REQUIREMENTS.md`
+**Requirements snapshot:** `.planning/milestones/v1.0-REQUIREMENTS.md`  
+**Phase directories (GSD 01–05):** `.planning/milestones/v1.0-phases/`
 
 **Key accomplishments**
 
