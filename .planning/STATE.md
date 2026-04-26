@@ -3,7 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: UX Polish
 status: ready_to_plan
-last_updated: "2026-04-26T00:00:00.000Z"
+stopped_at: Phase 6 context gathered
+last_updated: "2026-04-26T11:07:26.457Z"
+last_activity: 2026-04-26 — Phase 6 discuss-phase complete
 progress:
   total_phases: 3
   completed_phases: 0
@@ -21,7 +23,7 @@ progress:
 Phase: 6 of 8 (Dark Mode) — ready to plan
 Plan: —
 Status: Ready to plan Phase 6
-Last activity: 2026-04-26 — Roadmap created for v1.1 (Phases 6-8)
+Last activity: 2026-04-26 — Phase 6 discuss-phase complete (`06-CONTEXT.md`)
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -34,6 +36,7 @@ See: `.planning/PROJECT.md` (updated 2026-04-26)
 ## Performance Metrics
 
 **Velocity:**
+
 - Total plans completed: 0 (v1.1)
 - Average duration: —
 - Total execution time: —
@@ -54,6 +57,7 @@ See: `.planning/PROJECT.md` (updated 2026-04-26)
 - v1.1 research: Mobile sidebar fix is a single prop change (`collapsible="none"` → `"offcanvas"`) in `AppSidebar.tsx`
 - v1.1 arch: Theme preference stored in `localStorage` only — not in `data.json` (no schema version bump)
 - v1.1 arch: FOUC prevention requires inline `<script>` in `index.html` before React loads — ThemeProvider reads existing DOM class, does not apply via useEffect
+- Phase 6 context: First visit = light; binary `localStorage` key `theme` (`light` \| `dark`); Sun/Moon in **sidebar footer**; no stored `system` mode — see `.planning/phases/06-dark-mode/06-CONTEXT.md`
 
 ### Pending Todos
 
@@ -75,5 +79,5 @@ Items acknowledged at v1.0 milestone close (non-blocking):
 ## Session Continuity
 
 Last session: 2026-04-26
-Stopped at: Roadmap created — ready to run `/gsd-plan-phase 6`
-Resume file: None
+Stopped at: Phase 6 context gathered
+Resume file: `.planning/phases/06-dark-mode/06-CONTEXT.md`
