@@ -17,9 +17,10 @@ A local-only React + Vite web app for tracking personal net worth across 7 asset
 
 This project uses GSD for phased planning and execution.
 
-- Planning docs: `.planning/` (not committed to git — local only)
-- Roadmap: `.planning/ROADMAP.md`
-- Requirements: `.planning/REQUIREMENTS.md`
+- Planning docs: `.planning/`
+- Roadmap: `.planning/ROADMAP.md` (v1.0 detail: `.planning/milestones/v1.0-ROADMAP.md`)
+- Requirements: `.planning/REQUIREMENTS.md` (v1.0 snapshot: `.planning/milestones/v1.0-REQUIREMENTS.md`)
+- Milestone history: `.planning/MILESTONES.md`
 
 ### Phase Execution Order
 1. Foundation — persistence, data model, app shell, calculation utilities
@@ -28,8 +29,8 @@ This project uses GSD for phased planning and execution.
 4. Property Section — milestone table, liability toggle
 5. Dashboard — net worth summary aggregating all sections (implemented: `src/lib/dashboardCalcs.ts`, `src/pages/DashboardPage.tsx`)
 
-### Next Step
-Milestone v1.0 planning phases are complete. Run `npm run dev` to use the app; use `/gsd-progress` to review state or start a new milestone with `/gsd-new-milestone` when ready.
+### Next step
+Milestone **v1.0 is shipped and archived** (`/gsd-complete-milestone`). Run the app with `npm run dev`. To plan the next version: `/gsd-new-milestone`. For status: `/gsd-progress`.
 
 ## Critical Conventions (must follow in all phases)
 

@@ -1,40 +1,42 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: milestone
-status: milestone_complete
-last_updated: "2026-04-26T07:40:16.043Z"
+milestone: (next)
+milestone_name: (none)
+status: between_milestones
+last_updated: "2026-04-26T12:00:00.000Z"
 progress:
-  total_phases: 5
-  completed_phases: 5
-  total_plans: 12
-  completed_plans: 12
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 ## Project
 
 **Personal Wealth Tracker** — local React + Vite net worth app.
 
-## Current Position
+## Current position
 
-- **Milestone v1.0 — all 5 phases complete** (2026-04-26)
-- **Phase 05 (Dashboard) complete** — 05-01, 05-02 executed; see `05-VERIFICATION.md`
-- **Next:** optional UAT, then archive milestone or add v1.1 / backlog as needed
+- **Milestone v1.0 shipped and archived** (2026-04-26) — see `.planning/MILESTONES.md` and `.planning/milestones/v1.0-ROADMAP.md`
+- **Next:** `/gsd-new-milestone` to define v1.1+; optionally finish open verification/UAT below
 
-## What shipped (phase 4)
+## Project reference
 
-- 04-01: `PropertyItemSchema`, `PropertyMilestoneRowSchema`, `Property` types in `data.ts`
-- 04-02: shadcn Checkbox, Switch, Table; `PropertyPage` (list, Sheet, milestones, liability, reconciliation warning, empty state)
+See: `.planning/PROJECT.md` (post–v1.0 evolution)  
+**Core value:** See total net worth at a glance with minimal effort — live BTC/forex, manual gold, all else in-app.  
+**Current focus:** Planning the next milestone (or closing deferred items).
 
-## What shipped (phase 3)
+## Deferred items
 
-- 03-01: `priceApi.ts`, `LivePricesProvider` / `useLivePrices`, TTL + session override clearing, `main.tsx` wiring
-- 03-02: Settings live rates + session-only inputs; Bitcoin inline form with INR/USD holding
-- 03-03: Bank `currency` + native `balance`, `balanceInr` migration, AED totals via `aedInr`
+Items acknowledged at v1.0 milestone close (non-blocking; resolve when convenient):
 
-## Earlier phases (reference)
+| Category | Item | Status |
+|----------|------|--------|
+| uat | Phase 05 — `.planning/phases/05-dashboard/05-UAT.md` | `testing` — 6 scenarios pending |
+| verification | Phase 01 — `.planning/phases/01-foundation/01-VERIFICATION.md` | `human_needed` |
 
-- Phase 02: Gold, MF, Stocks, Bank (pre-AED), Retirement, Settings, Export
+## Historical (v1.0)
 
-**Milestone v1.0** — Phases 01–05 done (Dashboard `dashboardCalcs` + `DashboardPage` + `App` navigation wiring).
+- **Phases 02–05** delivered all major app features (assets, live prices, property, dashboard).  
+- GSD **Phase 01** plan checkboxes in the archive remain `0/3` even though the codebase includes scaffold, `data.json` plugin, and app shell (planning drift only).

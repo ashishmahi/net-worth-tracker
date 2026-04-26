@@ -1,88 +1,68 @@
 # Personal Wealth Tracker
 
-## What This Is
+## What this is
 
-A local web app for tracking personal net worth across all asset classes — gold, mutual funds, stocks, Bitcoin, property, bank savings, and retirement accounts (NPS + EPF). Built to replace a manual Excel spreadsheet with a cleaner data entry experience. Data is stored locally in a JSON file; no backend or auth needed.
+A local-only **React + Vite** app for tracking personal net worth across **gold, mutual funds, stocks, Bitcoin, property, bank savings (INR/AED), and retirement (NPS/EPF)**. It replaces a manual Excel workflow: data lives in `data.json` via a small Vite dev-server API; there is no backend, auth, or cloud sync in v1.
 
-## Core Value
+## Core value
 
-See your total net worth at a glance with minimal manual effort — live prices for BTC and forex fetched automatically, gold entered once, everything else updated in a few taps.
+See **total net worth in INR** at a glance, with **live BTC and FX** where applicable and **manual** gold prices — minimal repeated data entry, everything else editable in the app.
 
 ## Requirements
 
-### Validated
+### Validated (v1.0 shipped)
 
-- [x] **Phase 03:** Bitcoin quantity with live BTC/USD and USD/INR via `useLivePrices()`; INR and USD value of holding
-- [x] **Phase 03:** Bank savings — INR and AED accounts (native balance; INR total using live or session AED/INR)
-- [x] **Phase 03:** Central `priceApi` + session-only manual rates (Settings) when feeds fail
-- [x] **Phase 04:** Property — agreement (INR), variable milestones (paid, amounts), balance due to builder (derived in UI), optional home loan (liability)
-- [x] **Phase 05:** Dashboard — total net worth in INR with per-category breakdown (read-only; `dashboardCalcs` + `DashboardPage`)
+- [x] **Gold, mutual funds, stocks** — per-platform / per-item entry; values in INR where applicable; persisted in JSON  
+- [x] **Bank savings** — INR and AED accounts; AED converted with live or session `aedInr`  
+- [x] **Retirement** — NPS + EPF balances; projected corpus on Retirement page using assumptions from Settings  
+- [x] **Settings** — gold prices (per-gram, by karat), retirement assumptions, live rate readouts, session rate overrides (Phase 3)  
+- [x] **Bitcoin** — quantity with **BTC/USD × USD/INR** via `useLivePrices()`; optional USD display on Bitcoin page  
+- [x] **Property** — agreements, milestone table, optional liability / outstanding loan; equity-based net in dashboard calcs  
+- [x] **Dashboard** — read-only net worth + per-category breakdown; `dashboardCalcs`; navigation to each asset section  
+- [x] **Data** — versioned `data.json` root; `AppData` / Zod; no computed totals stored in JSON (recompute in UI)  
+- [x] **INR** as primary display currency; formatting and `roundCurrency` conventions per `CLAUDE.md`  
 
-### Active
+### Active (candidates for a future milestone)
 
-- [ ] Gold holdings — enter weight (grams) per type (24K/22K), price per gram (manual), value calculated
-- [ ] Mutual funds — enter current value and monthly SIP per platform
-- [ ] Stocks — enter current portfolio value per platform (e.g. Zerodha)
-- [ ] Retirement — NPS and EPF current balance; projected corpus at retirement age (configurable)
-- [ ] Settings — gold prices (manual), retirement assumptions; live forex/BTC readouts and session overrides (Phase 3)
-- [ ] All data persisted to a local JSON file; editable through the app UI
-- [ ] INR as primary display currency throughout
+- [ ] Product priorities for v1.1+ (charts, history, cloud sync, deployment, etc.) — define in `/gsd-new-milestone`  
+- [ ] Tighten GSD **Phase 01** planning artifacts to match the repo (optional documentation cleanup)  
 
-### Out of Scope
+### Out of scope (v1.0 — still valid for “default” product)
 
-- User authentication / login — local-only app, no multi-user support needed now
-- Cloud sync or deployment — explicitly deferred to a future milestone
-- Multi-currency display (AED alongside INR) — deferred; INR-only for v1
-- Charts / visualizations — keep UI simple for now
-- Historical net worth tracking / trends — not in v1
-- Tax calculations — out of scope
+- User auth / multi-user  
+- Cloud sync and hosted deployment (deferred)  
+- First-class **AED** display column (INR remains primary)  
+- Charts, historical net-worth trends, tax (unless a future milestone re-opens)  
 
-## Context
+## Context (current state)
 
-- Migrating from `Personal_Wealth_Tracker.xlsx` which has 7 sheets: Dashboard, Settings, Gold, Investments, Property, Bank Savings, Retirement
-- The spreadsheet used GOOGLEFINANCE() for live BTC/USD and forex rates — the web app will fetch these from a free public API
-- Gold prices were manually updated from goodreturns.in — this stays manual
-- Mutual fund and stock values come from PaytmMoney and Zerodha Kite apps — manual entry
-- Property tracking includes a detailed payment milestone schedule (13 stages for current apartment)
-- User is based across India (INR) and UAE (AED) — AED savings are significant
-- Retirement age target: 60 (current age: 35), NPS return assumption: 10%, EPF rate: 8.15%
-- BTC holding: 0.08 BTC
+- **Stack:** React 18, Vite 5, TypeScript, shadcn/ui, Tailwind, RHF + Zod  
+- **Persistence:** Vite plugin: `GET`/`POST` `/api/data` → `data.json`  
+- **Prices:** `src/lib/priceApi.ts` + `LivePricesProvider` / `useLivePrices()`  
+- **Milestone v1.0** archived: `.planning/milestones/v1.0-ROADMAP.md`, `v1.0-REQUIREMENTS.md`, `MILESTONES.md`  
 
 ## Constraints
 
-- **Tech stack**: React + Vite — fast local dev, run with `npm run dev`
-- **Storage**: JSON file on disk (no database, no backend)
-- **Scope**: Local-only for now — no deployment, no auth
-- **UI**: Intentionally simple — functional over beautiful for v1
+- **Tech stack:** React + Vite (see `package.json` and `CLAUDE.md`)  
+- **Storage:** single local JSON file  
+- **Scope (v1):** local-only; no auth  
 
-## Key Decisions
+## Key decisions
 
-| Decision | Rationale | Outcome |
-|----------|-----------|---------|
-| React + Vite over plain HTML/JS | Better component structure for multi-section app with forms | — Pending |
-| JSON file storage | Simplest possible persistence for local-only app | — Pending |
-| Live price fetch for BTC + forex | Eliminates the most tedious manual update from spreadsheet | — Pending |
-| Gold prices stay manual | No reliable free API for Indian gold prices; goodreturns.in works fine | — Pending |
-| INR as primary currency | User's primary financial context; AED multi-currency deferred | — Pending |
+| Decision | Rationale | Outcome (v1.0) |
+|----------|-----------|----------------|
+| React + Vite | Component model + fast dev + simple deploy story later | Shipped |
+| JSON file + Vite API | No DB for personal local use | Shipped |
+| Live APIs for BTC + FX | Reduces manual FX/BTC updates | Shipped + session fallback in Settings |
+| Gold prices manual | No reliable free India gold API in scope | Shipped |
+| INR primary | User’s main lens; AED stored natively, converted in totals | Shipped |
+| GSD phased delivery | Tracked in `.planning/`; v1.0 plan archive frozen | Shipped (with Phase 01 checkbox drift noted in `MILESTONES.md`) |
 
 ## Evolution
 
-This document evolves at phase transitions and milestone boundaries.
+This file was fully reviewed at **v1.0 milestone close** (2026-04-26).
 
-**Last updated:** 2026-04-26 (Phase 05 complete — v1.0 milestone)
-
-**After each phase transition** (via `/gsd-transition`):
-1. Requirements invalidated? → Move to Out of Scope with reason
-2. Requirements validated? → Move to Validated with phase reference
-3. New requirements emerged? → Add to Active
-4. Decisions to log? → Add to Key Decisions
-5. "What This Is" still accurate? → Update if drifted
-
-**After each milestone** (via `/gsd-complete-milestone`):
-1. Full review of all sections
-2. Core Value check — still the right priority?
-3. Audit Out of Scope — reasons still valid?
-4. Update Context with current state
+**After each milestone** (`/gsd-complete-milestone`): validate “What this is,” core value, and Out of scope; roll shipped items into **Validated**; set **Active** to empty or next milestone placeholders.
 
 ---
-*Last updated: 2026-04-26 after phase 04 execution*
+*Last updated: 2026-04-26 after v1.0 milestone archive*
