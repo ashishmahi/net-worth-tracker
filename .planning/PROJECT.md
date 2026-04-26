@@ -8,6 +8,14 @@ A local-only **React + Vite** app for tracking personal net worth across **gold,
 
 See **total net worth in INR** at a glance, with **live BTC and FX** where applicable and **manual** gold prices — minimal repeated data entry, everything else editable in the app.
 
+## Current Milestone: v1.1 UX Polish
+
+**Goal:** Make the app comfortable to use on mobile devices and add a manual dark mode toggle.
+
+**Target features:**
+- Responsive layout — all pages usable on small screens (view and edit, not just read-only)
+- Dark mode — in-app manual light/dark toggle
+
 ## Requirements
 
 ### Validated (v1.0 shipped)
@@ -22,17 +30,24 @@ See **total net worth in INR** at a glance, with **live BTC and FX** where appli
 - [x] **Data** — versioned `data.json` root; `AppData` / Zod; no computed totals stored in JSON (recompute in UI)  
 - [x] **INR** as primary display currency; formatting and `roundCurrency` conventions per `CLAUDE.md`  
 
-### Active (candidates for a future milestone)
+### Active (v1.1)
 
-- [ ] Product priorities for v1.1+ (charts, history, cloud sync, deployment, etc.) — define in `/gsd-new-milestone`  
-- [ ] Tighten GSD **Phase 01** planning artifacts to match the repo (optional documentation cleanup)  
+- [ ] **UX-01**: Responsive mobile layout — all asset pages and dashboard usable on small screens (view + edit)
+- [ ] **UX-02**: Dark mode — in-app manual toggle (persisted across sessions)
+
+### Deferred (v1.2+)
+
+- [ ] Charts & historical net worth tracking (v1.2)
+- [ ] Export / reports — PDF or CSV snapshots (v1.3)
+- [ ] Navigation overhaul, inline editing improvements (future)
+- [ ] Tighten GSD Phase 01 planning artifacts to match the repo (optional)
 
 ### Out of scope (v1.0 — still valid for “default” product)
 
 - User auth / multi-user  
 - Cloud sync and hosted deployment (deferred)  
 - First-class **AED** display column (INR remains primary)  
-- Charts, historical net-worth trends, tax (unless a future milestone re-opens)  
+- Tax reporting (unless a future milestone re-opens)  
 
 ## Context (current state)
 
@@ -65,4 +80,4 @@ This file was fully reviewed at **v1.0 milestone close** (2026-04-26).
 **After each milestone** (`/gsd-complete-milestone`): validate “What this is,” core value, and Out of scope; roll shipped items into **Validated**; set **Active** to empty or next milestone placeholders.
 
 ---
-*Last updated: 2026-04-26 after v1.0 milestone archive*
+*Last updated: 2026-04-26 — milestone v1.1 UX Polish started*

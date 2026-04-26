@@ -1,9 +1,9 @@
 ---
 gsd_state_version: 1.0
-milestone: (next)
-milestone_name: (none)
-status: between_milestones
-last_updated: "2026-04-26T12:00:00.000Z"
+milestone: v1.1
+milestone_name: UX Polish
+status: defining_requirements
+last_updated: "2026-04-26T00:00:00.000Z"
 progress:
   total_phases: 0
   completed_phases: 0
@@ -18,8 +18,10 @@ progress:
 
 ## Current position
 
-- **Milestone v1.0 shipped and archived** (2026-04-26) — see `.planning/MILESTONES.md` and `.planning/milestones/v1.0-ROADMAP.md`
-- **Next:** `/gsd-new-milestone` to define v1.1+; optionally finish open verification/UAT below
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-04-26 — Milestone v1.1 started
 
 ## Project reference
 
