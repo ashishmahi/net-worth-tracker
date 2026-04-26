@@ -41,7 +41,7 @@ All phase goals, plan checklists, and progress table are preserved in:
   1. User can click a Sun/Moon toggle button and the entire app switches to dark or light mode immediately
   2. User reloads the page (or opens the app fresh) and the previously selected theme is restored without a flash of the wrong theme
   3. All 9 pages are readable and visually consistent in dark mode (no raw white backgrounds or invisible text)
-**Plans**: TBD
+**Plans**: 2 (`06-01-PLAN` FOUC + ThemeContext + wrap; `06-02-PLAN` sidebar toggle + token audit)
 **UI hint**: yes
 
 ### Phase 7: Mobile Foundation
@@ -78,6 +78,6 @@ All phase goals, plan checklists, and progress table are preserved in:
 | 3. Live Prices + Bitcoin | v1.0 | — | Complete | 2026-04-26 |
 | 4. Property Section | v1.0 | — | Complete | 2026-04-26 |
 | 5. Dashboard | v1.0 | — | Complete | 2026-04-26 |
-| 6. Dark Mode | v1.1 | 0/? | Not started | - |
+| 6. Dark Mode | v1.1 | 2/2 planned | Ready to execute | - |
 | 7. Mobile Foundation | v1.1 | 0/? | Not started | - |
 | 8. Mobile Page Fixes | v1.1 | 0/? | Not started | - |

@@ -1,15 +1,15 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.1
-milestone_name: UX Polish
-status: ready_to_plan
-stopped_at: Phase 6 context gathered
-last_updated: "2026-04-26T11:07:26.457Z"
-last_activity: 2026-04-26 — Phase 6 discuss-phase complete
+milestone_name: — UX Polish
+status: planning
+stopped_at: Phase 6 UI-SPEC approved
+last_updated: "2026-04-26T11:11:40.922Z"
+last_activity: 2026-04-26 — Phase 6 discuss-phase complete (`06-CONTEXT.md`)
 progress:
   total_phases: 3
   completed_phases: 0
-  total_plans: 0
+  total_plans: 2
   completed_plans: 0
   percent: 0
 ---
@@ -78,6 +78,8 @@ Items acknowledged at v1.0 milestone close (non-blocking):
 
 ## Session Continuity
 
-Last session: 2026-04-26
-Stopped at: Phase 6 context gathered
-Resume file: `.planning/phases/06-dark-mode/06-CONTEXT.md`
+Last session: --stopped-at
+Stopped at: Phase 6 UI-SPEC approved
+Resume file: --resume-file
+
+**Planned Phase:** 06 (Dark Mode) — 2 plans — 2026-04-26T11:11:40.901Z
