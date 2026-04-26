@@ -46,7 +46,7 @@ Velocity: v1.3 TBD.
 
 ### Roadmap evolution
 
-- **Phase 10.1** inserted after Phase **10** (URGENT/INSERTED): **JSON import** from file, paired with existing **Export** — [`.planning/phases/10.1-json-import-quick-import-from-file-to-match-existing-json-ex/`](phases/10.1-json-import-quick-import-from-file-to-match-existing-json-ex/) (slug truncated by tool). **IMP-01** / **IMP-02** in `REQUIREMENTS.md`.  
+- **Phase 10.1** inserted after Phase **10** (INSERTED): **JSON import** from file, paired with **Export** — see `.planning/phases/10.1-json-import-quick-import-from-file-to-match-existing-json-ex/README.md` (GSD may truncate long folder slugs). **IMP-01** / **IMP-02** in `REQUIREMENTS.md`.  
 
 ### Pending todos
 
