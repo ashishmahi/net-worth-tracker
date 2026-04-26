@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
+import type { ZodError } from 'zod'
 import { nowIso } from '@/lib/financials'
 import { DataSchema, AppData } from '../types/data'
 
@@ -35,6 +36,18 @@ function migrateLegacyBankAccounts(raw: unknown): unknown {
       },
     },
   }
+}
+
+/** Same migrate + `DataSchema` path as initial `GET /api/data` load — for import and boot. */
+export function parseAppDataFromImport(
+  raw: unknown,
+): { success: true; data: AppData } | { success: false; zodError: ZodError } {
+  const migrated = migrateLegacyBankAccounts(raw)
+  const result = DataSchema.safeParse(migrated)
+  if (result.success) {
+    return { success: true, data: result.data }
+  }
+  return { success: false, zodError: result.error }
 }
 
 // ── Initial empty data structure (used when data.json is absent or invalid) ──
@@ -79,12 +92,11 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     fetch('/api/data')
       .then(r => r.json())
       .then(raw => {
-        const migrated = migrateLegacyBankAccounts(raw)
-        const result = DataSchema.safeParse(migrated)
+        const result = parseAppDataFromImport(raw)
         if (result.success) {
           setData(result.data)
         } else {
-          console.warn('data.json schema mismatch:', result.error.issues)
+          console.warn('data.json schema mismatch:', result.zodError.issues)
           setLoadError('Saved data format is unrecognized. Starting with defaults to avoid data loss.')
         }
       })

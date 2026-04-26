@@ -47,7 +47,7 @@
 
 **Depends on:** Phase 10 (recommended so data-model changes for history land first; if import is independent, planner may adjust).
 
-**Plans:** TBD — `/gsd-discuss-phase 10.1` or `/gsd-plan-phase 10.1`  
+**Plans:** [10.1-01-PLAN.md](phases/10.1-json-import-quick-import-from-file-to-match-existing-json-ex/10.1-01-PLAN.md) (1/1) — *implemented 2026-04-26*  
 
 ### Phase 11: Net worth chart
 
@@ -99,7 +99,7 @@
 | 6–8     | v1.1       | (see snapshot)  | Complete     | 2026-04-26 |
 | 9       | v1.2       | 2/2            | Complete     | 2026-04-26 |
 | **10. History & schema** | **v1.3**  | TBD  | *Not started* | —  |
-| **10.1. JSON import**  | **v1.3**  | 0/0 (INSERTED)  | *Not started* | —  |
+| **10.1. JSON import**  | **v1.3**  | 1/1  | *Complete* | 2026-04-26  |
 | **11. Net worth chart**  | **v1.3**  | TBD  | *Not started* | —  |
 
 ---

@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, type ChangeEvent } from 'react'
+import type { ZodError } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -20,7 +21,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { createInitialData, useAppData } from '@/context/AppDataContext'
+import { createInitialData, parseAppDataFromImport, useAppData } from '@/context/AppDataContext'
 import { useLivePrices } from '@/context/LivePricesContext'
 import { parseFinancialInput, nowIso } from '@/lib/financials'
 import type { AppData } from '@/types/data'
@@ -38,6 +39,13 @@ function handleExport(data: AppData) {
   a.click()
   document.body.removeChild(a)
   URL.revokeObjectURL(url)
+}
+
+function zodFirstHint(err: ZodError): string {
+  const i = err.issues[0]
+  if (!i) return `${err.issues.length} validation issues`
+  const p = i.path.length ? i.path.join('.') : 'root'
+  return `${p}: ${i.message}${err.issues.length > 1 ? ` (+${err.issues.length - 1} more)` : ''}`
 }
 
 // ── Form schemas (string inputs — parse to number on submit) ─────────────────
@@ -100,6 +108,16 @@ export function SettingsPage() {
   const [clearingData, setClearingData] = useState(false)
   const [clearDataError, setClearDataError] = useState<string | null>(null)
   const [clearDataSuccess, setClearDataSuccess] = useState(false)
+
+  const importFileInputRef = useRef<HTMLInputElement>(null)
+  const [importBusy, setImportBusy] = useState(false)
+  const [importDialogOpen, setImportDialogOpen] = useState(false)
+  const [pendingImport, setPendingImport] = useState<AppData | null>(null)
+  const [importParseError, setImportParseError] = useState<string | null>(null)
+  const [importValidationError, setImportValidationError] = useState<string | null>(null)
+  const [importValidationHint, setImportValidationHint] = useState<string | null>(null)
+  const [importSaveError, setImportSaveError] = useState<string | null>(null)
+  const [importDataSuccess, setImportDataSuccess] = useState(false)
 
   // Block 1: Gold Prices form (D-16)
   const goldForm = useForm<GoldPricesValues>({
@@ -196,6 +214,60 @@ export function SettingsPage() {
       setRetirementSaveError('Could not save. Check that the app is running and try again.')
     } finally {
       setRetirementSaving(false)
+    }
+  }
+
+  const onImportFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file) return
+    setImportParseError(null)
+    setImportValidationError(null)
+    setImportValidationHint(null)
+    setImportSaveError(null)
+    setImportDataSuccess(false)
+    setImportBusy(true)
+    try {
+      const text = await file.text()
+      let raw: unknown
+      try {
+        raw = JSON.parse(text) as unknown
+      } catch {
+        setImportParseError(
+          'The file is not valid JSON. Use a file exported from this app or a compatible editor.',
+        )
+        return
+      }
+      const result = parseAppDataFromImport(raw)
+      if (!result.success) {
+        setImportValidationError(
+          'This file is not valid app data or does not match this app’s expected format.',
+        )
+        setImportValidationHint(zodFirstHint(result.zodError))
+        return
+      }
+      setPendingImport(result.data)
+      setImportDialogOpen(true)
+    } finally {
+      setImportBusy(false)
+    }
+  }
+
+  const onConfirmImport = async () => {
+    if (!pendingImport) return
+    setImportSaveError(null)
+    setImportBusy(true)
+    try {
+      await saveData(pendingImport)
+      setImportDialogOpen(false)
+      setPendingImport(null)
+      setImportDataSuccess(true)
+    } catch {
+      setImportSaveError(
+        'Could not save imported data. Check that the app is running and try again.',
+      )
+    } finally {
+      setImportBusy(false)
     }
   }
 
@@ -481,12 +553,105 @@ export function SettingsPage() {
 
       <Separator />
 
-      {/* Block 3: Data (D-18 — Export Data button, keep as-is) */}
+      {/* Block 3: Data (export + import) */}
       <div>
         <p className="text-sm font-semibold mb-4">Data</p>
-        <Button variant="outline" aria-label="Export data as JSON" onClick={() => handleExport(data)}>
-          Export Data
-        </Button>
+        <input
+          ref={importFileInputRef}
+          type="file"
+          accept="application/json,.json"
+          className="hidden"
+          tabIndex={-1}
+          onChange={onImportFileChange}
+        />
+        <div className="flex flex-wrap gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            disabled={importBusy}
+            aria-label="Export data as JSON"
+            onClick={() => handleExport(data)}
+          >
+            Export Data
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            disabled={importBusy}
+            aria-label="Import wealth data from a JSON file"
+            onClick={() => importFileInputRef.current?.click()}
+          >
+            {importBusy && !importDialogOpen ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin shrink-0" aria-hidden />
+            ) : null}
+            Import from JSON
+          </Button>
+        </div>
+        {(importParseError || importValidationError) && (
+          <div className="mt-2 space-y-1">
+            <p role="alert" className="text-sm text-destructive">
+              {importParseError ?? importValidationError}
+            </p>
+            {importValidationHint && !importParseError && (
+              <p className="text-sm text-muted-foreground">{importValidationHint}</p>
+            )}
+          </div>
+        )}
+        {importDataSuccess && !importParseError && !importValidationError && (
+          <p className="text-sm text-muted-foreground mt-2" role="status">
+            Wealth data was imported from file.
+          </p>
+        )}
+
+        <AlertDialog
+          open={importDialogOpen}
+          onOpenChange={open => {
+            setImportDialogOpen(open)
+            if (!open) {
+              setPendingImport(null)
+              setImportSaveError(null)
+            }
+          }}
+        >
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Replace with imported data?</AlertDialogTitle>
+              <AlertDialogDescription asChild>
+                <div className="text-left text-sm text-muted-foreground">
+                  <span className="block text-foreground">
+                    This will replace the wealth data in memory and in your local data file with the
+                    contents of the file you selected. This is not a merge.
+                  </span>
+                </div>
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            {importSaveError && (
+              <p role="alert" className="text-sm text-destructive">
+                {importSaveError}
+              </p>
+            )}
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={importBusy}>Cancel</AlertDialogCancel>
+              <button
+                type="button"
+                disabled={importBusy}
+                className={cn(buttonVariants())}
+                onClick={() => {
+                  void onConfirmImport()
+                }}
+              >
+                {importBusy ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden />
+                    Importing…
+                  </>
+                ) : (
+                  'Import and replace'
+                )}
+              </button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
 
       <Separator />

@@ -13,8 +13,8 @@
 
 ### Data import — JSON (Phase 10.1, INSERTED)
 
-- [ ] **IMP-01**: User can **choose a local JSON file** in the app (e.g. Settings, near **Export Data**) and the app **attempts** to load it as the same `AppData` shape used for export, running the **same** validation + migration path as a fresh load (`DataSchema` + any legacy bank migration), then **persists** on success via **`saveData`** / `POST` `/api/data`.  
-- [ ] **IMP-02**: If the file is **invalid** or **save** fails, the user sees a **clear error**; **no** silent partial write — align with `saveData` rollback behavior. **Optional:** one-line **confirm** before replace if the product should warn that current in-memory + disk data will be overwritten.  
+- [x] **IMP-01**: User can **choose a local JSON file** in the app (e.g. Settings, near **Export Data**) and the app **attempts** to load it as the same `AppData` shape used for export, running the **same** validation + migration path as a fresh load (`DataSchema` + any legacy bank migration), then **persists** on success via **`saveData`** / `POST` `/api/data`.  
+- [x] **IMP-02**: If the file is **invalid** or **save** fails, the user sees a **clear error**; **no** silent partial write — align with `saveData` rollback behavior. **Optional:** one-line **confirm** before replace if the product should warn that current in-memory + disk data will be overwritten.  
 
 ### Net worth history — data
 
@@ -51,8 +51,8 @@
 
 | REQ-ID  | Description                                      | Phase  | Status |
 | ------- | ------------------------------------------------ | ------ | ------ |
-| IMP-01  | Choose JSON file → validate + `saveData`       | 10.1  | open   |
-| IMP-02  | Error on invalid / failed save; optional confirm| 10.1  | open   |
+| IMP-01  | Choose JSON file → validate + `saveData`       | 10.1  | done (2026-04-26)   |
+| IMP-02  | Error on invalid / failed save; optional confirm| 10.1  | done (2026-04-26)   |
 | NWH-01  | Schema + `createInitialData` + snapshot shape   | 10     | open   |
 | NWH-02  | Migration from v1.2 / missing key             | 10     | open   |
 | NWH-05  | Reset clears history                          | 10     | open   |
