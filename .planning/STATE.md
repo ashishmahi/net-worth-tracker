@@ -1,12 +1,12 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.3
-milestone_name: Net worth history
-status: requirements_ready
-last_updated: "2026-04-26T12:00:00.000Z"
-last_activity: 2026-04-26 — `/gsd-new-milestone` (v1.3: requirements + roadmap)
+milestone_name: — Net worth history
+status: `requirements_ready` — run `/gsd-discuss-phase 10` or `/gsd-plan-phase 10`
+last_updated: "2026-04-26T13:12:27.285Z"
+last_activity: 2026-04-26 — `REQUIREMENTS.md` and `ROADMAP.md` created for v1.3
 progress:
-  total_phases: 0
+  total_phases: 3
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
