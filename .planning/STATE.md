@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: — Net worth history
-status: "v1.3: **plan/execute** Phase 10, then **11** (chart)."
-last_updated: "2026-04-26T17:38:49.005Z"
-last_activity: "2026-04-26 — [`10-CONTEXT.md`](phases/10-history-schema/10-CONTEXT.md) (discuss phase); `netWorthHistory: { recordedAt, totalInr }[]` + guards per context."
+status: "v1.3: Phase **10** shipped; **11** (chart) next."
+last_updated: "2026-04-26T18:45:00.000Z"
+last_activity: "2026-04-26 — Phase 10 executed: `feat(10): net worth history schema and record snapshot` — [10-01-SUMMARY.md](phases/10-history-schema/10-01-SUMMARY.md)"
 progress:
   total_phases: 3
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 2
-  completed_plans: 1
-  percent: 50
+  completed_plans: 2
+  percent: 67
 ---
 
 ## Project
@@ -19,12 +19,12 @@ progress:
 
 ## Current position
 
-**Milestone:** v1.3 — **Net worth history** (in planning)  
-**Phase:** **10** — **context gathered** (history + schema, record on Dashboard) — not implemented yet. **10.1** (JSON import) is shipped; **11** (chart) is next after **10** implementation. See [ROADMAP](ROADMAP.md).  
-**Status:** v1.3: **plan/execute** Phase 10, then **11** (chart).  
-**Last activity:** 2026-04-26 — [`10-CONTEXT.md`](phases/10-history-schema/10-CONTEXT.md) (discuss phase); `netWorthHistory: { recordedAt, totalInr }[]` + guards per context.  
+**Milestone:** v1.3 — **Net worth history** (in progress)  
+**Phase:** **11** — **Net worth chart** (*next* — NWH-04). **Phase 10** (**History & schema**) **implemented** 2026-04-26; **10.1** (JSON import) shipped earlier — re-test **import/export** against `netWorthHistory`. See [ROADMAP](ROADMAP.md).  
 
-**Resume from:** [`10-CONTEXT.md`](phases/10-history-schema/10-CONTEXT.md) — next **`/gsd-plan-phase 10`**.  
+**Last activity:** 2026-04-26 — `/gsd-execute-phase 10` → `NetWorthPointSchema`, **`ensureNetWorthHistory`**, **`Record snapshot`** on Dashboard (`src/pages/DashboardPage.tsx`).  
+
+**Resume from:** `/gsd-plan-phase 11` or `/gsd-discuss-phase 11` → chart + empty state.  
 
 ## Project reference
 
@@ -32,11 +32,11 @@ See: [`.planning/PROJECT.md`](PROJECT.md) (Current Milestone: v1.3)
 
 **Core value:** total net worth in INR at a glance; v1.3 adds **trend** visibility via snapshots + chart.  
 
-**Current focus:** **10** (NWH data model + record) → **11** (chart). Phase **10.1** import is **shipped** (can be used with current `DataSchema`; re-test after **10** extends the schema).  
+**Current focus:** **11** (chart / NWH-04). Phase **10** delivers persisted **`netWorthHistory`** + Dashboard **Record snapshot**.  
 
 ## Performance metrics
 
-Velocity: v1.3 TBD.  
+Velocity: Phase 10 executed same day as planning.  
 
 ## Accumulated context
 
@@ -44,14 +44,15 @@ Velocity: v1.3 TBD.
 
 - v1.3: top-level **`netWorthHistory`** in `data.json` (Zod) — `{ recordedAt, totalInr }` rows; **clear all** resets; **migration** to `[]` for missing key; import + boot use same `DataSchema`.  
 - **Phase 10.1 (shipped):** `parseAppDataFromImport` mirrors boot load; confirm `AlertDialog` before replace; inline errors and success in Settings **Data** block.  
+- **Phase 10 (shipped):** **`ensureNetWorthHistory`** before **safeParse**; **Record snapshot** disabled when skeleton, excluded categories, or AED rate missing; outline button under net worth **Card**.  
 
 ### Roadmap evolution
 
-- **Phase 10.1** complete 2026-04-26: `parseAppDataFromImport`, **Import from JSON** next to Export, `10.1-01-PLAN` + research/patterns/validation. **IMP-01** / **IMP-02** marked done in `REQUIREMENTS.md`.  
+- **Phase 10** complete 2026-04-26: see [10-01-SUMMARY.md](phases/10-history-schema/10-01-SUMMARY.md). **NWH-01**, **NWH-02**, **NWH-05** done; **NWH-03** record path done; **NWH-04** → Phase **11**.  
 
 ### Pending todos
 
-- Phase **10** (history & schema) → **11** (chart).  
+- Phase **11** (chart + insufficient-data state).  
 
 ### Blockers / concerns
 
@@ -67,10 +68,8 @@ Velocity: v1.3 TBD.
 
 ## Session continuity
 
-**Completed:** v1.0, v1.1, v1.2 (shipped); v1.3 **Phase 10.1** (import)  
+**Completed:** v1.0–v1.2; v1.3 **Phase 10.1** (import); v1.3 **Phase 10** (history + record)  
 
-**Next:** `/gsd-plan-phase 10` (history & schema + record on Dashboard), then `11` (chart).  
+**Next:** **`/gsd-plan-phase 11`** (chart)  
 
 ---
-
-**Planned Phase:** 10 (History & schema) — 1 plans — 2026-04-26T17:38:48.994Z

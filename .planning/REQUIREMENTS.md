@@ -53,10 +53,10 @@
 | ------- | ------------------------------------------------ | ------ | ------ |
 | IMP-01  | Choose JSON file → validate + `saveData`       | 10.1  | done (2026-04-26)   |
 | IMP-02  | Error on invalid / failed save; optional confirm| 10.1  | done (2026-04-26)   |
-| NWH-01  | Schema + `createInitialData` + snapshot shape   | 10     | open   |
-| NWH-02  | Migration from v1.2 / missing key             | 10     | open   |
-| NWH-05  | Reset clears history                          | 10     | open   |
-| NWH-03  | “Record snapshot” on Dashboard + persist      | 10/11  | open   |
+| NWH-01  | Schema + `createInitialData` + snapshot shape   | 10     | done (2026-04-26)   |
+| NWH-02  | Migration from v1.2 / missing key             | 10     | done (2026-04-26)   |
+| NWH-05  | Reset clears history                          | 10     | done (2026-04-26)   |
+| NWH-03  | “Record snapshot” on Dashboard + persist      | 10/11  | partial — record done (2026-04-26); chart remains **11** |
 | NWH-04  | Chart + empty state (≥2 points)               | 11     | open   |
 
 

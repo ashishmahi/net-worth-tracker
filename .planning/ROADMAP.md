@@ -98,7 +98,7 @@
 | 1–5     | v1.0       | (see snapshot)  | Complete     | 2026-04-26 |
 | 6–8     | v1.1       | (see snapshot)  | Complete     | 2026-04-26 |
 | 9       | v1.2       | 2/2            | Complete     | 2026-04-26 |
-| **10. History & schema** | **v1.3**  | 1/1  | *Planned* | —  |
+| **10. History & schema** | **v1.3**  | 1/1  | Complete | 2026-04-26  |
 | **10.1. JSON import**  | **v1.3**  | 1/1  | *Complete* | 2026-04-26  |
 | **11. Net worth chart**  | **v1.3**  | TBD  | *Not started* | —  |
 
