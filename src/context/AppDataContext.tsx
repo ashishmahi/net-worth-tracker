@@ -38,12 +38,23 @@ function migrateLegacyBankAccounts(raw: unknown): unknown {
   }
 }
 
+/** v1.2 files without `netWorthHistory`: default to `[]` before Zod parse. */
+function ensureNetWorthHistory(raw: unknown): unknown {
+  if (raw === null || typeof raw !== 'object') return raw
+  const o = raw as Record<string, unknown>
+  if (!('netWorthHistory' in o) || o.netWorthHistory === undefined) {
+    return { ...o, netWorthHistory: [] }
+  }
+  return raw
+}
+
 /** Same migrate + `DataSchema` path as initial `GET /api/data` load — for import and boot. */
 export function parseAppDataFromImport(
   raw: unknown,
 ): { success: true; data: AppData } | { success: false; zodError: ZodError } {
   const migrated = migrateLegacyBankAccounts(raw)
-  const result = DataSchema.safeParse(migrated)
+  const withHistory = ensureNetWorthHistory(migrated)
+  const result = DataSchema.safeParse(withHistory)
   if (result.success) {
     return { success: true, data: result.data }
   }
@@ -67,6 +78,7 @@ export function createInitialData(): AppData {
       bankSavings: { updatedAt: now, accounts: [] },
       retirement: { updatedAt: now, nps: 0, epf: 0 },
     },
+    netWorthHistory: [],
   }
 }
 

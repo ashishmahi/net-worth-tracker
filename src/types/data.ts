@@ -111,6 +111,12 @@ const SettingsSchema = z
   })
   .passthrough() // settings may gain further fields in later phases
 
+// ── Net worth history (Phase 10: point-in-time snapshots; not the live computed total)
+export const NetWorthPointSchema = z.object({
+  recordedAt: z.string().datetime(),
+  totalInr: z.number().nonnegative(),
+})
+
 // ── Root schema ───────────────────────────────────────────────────────────────
 
 export const DataSchema = z.object({
@@ -125,6 +131,7 @@ export const DataSchema = z.object({
     bankSavings: BankSavingsSchema,
     retirement: RetirementSchema,
   }),
+  netWorthHistory: z.array(NetWorthPointSchema),
 })
 
 // Single source of truth for TypeScript types — never define interfaces separately
@@ -137,3 +144,4 @@ export type BankAccount = z.infer<typeof BankAccountSchema>
 export type PropertyMilestoneRow = z.infer<typeof PropertyMilestoneRowSchema>
 export type PropertyItem = z.infer<typeof PropertyItemSchema>
 export type Property = z.infer<typeof PropertySchema>
+export type NetWorthPoint = z.infer<typeof NetWorthPointSchema>
