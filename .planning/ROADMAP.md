@@ -5,7 +5,7 @@
 - ✅ **v1.0 — Local wealth tracker** — Shipped 2026-04-26 — [full snapshot](milestones/v1.0-ROADMAP.md)  
 - ✅ **v1.1 — UX Polish** — Shipped 2026-04-26 — [full snapshot](milestones/v1.1-ROADMAP.md)  
 - ✅ **v1.2 — Data reset** — Shipped 2026-04-26 — [full snapshot](milestones/v1.2-ROADMAP.md)  
-- **v1.3 — Net worth history** — *In planning* — this file  
+- **v1.3 — Net worth history** — **Phases 10–11 complete** (2026-04-28) — this file  
 
 **Phase numbering:** v1.2 ended at **Phase 9**. v1.3 uses **Phases 10, 10.1, 11** (no `--reset-phase-numbers`); **10.1** was inserted after Phase 10 for **JSON import** before the chart.
 
@@ -19,7 +19,7 @@
 |-------|----------------------|--------------|---------------|
 | 10    | **History & schema** | Extend `DataSchema`, migration, `createInitialData`, `record` flow + **Reset** clears history, POST validates | NWH-01, NWH-02, NWH-03, NWH-05 |
 | 10.1  | **JSON import** *(INSERTED)* | Quick import from a chosen JSON file; validate with `DataSchema` + `saveData` (pair with existing Export) | IMP-01, IMP-02 (see [REQUIREMENTS](REQUIREMENTS.md)) |
-| 11    | **Net worth chart**  | Recharts(ish) line/area on Dashboard, NWH-04 empty state, **dark**/**light** | NWH-04 |
+| 11    | **Net worth chart** | Recharts **line/area** on Dashboard; **NWH-04** empty state (0–1 snapshots) | **NWH-04** |
 
 ### Phase 10: History & schema
 
@@ -100,7 +100,7 @@
 | 9       | v1.2       | 2/2            | Complete     | 2026-04-26 |
 | **10. History & schema** | **v1.3**  | 1/1  | Complete | 2026-04-26  |
 | **10.1. JSON import**  | **v1.3**  | 1/1  | *Complete* | 2026-04-26  |
-| **11. Net worth chart**  | **v1.3**  | 1/1 planned  | *Ready to execute* | —  |
+| **11. Net worth chart**  | **v1.3**  | 1/1  | Complete | 2026-04-28  |
 
 ---
 

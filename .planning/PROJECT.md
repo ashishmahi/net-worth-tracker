@@ -30,10 +30,10 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.2-ROADMAP.md` and matc
 - **Schema evolution** — extend the data model in a way that **migrates** existing `data.json` (no data loss for users upgrading from v1.2).  
 - **JSON import** (Phase 10.1) — import a wealth JSON file from disk (paired with **Export**); see **IMP-01** / **IMP-02** in `REQUIREMENTS.md`.  
 
-## Current state (milestone in planning)
+## Current state (milestone v1.3)
 
-- **Active work:** v1.3 (requirements and roadmap in `.planning/REQUIREMENTS.md`, `.planning/ROADMAP.md`).  
-- **App:** `npm run dev` — v1.0–v1.2 capabilities shipped; v1.3 not yet implemented.  
+- **v1.3 (net worth history):** Implemented — persisted **`netWorthHistory`**, **Record snapshot**, **JSON import** (10.1), and **Dashboard net worth over time** chart with **NWH-04** empty state (Phase **11**).  
+- **App:** `npm run dev` — run **`/gsd-complete-milestone`** when ready to archive v1.3 planning artifacts.  
 
 ## Requirements
 
@@ -57,9 +57,9 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.2-ROADMAP.md` and matc
 - [x] **DATA-02** — Irreversibility + backup hint + non-accidental confirm (AlertDialog)  
 - [x] **DATA-03** — `createInitialData()` + `saveData` / `POST` `/api/data`; in-memory + forms re-sync  
 
-### Active (v1.3)
+### Validated (v1.3)
 
-See [REQUIREMENTS.md](REQUIREMENTS.md) in `.planning/` — **NWH-01** through **NWH-05** (net worth history, chart, reset, migration).    
+- [x] **NWH-01–NWH-05**, **IMP-01–IMP-02** — per live [REQUIREMENTS.md](REQUIREMENTS.md) (snapshots, chart, reset, migration, import); validated through Phases **10**, **10.1**, **11** (2026-04-28).    
 
 ### Deferred (post–v1.3 unless pulled in)
 
@@ -99,7 +99,7 @@ See [REQUIREMENTS.md](REQUIREMENTS.md) in `.planning/` — **NWH-01** through **
 | GSD planning | Phased delivery in `.planning/` | Ongoing |
 | v1.1 scope | `localStorage` only for theme; no `data.json` version bump for theme | ✓ Shipped |
 | v1.2 data reset | Danger zone + dialog + `createInitialData` + `saveData`; no theme wipe | ✓ v1.2 2026-04-26 |
-| v1.3 (planned) | Snapshot list + chart on dashboard; INR total from existing `dashboardCalcs`; migration for existing files | *In progress* |  
+| v1.3 | Snapshot list + chart on dashboard; import; migration; NWH-04 empty state | ✓ Phases 10–11, 2026-04-28 |  
 
 ## Evolution
 
@@ -115,4 +115,4 @@ This file is updated at **milestone completion** to avoid drift between plans an
 </details>  
 
 ---
-*Last updated: 2026-04-26 — **v1.3 — Net worth history** milestone started (`/gsd-new-milestone`).*  
+*Last updated: 2026-04-28 — **v1.3** implemented (history, import, net worth chart).*  

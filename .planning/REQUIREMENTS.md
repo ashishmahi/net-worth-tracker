@@ -57,7 +57,7 @@
 | NWH-02  | Migration from v1.2 / missing key             | 10     | done (2026-04-26)   |
 | NWH-05  | Reset clears history                          | 10     | done (2026-04-26)   |
 | NWH-03  | “Record snapshot” on Dashboard + persist      | 10/11  | partial — record done (2026-04-26); chart remains **11** |
-| NWH-04  | Chart + empty state (≥2 points)               | 11     | open   |
+| NWH-04  | Chart + empty state (≥2 points)               | 11     | done (2026-04-28)   |
 
 
 *10.1: JSON import (INSERTED). Order: 10 → 10.1 → 11. See [ROADMAP](ROADMAP.md).*  
