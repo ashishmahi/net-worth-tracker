@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: — Net worth history
-status: "v1.3: Phase **10** shipped; **11** (chart) next."
-last_updated: "2026-04-26T18:45:00.000Z"
-last_activity: "2026-04-26 — Phase 10 executed: `feat(10): net worth history schema and record snapshot` — [10-01-SUMMARY.md](phases/10-history-schema/10-01-SUMMARY.md)"
+status: unknown
+last_updated: "2026-04-28T17:11:29.822Z"
+last_activity: 2026-04-26 — `/gsd-execute-phase 10` → `NetWorthPointSchema`, **`ensureNetWorthHistory`**, **`Record snapshot`** on Dashboard (`src/pages/DashboardPage.tsx`).
 progress:
   total_phases: 3
   completed_phases: 2
   total_plans: 2
   completed_plans: 2
-  percent: 67
+  percent: 100
 ---
 
 ## Project
