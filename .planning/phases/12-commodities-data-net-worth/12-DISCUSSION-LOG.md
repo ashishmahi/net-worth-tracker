@@ -61,3 +61,16 @@
 ## Deferred Ideas
 
 - Live commodity feeds; additional metals — see CONTEXT `<deferred>`.
+
+---
+
+## Revision (2026-04-28)
+
+**User selected:** Update existing context; revise **persisted shape**, **pricing**, **totals**, **scope**, plus freeform: *how many commodities & price fetch*.
+
+**Captured in `12-CONTEXT.md`:**
+
+- **Kinds:** `silver` **and** `platinum` in **`kind` enum** (two non-gold metals); grams; **`settings.commodityPrices`** map (INR/gram per kind), replacing single **`silverPricePerGram`**.
+- **Totals:** **`otherCommodities`** remains one nullable bucket; sum uses **per-kind** prices from the map; **null** if any held line lacks its price.
+- **Price fetch:** **D-11** — **no** live fetch in v1.4; manual only; feeds deferred.
+- **Scope:** **D-12** — Phase 12 = schema + calcs + minimal dashboard gating; Phase 13 = Settings forms & section UI.

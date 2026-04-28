@@ -1,14 +1,21 @@
 # Phase 12: Commodities: data & net worth - Context
 
 **Gathered:** 2026-04-28  
+**Revised:** 2026-04-28 — multi-kind commodities, `commodityPrices` map, explicit **no live fetch** for v1.4  
 **Status:** Ready for planning
 
 <domain>
 ## Phase Boundary
 
-This phase delivers the **persisted data model**, **load-time migration**, **Settings-based manual pricing**, **`createInitialData` / import / reset** alignment, and **net worth math** (including **Record snapshot** eligibility) for **commodities other than gold** — at minimum **silver** in grams with **INR per gram** in Settings.
+This phase delivers the **persisted data model**, **load-time migration**, **Settings-based manual pricing**, **`createInitialData` / import / reset** alignment, and **net worth math** (including **Record snapshot** eligibility) for **commodities other than gold**.
 
-**Out of this phase (Phase 13):** CRUD UI, nav labels, dashboard row copy, and **COM-06** gold UX polish. Phase 12 may touch **`dashboardCalcs.ts`** and **minimal** `DashboardPage.tsx** logic (`noHoldingsYet`, `excludedNames`, `canRecordSnapshot`) only where required so **COM-02** (totals + snapshot integrity) holds end-to-end.
+**Non-gold commodities in scope for the **data model**: **two kinds** in v1.4 — **`silver`** and **`platinum`** — both tracked in **grams**, each with **manual INR per gram** in Settings (see **D-04**). **Product/UI** may expose **one or both** in Phase 13; the schema is ready for either.
+
+**Pricing source:** **Manual entry only** for all non-gold commodities in v1.4 (**D-11**). No HTTP/API **fetch** for silver or platinum spots in this milestone — aligns with gold (manual `goldPrices`) and [`.planning/REQUIREMENTS.md`](../../REQUIREMENTS.md) **Future** section.
+
+**Out of this phase (Phase 13):** CRUD UI, nav labels, dashboard row copy, Settings **forms** for each commodity price, and **COM-06** gold UX polish.
+
+**Phase 12 vs Dashboard:** Implement **`dashboardCalcs`** + **`DataSchema`** + migration + **`parseAppDataFromImport`** + **`createInitialData`** in full. Touch **`DashboardPage.tsx`** only as much as needed for **COM-02**: **`noHoldingsYet`**, **`excludedNames`**, **`canRecordSnapshot`**, and labels for **incomplete total** / blocked snapshot — **no** new commodity section pages here (**D-12**).
 
 </domain>
 
@@ -18,29 +25,34 @@ This phase delivers the **persisted data model**, **load-time migration**, **Set
 ### Persisted shape (keep gold intact)
 
 - **D-01:** Leave **`assets.gold`** and **`settings.goldPrices`** unchanged for COM-06 compatibility; do **not** fold gold into a generic commodities tree in this milestone.
-- **D-02:** Add a sibling **`assets.otherCommodities`** object shaped like other sections: `{ updatedAt: ISO datetime, items: OtherCommodityItem[] }`.
-- **D-03:** **`OtherCommodityItem`** extends **`BaseItemSchema`** (`id`, `createdAt`, `updatedAt`) with **`kind: z.literal('silver')`** and **`grams: z.number().nonnegative()`** for v1.4. Future metals append new literals **or** extend `kind` union in a later phase — same table pattern.
+- **D-02:** Add a sibling **`assets.otherCommodities`** object: `{ updatedAt: ISO datetime, items: OtherCommodityItem[] }`.
+- **D-03:** **`OtherCommodityItem`** extends **`BaseItemSchema`** with **`kind: z.enum(['silver', 'platinum'])`** and **`grams: z.number().nonnegative()`**. More metals later → extend the enum + add matching optional price keys under **`commodityPrices`**.
 
-### Settings pricing
+### Settings pricing (multi-commodity, all manual)
 
-- **D-04:** Add optional **`settings.silverPricePerGram`** — nonnegative **INR per gram**, aligned with gold’s “price lives in Settings” rule (see existing gold pattern in `dashboardCalcs`).
-- **D-05:** Omit silver price from Settings UI work here if Phase 13 owns Settings forms — but **schema + defaults** must exist in Phase 12 so planners wire Phase 13 fields to this key. If Phase 12 ships Settings inputs for silver price, that is acceptable overlap; otherwise expose via JSON/edit until Phase 13.
+- **D-04:** Add **`settings.commodityPrices`** — an object whose **keys align with `kind`** (at minimum **`silver`** and **`platinum`**), each value **nonnegative INR per gram**. Use **`.optional()`** on the whole object **and/or** **partial keys** so legacy `data.json` without it still parses; treat missing key for a **held** kind as “no price” (same as missing karat price for gold).
+- **D-05:** **Deprecated single-field approach:** do **not** use **`silverPricePerGram`** alone — the **map** scales to **N** commodities without schema churn. **Migration:** no production reliance on the earlier CONTEXT draft; if any dev JSON used a flat key, one-off migrate into **`commodityPrices.silver`** in the same **pre-parse** pipeline (optional).
+- **D-11 (price fetch):** **No** automated price fetch for silver/platinum in v1.4. **Future milestone** could add optional feeds that **populate** manual fields or a separate “stale” indicator — **out of scope** for Phase 12–13.
 
 ### Dashboard calculations & snapshot behavior
 
-- **D-06:** Extend **`CategoryTotals`** with **`otherCommodities: number | null`**: `null` when any **silver** line has `grams > 0` and **`settings.silverPricePerGram` is undefined**; `0` when there are no such items; else **sum(grams × silverPricePerGram)** with **`roundCurrency`** at each step (match `sumGoldInr` style).
-- **D-07:** Append **`otherCommodities`** to **`DASHBOARD_CATEGORY_ORDER`** (position: **immediately after `gold`**) so mental ordering stays “metals together” and **`sumForNetWorth`** includes the new bucket without special cases.
-- **D-08:** Update **`noHoldingsYet`**, snapshot **`excludedNames`**, and any **“incomplete total”** messaging to treat **`otherCommodities === null`** like gold: if user holds silver but price is missing, they are **excluded** from the displayed total and **Record snapshot** must stay **disabled** until price is set (same policy as `totals.gold === null`).
+- **D-06:** Extend **`CategoryTotals`** with **`otherCommodities: number | null`**. **`null`** if **any** line has **`grams > 0`** and **`commodityPrices[kind]`** is missing for that **`kind`**; **`0`** if there are no non-gold commodity items; else **Σ roundCurrency(grams × price)** per line (same rounding discipline as **`sumGoldInr`**).
+- **D-07:** Append **`otherCommodities`** to **`DASHBOARD_CATEGORY_ORDER`** **immediately after `gold`**.
+- **D-08:** **`noHoldingsYet`**, **`excludedNames`**, and snapshot gating treat **`otherCommodities === null`** like **`totals.gold === null`**: incomplete total, **Record snapshot** disabled, user messaging points to **Settings** for missing **commodity** prices (copy can say “commodity prices” or list kinds — Phase 13 can polish strings).
 
 ### Migration & parse path
 
-- **D-09:** Stay on **`version: 1`** at the root; add an **`ensureOtherCommodities`** (or inline) step in **`parseAppDataFromImport`** / boot path that injects **`{ updatedAt: nowIso(), items: [] }`** when missing, mirroring **`ensureNetWorthHistory`**.
-- **D-10:** **`createInitialData`** includes **`otherCommodities: { updatedAt, items: [] }`**; full reset clears it with the rest of `assets`.
+- **D-09:** Stay on **`version: 1`**; add **`ensureOtherCommodities`** before **`DataSchema.safeParse`** to inject **`{ updatedAt: nowIso(), items: [] }`** when absent.
+- **D-10:** **`createInitialData`** includes **`otherCommodities`** empty shell; **`settings`** may omit **`commodityPrices`** until the user sets prices (optional object).
+
+### Phase 12 surface area (scope)
+
+- **D-12:** **Required in Phase 12:** schema, migration, **`commodityPrices`** shape, **`sumOtherCommoditiesInr`-style** helper, **`CategoryTotals`** + **`DASHBOARD_CATEGORY_ORDER`**, snapshot eligibility parity, **`parseAppDataFromImport`** / reset. **Defer to Phase 13:** user-facing Settings inputs for silver/platinum (unless a **minimal** dev-only field is needed for local verification — Claude’s discretion).
 
 ### Claude's Discretion
 
-- Exact **Zod** naming (`otherCommodities` vs `commodities`) if minor refactors improve consistency with existing `assets.*` keys.
-- Whether Phase 12 adds a **minimal Settings** numeric field for silver price vs. schema-only — prefer whichever minimizes duplicate work with Phase 13 without breaking COM-05.
+- Exact **Zod** shape for **`commodityPrices`** (`z.object({ silver: optional, platinum: optional })` vs **`z.record`**) as long as validation matches **`kind`** and **partial** keys behave correctly on import.
+- Wording of **excludedNames** entries for the new bucket (“Other commodities” vs listing metals).
 
 </decisions>
 
@@ -51,8 +63,8 @@ This phase delivers the **persisted data model**, **load-time migration**, **Set
 
 ### Requirements & roadmap
 
-- [`.planning/REQUIREMENTS.md`](../../REQUIREMENTS.md) — **COM-01, COM-02, COM-05** for Phase 12
-- [`.planning/ROADMAP.md`](../../ROADMAP.md) — v1.4 Phase 12 row (schema, migration, calcs, import, reset)
+- [`.planning/REQUIREMENTS.md`](../../REQUIREMENTS.md) — **COM-01, COM-02, COM-05**; **Future:** live spot feeds deferred
+- [`.planning/ROADMAP.md`](../../ROADMAP.md) — v1.4 Phase 12 row
 
 ### Product constraints
 
@@ -61,9 +73,9 @@ This phase delivers the **persisted data model**, **load-time migration**, **Set
 ### Code hooks (integration)
 
 - [`src/types/data.ts`](../../../../src/types/data.ts) — `DataSchema`, `GoldSchema`, `SettingsSchema`, `BaseItemSchema`
-- [`src/context/AppDataContext.tsx`](../../../../src/context/AppDataContext.tsx) — `parseAppDataFromImport`, `createInitialData`, `migrateLegacyBankAccounts`, `ensureNetWorthHistory`
+- [`src/context/AppDataContext.tsx`](../../../../src/context/AppDataContext.tsx) — `parseAppDataFromImport`, `createInitialData`, migration helpers
 - [`src/lib/dashboardCalcs.ts`](../../../../src/lib/dashboardCalcs.ts) — `calcCategoryTotals`, `sumForNetWorth`, `DASHBOARD_CATEGORY_ORDER`
-- [`src/pages/DashboardPage.tsx`](../../../../src/pages/DashboardPage.tsx) — `canRecordSnapshot`, `excludedNames`, `noHoldingsYet`, `grandTotal` / snapshot write
+- [`src/pages/DashboardPage.tsx`](../../../../src/pages/DashboardPage.tsx) — `canRecordSnapshot`, `excludedNames`, `noHoldingsYet`
 
 </canonical_refs>
 
@@ -72,38 +84,39 @@ This phase delivers the **persisted data model**, **load-time migration**, **Set
 
 ### Reusable assets
 
-- **`parseAppDataFromImport`** — single choke point for boot + JSON import; add migration **before** `DataSchema.safeParse`.
-- **`sumGoldInr` / `CategoryTotals`** — template for nullable category totals when manual rates are missing.
-- **`BaseItemSchema`** — reuse for silver line items.
+- **`parseAppDataFromImport`** — add **`ensureOtherCommodities`** alongside **`ensureNetWorthHistory`**.
+- **`sumGoldInr`** — pattern for **nullable** category when prices missing.
+- **`BaseItemSchema`** — line items for each **`otherCommodities`** row.
 
 ### Established patterns
 
-- **Optional Settings slices** — `goldPrices.optional()` pattern; mirror with **`silverPricePerGram.optional()`**.
-- **Migration helpers** — pure functions mutating raw JSON prior to Zod (see `migrateLegacyBankAccounts`, `ensureNetWorthHistory`).
+- **Optional Settings** — `goldPrices.optional()`; mirror with **`commodityPrices.optional()`** (partial keys per metal).
+- **Migration helpers** — pure JSON transforms before **`safeParse`**.
 
 ### Integration points
 
-- **`calcCategoryTotals`** → **`DashboardPage`** `totals` / **`sumForNetWorth`** → snapshot **`totalInr`** must all pick up **`otherCommodities`** once schema exists.
+- **`calcCategoryTotals`** → **`sumForNetWorth`** → Dashboard snapshot **`totalInr`** must include **`otherCommodities`**.
 
 </code_context>
 
 <specifics>
 ## Specific Ideas
 
-- First additional commodity is **silver**, **grams**, **INR/gram** — matches Indian bullion thinking and existing gold **grams** UX.
+- **Silver** is the primary **COM-01** “additional commodity”; **platinum** is included in the **same** schema so users can hold **two** non-gold metals without a follow-up migration.
+- **Grams + INR/gram** throughout — consistent with gold’s gram mental model.
 
 </specifics>
 
 <deferred>
 ## Deferred Ideas
 
-- **Live** silver spot APIs — future milestone (manual only for v1.4).
-- **Platinum / generic commodity** rows — extend `kind` union when needed.
-- Rich **Settings** UX for multiple metals — Phase 13 (COM-03/04/06).
+- **Live / fetched** spot prices for silver, platinum, or other commodities — **not v1.4**; would require product rules (frequency, override) — separate milestone (**D-11**).
+- Additional **`kind`** values (e.g. palladium) — extend enum + **`commodityPrices`** keys when needed.
+- Rich **Settings** UX for many metals — Phase 13.
 
 </deferred>
 
 ---
 
 *Phase: 12-commodities-data-net-worth*  
-*Context gathered: 2026-04-28*
+*Context gathered: 2026-04-28 · Revised: 2026-04-28*
