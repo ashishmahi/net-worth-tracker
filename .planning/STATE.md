@@ -4,7 +4,7 @@ milestone: v1.4
 milestone_name: Multiple commodities
 status: planning_phase_12
 last_updated: "2026-04-28T22:15:00.000Z"
-last_activity: "2026-04-28 — `/gsd-discuss-phase 12`: 12-CONTEXT.md + 12-DISCUSSION-LOG.md committed."
+last_activity: "2026-04-28 — `/gsd-discuss-phase 12` (update): CONTEXT revised — silver+platinum kinds, `commodityPrices` map, D-11 no live fetch, D-12 scope split."
 progress:
   total_phases: 2
   completed_phases: 0
