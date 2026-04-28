@@ -6,7 +6,7 @@
 ## v1.3 Net worth history (Shipped: 2026-04-28)
 
 **Scope:** Phases 10, 10.1 (INSERTED), 11.  
-**Phase directories:** `.planning/phases/10-history-schema/`, `.planning/phases/10.1-json-import-quick-import-from-file-to-match-existing-json-ex/`, `.planning/phases/11-net-worth-chart/`
+**Phase directories:** `.planning/milestones/v1.3-phases/10-history-schema/`, `.planning/milestones/v1.3-phases/10.1-json-import-quick-import-from-file-to-match-existing-json-ex/`, `.planning/milestones/v1.3-phases/11-net-worth-chart/`
 
 **Phases completed:** 3 phases, 3 plans
 

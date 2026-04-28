@@ -17,13 +17,21 @@ See **total net worth in INR** at a glance, with **live BTC and FX** where appli
 | **v1.2** | **Data reset** — Settings danger zone, AlertDialog, `createInitialData()` + `saveData` full clear, inline error/success; `localStorage` theme unchanged | 2026-04-26 |
 | **v1.3** | **Net worth history** — persisted **`netWorthHistory`**, **Record snapshot**, **JSON import** (10.1), **Dashboard** line/area chart + **NWH-04** empty state | 2026-04-28 |
 
-Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.3-ROADMAP.md` and matching `*-REQUIREMENTS.md` archives. Phase work: `v1.0-phases/`, `v1.1-phases/`, `v1.2-phases/` under [`.planning/milestones/`](milestones/); v1.3 phases remain under [`.planning/phases/`](phases/) (`10-*`, `10.1-*`, `11-*`).
+Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.3-ROADMAP.md` and matching `*-REQUIREMENTS.md` archives. Phase work: `v1.0-phases/` … `v1.3-phases/` under [`.planning/milestones/`](milestones/); **live** execution phases for v1.4+ live under [`.planning/phases/`](phases/) as they are opened.
 
-## Next milestone
+## Current Milestone: v1.4 Multiple commodities
 
-**Requirements and roadmap for v1.4+ are not initialized.** Run **`/gsd-new-milestone`** to define the next goal, refresh `.planning/REQUIREMENTS.md`, and extend [`.planning/ROADMAP.md`](ROADMAP.md).
+**Goal:** Track **more than gold** for physical commodities — at least **one additional type** (e.g. silver) with **manual INR pricing** in Settings and **full inclusion** in net worth, snapshots, import/export, and reset.
 
-## Current state (post–v1.3)
+**Target features:**
+
+- **Data:** Extend `DataSchema` + migration so existing `data.json` loads unchanged; new holdings + Settings prices for non-gold commodities.  
+- **Calculations:** `dashboardCalcs` / snapshot totals include all commodities; missing prices behave like gold today.  
+- **UX:** Dedicated flows for non-gold commodity lines; Dashboard/nav show commodity wealth clearly; gold’s karat/gram model preserved (**COM-06**).
+
+**Requirements:** [`.planning/REQUIREMENTS.md`](REQUIREMENTS.md) · **Roadmap:** [`.planning/ROADMAP.md`](ROADMAP.md) (Phases **12–13**).
+
+## Current state (post–v1.3, planning v1.4)
 
 - **Shipped v1.3:** Net worth **snapshots** in `data.json`, **Record snapshot**, **Import JSON** (Settings), **Net worth over time** chart (Recharts + shadcn charts), migration from v1.2, reset clears history.  
 - **App:** `npm run dev` — local-only; persistence unchanged (`GET`/`POST` `/api/data`).  
@@ -54,12 +62,17 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.3-ROADMAP.md` and matc
 
 - [x] **NWH-01–NWH-05**, **IMP-01–IMP-02** — per [`.planning/milestones/v1.3-REQUIREMENTS.md`](milestones/v1.3-REQUIREMENTS.md) (snapshots, chart, reset, migration, import); Phases **10**, **10.1**, **11** (2026-04-28).  
 
-### Deferred (post–v1.3 unless pulled in)
+### Active (v1.4 — in progress)
+
+- [ ] **COM-01 … COM-06** — multiple commodities (gold + at least one other); see [`.planning/REQUIREMENTS.md`](REQUIREMENTS.md).
+
+### Deferred (post–v1.4 unless pulled in)
 
 - [ ] Export / reports — PDF or CSV (JSON export exists; richer formats later)  
 - [ ] Navigation overhaul, richer inline editing (future)  
 - [ ] Align GSD Phase 01 planning artifacts with repo (optional)  
-- [ ] Optional: automatic periodic snapshots (cron-like) — not required for v1.3  
+- [ ] Optional: automatic periodic snapshots (cron-like)  
+- [ ] Live commodity spot feeds (manual pricing for v1.4)
 
 ### Out of scope (unchanged)
 
@@ -93,6 +106,7 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.3-ROADMAP.md` and matc
 | v1.1 scope | `localStorage` only for theme; no `data.json` version bump for theme | ✓ Shipped |
 | v1.2 data reset | Danger zone + dialog + `createInitialData` + `saveData`; no theme wipe | ✓ v1.2 2026-04-26 |
 | v1.3 | Snapshot list + chart on dashboard; import; migration; NWH-04 empty state | ✓ v1.3 2026-04-28 |  
+| v1.4 (planning) | Commodities beyond gold; manual pricing; net worth + import/reset | In progress |  
 
 ## Evolution
 
@@ -108,4 +122,4 @@ This file is updated at **milestone completion** to avoid drift between plans an
 </details>  
 
 ---
-*Last updated: 2026-04-28 after **v1.3** milestone archive (history, import, net worth chart).*  
+*Last updated: 2026-04-28 — **v1.4** milestone opened (multi-commodity requirements + roadmap).*  

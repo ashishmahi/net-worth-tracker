@@ -6,14 +6,22 @@
 - ✅ **v1.1 — UX Polish** — Shipped 2026-04-26 — [full snapshot](milestones/v1.1-ROADMAP.md)  
 - ✅ **v1.2 — Data reset** — Shipped 2026-04-26 — [full snapshot](milestones/v1.2-ROADMAP.md)  
 - ✅ **v1.3 — Net worth history** — Shipped 2026-04-28 — [full snapshot](milestones/v1.3-ROADMAP.md)  
+- **v1.4 — Multiple commodities** — **In planning / build** — [REQUIREMENTS](REQUIREMENTS.md) · Phase artifacts: [`.planning/phases/`](phases/) (as created)
 
-**Phase numbering:** v1.3 ended at **Phase 11** (with **10.1** inserted for JSON import). The next milestone continues phase numbering from **12** (use `/gsd-new-milestone`).
+**Phase numbering:** v1.3 ended at **Phase 11** (with **10.1** inserted). **v1.4** continues from **Phase 12**.
 
 ---
 
-## Next milestone
+## v1.4 — Multiple commodities
 
-Requirements and phases for **v1.4+** are not defined in this file. Run **`/gsd-new-milestone`** to create `.planning/REQUIREMENTS.md` and extend the roadmap.
+**Goal:** Support **commodities beyond gold** (at least one additional type, e.g. silver) with **manual INR pricing**, **migration** from current `data.json`, and **full** net worth / snapshot / import / reset alignment.
+
+| Phase | Name | Goal | Requirements | Success criteria (high level) |
+|-------|------|------|----------------|------------------------------|
+| **12** | Commodities: data & net worth | Schema, migration, Settings pricing model, `createInitialData`, import validation, reset; **`dashboardCalcs`** + snapshot path include new commodities | COM-01, COM-02, COM-05 | Existing files load; new installs initialize; totals + snapshots reflect commodities; missing prices match gold-style null behavior; import + reset consistent with schema |
+| **13** | Commodities: product UX | CRUD UI for non-gold lines; Dashboard + nav; preserve gold karat/gram UX (**COM-06**) | COM-03, COM-04, COM-06 | User can manage non-gold items; dashboard/nav understandable; gold behavior unchanged for legacy data |
+
+**Depends on:** v1.3 shipped (history + import patterns). **Phase 12** before **13** (UI needs model + calcs).
 
 ---
 
@@ -47,7 +55,7 @@ Requirements and phases for **v1.4+** are not defined in this file. Run **`/gsd-
 - [x] **Phase 10: History & schema** (1/1) — 2026-04-26  
 - [x] **Phase 10.1: JSON import** (1/1) — 2026-04-26  
 - [x] **Phase 11: Net worth chart** (1/1) — 2026-04-28  
-- Artifacts: [`phases/10-history-schema/`](phases/10-history-schema/) · [`phases/10.1-json-import-quick-import-from-file-to-match-existing-json-ex/`](phases/10.1-json-import-quick-import-from-file-to-match-existing-json-ex/) · [`phases/11-net-worth-chart/`](phases/11-net-worth-chart/) · [v1.3-ROADMAP](milestones/v1.3-ROADMAP.md) · [v1.3-REQUIREMENTS](milestones/v1.3-REQUIREMENTS.md)  
+- Artifacts: [`milestones/v1.3-phases/10-history-schema/`](milestones/v1.3-phases/10-history-schema/) · [`milestones/v1.3-phases/10.1-json-import-quick-import-from-file-to-match-existing-json-ex/`](milestones/v1.3-phases/10.1-json-import-quick-import-from-file-to-match-existing-json-ex/) · [`milestones/v1.3-phases/11-net-worth-chart/`](milestones/v1.3-phases/11-net-worth-chart/) · [v1.3-ROADMAP](milestones/v1.3-ROADMAP.md) · [v1.3-REQUIREMENTS](milestones/v1.3-REQUIREMENTS.md)  
 
 </details>  
 
@@ -55,13 +63,14 @@ Requirements and phases for **v1.4+** are not defined in this file. Run **`/gsd-
 
 ## Progress
 
-| Phase           | Milestone | Plans (summary)      | Status   | Completed              |
-|-----------------|-----------|----------------------|----------|-------------------------|
-| 1–5             | v1.0      | (see snapshot)       | Complete | 2026-04-26              |
-| 6–8             | v1.1      | (see snapshot)       | Complete | 2026-04-26              |
-| 9               | v1.2      | 2/2                  | Complete | 2026-04-26              |
-| 10, 10.1, 11    | v1.3      | 3/3                  | Complete | 2026-04-26 / 2026-04-28 |
+| Phase | Milestone | Plans (summary) | Status | Completed |
+|-------|-----------|-----------------|--------|------------|
+| 1–5 | v1.0 | (see snapshot) | Complete | 2026-04-26 |
+| 6–8 | v1.1 | (see snapshot) | Complete | 2026-04-26 |
+| 9 | v1.2 | 2/2 | Complete | 2026-04-26 |
+| 10, 10.1, 11 | v1.3 | 3/3 | Complete | 2026-04-26 / 2026-04-28 |
+| 12–13 | v1.4 | 0/? | **Not started** | — |
 
 ---
 
-_Milestone archives: `.planning/milestones/` · Live requirements for the next version are created by `/gsd-new-milestone`._
+_Milestone archives: `.planning/milestones/` · Live requirements: [`REQUIREMENTS.md`](REQUIREMENTS.md)._
