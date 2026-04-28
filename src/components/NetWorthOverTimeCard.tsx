@@ -123,7 +123,7 @@ export function NetWorthOverTimeCard({
         >
           <LineChart
             data={chartData}
-            margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
+            margin={{ top: 8, right: 12, left: 4, bottom: 8 }}
             accessibilityLayer
           >
             <CartesianGrid
@@ -149,7 +149,8 @@ export function NetWorthOverTimeCard({
             <YAxis
               tickLine={false}
               axisLine={false}
-              width={56}
+              width={100}
+              tickMargin={4}
               tickFormatter={v => formatInr0(Number(v))}
             />
             <ChartTooltip
