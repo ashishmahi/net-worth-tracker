@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: — Net worth history
-status: unknown
-last_updated: "2026-04-28T17:11:29.822Z"
-last_activity: 2026-04-26 — `/gsd-execute-phase 10` → `NetWorthPointSchema`, **`ensureNetWorthHistory`**, **`Record snapshot`** on Dashboard (`src/pages/DashboardPage.tsx`).
+status: "v1.3: Phase 11 context gathered; ready to plan chart (NWH-04)."
+last_updated: "2026-04-28T17:15:00.000Z"
+last_activity: 2026-04-28 — `/gsd-discuss-phase 11` → `11-CONTEXT.md` (Recharts+shadcn, layout, empty state, compact tooltips).
 progress:
   total_phases: 3
   completed_phases: 2
   total_plans: 2
   completed_plans: 2
-  percent: 100
+  percent: 67
 ---
 
 ## Project
@@ -22,9 +22,9 @@ progress:
 **Milestone:** v1.3 — **Net worth history** (in progress)  
 **Phase:** **11** — **Net worth chart** (*next* — NWH-04). **Phase 10** (**History & schema**) **implemented** 2026-04-26; **10.1** (JSON import) shipped earlier — re-test **import/export** against `netWorthHistory`. See [ROADMAP](ROADMAP.md).  
 
-**Last activity:** 2026-04-26 — `/gsd-execute-phase 10` → `NetWorthPointSchema`, **`ensureNetWorthHistory`**, **`Record snapshot`** on Dashboard (`src/pages/DashboardPage.tsx`).  
+**Last activity:** 2026-04-28 — **Phase 11** discuss complete: [11-CONTEXT.md](phases/11-net-worth-chart/11-CONTEXT.md) (chart stack, placement, NWH-04 empty state, compact axis/tooltip).  
 
-**Resume from:** `/gsd-plan-phase 11` or `/gsd-discuss-phase 11` → chart + empty state.  
+**Resume from:** `/gsd-plan-phase 11` → research + plans + execute.  
 
 ## Project reference
 
@@ -52,7 +52,7 @@ Velocity: Phase 10 executed same day as planning.
 
 ### Pending todos
 
-- Phase **11** (chart + insufficient-data state).  
+- Phase **11** — run **`/gsd-plan-phase 11`** (optional **`/gsd-ui-phase 11`** if you want a UI-SPEC before plans).  
 
 ### Blockers / concerns
 
