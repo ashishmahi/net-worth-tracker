@@ -2,15 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Multiple commodities
-status: defining_done
-last_updated: "2026-04-28T22:05:00.000Z"
-last_activity: "2026-04-28 — Milestone v1.4 started (COM-01…06); REQUIREMENTS.md + ROADMAP Phases 12–13."
+status: planning_phase_12
+last_updated: "2026-04-28T22:15:00.000Z"
+last_activity: "2026-04-28 — `/gsd-discuss-phase 12`: 12-CONTEXT.md + 12-DISCUSSION-LOG.md committed."
 progress:
   total_phases: 2
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
-  percent: 0
 ---
 
 ## Project
@@ -19,11 +18,11 @@ progress:
 
 ## Current position
 
-**Phase:** Not started (ready to discuss/plan)  
+**Phase:** **12** — Commodities: data & net worth (context complete)  
 **Plan:** —  
-**Status:** Requirements and roadmap defined for **v1.4** — execution starts with **`/gsd-discuss-phase 12`** or **`/gsd-plan-phase 12`**.
+**Status:** **`/gsd-discuss-phase 12`** finished — resume file [`.planning/phases/12-commodities-data-net-worth/12-CONTEXT.md`](phases/12-commodities-data-net-worth/12-CONTEXT.md).
 
-**Last activity:** 2026-04-28 — **`/gsd-new-milestone`**: `PROJECT.md`, `REQUIREMENTS.md`, `ROADMAP.md`; v1.3 phase artifacts moved to [`.planning/milestones/v1.3-phases/`](milestones/v1.3-phases/).
+**Last activity:** 2026-04-28 — Phase 12 context captured (silver grams + `silverPricePerGram`, sibling `assets.otherCommodities`, dashboard totals + snapshot rules).
 
 ## Project reference
 
@@ -39,7 +38,7 @@ See [`.planning/PROJECT.md`](PROJECT.md) — **Current Milestone: v1.4 Multiple 
 
 ### Decisions
 
-- v1.3 phase directories archived to `.planning/milestones/v1.3-phases/` (10, 10.1, 11) so `.planning/phases/` is clear for **12+**.
+- **Phase 12:** See [`.planning/phases/12-commodities-data-net-worth/12-CONTEXT.md`](phases/12-commodities-data-net-worth/12-CONTEXT.md) — **D-01–D-10** (schema, migration, `otherCommodities` totals, snapshot exclusion parity with gold).
 
 ### Roadmap evolution
 
@@ -47,7 +46,7 @@ See [`.planning/PROJECT.md`](PROJECT.md) — **Current Milestone: v1.4 Multiple 
 
 ### Pending todos
 
-*None — run phase 12 when ready.*
+*None.*
 
 ### Blockers / concerns
 
@@ -63,6 +62,6 @@ See [`.planning/PROJECT.md`](PROJECT.md) — **Current Milestone: v1.4 Multiple 
 
 ## Session continuity
 
-**Completed through:** v1.3 shipped; planning **v1.4** initialized.
+**Completed through:** Phase **12** discussion → **CONTEXT** ready.
 
-**Next:** `/gsd-discuss-phase 12` or `/gsd-plan-phase 12` for **Commodities: data & net worth**.
+**Next:** `/gsd-plan-phase 12` — implement COM-01, COM-02, COM-05 per context.
