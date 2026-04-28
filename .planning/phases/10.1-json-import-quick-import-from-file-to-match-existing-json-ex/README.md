@@ -5,4 +5,4 @@
 
 **Next:** `/gsd-discuss-phase 10.1` or `/gsd-plan-phase 10.1`
 
-See also: [`.planning/REQUIREMENTS.md`](../REQUIREMENTS.md) · [`.planning/ROADMAP.md`](../ROADMAP.md)
+See also (archived at v1.3 close): [`v1.3-REQUIREMENTS.md`](../../milestones/v1.3-REQUIREMENTS.md) · [`.planning/ROADMAP.md`](../ROADMAP.md)

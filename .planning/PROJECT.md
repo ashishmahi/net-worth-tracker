@@ -15,25 +15,18 @@ See **total net worth in INR** at a glance, with **live BTC and FX** where appli
 | **v1.0** | Core wealth tracker: assets, property, dashboard, data model, live prices | 2026-04-26 |
 | **v1.1** | **UX Polish** — manual dark mode; mobile offcanvas + top bar; page headers; scrollable sheets; property table on small screens | 2026-04-26 |
 | **v1.2** | **Data reset** — Settings danger zone, AlertDialog, `createInitialData()` + `saveData` full clear, inline error/success; `localStorage` theme unchanged | 2026-04-26 |
+| **v1.3** | **Net worth history** — persisted **`netWorthHistory`**, **Record snapshot**, **JSON import** (10.1), **Dashboard** line/area chart + **NWH-04** empty state | 2026-04-28 |
 
-Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.2-ROADMAP.md` and matching `*-REQUIREMENTS.md` archives. Phase work: `v1.0-phases/`, `v1.1-phases/`, `v1.2-phases/` under [`.planning/milestones/`](milestones/).  
+Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.3-ROADMAP.md` and matching `*-REQUIREMENTS.md` archives. Phase work: `v1.0-phases/`, `v1.1-phases/`, `v1.2-phases/` under [`.planning/milestones/`](milestones/); v1.3 phases remain under [`.planning/phases/`](phases/) (`10-*`, `10.1-*`, `11-*`).
 
-## Current Milestone: v1.3 Net worth history
+## Next milestone
 
-**Goal:** Let users **see how total net worth changes over time** with stored **snapshots** and a **chart** on the dashboard — still local-only, same `data.json` persistence.
+**Requirements and roadmap for v1.4+ are not initialized.** Run **`/gsd-new-milestone`** to define the next goal, refresh `.planning/REQUIREMENTS.md`, and extend [`.planning/ROADMAP.md`](ROADMAP.md).
 
-**Target features:**
+## Current state (post–v1.3)
 
-- **Persisted history** — append-only list of point-in-time totals in INR (with timestamps), validated in the `AppData` / Zod schema, cleared on full data reset.  
-- **Record snapshot** — user-triggered action (e.g. on Dashboard) to save the current computed total.  
-- **Chart** — simple line (or area) view of history on the dashboard; empty state when there is not enough data to draw a trend.  
-- **Schema evolution** — extend the data model in a way that **migrates** existing `data.json` (no data loss for users upgrading from v1.2).  
-- **JSON import** (Phase 10.1) — import a wealth JSON file from disk (paired with **Export**); see **IMP-01** / **IMP-02** in `REQUIREMENTS.md`.  
-
-## Current state (milestone v1.3)
-
-- **v1.3 (net worth history):** Implemented — persisted **`netWorthHistory`**, **Record snapshot**, **JSON import** (10.1), and **Dashboard net worth over time** chart with **NWH-04** empty state (Phase **11**).  
-- **App:** `npm run dev` — run **`/gsd-complete-milestone`** when ready to archive v1.3 planning artifacts.  
+- **Shipped v1.3:** Net worth **snapshots** in `data.json`, **Record snapshot**, **Import JSON** (Settings), **Net worth over time** chart (Recharts + shadcn charts), migration from v1.2, reset clears history.  
+- **App:** `npm run dev` — local-only; persistence unchanged (`GET`/`POST` `/api/data`).  
 
 ## Requirements
 
@@ -59,7 +52,7 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.2-ROADMAP.md` and matc
 
 ### Validated (v1.3)
 
-- [x] **NWH-01–NWH-05**, **IMP-01–IMP-02** — per live [REQUIREMENTS.md](REQUIREMENTS.md) (snapshots, chart, reset, migration, import); validated through Phases **10**, **10.1**, **11** (2026-04-28).    
+- [x] **NWH-01–NWH-05**, **IMP-01–IMP-02** — per [`.planning/milestones/v1.3-REQUIREMENTS.md`](milestones/v1.3-REQUIREMENTS.md) (snapshots, chart, reset, migration, import); Phases **10**, **10.1**, **11** (2026-04-28).  
 
 ### Deferred (post–v1.3 unless pulled in)
 
@@ -82,7 +75,7 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.2-ROADMAP.md` and matc
 - **Theme:** `localStorage` `theme` (`light` | `dark`); FOUC script in `index.html`  
 - **Layout:** `AppSidebar` offcanvas on mobile; `MobileTopBar`; `PageHeader` on section pages; asset sheets with scroll regions + property milestone horizontal scroll on narrow widths  
 - **Data reset (v1.2):** `createInitialData()` in `AppDataContext`; shadcn `AlertDialog` in Settings danger zone  
-- **Planned (v1.3):** net worth snapshot list + chart (e.g. Recharts) on dashboard — details in `REQUIREMENTS.md` / `ROADMAP.md`  
+- **Net worth history (v1.3):** `netWorthHistory` list; **Recharts** + `--chart-*` tokens; import uses same `DataSchema` path as boot  
 
 ## Constraints
 
@@ -99,7 +92,7 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.2-ROADMAP.md` and matc
 | GSD planning | Phased delivery in `.planning/` | Ongoing |
 | v1.1 scope | `localStorage` only for theme; no `data.json` version bump for theme | ✓ Shipped |
 | v1.2 data reset | Danger zone + dialog + `createInitialData` + `saveData`; no theme wipe | ✓ v1.2 2026-04-26 |
-| v1.3 | Snapshot list + chart on dashboard; import; migration; NWH-04 empty state | ✓ Phases 10–11, 2026-04-28 |  
+| v1.3 | Snapshot list + chart on dashboard; import; migration; NWH-04 empty state | ✓ v1.3 2026-04-28 |  
 
 ## Evolution
 
@@ -108,11 +101,11 @@ This file is updated at **milestone completion** to avoid drift between plans an
 **After each milestone** (via `/gsd-complete-milestone`): full review, validated requirements, key decisions, context.
 
 <details>
-<summary>Previous “Current milestone” blurb (v1.2 in planning — superseded 2026-04-26)</summary>  
+<summary>Previous “Current milestone” blurb (v1.3 in planning — superseded 2026-04-28)</summary>  
 
-*Former text referred to v1.2 as in planning with DATA-01–03 in **Active**; those are now in **Validated (v1.2)**.*  
+*Former text referred to v1.3 deliverables in **Active**; those are now in **Validated (v1.3)** and the roadmap/requirements live under `milestones/v1.3-*`.*  
 
 </details>  
 
 ---
-*Last updated: 2026-04-28 — **v1.3** implemented (history, import, net worth chart).*  
+*Last updated: 2026-04-28 after **v1.3** milestone archive (history, import, net worth chart).*  

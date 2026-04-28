@@ -1,5 +1,41 @@
 # Project retrospective — Personal Wealth Tracker
 
+## Milestone: v1.3 — Net worth history
+
+**Shipped:** 2026-04-28  
+**Phases:** 10, 10.1 (INSERTED), 11 | **Plans:** 3  
+
+### What was built
+
+- **Phase 10:** `netWorthHistory` on `DataSchema`, migration via **`ensureNetWorthHistory`**, **`Record snapshot`** on Dashboard with eligibility gates, reset clears history.  
+- **Phase 10.1:** Settings **Import from JSON** with **`parseAppDataFromImport`**, confirm **`AlertDialog`**, inline errors (**IMP-01** / **IMP-02**).  
+- **Phase 11:** **`NetWorthOverTimeCard`** (Recharts + shadcn **`ChartContainer`**), **`--chart-*`** tokens, chart only when **≥2** snapshots (**NWH-04**).  
+
+### What worked
+
+- Reusing the **same** validation path for import as boot load kept **`DataSchema`** the single gate.  
+- **Gating** record snapshot on data readiness avoided bogus totals in history.  
+- **shadcn** chart primitives + small custom tooltip matched existing Dashboard density.  
+
+### What was inefficient
+
+- **`gsd-sdk query milestone.complete`** again failed (`version required for phases archive`); close-out duplicated the **manual** v1.2 path (archives + `git rm` REQUIREMENTS + tag).  
+
+### Patterns established
+
+- **Sorted ascending** history for chart X-axis; **branch** UI: empty Card vs chart when `<2` points.  
+- **Import:** destructive replace behind explicit dialog — consistent with data-reset severity.  
+
+### Key lessons
+
+- For **time series**, **two points** is the minimum honest trend; a single point stays in **guidance** empty state, not a flat line.  
+
+### Cost observations
+
+- Not recorded.  
+
+---
+
 ## Milestone: v1.2 — Data reset
 
 **Shipped:** 2026-04-26  
@@ -80,3 +116,4 @@
 | v1.0 | 1–5 | Core app + v1.0 requirements snapshot |
 | v1.1 | 6–8 | UX and mobile; no `data.json` schema change for theme |
 | v1.2 | 9 | Data reset; `createInitialData` + AlertDialog; no new API routes |
+| v1.3 | 10, 10.1, 11 | Net worth history + JSON import + chart; same `/api/data` surface |

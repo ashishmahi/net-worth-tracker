@@ -1,7 +1,28 @@
 # Milestone history — Personal Wealth Tracker
 
-**Pre-ship audit (v1.2):** No `v1.2-MILESTONE-AUDIT.md` on file — optional `/gsd-audit-milestone` before high-stakes releases.  
-**Open-artifact audit at v1.2 close:** all clear (2026-04-26).
+**Pre-ship audit (v1.3):** No `v1.3-MILESTONE-AUDIT.md` on file — optional `/gsd-audit-milestone` before high-stakes releases.  
+**Open-artifact audit at v1.3 close:** all clear (2026-04-28).
+
+## v1.3 Net worth history (Shipped: 2026-04-28)
+
+**Scope:** Phases 10, 10.1 (INSERTED), 11.  
+**Phase directories:** `.planning/phases/10-history-schema/`, `.planning/phases/10.1-json-import-quick-import-from-file-to-match-existing-json-ex/`, `.planning/phases/11-net-worth-chart/`
+
+**Phases completed:** 3 phases, 3 plans
+
+**Key accomplishments:**
+
+- **`netWorthHistory`** on **`DataSchema`**, **`ensureNetWorthHistory`**, **`createInitialData()`** with `[]`; **`Record snapshot`** on Dashboard with **`canRecordSnapshot`** gates; full reset clears history (**NWH-01–05** record + reset path).
+- Settings **Import from JSON** paired with Export: **`parseAppDataFromImport`**, **`AlertDialog`** before replace, inline errors (**IMP-01**, **IMP-02**).
+- **Recharts** + shadcn **`ChartContainer`**, **`NetWorthOverTimeCard`** with **`--chart-*`** theme tokens; chart only when **≥2** snapshots; **NWH-04** insufficient-data state (**Phase 11**).
+
+**Roadmap / requirements:** [`.planning/milestones/v1.3-ROADMAP.md`](milestones/v1.3-ROADMAP.md), [`v1.3-REQUIREMENTS.md`](milestones/v1.3-REQUIREMENTS.md)
+
+**Tooling note:** `gsd-sdk query milestone.complete` returned `version required for phases archive`; v1.3 archives and `REQUIREMENTS.md` removal were completed manually (same as v1.2 close).
+
+**Known deferred (unchanged):** Phase 05 UAT, Phase 01 `human_needed` — see `STATE.md` **Deferred items**.
+
+---
 
 ## v1.2 Data reset (Shipped: 2026-04-26)
 
@@ -67,4 +88,4 @@
 
 **Known deferred (unchanged from v1.0 close):** Phase 05 UAT, Phase 01 `human_needed` — see `STATE.md` **Deferred items**.
 
-_Next: `/gsd-new-milestone` to plan the following version (e.g. v1.3)._
+_Next: `/gsd-new-milestone` to plan the following version (e.g. v1.4)._
