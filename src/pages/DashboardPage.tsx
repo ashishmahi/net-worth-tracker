@@ -24,6 +24,7 @@ import {
 } from '@/lib/dashboardCalcs'
 import { roundCurrency } from '@/lib/financials'
 import type { AppData } from '@/types/data'
+import { NetWorthOverTimeCard } from '@/components/NetWorthOverTimeCard'
 
 const ROW_LABEL: Record<DashboardCategoryKey, string> = {
   gold: 'Gold',
@@ -229,6 +230,11 @@ export function DashboardPage({
               </p>
             ) : null}
           </div>
+
+          <NetWorthOverTimeCard
+            history={data.netWorthHistory}
+            recordBlockedMessage={recordBlockedMessage}
+          />
 
           <Card>
             <CardContent className="p-0">
