@@ -61,7 +61,7 @@
 
 **Depends on:** Phase 10.1 (import can ship before history in theory, but v1.3 order is 10 → 10.1 → 11; chart must follow any schema field added in 10/10.1).  
 
-**Plans:** TBD — `/gsd-plan-phase 11`  
+**Plans:** [11-01-PLAN.md](phases/11-net-worth-chart/11-01-PLAN.md) (1/1)  
 
 ---
 
@@ -100,7 +100,7 @@
 | 9       | v1.2       | 2/2            | Complete     | 2026-04-26 |
 | **10. History & schema** | **v1.3**  | 1/1  | Complete | 2026-04-26  |
 | **10.1. JSON import**  | **v1.3**  | 1/1  | *Complete* | 2026-04-26  |
-| **11. Net worth chart**  | **v1.3**  | TBD  | *Not started* | —  |
+| **11. Net worth chart**  | **v1.3**  | 1/1 planned  | *Ready to execute* | —  |
 
 ---
 
