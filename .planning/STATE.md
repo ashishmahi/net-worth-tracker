@@ -3,13 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: — Multiple commodities
 status: planning
-last_updated: "2026-04-30T18:53:52.002Z"
-last_activity: 2026-04-30 — Phase 12 context revised (discriminated union: standard silver + freeform manual assets, silver live fetch via metals API, single 'Commodities' dashboard row).
+last_updated: "2026-04-30T19:19:44.920Z"
+last_activity: "2026-04-30 — Phase 12 context revised (discriminated union: standard silver + freeform manual assets, silver live fetch via metals API, single 'Commodities' dashboard row)."
 progress:
   total_phases: 1
   completed_phases: 0
-  total_plans: 0
+  total_plans: 3
   completed_plans: 0
+  percent: 0
 ---
 
 ## Project
@@ -65,3 +66,5 @@ See [`.planning/PROJECT.md`](PROJECT.md) — **Current Milestone: v1.4 Multiple 
 **Completed through:** Phase **12** discussion → **CONTEXT** ready.
 
 **Next:** `/gsd-plan-phase 12` — implement COM-01, COM-02, COM-05 per context.
+
+**Planned Phase:** 12 (commodities-data-net-worth) — 3 plans — 2026-04-30T19:19:44.915Z
