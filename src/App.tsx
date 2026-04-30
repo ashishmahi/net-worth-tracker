@@ -6,6 +6,7 @@ import { MobileTopBar } from '@/components/MobileTopBar'
 import { useAppData } from '@/context/AppDataContext'
 import { DashboardPage } from '@/pages/DashboardPage'
 import { GoldPage } from '@/pages/GoldPage'
+import { CommoditiesPage } from '@/pages/CommoditiesPage'
 import { MutualFundsPage } from '@/pages/MutualFundsPage'
 import { StocksPage } from '@/pages/StocksPage'
 import { BitcoinPage } from '@/pages/BitcoinPage'
@@ -16,6 +17,7 @@ import { SettingsPage } from '@/pages/SettingsPage'
 
 const SECTION_COMPONENTS: Record<Exclude<SectionKey, 'dashboard'>, React.ComponentType> = {
   gold: GoldPage,
+  commodities: CommoditiesPage,
   mutualFunds: MutualFundsPage,
   stocks: StocksPage,
   bitcoin: BitcoinPage,

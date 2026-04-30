@@ -15,6 +15,7 @@ import { useTheme } from '@/context/ThemeContext'
 export type SectionKey =
   | 'dashboard'
   | 'gold'
+  | 'commodities'
   | 'mutualFunds'
   | 'stocks'
   | 'bitcoin'
@@ -26,6 +27,7 @@ export type SectionKey =
 const NAV_ITEMS: { key: SectionKey; label: string }[] = [
   { key: 'dashboard', label: 'Dashboard' },
   { key: 'gold', label: 'Gold' },
+  { key: 'commodities', label: 'Commodities' },
   { key: 'mutualFunds', label: 'Mutual Funds' },
   { key: 'stocks', label: 'Stocks' },
   { key: 'bitcoin', label: 'Bitcoin' },
