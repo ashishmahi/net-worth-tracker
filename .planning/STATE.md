@@ -1,12 +1,12 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.4
-milestone_name: Multiple commodities
-status: planning_phase_12
-last_updated: "2026-04-28T22:15:00.000Z"
-last_activity: "2026-04-28 — `/gsd-discuss-phase 12` (update): CONTEXT revised — silver+platinum kinds, `commodityPrices` map, D-11 no live fetch, D-12 scope split."
+milestone_name: — Multiple commodities
+status: planning
+last_updated: "2026-04-30T18:53:52.002Z"
+last_activity: 2026-04-30 — Phase 12 context revised (discriminated union: standard silver + freeform manual assets, silver live fetch via metals API, single 'Commodities' dashboard row).
 progress:
-  total_phases: 2
+  total_phases: 1
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -22,7 +22,7 @@ progress:
 **Plan:** —  
 **Status:** **`/gsd-discuss-phase 12`** finished — resume file [`.planning/phases/12-commodities-data-net-worth/12-CONTEXT.md`](phases/12-commodities-data-net-worth/12-CONTEXT.md).
 
-**Last activity:** 2026-04-28 — Phase 12 context captured (silver grams + `silverPricePerGram`, sibling `assets.otherCommodities`, dashboard totals + snapshot rules).
+**Last activity:** 2026-04-30 — Phase 12 context revised (discriminated union: standard silver + freeform manual assets, silver live fetch via metals API, single 'Commodities' dashboard row).
 
 ## Project reference
 
