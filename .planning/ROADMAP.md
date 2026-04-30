@@ -6,33 +6,15 @@
 - ✅ **v1.1 — UX Polish** — Shipped 2026-04-26 — [full snapshot](milestones/v1.1-ROADMAP.md)  
 - ✅ **v1.2 — Data reset** — Shipped 2026-04-26 — [full snapshot](milestones/v1.2-ROADMAP.md)  
 - ✅ **v1.3 — Net worth history** — Shipped 2026-04-28 — [full snapshot](milestones/v1.3-ROADMAP.md)  
-- **v1.4 — Multiple commodities** — **Phases 12–13 complete** (ready to ship / close milestone) — [REQUIREMENTS](REQUIREMENTS.md) · Phase artifacts: [`.planning/phases/`](phases/)
+- ✅ **v1.4 — Multiple commodities** — Shipped 2026-05-01 — [full snapshot](milestones/v1.4-ROADMAP.md)
 
-**Phase numbering:** v1.3 ended at **Phase 11** (with **10.1** inserted). **v1.4** continues from **Phase 12**.
+**Phase numbering:** v1.4 ended at **Phase 13**. The **next milestone** continues numbering from **Phase 14** unless you explicitly reset phase numbers in GSD.
 
 ---
 
-## v1.4 — Multiple commodities
+## Next milestone
 
-**Goal:** Support **commodities beyond gold** (at least one additional type, e.g. silver) with **manual INR pricing**, **migration** from current `data.json`, and **full** net worth / snapshot / import / reset alignment.
-
-| Phase | Name | Goal | Requirements | Success criteria (high level) |
-|-------|------|------|----------------|------------------------------|
-| **12** | Commodities: data & net worth | Schema, migration, Settings pricing model, `createInitialData`, import validation, reset; **`dashboardCalcs`** + snapshot path include new commodities | COM-01, COM-02, COM-05 | Existing files load; new installs initialize; totals + snapshots reflect commodities; missing prices match gold-style null behavior; import + reset consistent with schema |
-| **13** | Commodities: product UX | CRUD UI for non-gold lines; Dashboard + nav; preserve gold karat/gram UX (**COM-06**) | COM-03, COM-04, COM-06 | User can manage non-gold items; dashboard/nav understandable; gold behavior unchanged for legacy data |
-
-**Depends on:** v1.3 shipped (history + import patterns). **Phase 12** before **13** (UI needs model + calcs).
-
-**Phase 12 — plans:** 3
-
-- [x] 12-01-PLAN.md — Schema + migration + Vitest setup + init/import/reset alignment
-- [x] 12-02-PLAN.md — Silver price fetch (priceApi.ts) + LivePricesContext silver channel
-- [x] 12-03-PLAN.md — dashboardCalcs (sumCommoditiesInr) + DashboardPage Commodities row
-
-**Phase 13 — plans:** 2
-
-- [x] 13-01-PLAN.md — Sidebar + `CommoditiesPage` CRUD (silver + manual), empty state (COM-03, COM-06)
-- [x] 13-02-PLAN.md — Dashboard `NAV_KEY` + wayfinding copy + Gold row cosmetics (COM-04, COM-06)
+Planning has not started for **v1.5+**. Run **`/gsd-new-milestone`** to capture goals, requirements, and phases.
 
 ---
 
@@ -70,6 +52,15 @@
 
 </details>  
 
+<details>
+<summary>✅ v1.4 — Multiple commodities (Phases 12–13) — SHIPPED 2026-05-01</summary>  
+
+- [x] **Phase 12: Commodities data & net worth** (3/3) — 2026-04-30  
+- [x] **Phase 13: Commodities product UX** (2/2) — 2026-05-01  
+- Artifacts: [`.planning/milestones/v1.4-phases/12-commodities-data-net-worth/`](milestones/v1.4-phases/12-commodities-data-net-worth/) · [`.planning/milestones/v1.4-phases/13-commodities-product-ux/`](milestones/v1.4-phases/13-commodities-product-ux/) · [v1.4-ROADMAP](milestones/v1.4-ROADMAP.md) · [v1.4-REQUIREMENTS](milestones/v1.4-REQUIREMENTS.md)  
+
+</details>  
+
 ---
 
 ## Progress
@@ -80,9 +71,9 @@
 | 6–8 | v1.1 | (see snapshot) | Complete | 2026-04-26 |
 | 9 | v1.2 | 2/2 | Complete | 2026-04-26 |
 | 10, 10.1, 11 | v1.3 | 3/3 | Complete | 2026-04-26 / 2026-04-28 |
-| 12 | v1.4 | 3/3 | **Complete** | 2026-04-30 |
-| 13 | v1.4 | 2/2 | **Complete** | 2026-05-01 |
+| 12 | v1.4 | 3/3 | Complete | 2026-04-30 |
+| 13 | v1.4 | 2/2 | Complete | 2026-05-01 |
 
 ---
 
-_Milestone archives: `.planning/milestones/` · Live requirements: [`REQUIREMENTS.md`](REQUIREMENTS.md)._
+_Milestone archives: `.planning/milestones/` · **Next requirements:** `/gsd-new-milestone`._

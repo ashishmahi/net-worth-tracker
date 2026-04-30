@@ -1,5 +1,29 @@
 # Milestone history — Personal Wealth Tracker
 
+**Pre-ship audit (v1.4):** No `v1.4-MILESTONE-AUDIT.md` on file — optional `/gsd-audit-milestone` before high-stakes releases.  
+**Open-artifact audit at v1.4 close:** all clear (2026-05-01).
+
+## v1.4 Multiple commodities (Shipped: 2026-05-01)
+
+**Scope:** Phases 12–13.  
+**Phase directories:** [`.planning/milestones/v1.4-phases/12-commodities-data-net-worth/`](milestones/v1.4-phases/12-commodities-data-net-worth/), [`.planning/milestones/v1.4-phases/13-commodities-product-ux/`](milestones/v1.4-phases/13-commodities-product-ux/)
+
+**Phases completed:** 2 phases, 5 plans
+
+**Key accomplishments:**
+
+- **`otherCommodities`** on **`DataSchema`** with migration / **`ensureOtherCommodities`**; silver USD via **`priceApi`** + **`LivePricesContext`**; **`sumCommoditiesInr`** + Dashboard **Commodities** row with null-total semantics when rates or prices missing (**COM-01**, **COM-02**, **COM-05**).
+- **`CommoditiesPage`**: RHF + Zod CRUD for standard silver (grams) and manual ₹ lines; rich empty state; read-only live INR hint (**COM-03**).
+- Sidebar **`commodities`** section; Dashboard **`NAV_KEY.otherCommodities` → `commodities`**; exclusion / blocked-snapshot copy; **Gold** row cosmetic pairing only (**COM-04**, **COM-06**).
+
+**Roadmap / requirements:** [`.planning/milestones/v1.4-ROADMAP.md`](milestones/v1.4-ROADMAP.md), [`v1.4-REQUIREMENTS.md`](milestones/v1.4-REQUIREMENTS.md)
+
+**Tooling note:** `gsd-sdk query milestone.complete` returned `version required for phases archive`; v1.4 archives, phase moves, and `REQUIREMENTS.md` removal follow the same **manual** path as v1.2 / v1.3 close.
+
+**Known deferred (unchanged):** Phase 05 UAT, Phase 01 `human_needed` — see `STATE.md` **Deferred items**.
+
+---
+
 **Pre-ship audit (v1.3):** No `v1.3-MILESTONE-AUDIT.md` on file — optional `/gsd-audit-milestone` before high-stakes releases.  
 **Open-artifact audit at v1.3 close:** all clear (2026-04-28).
 
@@ -88,4 +112,4 @@
 
 **Known deferred (unchanged from v1.0 close):** Phase 05 UAT, Phase 01 `human_needed` — see `STATE.md` **Deferred items**.
 
-_Next: `/gsd-new-milestone` to plan the following version (e.g. v1.4)._
+_Next: `/gsd-new-milestone` to plan **v1.5+** (requirements + roadmap)._

@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.4
-milestone_name: — Multiple commodities
-status: milestone_complete
-last_updated: "2026-05-01T00:05:00.000Z"
+milestone: pending
+milestone_name: Next version (define via /gsd-new-milestone)
+status: between_milestones
+last_updated: "2026-05-01T12:00:00.000Z"
 last_activity: 2026-05-01
 progress:
-  total_phases: 2
-  completed_phases: 2
-  total_plans: 5
-  completed_plans: 5
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 ## Project
@@ -19,32 +19,31 @@ progress:
 
 ## Current position
 
-**Phase:** **13** — Commodities: product UX — **complete**  
-**Plan:** 2/2 plans executed  
-**Status:** v1.4 milestone phases **12–13** complete — ready to ship or plan next milestone.
+**Milestone:** **v1.4 shipped** (2026-05-01) — archived under [`.planning/milestones/v1.4-ROADMAP.md`](milestones/v1.4-ROADMAP.md).  
+**Next:** Define **v1.5+** via **`/gsd-new-milestone`** (new `REQUIREMENTS.md`, roadmap phases from **14** onward unless reset).
 
-**Last activity:** 2026-05-01 — `/gsd-execute-phase 13` (inline): CommoditiesPage + Dashboard NAV/copy + SUMMARYs.
+**Last activity:** 2026-05-01 — `/gsd-complete-milestone 1.4` (manual archive: phases → `v1.4-phases/`, roadmap/requirements snapshots).
 
 ## Project reference
 
-See [`.planning/PROJECT.md`](PROJECT.md) — **Current Milestone: v1.4 Multiple commodities**.
+See [`.planning/PROJECT.md`](PROJECT.md) — **between milestones**; last shipped **v1.4 Multiple commodities**.
 
-**Core value:** Total net worth in INR; **v1.4** adds **non-gold commodities** with manual pricing and full aggregation.
+**Core value:** Total net worth in INR; non-gold commodities (silver + manual ₹ lines) integrated with net worth, snapshots, import, and reset.
 
 ## Performance metrics
 
-*(Reset when first v1.4 phase completes.)*
+*(Reset when the next milestone opens.)*
 
 ## Accumulated context
 
 ### Decisions
 
-- **Phase 12:** See [`.planning/phases/12-commodities-data-net-worth/12-CONTEXT.md`](phases/12-commodities-data-net-worth/12-CONTEXT.md) — **D-01–D-10** (schema, migration, `otherCommodities` totals, snapshot exclusion parity with gold).
-- **Phase 13:** See [`.planning/phases/13-commodities-product-ux/13-CONTEXT.md`](phases/13-commodities-product-ux/13-CONTEXT.md) — **D-01–D-07** (Commodities nav page, Dashboard links, CRUD discretion, COM-06 split).
+- **Phase 12:** See [`.planning/milestones/v1.4-phases/12-commodities-data-net-worth/12-CONTEXT.md`](milestones/v1.4-phases/12-commodities-data-net-worth/12-CONTEXT.md) — **D-01–D-10** (schema, migration, `otherCommodities` totals, snapshot exclusion parity with gold).
+- **Phase 13:** See [`.planning/milestones/v1.4-phases/13-commodities-product-ux/13-CONTEXT.md`](milestones/v1.4-phases/13-commodities-product-ux/13-CONTEXT.md) — **D-01–D-07** (Commodities nav page, Dashboard links, CRUD discretion, COM-06 split).
 
 ### Roadmap evolution
 
-- **v1.4** roadmap: Phases **12** (data, migration, calcs, import/reset) and **13** (UI, dashboard, gold preserved). See [`.planning/ROADMAP.md`](ROADMAP.md).
+- **v1.4** archived: [`.planning/milestones/v1.4-ROADMAP.md`](milestones/v1.4-ROADMAP.md). Live roadmap: [`.planning/ROADMAP.md`](ROADMAP.md) (**next milestone** not yet planned).
 
 ### Pending todos
 
@@ -64,8 +63,8 @@ See [`.planning/PROJECT.md`](PROJECT.md) — **Current Milestone: v1.4 Multiple 
 
 ## Session continuity
 
-**Completed through:** Phase **13** executed — COM-03 / COM-04 / COM-06 UX delivered.
+**Completed through:** Milestone **v1.4** closed — phases **12–13** archived.
 
-**Next:** Ship v1.4, `/gsd-complete-milestone`, or `/gsd-new-milestone` as needed.
+**Next:** `/gsd-new-milestone` — then phased work under [`.planning/phases/`](phases/).
 
-**Last completed phase:** 13 (commodities-product-ux) — 2026-05-01
+**Last shipped milestone:** v1.4 — 2026-05-01

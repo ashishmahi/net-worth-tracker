@@ -1,5 +1,40 @@
 # Project retrospective — Personal Wealth Tracker
 
+## Milestone: v1.4 — Multiple commodities
+
+**Shipped:** 2026-05-01  
+**Phases:** 12–13 | **Plans:** 5  
+
+### What was built
+
+- **Phase 12:** `otherCommodities` on **`DataSchema`** + migration; **`ensureOtherCommodities`**; silver **`fetchSilverUsdPerOz`** + **`LivePricesContext`** channel; **`sumCommoditiesInr`** / **`calcCategoryTotals`**; Dashboard **Commodities** row + exclusion parity with gold-style nulls.  
+- **Phase 13:** **`CommoditiesPage`** (silver + manual CRUD, empty state); sidebar **`commodities`**; Dashboard **`NAV_KEY`** + copy; **Gold** row cosmetic icon only (**COM-06**).  
+
+### What worked
+
+- Reusing **`dashboardCalcs`** semantics for a **read-only** approximate INR hint on the silver sheet kept display aligned with totals without persisting derived values.  
+- **Discriminated** commodity items (**standard** vs **manual**) matched Zod + TS cleanly for CRUD.  
+
+### What was inefficient
+
+- **`gsd-sdk query milestone.complete`** still fails (`version required for phases archive`); close-out repeated the **manual** archive + **`git rm` REQUIREMENTS** path.  
+- **`roadmap.analyze`** did not enumerate v1.4 phases in this environment; readiness was verified from **SUMMARY** files and roadmap instead.  
+
+### Patterns established
+
+- **Partial commodity totals:** manual lines always count; standard silver counts only when INR/gram is derivable — mirrors gold “needs Settings/live inputs” behavior.  
+- **Section navigation:** Dashboard category rows use **`NAV_KEY`** aligned with **`AppSidebar` `SectionKey`** (commodities row → **`commodities`** page).  
+
+### Key lessons
+
+- **COM-06 / gold boundary:** Shipping non-gold commodities as **new surfaces** (`CommoditiesPage`, `otherCommodities`) avoided risky migration away from karat + **`goldPrices`**.  
+
+### Cost observations
+
+- Not recorded.  
+
+---
+
 ## Milestone: v1.3 — Net worth history
 
 **Shipped:** 2026-04-28  

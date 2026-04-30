@@ -59,7 +59,7 @@ This phase delivers **product UX** for **non-gold** commodity holdings: **add / 
 
 ### Prior phase (data & behavior)
 
-- `.planning/phases/12-commodities-data-net-worth/12-CONTEXT.md` — discriminated union, silver live pricing, combined Commodities row math, Phase 12 vs 13 split
+- `.planning/milestones/v1.4-phases/12-commodities-data-net-worth/12-CONTEXT.md` — discriminated union, silver live pricing, combined Commodities row math, Phase 12 vs 13 split
 
 ### Product / code conventions
 
