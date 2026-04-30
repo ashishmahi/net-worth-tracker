@@ -23,6 +23,13 @@
 
 **Depends on:** v1.3 shipped (history + import patterns). **Phase 12** before **13** (UI needs model + calcs).
 
+**Plans:** 3 plans
+
+Plans:
+- [ ] 12-01-PLAN.md — Schema + migration + Vitest setup + init/import/reset alignment
+- [ ] 12-02-PLAN.md — Silver price fetch (priceApi.ts) + LivePricesContext silver channel
+- [ ] 12-03-PLAN.md — dashboardCalcs (sumCommoditiesInr) + DashboardPage Commodities row
+
 ---
 
 ## Phases (historical)
@@ -69,7 +76,7 @@
 | 6–8 | v1.1 | (see snapshot) | Complete | 2026-04-26 |
 | 9 | v1.2 | 2/2 | Complete | 2026-04-26 |
 | 10, 10.1, 11 | v1.3 | 3/3 | Complete | 2026-04-26 / 2026-04-28 |
-| 12–13 | v1.4 | 0/? | **Not started** | — |
+| 12–13 | v1.4 | 0/3 | **Planning** | — |
 
 ---
 
