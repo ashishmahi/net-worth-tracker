@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: — Multiple commodities
 status: executing
-last_updated: "2026-04-30T19:30:00.000Z"
-last_activity: "2026-04-30 — Phase 12 executed (schema, silver API, dashboard commodities)."
+last_updated: "2026-04-30T23:59:00.000Z"
+last_activity: 2026-04-30 — Phase 13 discuss-phase complete; 13-CONTEXT.md captured.
 progress:
   total_phases: 2
   completed_phases: 1
@@ -21,9 +21,9 @@ progress:
 
 **Phase:** **13** — Commodities: product UX (next)  
 **Plan:** —  
-**Status:** Phase **12** complete — data model, live silver channel, dashboard row + tests shipped.
+**Status:** Phase **13** context gathered — ready for `/gsd-plan-phase 13`.
 
-**Last activity:** 2026-04-30 — Phase 12 execution finished; roadmap plans 12-01–12-03 checked off.
+**Last activity:** 2026-04-30 — `/gsd-discuss-phase 13` produced **13-CONTEXT.md** (nav, CRUD discretion, dashboard, gold boundary, empty state).
 
 ## Project reference
 
@@ -40,6 +40,7 @@ See [`.planning/PROJECT.md`](PROJECT.md) — **Current Milestone: v1.4 Multiple 
 ### Decisions
 
 - **Phase 12:** See [`.planning/phases/12-commodities-data-net-worth/12-CONTEXT.md`](phases/12-commodities-data-net-worth/12-CONTEXT.md) — **D-01–D-10** (schema, migration, `otherCommodities` totals, snapshot exclusion parity with gold).
+- **Phase 13:** See [`.planning/phases/13-commodities-product-ux/13-CONTEXT.md`](phases/13-commodities-product-ux/13-CONTEXT.md) — **D-01–D-07** (Commodities nav page, Dashboard links, CRUD discretion, COM-06 split).
 
 ### Roadmap evolution
 
@@ -63,8 +64,8 @@ See [`.planning/PROJECT.md`](PROJECT.md) — **Current Milestone: v1.4 Multiple 
 
 ## Session continuity
 
-**Completed through:** Phase **12** executed — COM-01 / COM-02 / COM-05 (see `12-VERIFICATION.md`).
+**Completed through:** Phase **13** discuss — context locked for COM-03 / COM-04 / COM-06 UX.
 
-**Next:** `/gsd-discuss-phase 13` or `/gsd-plan-phase 13` — commodities CRUD UI (COM-03, COM-04, COM-06).
+**Next:** `/gsd-plan-phase 13` — then execute.
 
-**Last completed phase:** 12 (commodities-data-net-worth) — 2026-04-30
+**Last completed phase:** 12 (commodities-data-net-worth) — 2026-04-30 *(Phase 13 planning next, not yet executed)*
