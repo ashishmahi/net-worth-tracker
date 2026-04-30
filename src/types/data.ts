@@ -21,6 +21,28 @@ const GoldSchema = z.object({
   items: z.array(GoldItemSchema),
 })
 
+const StandardCommodityItemSchema = BaseItemSchema.extend({
+  type: z.literal('standard'),
+  kind: z.literal('silver'),
+  grams: z.number().nonnegative(),
+})
+
+const ManualCommodityItemSchema = BaseItemSchema.extend({
+  type: z.literal('manual'),
+  label: z.string().min(1),
+  valueInr: z.number().nonnegative(),
+})
+
+export const OtherCommodityItemSchema = z.discriminatedUnion('type', [
+  StandardCommodityItemSchema,
+  ManualCommodityItemSchema,
+])
+
+const OtherCommoditiesSchema = z.object({
+  updatedAt: z.string().datetime(),
+  items: z.array(OtherCommodityItemSchema),
+})
+
 // D-21: MF platforms with name, currentValue, monthlySip
 const MfPlatformSchema = BaseItemSchema.extend({
   name: z.string(),
@@ -124,6 +146,7 @@ export const DataSchema = z.object({
   settings: SettingsSchema,
   assets: z.object({
     gold: GoldSchema,
+    otherCommodities: OtherCommoditiesSchema,
     mutualFunds: MutualFundsSchema,
     stocks: StocksSchema,
     bitcoin: BitcoinSchema,
@@ -137,6 +160,9 @@ export const DataSchema = z.object({
 // Single source of truth for TypeScript types — never define interfaces separately
 export type AppData = z.infer<typeof DataSchema>
 export type BaseItem = z.infer<typeof BaseItemSchema>
+export type OtherCommodityItem = z.infer<typeof OtherCommodityItemSchema>
+export type StandardCommodityItem = z.infer<typeof StandardCommodityItemSchema>
+export type ManualCommodityItem = z.infer<typeof ManualCommodityItemSchema>
 export type GoldItem = z.infer<typeof GoldItemSchema>
 export type MfPlatform = z.infer<typeof MfPlatformSchema>
 export type StockPlatform = z.infer<typeof StockPlatformSchema>

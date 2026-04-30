@@ -71,6 +71,7 @@ export function createInitialData(): AppData {
     settings: { updatedAt: now },
     assets: {
       gold: { updatedAt: now, items: [] },
+      otherCommodities: { updatedAt: now, items: [] },
       mutualFunds: { updatedAt: now, platforms: [] },
       stocks: { updatedAt: now, platforms: [] },
       bitcoin: { updatedAt: now, quantity: 0 },
