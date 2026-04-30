@@ -48,13 +48,35 @@ function ensureNetWorthHistory(raw: unknown): unknown {
   return raw
 }
 
-/** Same migrate + `DataSchema` path as initial `GET /api/data` load — for import and boot. */
+/** v1.4 files without `assets.otherCommodities`: default empty block before Zod parse. */
+export function ensureOtherCommodities(raw: unknown): unknown {
+  if (raw === null || typeof raw !== 'object') return raw
+  const o = raw as Record<string, unknown>
+  const assets = o.assets
+  if (!assets || typeof assets !== 'object') return raw
+  const a = assets as Record<string, unknown>
+  if (!('otherCommodities' in a) || a.otherCommodities === undefined) {
+    return {
+      ...o,
+      assets: {
+        ...a,
+        otherCommodities: { updatedAt: nowIso(), items: [] },
+      },
+    }
+  }
+  return raw
+}
+
+/** Same migrate + `DataSchema` path as initial `GET /api/data` load — for import and boot.
+ *  Chain: migrateLegacyBankAccounts → ensureNetWorthHistory → ensureOtherCommodities → safeParse
+ */
 export function parseAppDataFromImport(
   raw: unknown,
 ): { success: true; data: AppData } | { success: false; zodError: ZodError } {
   const migrated = migrateLegacyBankAccounts(raw)
   const withHistory = ensureNetWorthHistory(migrated)
-  const result = DataSchema.safeParse(withHistory)
+  const withCommodities = ensureOtherCommodities(withHistory)
+  const result = DataSchema.safeParse(withCommodities)
   if (result.success) {
     return { success: true, data: result.data }
   }
