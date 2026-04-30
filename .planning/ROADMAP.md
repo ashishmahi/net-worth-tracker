@@ -6,7 +6,7 @@
 - ✅ **v1.1 — UX Polish** — Shipped 2026-04-26 — [full snapshot](milestones/v1.1-ROADMAP.md)  
 - ✅ **v1.2 — Data reset** — Shipped 2026-04-26 — [full snapshot](milestones/v1.2-ROADMAP.md)  
 - ✅ **v1.3 — Net worth history** — Shipped 2026-04-28 — [full snapshot](milestones/v1.3-ROADMAP.md)  
-- **v1.4 — Multiple commodities** — **In build** (Phase 12 complete; Phase 13 planned — ready to execute) — [REQUIREMENTS](REQUIREMENTS.md) · Phase artifacts: [`.planning/phases/`](phases/)
+- **v1.4 — Multiple commodities** — **Phases 12–13 complete** (ready to ship / close milestone) — [REQUIREMENTS](REQUIREMENTS.md) · Phase artifacts: [`.planning/phases/`](phases/)
 
 **Phase numbering:** v1.3 ended at **Phase 11** (with **10.1** inserted). **v1.4** continues from **Phase 12**.
 
@@ -31,8 +31,8 @@
 
 **Phase 13 — plans:** 2
 
-- [ ] 13-01-PLAN.md — Sidebar + `CommoditiesPage` CRUD (silver + manual), empty state (COM-03, COM-06)
-- [ ] 13-02-PLAN.md — Dashboard `NAV_KEY` + wayfinding copy + Gold row cosmetics (COM-04, COM-06)
+- [x] 13-01-PLAN.md — Sidebar + `CommoditiesPage` CRUD (silver + manual), empty state (COM-03, COM-06)
+- [x] 13-02-PLAN.md — Dashboard `NAV_KEY` + wayfinding copy + Gold row cosmetics (COM-04, COM-06)
 
 ---
 
@@ -81,7 +81,7 @@
 | 9 | v1.2 | 2/2 | Complete | 2026-04-26 |
 | 10, 10.1, 11 | v1.3 | 3/3 | Complete | 2026-04-26 / 2026-04-28 |
 | 12 | v1.4 | 3/3 | **Complete** | 2026-04-30 |
-| 13 | v1.4 | 2 planned | **Ready to execute** | — |
+| 13 | v1.4 | 2/2 | **Complete** | 2026-05-01 |
 
 ---
 
