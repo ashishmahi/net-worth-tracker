@@ -1,8 +1,10 @@
 import type { AppData } from '@/types/data'
 import { roundCurrency } from '@/lib/financials'
+import { TROY_OZ_TO_GRAMS } from '@/lib/priceApi'
 
 export const DASHBOARD_CATEGORY_ORDER = [
   'gold',
+  'otherCommodities',
   'mutualFunds',
   'stocks',
   'bitcoin',
@@ -15,6 +17,7 @@ export type DashboardCategoryKey = (typeof DASHBOARD_CATEGORY_ORDER)[number]
 
 export type CategoryTotals = {
   gold: number | null
+  otherCommodities: number | null
   mutualFunds: number
   stocks: number
   bitcoin: number | null
@@ -37,6 +40,33 @@ function sumGoldInr(data: AppData): number | null {
     const line = roundCurrency(item.grams * price)
     sum = roundCurrency(sum + line)
   }
+  return sum
+}
+
+/** Sum INR for the 'otherCommodities' dashboard row (manual always; silver when priced). */
+export function sumCommoditiesInr(
+  data: AppData,
+  silverInrPerGram: number | null
+): number | null {
+  const items = data.assets.otherCommodities.items
+  if (items.length === 0) return 0
+
+  let sum = 0
+  let hasPricedItems = false
+
+  for (const item of items) {
+    if (item.type === 'manual') {
+      sum = roundCurrency(sum + roundCurrency(item.valueInr))
+      hasPricedItems = true
+    } else if (item.type === 'standard') {
+      if (silverInrPerGram != null && item.grams > 0) {
+        sum = roundCurrency(sum + roundCurrency(item.grams * silverInrPerGram))
+        hasPricedItems = true
+      }
+    }
+  }
+
+  if (!hasPricedItems) return null
   return sum
 }
 
@@ -100,10 +130,21 @@ function sumRetirement(data: AppData): number {
  */
 export function calcCategoryTotals(
   data: AppData,
-  live: { btcUsd: number | null; usdInr: number | null; aedInr: number | null }
+  live: {
+    btcUsd: number | null
+    usdInr: number | null
+    aedInr: number | null
+    silverUsdPerOz: number | null
+  }
 ): CategoryTotals {
+  const silverInrPerGram =
+    live.silverUsdPerOz != null && live.usdInr != null
+      ? roundCurrency((live.silverUsdPerOz / TROY_OZ_TO_GRAMS) * live.usdInr)
+      : null
+
   return {
     gold: sumGoldInr(data),
+    otherCommodities: sumCommoditiesInr(data, silverInrPerGram),
     mutualFunds: sumMutualFunds(data),
     stocks: sumStocks(data),
     bitcoin: sumBitcoinInr(data, live),
