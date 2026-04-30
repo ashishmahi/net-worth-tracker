@@ -28,6 +28,7 @@ import { NetWorthOverTimeCard } from '@/components/NetWorthOverTimeCard'
 
 const ROW_LABEL: Record<DashboardCategoryKey, string> = {
   gold: 'Gold',
+  otherCommodities: 'Commodities',
   mutualFunds: 'Mutual Funds',
   stocks: 'Stocks',
   bitcoin: 'Bitcoin',
@@ -38,6 +39,7 @@ const ROW_LABEL: Record<DashboardCategoryKey, string> = {
 
 const NAV_KEY: Record<DashboardCategoryKey, SectionKey> = {
   gold: 'gold',
+  otherCommodities: 'settings',
   mutualFunds: 'mutualFunds',
   stocks: 'stocks',
   bitcoin: 'bitcoin',
@@ -57,6 +59,7 @@ function inrNoDecimals(n: number) {
 function noHoldingsYet(data: AppData): boolean {
   return (
     data.assets.gold.items.length === 0 &&
+    data.assets.otherCommodities.items.length === 0 &&
     data.assets.mutualFunds.platforms.length === 0 &&
     data.assets.stocks.platforms.length === 0 &&
     data.assets.bitcoin.quantity === 0 &&
@@ -82,18 +85,32 @@ export function DashboardPage({
     aedInr,
     btcLoading,
     forexLoading,
+    silverUsdPerOz,
+    silverLoading,
+    silverError,
   } = useLivePrices()
 
   const totals = useMemo(
-    () => calcCategoryTotals(data, { btcUsd, usdInr, aedInr }),
-    [data, btcUsd, usdInr, aedInr]
+    () =>
+      calcCategoryTotals(data, {
+        btcUsd,
+        usdInr,
+        aedInr,
+        silverUsdPerOz,
+      }),
+    [data, btcUsd, usdInr, aedInr, silverUsdPerOz]
   )
   const grandTotal = useMemo(() => sumForNetWorth(totals), [totals])
   const hasBtcHolding = data.assets.bitcoin.quantity > 0
   const hasAed =
     data.assets.bankSavings.accounts.some(a => a.currency === 'AED')
+  const hasSilverItems = data.assets.otherCommodities.items.some(
+    i => i.type === 'standard'
+  )
   const showNetWorthSkeleton =
-    (hasBtcHolding && btcLoading) || (hasAed && forexLoading)
+    (hasBtcHolding && btcLoading) ||
+    (hasAed && forexLoading) ||
+    (hasSilverItems && silverLoading)
   const aedRateMissing = hasAedAccountsWithMissingRate(data, aedInr)
 
   const excludedNames: string[] = []
@@ -102,6 +119,9 @@ export function DashboardPage({
   }
   if (totals.bitcoin === null && hasBtcHolding) {
     excludedNames.push('Bitcoin')
+  }
+  if (totals.otherCommodities === null) {
+    excludedNames.push('Commodities')
   }
 
   const showExclusionNote = excludedNames.length > 0
@@ -248,6 +268,7 @@ export function DashboardPage({
                 const isGoldRow = key === 'gold'
                 const isBtcRow = key === 'bitcoin'
                 const isBankRow = key === 'bankSavings'
+                const isCommoditiesRow = key === 'otherCommodities'
 
                 const valueSkeleton = isBtcRow
                   ? btcLoading || (forexLoading && hasBtcHolding)
@@ -274,6 +295,13 @@ export function DashboardPage({
                             Set gold prices in Settings
                           </span>
                         )}
+                        {isCommoditiesRow &&
+                          silverError != null &&
+                          hasSilverItems && (
+                            <span className="text-xs text-muted-foreground block mt-0.5">
+                              Silver price unavailable — silver items excluded
+                            </span>
+                          )}
                       </div>
                       <div className="flex items-center gap-3 shrink-0 text-right">
                         {valueSkeleton ? (
