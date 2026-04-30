@@ -10,8 +10,10 @@ import React, {
 import {
   BTC_TTL_MS,
   FOREX_TTL_MS,
+  SILVER_TTL_MS,
   fetchBtcUsd,
   fetchForex,
+  fetchSilverUsdPerOz,
 } from '../lib/priceApi'
 
 /**
@@ -36,6 +38,9 @@ export type LivePricesContextValue = {
   usdInr: number | null
   /** Effective AED→INR (INR per 1 AED). */
   aedInr: number | null
+  silverUsdPerOz: number | null
+  silverLoading: boolean
+  silverError: string | null
   btcLoading: boolean
   forexLoading: boolean
   btcError: string | null
@@ -61,6 +66,12 @@ export function LivePricesProvider({ children }: { children: React.ReactNode }) 
   const liveAedInrRef = useRef<number | null>(null)
 
   const [session, setSession] = useState<SessionOverrides>({})
+
+  const [liveSilver, setLiveSilver] = useState<number | null>(null)
+  const lastSilverAt = useRef<number>(0)
+  const liveSilverRef = useRef<number | null>(null)
+  const [silverLoading, setSilverLoading] = useState(false)
+  const [silverError, setSilverError] = useState<string | null>(null)
 
   const [btcLoading, setBtcLoading] = useState(false)
   const [forexLoading, setForexLoading] = useState(false)
@@ -118,20 +129,42 @@ export function LivePricesProvider({ children }: { children: React.ReactNode }) 
     }
   }, [])
 
+  const runSilverFetch = useCallback(async (force: boolean) => {
+    const now = Date.now()
+    const hasLive = liveSilverRef.current != null
+    const stale = force || now - lastSilverAt.current >= SILVER_TTL_MS || !hasLive
+    if (!stale) return
+    setSilverLoading(true)
+    setSilverError(null)
+    try {
+      const v = await fetchSilverUsdPerOz()
+      liveSilverRef.current = v
+      setLiveSilver(v)
+      lastSilverAt.current = Date.now()
+    } catch (e) {
+      setSilverError(e instanceof Error ? e.message : 'Silver price fetch failed')
+    } finally {
+      setSilverLoading(false)
+    }
+  }, [])
+
   const refetch = useCallback(() => {
     void runBtcFetch(true)
     void runForexFetch(true)
-  }, [runBtcFetch, runForexFetch])
+    void runSilverFetch(true)
+  }, [runBtcFetch, runForexFetch, runSilverFetch])
 
   const refetchStale = useCallback(() => {
     void runBtcFetch(false)
     void runForexFetch(false)
-  }, [runBtcFetch, runForexFetch])
+    void runSilverFetch(false)
+  }, [runBtcFetch, runForexFetch, runSilverFetch])
 
   useEffect(() => {
     void runBtcFetch(true)
     void runForexFetch(true)
-  }, [runBtcFetch, runForexFetch])
+    void runSilverFetch(true)
+  }, [runBtcFetch, runForexFetch, runSilverFetch])
 
   useEffect(() => {
     const id = window.setInterval(() => {
@@ -163,6 +196,9 @@ export function LivePricesProvider({ children }: { children: React.ReactNode }) 
       btcUsd: session.btcUsd ?? liveBtc,
       usdInr: session.usdInr ?? liveUsdInr,
       aedInr: session.aedInr ?? liveAedInr,
+      silverUsdPerOz: liveSilver,
+      silverLoading,
+      silverError,
       btcLoading,
       forexLoading,
       btcError,
@@ -176,6 +212,9 @@ export function LivePricesProvider({ children }: { children: React.ReactNode }) 
       liveBtc,
       liveUsdInr,
       liveAedInr,
+      liveSilver,
+      silverLoading,
+      silverError,
       btcLoading,
       forexLoading,
       btcError,
