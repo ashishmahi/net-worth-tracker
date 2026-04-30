@@ -1,5 +1,5 @@
 import { useMemo, useState, useCallback } from 'react'
-import { AlertCircle, Loader2 } from 'lucide-react'
+import { AlertCircle, Coins, Loader2 } from 'lucide-react'
 import { PageHeader } from '@/components/PageHeader'
 import {
   Card,
@@ -39,7 +39,7 @@ const ROW_LABEL: Record<DashboardCategoryKey, string> = {
 
 const NAV_KEY: Record<DashboardCategoryKey, SectionKey> = {
   gold: 'gold',
-  otherCommodities: 'settings',
+  otherCommodities: 'commodities',
   mutualFunds: 'mutualFunds',
   stocks: 'stocks',
   bitcoin: 'bitcoin',
@@ -107,6 +107,9 @@ export function DashboardPage({
   const hasSilverItems = data.assets.otherCommodities.items.some(
     i => i.type === 'standard'
   )
+  const hasManualCommodityItems = data.assets.otherCommodities.items.some(
+    i => i.type === 'manual'
+  )
   const showNetWorthSkeleton =
     (hasBtcHolding && btcLoading) ||
     (hasAed && forexLoading) ||
@@ -148,7 +151,7 @@ export function DashboardPage({
       ? showNetWorthSkeleton
         ? 'Waiting for live prices…'
         : excludedNames.length > 0
-          ? 'Cannot record while part of your net worth is excluded from the total. Use Settings for gold prices or wait for rates.'
+          ? 'Cannot record while part of your net worth is excluded from the total. Open Commodities for silver/manual holdings, Settings for gold prices, or wait for live rates.'
           : hasAedAccountsWithMissingRate(data, aedInr)
             ? 'Cannot record while AED balances lack an exchange rate.'
             : null
@@ -209,9 +212,24 @@ export function DashboardPage({
             {showExclusionNote && (
               <CardContent className="px-6 pt-0 pb-6 text-sm text-muted-foreground">
                 Total excludes {excludedNames.join(' and ')} because a rate or
-                price is missing. Open{' '}
-                <span className="font-medium text-foreground">Settings</span> to
-                set gold prices or check live rates, or try again later.
+                price is missing.
+                {excludedNames.includes('Commodities') ? (
+                  <>
+                    {' '}
+                    Use{' '}
+                    <span className="font-medium text-foreground">Commodities</span>{' '}
+                    for silver grams and manual ₹ values;{' '}
+                    <span className="font-medium text-foreground">Settings</span>{' '}
+                    for gold prices; wait or refresh for live silver/forex when needed.
+                  </>
+                ) : (
+                  <>
+                    {' '}
+                    Open{' '}
+                    <span className="font-medium text-foreground">Settings</span>{' '}
+                    to set gold prices or check live rates, or try again later.
+                  </>
+                )}
               </CardContent>
             )}
           </Card>
@@ -284,7 +302,17 @@ export function DashboardPage({
                       aria-label={`Open ${label} section`}
                     >
                       <div className="min-w-0">
-                        <span className="text-sm font-semibold block">{label}</span>
+                        {isGoldRow ? (
+                          <span className="flex items-center gap-2 text-sm font-semibold">
+                            <Coins
+                              className="size-4 shrink-0 text-muted-foreground"
+                              aria-hidden
+                            />
+                            {label}
+                          </span>
+                        ) : (
+                          <span className="text-sm font-semibold block">{label}</span>
+                        )}
                         {isBankRow && aedRateMissing && (
                           <span className="text-xs text-muted-foreground block mt-0.5">
                             AED balances excluded — rate unavailable
@@ -300,6 +328,13 @@ export function DashboardPage({
                           hasSilverItems && (
                             <span className="text-xs text-muted-foreground block mt-0.5">
                               Silver price unavailable — silver items excluded
+                            </span>
+                          )}
+                        {isCommoditiesRow &&
+                          hasSilverItems &&
+                          hasManualCommodityItems && (
+                            <span className="text-xs text-muted-foreground block mt-0.5">
+                              Includes silver & manual
                             </span>
                           )}
                       </div>
