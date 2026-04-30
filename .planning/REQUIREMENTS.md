@@ -14,9 +14,9 @@
 
 ### Commodities — data & net worth
 
-- [ ] **COM-01**: The persisted model supports **at least one** commodity type **in addition to gold** (e.g. silver), with **user-entered holdings** (weight or quantity per agreed units) and **manual INR pricing** configured in **Settings** (or an equivalent single place), stored under `data.json` with **backward-compatible migration** from files that only have today’s gold shape.  
-- [ ] **COM-02**: **Net worth** and **“Record snapshot”** use the **same** aggregate definition as today and **include** all commodity holdings; when required prices are missing, behavior matches existing patterns (**null / incomplete** category behavior, consistent with gold without `goldPrices`).  
-- [ ] **COM-05**: **JSON export/import**, **`createInitialData`**, and **full data reset** stay aligned with **Zod `DataSchema`**: new commodity fields are **validated** on import, **initialized** for new installs, and **cleared** on the existing danger-zone reset path.
+- [x] **COM-01**: The persisted model supports **at least one** commodity type **in addition to gold** (e.g. silver), with **user-entered holdings** (weight or quantity per agreed units) and **manual INR pricing** configured in **Settings** (or an equivalent single place), stored under `data.json` with **backward-compatible migration** from files that only have today’s gold shape. *(Phase 12 — standard silver + manual items; live silver USD via API; Settings pricing for manual lines.)*  
+- [x] **COM-02**: **Net worth** and **“Record snapshot”** use the **same** aggregate definition as today and **include** all commodity holdings; when required prices are missing, behavior matches existing patterns (**null / incomplete** category behavior, consistent with gold without `goldPrices`). *(Phase 12 — `sumCommoditiesInr`, Dashboard row, exclusion note.)*  
+- [x] **COM-05**: **JSON export/import**, **`createInitialData`**, and **full data reset** stay aligned with **Zod `DataSchema`**: new commodity fields are **validated** on import, **initialized** for new installs, and **cleared** on the existing danger-zone reset path. *(Phase 12 — `ensureOtherCommodities`, tests.)*
 
 ### Commodities — product UX
 
@@ -48,9 +48,9 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| COM-01 | 12 | Pending |
-| COM-02 | 12 | Pending |
-| COM-05 | 12 | Pending |
+| COM-01 | 12 | Done |
+| COM-02 | 12 | Done |
+| COM-05 | 12 | Done |
 | COM-03 | 13 | Pending |
 | COM-04 | 13 | Pending |
 | COM-06 | 13 | Pending |

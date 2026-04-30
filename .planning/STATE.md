@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: — Multiple commodities
-status: planning
-last_updated: "2026-04-30T19:19:44.920Z"
-last_activity: "2026-04-30 — Phase 12 context revised (discriminated union: standard silver + freeform manual assets, silver live fetch via metals API, single 'Commodities' dashboard row)."
+status: executing
+last_updated: "2026-04-30T19:30:00.000Z"
+last_activity: "2026-04-30 — Phase 12 executed (schema, silver API, dashboard commodities)."
 progress:
-  total_phases: 1
-  completed_phases: 0
+  total_phases: 2
+  completed_phases: 1
   total_plans: 3
-  completed_plans: 0
-  percent: 0
+  completed_plans: 3
+  percent: 50
 ---
 
 ## Project
@@ -19,11 +19,11 @@ progress:
 
 ## Current position
 
-**Phase:** **12** — Commodities: data & net worth (context complete)  
+**Phase:** **13** — Commodities: product UX (next)  
 **Plan:** —  
-**Status:** **`/gsd-discuss-phase 12`** finished — resume file [`.planning/phases/12-commodities-data-net-worth/12-CONTEXT.md`](phases/12-commodities-data-net-worth/12-CONTEXT.md).
+**Status:** Phase **12** complete — data model, live silver channel, dashboard row + tests shipped.
 
-**Last activity:** 2026-04-30 — Phase 12 context revised (discriminated union: standard silver + freeform manual assets, silver live fetch via metals API, single 'Commodities' dashboard row).
+**Last activity:** 2026-04-30 — Phase 12 execution finished; roadmap plans 12-01–12-03 checked off.
 
 ## Project reference
 
@@ -63,8 +63,8 @@ See [`.planning/PROJECT.md`](PROJECT.md) — **Current Milestone: v1.4 Multiple 
 
 ## Session continuity
 
-**Completed through:** Phase **12** discussion → **CONTEXT** ready.
+**Completed through:** Phase **12** executed — COM-01 / COM-02 / COM-05 (see `12-VERIFICATION.md`).
 
-**Next:** `/gsd-plan-phase 12` — implement COM-01, COM-02, COM-05 per context.
+**Next:** `/gsd-discuss-phase 13` or `/gsd-plan-phase 13` — commodities CRUD UI (COM-03, COM-04, COM-06).
 
-**Planned Phase:** 12 (commodities-data-net-worth) — 3 plans — 2026-04-30T19:19:44.915Z
+**Last completed phase:** 12 (commodities-data-net-worth) — 2026-04-30

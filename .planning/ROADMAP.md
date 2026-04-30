@@ -6,7 +6,7 @@
 - ✅ **v1.1 — UX Polish** — Shipped 2026-04-26 — [full snapshot](milestones/v1.1-ROADMAP.md)  
 - ✅ **v1.2 — Data reset** — Shipped 2026-04-26 — [full snapshot](milestones/v1.2-ROADMAP.md)  
 - ✅ **v1.3 — Net worth history** — Shipped 2026-04-28 — [full snapshot](milestones/v1.3-ROADMAP.md)  
-- **v1.4 — Multiple commodities** — **In planning / build** — [REQUIREMENTS](REQUIREMENTS.md) · Phase artifacts: [`.planning/phases/`](phases/) (as created)
+- **v1.4 — Multiple commodities** — **In build** (Phase 12 complete; Phase 13 UX next) — [REQUIREMENTS](REQUIREMENTS.md) · Phase artifacts: [`.planning/phases/`](phases/)
 
 **Phase numbering:** v1.3 ended at **Phase 11** (with **10.1** inserted). **v1.4** continues from **Phase 12**.
 
@@ -26,9 +26,9 @@
 **Plans:** 3 plans
 
 Plans:
-- [ ] 12-01-PLAN.md — Schema + migration + Vitest setup + init/import/reset alignment
-- [ ] 12-02-PLAN.md — Silver price fetch (priceApi.ts) + LivePricesContext silver channel
-- [ ] 12-03-PLAN.md — dashboardCalcs (sumCommoditiesInr) + DashboardPage Commodities row
+- [x] 12-01-PLAN.md — Schema + migration + Vitest setup + init/import/reset alignment
+- [x] 12-02-PLAN.md — Silver price fetch (priceApi.ts) + LivePricesContext silver channel
+- [x] 12-03-PLAN.md — dashboardCalcs (sumCommoditiesInr) + DashboardPage Commodities row
 
 ---
 
@@ -76,7 +76,8 @@ Plans:
 | 6–8 | v1.1 | (see snapshot) | Complete | 2026-04-26 |
 | 9 | v1.2 | 2/2 | Complete | 2026-04-26 |
 | 10, 10.1, 11 | v1.3 | 3/3 | Complete | 2026-04-26 / 2026-04-28 |
-| 12–13 | v1.4 | 0/3 | **Planning** | — |
+| 12 | v1.4 | 3/3 | **Complete** | 2026-04-30 |
+| 13 | v1.4 | — | **Planning** | — |
 
 ---
 

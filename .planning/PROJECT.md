@@ -31,10 +31,11 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.3-ROADMAP.md` and matc
 
 **Requirements:** [`.planning/REQUIREMENTS.md`](REQUIREMENTS.md) · **Roadmap:** [`.planning/ROADMAP.md`](ROADMAP.md) (Phases **12–13**).
 
-## Current state (post–v1.3, planning v1.4)
+## Current state (post–Phase 12, v1.4 in progress)
 
 - **Shipped v1.3:** Net worth **snapshots** in `data.json`, **Record snapshot**, **Import JSON** (Settings), **Net worth over time** chart (Recharts + shadcn charts), migration from v1.2, reset clears history.  
-- **App:** `npm run dev` — local-only; persistence unchanged (`GET`/`POST` `/api/data`).  
+- **Phase 12 (2026-04-30):** `otherCommodities` on `DataSchema`, migration on import, Vitest unit tests, silver spot via `priceApi` + `LivePricesContext`, **Commodities** dashboard row with partial-total semantics.  
+- **App:** `npm run dev` — local-only; persistence unchanged (`GET`/`POST` `/api/data`). **`npm test`** runs Vitest.  
 
 ## Requirements
 
@@ -62,9 +63,13 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.3-ROADMAP.md` and matc
 
 - [x] **NWH-01–NWH-05**, **IMP-01–IMP-02** — per [`.planning/milestones/v1.3-REQUIREMENTS.md`](milestones/v1.3-REQUIREMENTS.md) (snapshots, chart, reset, migration, import); Phases **10**, **10.1**, **11** (2026-04-28).  
 
-### Active (v1.4 — in progress)
+### Validated (v1.4 — Phase 12)
 
-- [ ] **COM-01 … COM-06** — multiple commodities (gold + at least one other); see [`.planning/REQUIREMENTS.md`](REQUIREMENTS.md).
+- [x] **COM-01**, **COM-02**, **COM-05** — data model, net worth/snapshot alignment, import/reset/schema (see [`.planning/phases/12-commodities-data-net-worth/12-VERIFICATION.md`](phases/12-commodities-data-net-worth/12-VERIFICATION.md)).
+
+### Active (v1.4 — Phase 13 next)
+
+- [ ] **COM-03**, **COM-04**, **COM-06** — commodity CRUD UI, nav/dashboard polish, preserve gold UX; see [`.planning/REQUIREMENTS.md`](REQUIREMENTS.md).
 
 ### Deferred (post–v1.4 unless pulled in)
 
@@ -122,4 +127,4 @@ This file is updated at **milestone completion** to avoid drift between plans an
 </details>  
 
 ---
-*Last updated: 2026-04-28 — **v1.4** milestone opened (multi-commodity requirements + roadmap).*  
+*Last updated: 2026-04-30 — **v1.4** Phase 12 complete (commodities data + net worth); Phase 13 next.*  
