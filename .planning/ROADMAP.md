@@ -7,14 +7,86 @@
 - ✅ **v1.2 — Data reset** — Shipped 2026-04-26 — [full snapshot](milestones/v1.2-ROADMAP.md)  
 - ✅ **v1.3 — Net worth history** — Shipped 2026-04-28 — [full snapshot](milestones/v1.3-ROADMAP.md)  
 - ✅ **v1.4 — Multiple commodities** — Shipped 2026-05-01 — [full snapshot](milestones/v1.4-ROADMAP.md)
+- 🔄 **v1.5 — Debt & Liabilities** — In progress
 
-**Phase numbering:** v1.4 ended at **Phase 13**. The **next milestone** continues numbering from **Phase 14** unless you explicitly reset phase numbers in GSD.
+**Phase numbering:** v1.4 ended at **Phase 13**. v1.5 continues from **Phase 14**.
 
 ---
 
-## Next milestone
+## v1.5 — Debt & Liabilities
 
-Planning has not started for **v1.5+**. Run **`/gsd-new-milestone`** to capture goals, requirements, and phases.
+### Phases
+
+- [ ] **Phase 14: Schema & Migration** — Add `liabilities` to `DataSchema`, migration, import/reset parity
+- [ ] **Phase 15: Calculation Utilities** — Pure functions for debt totals, net worth, and debt-to-asset ratio
+- [ ] **Phase 16: Property Liability Enrichment** — Extend property form with lender, EMI, and disambiguation hint
+- [ ] **Phase 17: Liabilities Page CRUD** — New standalone loans page with full add/edit/delete and sidebar nav
+- [ ] **Phase 18: Dashboard & Net Worth Integration** — Wire debt into headline net worth, Total Debt row, and ratio insight
+
+---
+
+## Phase Details
+
+### Phase 14: Schema & Migration
+**Goal**: The app loads and saves a data model that fully represents liabilities — old data files upgrade seamlessly, new snapshots support negative net worth, and import/reset handle the new field
+**Depends on**: Nothing (schema foundation)
+**Requirements**: DEBT-01, DEBT-02, DEBT-03, DEBT-04, DEBT-05, INFRA-01, INFRA-02
+**Success Criteria** (what must be TRUE):
+  1. An existing `data.json` without a `liabilities` key loads without error and gains `liabilities: []`
+  2. `createInitialData()` returns an object that passes `DataSchema.safeParse()` including `liabilities: []`
+  3. Importing a JSON file with a populated `liabilities` array succeeds; importing one without `liabilities` also succeeds via migration
+  4. Data reset clears the liabilities list to `[]`
+  5. A `NetWorthPointSchema` record with a negative `totalInr` passes validation
+**Plans**: TBD
+
+### Phase 15: Calculation Utilities
+**Goal**: All debt arithmetic is implemented as pure, tested functions — no ad-hoc inline math in components
+**Depends on**: Phase 14
+**Requirements**: CALC-01, CALC-02, CALC-03, CALC-04
+**Success Criteria** (what must be TRUE):
+  1. `sumLiabilitiesInr(data)` returns the correct sum of all `outstandingInr` values across standalone liabilities
+  2. `sumAllDebtInr(data)` correctly combines property `outstandingLoanInr` and standalone liability totals without double-counting
+  3. `calcNetWorth(grossAssets, liabilitiesTotal)` subtracts only standalone liabilities from gross assets and returns negative values when debt exceeds assets
+  4. `debtToAssetRatio(totalDebt, grossAssets)` returns 0% when `grossAssets` is 0 and a correct percentage otherwise
+  5. All four functions have unit tests that pass under `npm test`
+**Plans**: TBD
+
+### Phase 16: Property Liability Enrichment
+**Goal**: Users can record lender name and EMI against a property liability, and are guided to the right place for standalone loan tracking
+**Depends on**: Phase 14
+**Requirements**: PROP-01, PROP-02, PROP-03
+**Success Criteria** (what must be TRUE):
+  1. When a user toggles on the liability switch on a property, an optional Lender field appears and can be saved
+  2. When a user toggles on the liability switch on a property, an optional EMI (₹/month) field appears and can be saved
+  3. The property form shows a visible hint directing users to the Liabilities page for loans not tied to a specific property
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 17: Liabilities Page CRUD
+**Goal**: Users can manage a list of standalone loans — add, edit, delete — with clear type labelling and guidance on scope
+**Depends on**: Phase 15
+**Requirements**: LIAB-01, LIAB-02, LIAB-03, LIAB-04, LIAB-05, LIAB-06, INFRA-03
+**Success Criteria** (what must be TRUE):
+  1. User can add a loan with label, lender, outstanding balance, EMI, and loan type; it appears in the list immediately
+  2. User can edit any field of an existing loan and save the changes
+  3. User can delete a loan entry; the entry is removed from the list
+  4. Each loan entry displays a badge showing its loan type (Home / Car / Personal / Other)
+  5. When no loans exist the page shows an empty state with a prompt to add the first loan
+  6. The Liabilities page is reachable from the sidebar navigation
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 18: Dashboard & Net Worth Integration
+**Goal**: The dashboard headline net worth reflects total debt, a Total Debt summary row is visible, and new snapshots capture the true (debt-adjusted) net worth
+**Depends on**: Phase 15, Phase 17
+**Requirements**: DASH-01, DASH-02, DASH-03, DASH-04
+**Success Criteria** (what must be TRUE):
+  1. The dashboard headline net worth figure equals gross assets minus standalone liabilities (decreases when a loan is added)
+  2. A Total Debt row on the dashboard shows the combined property + standalone debt figure and links to the Liabilities page
+  3. A Debt-to-Asset ratio percentage is displayed on the dashboard; it shows 0% when there are no assets
+  4. Recording a new net worth snapshot captures the `calcNetWorth()` result; historical snapshots are unchanged
+**Plans**: TBD
+**UI hint**: yes
 
 ---
 
@@ -65,15 +137,20 @@ Planning has not started for **v1.5+**. Run **`/gsd-new-milestone`** to capture 
 
 ## Progress
 
-| Phase | Milestone | Plans (summary) | Status | Completed |
-|-------|-----------|-----------------|--------|------------|
+| Phase | Milestone | Plans complete | Status | Completed |
+|-------|-----------|----------------|--------|-----------|
 | 1–5 | v1.0 | (see snapshot) | Complete | 2026-04-26 |
 | 6–8 | v1.1 | (see snapshot) | Complete | 2026-04-26 |
 | 9 | v1.2 | 2/2 | Complete | 2026-04-26 |
 | 10, 10.1, 11 | v1.3 | 3/3 | Complete | 2026-04-26 / 2026-04-28 |
 | 12 | v1.4 | 3/3 | Complete | 2026-04-30 |
 | 13 | v1.4 | 2/2 | Complete | 2026-05-01 |
+| 14. Schema & Migration | v1.5 | 0/? | Not started | - |
+| 15. Calculation Utilities | v1.5 | 0/? | Not started | - |
+| 16. Property Liability Enrichment | v1.5 | 0/? | Not started | - |
+| 17. Liabilities Page CRUD | v1.5 | 0/? | Not started | - |
+| 18. Dashboard & Net Worth Integration | v1.5 | 0/? | Not started | - |
 
 ---
 
-_Milestone archives: `.planning/milestones/` · **Next requirements:** `/gsd-new-milestone`._
+_Milestone archives: `.planning/milestones/` · Next: `/gsd-plan-phase 14`_

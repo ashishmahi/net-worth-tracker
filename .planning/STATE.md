@@ -2,11 +2,11 @@
 gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: Debt & Liabilities
-status: defining_requirements
+status: roadmap_ready
 last_updated: "2026-05-01T12:00:00.000Z"
 last_activity: 2026-05-01
 progress:
-  total_phases: 0
+  total_phases: 5
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -19,16 +19,18 @@ progress:
 
 ## Current position
 
-Phase: Not started (defining requirements)
+Phase: 14 (not started)
 Plan: —
-Status: Defining requirements
-Last activity: 2026-05-01 — Milestone v1.5 started
+Status: Roadmap ready — awaiting first plan
+Last activity: 2026-05-01 — v1.5 roadmap created (phases 14–18)
+
+Progress: `░░░░░░░░░░` 0% (0/5 phases)
 
 ## Project reference
 
-See [`.planning/PROJECT.md`](PROJECT.md) — **between milestones**; last shipped **v1.4 Multiple commodities**.
+See [`.planning/PROJECT.md`](PROJECT.md) — **v1.5 in progress**; last shipped **v1.4 Multiple commodities** (2026-05-01).
 
-**Core value:** Total net worth in INR; non-gold commodities (silver + manual ₹ lines) integrated with net worth, snapshots, import, and reset.
+**Core value:** Total net worth in INR — liabilities deducted from gross assets, live prices where applicable, minimal repeated data entry.
 
 ## Performance metrics
 
@@ -43,7 +45,16 @@ See [`.planning/PROJECT.md`](PROJECT.md) — **between milestones**; last shippe
 
 ### Roadmap evolution
 
-- **v1.4** archived: [`.planning/milestones/v1.4-ROADMAP.md`](milestones/v1.4-ROADMAP.md). Live roadmap: [`.planning/ROADMAP.md`](ROADMAP.md) (**next milestone** not yet planned).
+- **v1.4** archived: [`.planning/milestones/v1.4-ROADMAP.md`](milestones/v1.4-ROADMAP.md).
+- **v1.5** live roadmap: [`.planning/ROADMAP.md`](ROADMAP.md) — phases 14–18.
+
+### Key v1.5 design notes
+
+- `liabilities` is a root-level list on `DataSchema` (peer of `assets`), not nested inside `assets`
+- Net worth deducts **standalone liabilities only** (not property `outstandingLoanInr`) — property equity calc (`agreementInr - outstandingLoanInr`) is preserved unchanged
+- `sumAllDebtInr` (display total for "Total Debt" row) combines both property + standalone; `calcNetWorth` uses standalone only
+- `NetWorthPointSchema.totalInr` relaxed from `nonneg` to `z.number()` to support debt-exceeds-assets scenarios
+- Property form gains lender + EMI fields under the existing liability toggle (no schema restructure of property model)
 
 ### Pending todos
 
@@ -51,7 +62,7 @@ See [`.planning/PROJECT.md`](PROJECT.md) — **between milestones**; last shippe
 
 ### Blockers / concerns
 
-*None*
+*None.*
 
 ## Deferred items
 
@@ -65,6 +76,8 @@ See [`.planning/PROJECT.md`](PROJECT.md) — **between milestones**; last shippe
 
 **Completed through:** Milestone **v1.4** closed — phases **12–13** archived.
 
-**Next:** `/gsd-new-milestone` — then phased work under [`.planning/phases/`](phases/).
+**Current milestone:** v1.5 Debt & Liabilities — roadmap ready, phases 14–18 defined.
+
+**Next:** `/gsd-plan-phase 14`
 
 **Last shipped milestone:** v1.4 — 2026-05-01

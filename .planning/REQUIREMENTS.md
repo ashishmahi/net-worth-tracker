@@ -78,37 +78,37 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DEBT-01 | — | Pending |
-| DEBT-02 | — | Pending |
-| DEBT-03 | — | Pending |
-| DEBT-04 | — | Pending |
-| DEBT-05 | — | Pending |
-| CALC-01 | — | Pending |
-| CALC-02 | — | Pending |
-| CALC-03 | — | Pending |
-| CALC-04 | — | Pending |
-| PROP-01 | — | Pending |
-| PROP-02 | — | Pending |
-| PROP-03 | — | Pending |
-| LIAB-01 | — | Pending |
-| LIAB-02 | — | Pending |
-| LIAB-03 | — | Pending |
-| LIAB-04 | — | Pending |
-| LIAB-05 | — | Pending |
-| LIAB-06 | — | Pending |
-| DASH-01 | — | Pending |
-| DASH-02 | — | Pending |
-| DASH-03 | — | Pending |
-| DASH-04 | — | Pending |
-| INFRA-01 | — | Pending |
-| INFRA-02 | — | Pending |
-| INFRA-03 | — | Pending |
+| DEBT-01 | Phase 14 | Pending |
+| DEBT-02 | Phase 14 | Pending |
+| DEBT-03 | Phase 14 | Pending |
+| DEBT-04 | Phase 14 | Pending |
+| DEBT-05 | Phase 14 | Pending |
+| CALC-01 | Phase 15 | Pending |
+| CALC-02 | Phase 15 | Pending |
+| CALC-03 | Phase 15 | Pending |
+| CALC-04 | Phase 15 | Pending |
+| PROP-01 | Phase 16 | Pending |
+| PROP-02 | Phase 16 | Pending |
+| PROP-03 | Phase 16 | Pending |
+| LIAB-01 | Phase 17 | Pending |
+| LIAB-02 | Phase 17 | Pending |
+| LIAB-03 | Phase 17 | Pending |
+| LIAB-04 | Phase 17 | Pending |
+| LIAB-05 | Phase 17 | Pending |
+| LIAB-06 | Phase 17 | Pending |
+| INFRA-03 | Phase 17 | Pending |
+| DASH-01 | Phase 18 | Pending |
+| DASH-02 | Phase 18 | Pending |
+| DASH-03 | Phase 18 | Pending |
+| DASH-04 | Phase 18 | Pending |
+| INFRA-01 | Phase 14 | Pending |
+| INFRA-02 | Phase 14 | Pending |
 
 **Coverage:**
 - v1.5 requirements: 25 total
-- Mapped to phases: 0 (pending roadmap)
-- Unmapped: 25 ⚠️
+- Mapped to phases: 25 ✓
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-05-01*
-*Last updated: 2026-05-01 after initial definition*
+*Last updated: 2026-05-01 — traceability filled after roadmap creation*
