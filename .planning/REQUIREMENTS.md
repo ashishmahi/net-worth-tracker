@@ -22,9 +22,9 @@
 
 ### Property Liability Enrichment
 
-- [ ] **PROP-01**: Property form adds optional `lender` field when liability is toggled on
-- [ ] **PROP-02**: Property form adds optional `emiInr` field when liability is toggled on
-- [ ] **PROP-03**: Property form shows disambiguation hint pointing users to Liabilities page for standalone loan tracking
+- [x] **PROP-01**: Property form adds optional `lender` field when liability is toggled on
+- [x] **PROP-02**: Property form adds optional `emiInr` field when liability is toggled on
+- [x] **PROP-03**: Property form shows disambiguation hint pointing users to Liabilities page for standalone loan tracking
 
 ### Liabilities Page
 
@@ -87,9 +87,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CALC-02 | Phase 15 | Complete |
 | CALC-03 | Phase 15 | Complete |
 | CALC-04 | Phase 15 | Complete |
-| PROP-01 | Phase 16 | Pending |
-| PROP-02 | Phase 16 | Pending |
-| PROP-03 | Phase 16 | Pending |
+| PROP-01 | Phase 16 | Complete |
+| PROP-02 | Phase 16 | Complete |
+| PROP-03 | Phase 16 | Complete |
 | LIAB-01 | Phase 17 | Pending |
 | LIAB-02 | Phase 17 | Pending |
 | LIAB-03 | Phase 17 | Pending |
