@@ -7,11 +7,11 @@
 
 ### Data Model & Migration
 
-- [ ] **DEBT-01**: `LiabilityItemSchema` defined with `id`, `label`, `lender`, `outstandingInr`, `emiInr`, `loanType` (home/car/personal/other), `createdAt`, `updatedAt`
-- [ ] **DEBT-02**: `liabilities: LiabilityItem[]` added at `DataSchema` root (peer of `assets`, not inside it)
-- [ ] **DEBT-03**: `ensureLiabilities()` migration ensures old `data.json` loads with `liabilities: []` without error
-- [ ] **DEBT-04**: `createInitialData()` includes `liabilities: []`; `DataSchema.safeParse(createInitialData())` passes
-- [ ] **DEBT-05**: `NetWorthPointSchema.totalInr` relaxed from `z.number().nonneg()` to `z.number()` to support debt > assets
+- [x] **DEBT-01**: `LiabilityItemSchema` defined with `id`, `label`, `lender`, `outstandingInr`, `emiInr`, `loanType` (home/car/personal/other), `createdAt`, `updatedAt`
+- [x] **DEBT-02**: `liabilities: LiabilityItem[]` added at `DataSchema` root (peer of `assets`, not inside it)
+- [x] **DEBT-03**: `ensureLiabilities()` migration ensures old `data.json` loads with `liabilities: []` without error
+- [x] **DEBT-04**: `createInitialData()` includes `liabilities: []`; `DataSchema.safeParse(createInitialData())` passes
+- [x] **DEBT-05**: `NetWorthPointSchema.totalInr` relaxed from `z.number().nonneg()` to `z.number()` to support debt > assets
 
 ### Calculation Utilities
 
@@ -44,8 +44,8 @@
 
 ### Import / Reset / Nav
 
-- [ ] **INFRA-01**: Import from JSON handles `liabilities` array (validated via `DataSchema`; migration runs before parse)
-- [ ] **INFRA-02**: Data reset (`createInitialData()`) clears liabilities list
+- [x] **INFRA-01**: Import from JSON handles `liabilities` array (validated via `DataSchema`; migration runs before parse)
+- [x] **INFRA-02**: Data reset (`createInitialData()`) clears liabilities list
 - [ ] **INFRA-03**: Liabilities added to sidebar navigation
 
 ## Future Requirements
@@ -78,11 +78,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DEBT-01 | Phase 14 | Pending |
-| DEBT-02 | Phase 14 | Pending |
-| DEBT-03 | Phase 14 | Pending |
-| DEBT-04 | Phase 14 | Pending |
-| DEBT-05 | Phase 14 | Pending |
+| DEBT-01 | Phase 14 | Complete |
+| DEBT-02 | Phase 14 | Complete |
+| DEBT-03 | Phase 14 | Complete |
+| DEBT-04 | Phase 14 | Complete |
+| DEBT-05 | Phase 14 | Complete |
 | CALC-01 | Phase 15 | Pending |
 | CALC-02 | Phase 15 | Pending |
 | CALC-03 | Phase 15 | Pending |
@@ -101,8 +101,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DASH-02 | Phase 18 | Pending |
 | DASH-03 | Phase 18 | Pending |
 | DASH-04 | Phase 18 | Pending |
-| INFRA-01 | Phase 14 | Pending |
-| INFRA-02 | Phase 14 | Pending |
+| INFRA-01 | Phase 14 | Complete |
+| INFRA-02 | Phase 14 | Complete |
 
 **Coverage:**
 - v1.5 requirements: 25 total
