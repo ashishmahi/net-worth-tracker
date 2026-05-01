@@ -91,6 +91,14 @@ export const PropertySchema = z.object({
   items: z.array(PropertyItemSchema),
 })
 
+export const LiabilityItemSchema = BaseItemSchema.extend({
+  label: z.string().min(1),
+  outstandingInr: z.number().nonnegative(),
+  loanType: z.enum(['home', 'car', 'personal', 'other']),
+  lender: z.string().optional(),
+  emiInr: z.number().nonnegative().optional(),
+})
+
 // D-23: Bank accounts — native balance in INR or AED (Phase 3). Legacy `balanceInr` is migrated on load.
 const BankAccountSchema = BaseItemSchema.extend({
   label: z.string(),
@@ -136,7 +144,7 @@ const SettingsSchema = z
 // ── Net worth history (Phase 10: point-in-time snapshots; not the live computed total)
 export const NetWorthPointSchema = z.object({
   recordedAt: z.string().datetime(),
-  totalInr: z.number().nonnegative(),
+  totalInr: z.number(),
 })
 
 // ── Root schema ───────────────────────────────────────────────────────────────
@@ -154,6 +162,7 @@ export const DataSchema = z.object({
     bankSavings: BankSavingsSchema,
     retirement: RetirementSchema,
   }),
+  liabilities: z.array(LiabilityItemSchema),
   netWorthHistory: z.array(NetWorthPointSchema),
 })
 
@@ -171,3 +180,4 @@ export type PropertyMilestoneRow = z.infer<typeof PropertyMilestoneRowSchema>
 export type PropertyItem = z.infer<typeof PropertyItemSchema>
 export type Property = z.infer<typeof PropertySchema>
 export type NetWorthPoint = z.infer<typeof NetWorthPointSchema>
+export type LiabilityItem = z.infer<typeof LiabilityItemSchema>
