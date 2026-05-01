@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: — Debt & Liabilities
-status: ready_to_plan
-last_updated: "2026-05-01T19:03:07.084Z"
+status: planning
+last_updated: "2026-05-01T19:22:52.264Z"
 last_activity: 2026-05-01
 progress:
   total_phases: 5
   completed_phases: 2
   total_plans: 3
   completed_plans: 3
-  percent: 40
+  percent: 100
 ---
 
 ## Project
