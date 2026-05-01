@@ -2,17 +2,25 @@ import type { AppData } from '@/types/data'
 import { roundCurrency } from '@/lib/financials'
 
 export function sumLiabilitiesInr(data: AppData): number {
-  throw new Error('Not implemented')
+  return data.liabilities.reduce(
+    (sum, item) => roundCurrency(sum + roundCurrency(item.outstandingInr)),
+    0
+  )
 }
 
 export function sumAllDebtInr(data: AppData): number {
-  throw new Error('Not implemented')
+  const propertyDebt = data.assets.property.items.reduce((sum, item) => {
+    if (!item.hasLiability) return sum
+    return roundCurrency(sum + roundCurrency(item.outstandingLoanInr ?? 0))
+  }, 0)
+  return roundCurrency(propertyDebt + sumLiabilitiesInr(data))
 }
 
 export function calcNetWorth(grossAssets: number, liabilitiesTotal: number): number {
-  throw new Error('Not implemented')
+  return roundCurrency(grossAssets - liabilitiesTotal)
 }
 
 export function debtToAssetRatio(totalDebt: number, grossAssets: number): number {
-  throw new Error('Not implemented')
+  if (grossAssets === 0) return 0
+  return roundCurrency((totalDebt / grossAssets) * 100)
 }
