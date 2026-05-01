@@ -134,4 +134,4 @@ This file is updated at **milestone completion** to avoid drift between plans an
 </details>  
 
 ---
-*Last updated: 2026-05-01 — **v1.5** milestone started (debt & liabilities).*  
+*Last updated: 2026-05-01 — **Phase 14 complete** — liabilities schema foundation (LiabilityItemSchema, ensureLiabilities(), DataSchema updated, 35 tests pass).*  
