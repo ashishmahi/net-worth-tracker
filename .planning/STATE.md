@@ -1,10 +1,10 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.5
-milestone_name: Debt & Liabilities
-status: roadmap_ready
-last_updated: "2026-05-01T12:00:00.000Z"
-last_activity: 2026-05-01
+milestone_name: — Debt & Liabilities
+status: Roadmap ready — awaiting first plan
+last_updated: "2026-05-01T16:40:32.671Z"
+last_activity: 2026-05-01 — v1.5 roadmap created (phases 14–18)
 progress:
   total_phases: 5
   completed_phases: 0
