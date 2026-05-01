@@ -154,7 +154,7 @@ Plans:
 | 13 | v1.4 | 2/2 | Complete | 2026-05-01 |
 | 14. Schema & Migration | v1.5 | 2/2 | Complete    | 2026-05-01 |
 | 15. Calculation Utilities | v1.5 | 1/1 | Complete    | 2026-05-01 |
-| 16. Property Liability Enrichment | v1.5 | 0/? | Not started | - |
+| 16. Property Liability Enrichment | v1.5 | 0/1 planned | Ready to execute | - |
 | 17. Liabilities Page CRUD | v1.5 | 0/? | Not started | - |
 | 18. Dashboard & Net Worth Integration | v1.5 | 0/? | Not started | - |
 
