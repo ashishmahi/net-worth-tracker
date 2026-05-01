@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { ensureOtherCommodities } from '@/context/AppDataContext'
+import { ensureOtherCommodities, ensureLiabilities } from '@/context/AppDataContext'
 
 const iso = new Date().toISOString()
 
@@ -48,5 +48,24 @@ describe('ensureOtherCommodities', () => {
   it('returns non-object input unchanged', () => {
     expect(ensureOtherCommodities(null)).toBe(null)
     expect(ensureOtherCommodities('x')).toBe('x')
+  })
+})
+
+describe('ensureLiabilities', () => {
+  it('injects liabilities when root has no key', () => {
+    const raw = minimalOldRoot()
+    const out = ensureLiabilities(raw) as Record<string, unknown>
+    expect(Array.isArray(out.liabilities)).toBe(true)
+    expect((out.liabilities as unknown[]).length).toBe(0)
+  })
+
+  it('passes through when liabilities already exists', () => {
+    const raw = { ...minimalOldRoot(), liabilities: [] }
+    expect(ensureLiabilities(raw)).toBe(raw)
+  })
+
+  it('returns non-object input unchanged', () => {
+    expect(ensureLiabilities(null)).toBe(null)
+    expect(ensureLiabilities('x')).toBe('x')
   })
 })
