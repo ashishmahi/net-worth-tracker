@@ -160,4 +160,4 @@ Plans:
 
 ---
 
-_Milestone archives: `.planning/milestones/` · Next: `/gsd-discuss-phase 16` or `/gsd-plan-phase 16`_
+_Milestone archives: `.planning/milestones/` · Next: `/gsd-discuss-phase 17` or `/gsd-plan-phase 17`_
