@@ -67,8 +67,18 @@ export function ensureOtherCommodities(raw: unknown): unknown {
   return raw
 }
 
+/** v1.5 files without `liabilities`: default to `[]` before Zod parse. */
+export function ensureLiabilities(raw: unknown): unknown {
+  if (raw === null || typeof raw !== 'object') return raw
+  const o = raw as Record<string, unknown>
+  if (!('liabilities' in o) || o.liabilities === undefined) {
+    return { ...o, liabilities: [] }
+  }
+  return raw
+}
+
 /** Same migrate + `DataSchema` path as initial `GET /api/data` load — for import and boot.
- *  Chain: migrateLegacyBankAccounts → ensureNetWorthHistory → ensureOtherCommodities → safeParse
+ *  Chain: migrateLegacyBankAccounts → ensureNetWorthHistory → ensureOtherCommodities → ensureLiabilities → safeParse
  */
 export function parseAppDataFromImport(
   raw: unknown,
@@ -76,7 +86,8 @@ export function parseAppDataFromImport(
   const migrated = migrateLegacyBankAccounts(raw)
   const withHistory = ensureNetWorthHistory(migrated)
   const withCommodities = ensureOtherCommodities(withHistory)
-  const result = DataSchema.safeParse(withCommodities)
+  const withLiabilities = ensureLiabilities(withCommodities)
+  const result = DataSchema.safeParse(withLiabilities)
   if (result.success) {
     return { success: true, data: result.data }
   }
@@ -101,6 +112,7 @@ export function createInitialData(): AppData {
       bankSavings: { updatedAt: now, accounts: [] },
       retirement: { updatedAt: now, nps: 0, epf: 0 },
     },
+    liabilities: [],
     netWorthHistory: [],
   }
 }
