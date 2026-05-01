@@ -19,7 +19,7 @@
 
 - [x] **Phase 14: Schema & Migration** (2/2) — 2026-05-01 — Add `liabilities` to `DataSchema`, migration, import/reset parity
 - [x] **Phase 15: Calculation Utilities** (1/1) — 2026-05-01 — Pure functions for debt totals, net worth, and debt-to-asset ratio
-- [ ] **Phase 16: Property Liability Enrichment** — Extend property form with lender, EMI, and disambiguation hint
+- [ ] **Phase 16: Property Liability Enrichment** (0/1) — Extend property form with lender, EMI, and disambiguation hint
 - [ ] **Phase 17: Liabilities Page CRUD** — New standalone loans page with full add/edit/delete and sidebar nav
 - [ ] **Phase 18: Dashboard & Net Worth Integration** — Wire debt into headline net worth, Total Debt row, and ratio insight
 
@@ -64,7 +64,9 @@ Plans:
   1. When a user toggles on the liability switch on a property, an optional Lender field appears and can be saved
   2. When a user toggles on the liability switch on a property, an optional EMI (₹/month) field appears and can be saved
   3. The property form shows a visible hint directing users to the Liabilities page for loans not tied to a specific property
-**Plans**: TBD
+**Plans**: 1 plan
+Plans:
+- [ ] 16-01-PLAN.md — Schema: PropertyItem lender + emiInr; PropertyPage hint + fields + save/load
 **UI hint**: yes
 
 ### Phase 17: Liabilities Page CRUD
