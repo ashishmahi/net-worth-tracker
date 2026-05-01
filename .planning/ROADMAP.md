@@ -17,8 +17,8 @@
 
 ### Phases
 
-- [ ] **Phase 14: Schema & Migration** — Add `liabilities` to `DataSchema`, migration, import/reset parity
-- [ ] **Phase 15: Calculation Utilities** — Pure functions for debt totals, net worth, and debt-to-asset ratio
+- [x] **Phase 14: Schema & Migration** (2/2) — 2026-05-01 — Add `liabilities` to `DataSchema`, migration, import/reset parity
+- [x] **Phase 15: Calculation Utilities** (1/1) — 2026-05-01 — Pure functions for debt totals, net worth, and debt-to-asset ratio
 - [ ] **Phase 16: Property Liability Enrichment** — Extend property form with lender, EMI, and disambiguation hint
 - [ ] **Phase 17: Liabilities Page CRUD** — New standalone loans page with full add/edit/delete and sidebar nav
 - [ ] **Phase 18: Dashboard & Net Worth Integration** — Wire debt into headline net worth, Total Debt row, and ratio insight
@@ -54,7 +54,7 @@ Plans:
   5. All four functions have unit tests that pass under `npm test`
 **Plans**: 1 plan
 Plans:
-- [ ] 15-01-PLAN.md — TDD: implement and test four pure liability calc functions
+- [x] 15-01-PLAN.md — TDD: implement and test four pure liability calc functions
 
 ### Phase 16: Property Liability Enrichment
 **Goal**: Users can record lender name and EMI against a property liability, and are guided to the right place for standalone loan tracking
@@ -151,11 +151,11 @@ Plans:
 | 12 | v1.4 | 3/3 | Complete | 2026-04-30 |
 | 13 | v1.4 | 2/2 | Complete | 2026-05-01 |
 | 14. Schema & Migration | v1.5 | 2/2 | Complete    | 2026-05-01 |
-| 15. Calculation Utilities | v1.5 | 0/1 | Not started | - |
+| 15. Calculation Utilities | v1.5 | 1/1 | Complete    | 2026-05-01 |
 | 16. Property Liability Enrichment | v1.5 | 0/? | Not started | - |
 | 17. Liabilities Page CRUD | v1.5 | 0/? | Not started | - |
 | 18. Dashboard & Net Worth Integration | v1.5 | 0/? | Not started | - |
 
 ---
 
-_Milestone archives: `.planning/milestones/` · Next: `/gsd-execute-phase 15`_
+_Milestone archives: `.planning/milestones/` · Next: `/gsd-discuss-phase 16` or `/gsd-plan-phase 16`_

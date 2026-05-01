@@ -15,10 +15,10 @@
 
 ### Calculation Utilities
 
-- [ ] **CALC-01**: `sumLiabilitiesInr(data)` returns sum of all standalone liability `outstandingInr` values
-- [ ] **CALC-02**: `sumAllDebtInr(data)` returns sum of property `outstandingLoanInr` values + `sumLiabilitiesInr(data)` (display only — no double-counting in net worth)
-- [ ] **CALC-03**: `calcNetWorth(grossAssets, liabilitiesTotal)` = gross assets − standalone liabilities (new headline net worth function)
-- [ ] **CALC-04**: `debtToAssetRatio(totalDebt, grossAssets)` returns percentage; handles division by zero (grossAssets = 0 → 0%)
+- [x] **CALC-01**: `sumLiabilitiesInr(data)` returns sum of all standalone liability `outstandingInr` values
+- [x] **CALC-02**: `sumAllDebtInr(data)` returns sum of property `outstandingLoanInr` values + `sumLiabilitiesInr(data)` (display only — no double-counting in net worth)
+- [x] **CALC-03**: `calcNetWorth(grossAssets, liabilitiesTotal)` = gross assets − standalone liabilities (new headline net worth function)
+- [x] **CALC-04**: `debtToAssetRatio(totalDebt, grossAssets)` returns percentage; handles division by zero (grossAssets = 0 → 0%)
 
 ### Property Liability Enrichment
 
@@ -83,10 +83,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DEBT-03 | Phase 14 | Complete |
 | DEBT-04 | Phase 14 | Complete |
 | DEBT-05 | Phase 14 | Complete |
-| CALC-01 | Phase 15 | Pending |
-| CALC-02 | Phase 15 | Pending |
-| CALC-03 | Phase 15 | Pending |
-| CALC-04 | Phase 15 | Pending |
+| CALC-01 | Phase 15 | Complete |
+| CALC-02 | Phase 15 | Complete |
+| CALC-03 | Phase 15 | Complete |
+| CALC-04 | Phase 15 | Complete |
 | PROP-01 | Phase 16 | Pending |
 | PROP-02 | Phase 16 | Pending |
 | PROP-03 | Phase 16 | Pending |

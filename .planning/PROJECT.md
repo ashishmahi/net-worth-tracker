@@ -68,6 +68,10 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.4-ROADMAP.md` and matc
 - [x] **COM-01**, **COM-02**, **COM-05** — data model, net worth/snapshot alignment, import/reset/schema ([`12-VERIFICATION.md`](milestones/v1.4-phases/12-commodities-data-net-worth/12-VERIFICATION.md)).  
 - [x] **COM-03**, **COM-04**, **COM-06** — commodity CRUD UI, dashboard/nav wayfinding, gold UX preserved ([`13-VERIFICATION.md`](milestones/v1.4-phases/13-commodities-product-ux/13-VERIFICATION.md)).
 
+### Validated (v1.5 — partial)
+
+- [x] **CALC-01–CALC-04** — Pure liability calc helpers in `src/lib/liabilityCalcs.ts` ([`15-VERIFICATION.md`](phases/15-calculation-utilities/15-VERIFICATION.md)); Phase **15** (2026-05-01).
+
 ### Active (v1.5)
 
 - [ ] **DEBT-01** — Property liability enriched with lender, outstanding balance, EMI
@@ -134,4 +138,4 @@ This file is updated at **milestone completion** to avoid drift between plans an
 </details>  
 
 ---
-*Last updated: 2026-05-01 — **Phase 14 complete** — liabilities schema foundation (LiabilityItemSchema, ensureLiabilities(), DataSchema updated, 35 tests pass).*  
+*Last updated: 2026-05-01 — **Phases 14–15 complete** — liabilities schema (`ensureLiabilities`) plus tested calc helpers (`sumLiabilitiesInr`, `sumAllDebtInr`, `calcNetWorth`, `debtToAssetRatio`).*  
