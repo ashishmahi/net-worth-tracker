@@ -59,6 +59,8 @@ export function PropertyPage() {
   const [milestones, setMilestones] = useState<MilestoneDraft[]>([])
   const [hasLiability, setHasLiability] = useState(false)
   const [loanStr, setLoanStr] = useState('')
+  const [lenderStr, setLenderStr] = useState('')
+  const [emiStr, setEmiStr] = useState('')
 
   const items = data.assets.property.items
 
@@ -81,6 +83,8 @@ export function PropertyPage() {
     setMilestones([])
     setHasLiability(false)
     setLoanStr('')
+    setLenderStr('')
+    setEmiStr('')
     setSheetOpen(true)
   }
 
@@ -100,6 +104,8 @@ export function PropertyPage() {
     )
     setHasLiability(item.hasLiability)
     setLoanStr(item.outstandingLoanInr != null ? String(item.outstandingLoanInr) : '')
+    setLenderStr(item.lender ?? '')
+    setEmiStr(item.emiInr != null ? String(item.emiInr) : '')
     setSheetOpen(true)
   }
 
@@ -129,7 +135,11 @@ export function PropertyPage() {
         milestones: builtMilestones,
         hasLiability,
         ...(hasLiability
-          ? { outstandingLoanInr: roundCurrency(parseFinancialInput(loanStr)) }
+          ? {
+              outstandingLoanInr: roundCurrency(parseFinancialInput(loanStr)),
+              ...(lenderStr.trim() ? { lender: lenderStr.trim() } : {}),
+              ...(emiStr.trim() ? { emiInr: roundCurrency(parseFinancialInput(emiStr)) } : {}),
+            }
           : {}),
       }
       const list = data.assets.property.items
@@ -408,6 +418,10 @@ export function PropertyPage() {
                     aria-describedby="liability-hint"
                   />
                 </div>
+                <p className="text-sm text-muted-foreground">
+                  For loans not tied to a specific property (personal, car, etc.), use the{' '}
+                  <span className="font-medium text-foreground">Liabilities page</span>.
+                </p>
                 {hasLiability && (
                   <div>
                     <Label htmlFor="outstanding-loan">Outstanding loan (INR)</Label>
@@ -423,6 +437,31 @@ export function PropertyPage() {
                     <p className="text-sm text-muted-foreground mt-1" id="loan-helper">
                       How much you still owe the lender in INR, not the builder.
                     </p>
+                    <div className="space-y-2 mt-4">
+                      <Label htmlFor="property-lender">Lender</Label>
+                      <Input
+                        id="property-lender"
+                        type="text"
+                        value={lenderStr}
+                        onChange={e => setLenderStr(e.target.value)}
+                        placeholder="e.g. HDFC Bank"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="property-emi">EMI (₹/month)</Label>
+                      <Input
+                        id="property-emi"
+                        type="text"
+                        inputMode="decimal"
+                        value={emiStr}
+                        onChange={e => setEmiStr(e.target.value)}
+                        placeholder="e.g. 25,000"
+                        aria-describedby="emi-helper"
+                      />
+                      <p className="text-sm text-muted-foreground mt-1" id="emi-helper">
+                        Monthly payment to the lender for this loan (not payments to the builder).
+                      </p>
+                    </div>
                   </div>
                 )}
               </div>
