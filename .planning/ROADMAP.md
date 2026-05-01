@@ -52,7 +52,9 @@ Plans:
   3. `calcNetWorth(grossAssets, liabilitiesTotal)` subtracts only standalone liabilities from gross assets and returns negative values when debt exceeds assets
   4. `debtToAssetRatio(totalDebt, grossAssets)` returns 0% when `grossAssets` is 0 and a correct percentage otherwise
   5. All four functions have unit tests that pass under `npm test`
-**Plans**: TBD
+**Plans**: 1 plan
+Plans:
+- [ ] 15-01-PLAN.md — TDD: implement and test four pure liability calc functions
 
 ### Phase 16: Property Liability Enrichment
 **Goal**: Users can record lender name and EMI against a property liability, and are guided to the right place for standalone loan tracking
@@ -96,14 +98,14 @@ Plans:
 ## Phases (historical)
 
 <details>
-<summary>✅ v1.0 — Local wealth tracker (Phases 1–5) — SHIPPED 2026-04-26</summary>  
+<summary>✅ v1.0 — Local wealth tracker (Phases 1-5) — SHIPPED 2026-04-26</summary>  
 
 [`.planning/milestones/v1.0-ROADMAP.md`](milestones/v1.0-ROADMAP.md)  
 
 </details>  
 
 <details>
-<summary>✅ v1.1 — UX Polish (Phases 6–8) — SHIPPED 2026-04-26</summary>  
+<summary>✅ v1.1 — UX Polish (Phases 6-8) — SHIPPED 2026-04-26</summary>  
 
 [`.planning/milestones/v1.1-ROADMAP.md`](milestones/v1.1-ROADMAP.md)  
 
@@ -128,7 +130,7 @@ Plans:
 </details>  
 
 <details>
-<summary>✅ v1.4 — Multiple commodities (Phases 12–13) — SHIPPED 2026-05-01</summary>  
+<summary>✅ v1.4 — Multiple commodities (Phases 12-13) — SHIPPED 2026-05-01</summary>  
 
 - [x] **Phase 12: Commodities data & net worth** (3/3) — 2026-04-30  
 - [x] **Phase 13: Commodities product UX** (2/2) — 2026-05-01  
@@ -142,18 +144,18 @@ Plans:
 
 | Phase | Milestone | Plans complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 1–5 | v1.0 | (see snapshot) | Complete | 2026-04-26 |
-| 6–8 | v1.1 | (see snapshot) | Complete | 2026-04-26 |
+| 1-5 | v1.0 | (see snapshot) | Complete | 2026-04-26 |
+| 6-8 | v1.1 | (see snapshot) | Complete | 2026-04-26 |
 | 9 | v1.2 | 2/2 | Complete | 2026-04-26 |
 | 10, 10.1, 11 | v1.3 | 3/3 | Complete | 2026-04-26 / 2026-04-28 |
 | 12 | v1.4 | 3/3 | Complete | 2026-04-30 |
 | 13 | v1.4 | 2/2 | Complete | 2026-05-01 |
 | 14. Schema & Migration | v1.5 | 2/2 | Complete    | 2026-05-01 |
-| 15. Calculation Utilities | v1.5 | 0/? | Not started | - |
+| 15. Calculation Utilities | v1.5 | 0/1 | Not started | - |
 | 16. Property Liability Enrichment | v1.5 | 0/? | Not started | - |
 | 17. Liabilities Page CRUD | v1.5 | 0/? | Not started | - |
 | 18. Dashboard & Net Worth Integration | v1.5 | 0/? | Not started | - |
 
 ---
 
-_Milestone archives: `.planning/milestones/` · Next: `/gsd-plan-phase 14`_
+_Milestone archives: `.planning/milestones/` · Next: `/gsd-execute-phase 15`_
