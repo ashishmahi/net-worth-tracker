@@ -1,8 +1,8 @@
 ---
 gsd_state_version: 1.0
-milestone: pending
-milestone_name: Next version (define via /gsd-new-milestone)
-status: between_milestones
+milestone: v1.5
+milestone_name: Debt & Liabilities
+status: defining_requirements
 last_updated: "2026-05-01T12:00:00.000Z"
 last_activity: 2026-05-01
 progress:
@@ -19,10 +19,10 @@ progress:
 
 ## Current position
 
-**Milestone:** **v1.4 shipped** (2026-05-01) — archived under [`.planning/milestones/v1.4-ROADMAP.md`](milestones/v1.4-ROADMAP.md).  
-**Next:** Define **v1.5+** via **`/gsd-new-milestone`** (new `REQUIREMENTS.md`, roadmap phases from **14** onward unless reset).
-
-**Last activity:** 2026-05-01 — `/gsd-complete-milestone 1.4` (manual archive: phases → `v1.4-phases/`, roadmap/requirements snapshots).
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-05-01 — Milestone v1.5 started
 
 ## Project reference
 

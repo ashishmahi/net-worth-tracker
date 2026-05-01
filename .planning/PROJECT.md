@@ -20,9 +20,16 @@ See **total net worth in INR** at a glance, with **live BTC, FX, and silver (USD
 
 Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.4-ROADMAP.md` and matching `*-REQUIREMENTS.md` archives. Executed phase artifacts for shipped milestones live under [`.planning/milestones/`](milestones/) (e.g. `v1.4-phases/`). New work uses [`.planning/phases/`](phases/) once **`/gsd-new-milestone`** opens the next version.
 
-## Next milestone
+## Current Milestone: v1.5 Debt & Liabilities
 
-**Not started.** Use **`/gsd-new-milestone`** to define v1.5+ goals, **`REQUIREMENTS.md`**, and **`ROADMAP.md`** phases (continuing from **Phase 14** unless you reset numbering).
+**Goal:** Add a liabilities layer so net worth reflects what you actually owe — loans deducted from gross assets, with a debt-to-asset ratio insight on the dashboard.
+
+**Target features:**
+- Property liability extension — enrich existing property liability toggle with lender name, outstanding balance, and EMI amount
+- Standalone loans section — new Liabilities page for home/personal/car loans (label, lender, outstanding balance, EMI)
+- Net worth = assets − total debt (property liability + standalone loans both subtract)
+- Dashboard debt insights — Total Debt row + Debt-to-Asset ratio
+- Data model + migration — `liabilities` list on `DataSchema`, migration, import/reset parity
 
 ## Current state (shipped v1.4 — 2026-05-01)
 
@@ -61,9 +68,13 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.4-ROADMAP.md` and matc
 - [x] **COM-01**, **COM-02**, **COM-05** — data model, net worth/snapshot alignment, import/reset/schema ([`12-VERIFICATION.md`](milestones/v1.4-phases/12-commodities-data-net-worth/12-VERIFICATION.md)).  
 - [x] **COM-03**, **COM-04**, **COM-06** — commodity CRUD UI, dashboard/nav wayfinding, gold UX preserved ([`13-VERIFICATION.md`](milestones/v1.4-phases/13-commodities-product-ux/13-VERIFICATION.md)).
 
-### Active (next milestone)
+### Active (v1.5)
 
-- *(None yet — define via `/gsd-new-milestone`.)*
+- [ ] **DEBT-01** — Property liability enriched with lender, outstanding balance, EMI
+- [ ] **DEBT-02** — Standalone liabilities list (`liabilities` on `DataSchema`) with label, lender, outstanding balance, EMI
+- [ ] **DEBT-03** — Net worth = gross assets − total debt (property + standalone liabilities)
+- [ ] **DEBT-04** — Dashboard Total Debt row + Debt-to-Asset ratio insight
+- [ ] **DEBT-05** — Data migration, import, and reset parity for new liabilities schema
 
 ### Deferred (backlog / future)
 
@@ -123,4 +134,4 @@ This file is updated at **milestone completion** to avoid drift between plans an
 </details>  
 
 ---
-*Last updated: 2026-05-01 — **v1.4** milestone archived (commodities data + product UX).*  
+*Last updated: 2026-05-01 — **v1.5** milestone started (debt & liabilities).*  
