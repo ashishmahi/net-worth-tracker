@@ -37,7 +37,10 @@
   3. Importing a JSON file with a populated `liabilities` array succeeds; importing one without `liabilities` also succeeds via migration
   4. Data reset clears the liabilities list to `[]`
   5. A `NetWorthPointSchema` record with a negative `totalInr` passes validation
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 14-01-PLAN.md — Schema: LiabilityItemSchema, DataSchema liabilities, NetWorthPointSchema relaxation, migration function
+- [ ] 14-02-PLAN.md — Tests: LiabilityItemSchema validation and ensureLiabilities() migration unit tests
 
 ### Phase 15: Calculation Utilities
 **Goal**: All debt arithmetic is implemented as pure, tested functions — no ad-hoc inline math in components
@@ -145,7 +148,7 @@
 | 10, 10.1, 11 | v1.3 | 3/3 | Complete | 2026-04-26 / 2026-04-28 |
 | 12 | v1.4 | 3/3 | Complete | 2026-04-30 |
 | 13 | v1.4 | 2/2 | Complete | 2026-05-01 |
-| 14. Schema & Migration | v1.5 | 0/? | Not started | - |
+| 14. Schema & Migration | v1.5 | 0/2 | Not started | - |
 | 15. Calculation Utilities | v1.5 | 0/? | Not started | - |
 | 16. Property Liability Enrichment | v1.5 | 0/? | Not started | - |
 | 17. Liabilities Page CRUD | v1.5 | 0/? | Not started | - |
