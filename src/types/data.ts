@@ -84,6 +84,8 @@ export const PropertyItemSchema = BaseItemSchema.extend({
   milestones: z.array(PropertyMilestoneRowSchema),
   hasLiability: z.boolean(),
   outstandingLoanInr: z.number().nonnegative().optional(),
+  lender: z.string().optional(),
+  emiInr: z.number().nonnegative().optional(),
 })
 
 export const PropertySchema = z.object({
