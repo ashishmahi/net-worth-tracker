@@ -1,130 +1,195 @@
-# Features Research
+# Feature Research
 
-**Domain:** UX Polish — Dark Mode + Mobile Responsive for personal finance tracker
-**Researched:** 2026-04-26
-**Confidence:** HIGH (based on direct codebase inspection + shadcn/ui + Tailwind official docs)
+**Domain:** Debt & Liability tracking in a personal net worth tracker (v1.5 milestone)
+**Researched:** 2026-05-01
+**Confidence:** HIGH (milestone scope fixed in PROJECT.md; patterns verified against Monarch/Kubera/YNAB + existing codebase direct inspection)
 
 ---
 
-## Dark Mode
+## Feature Landscape
 
-### Context: What Is Already Done
+### Table Stakes (Users Expect These)
 
-The codebase has dark mode CSS *authored but inactive*:
-
-- `tailwind.config.js` already sets `darkMode: ["class"]` — activation is a single class toggle on `<html>`
-- `src/index.css` already defines a complete `.dark {}` block with all CSS custom properties for every shadcn token (`--background`, `--foreground`, `--card`, `--sidebar-background`, etc.)
-- All shadcn components (Card, Input, Sheet, Badge, Button, Table, Sidebar) use semantic tokens only — they recolor automatically when `.dark` is applied
-
-The gap is entirely at the *activation layer*: nothing reads or writes the `dark` class, and there is no toggle UI. Dark mode is zero-cost to make functional; the UI to control it is the only work.
-
-### Table Stakes
+Features a debt tracker must have to feel complete. Missing any means the feature is broken or actively misleading.
 
 | Feature | Why Expected | Complexity | Notes |
 |---------|--------------|------------|-------|
-| Manual light/dark toggle button | Users expect explicit control for a local personal app; "system follows OS" alone is frustrating when you want to use the app at night without changing OS settings | Low | `Sun`/`Moon` icon from `lucide-react` (already installed). Flip `.dark` class on `document.documentElement`. |
-| Persistence across sessions | State must survive page reload; a toggle that resets every visit is useless | Low | `localStorage` key (e.g. `theme`). Read on mount, write on toggle. |
-| Immediate visual feedback | Toggle must apply instantly with no page reload | Low | Class manipulation on `<html>` is synchronous |
-| No flash of wrong theme on load | Page must not briefly flash light mode before JS runs when dark is saved | Low-Medium | Inline `<script>` in `index.html` before React hydrates: reads `localStorage` and sets class before first paint. ~3 lines. |
-| All 9 pages readable in dark mode | Every asset section, dashboard, and settings must be legible — no white hardcoded backgrounds | Low | Already handled by semantic tokens throughout codebase. Manual audit needed for any inline `bg-white` or `text-black` that bypass tokens. |
-| Form inputs readable in dark mode | The shadcn `Input`, `select`, `Checkbox`, `Switch` must render with correct contrast | Low | Already handled by CSS tokens. The one native `<select>` in GoldPage uses `bg-background` class — will pick up dark correctly. |
+| Loan entry: label + lender + outstanding balance | Every net worth tracker (Monarch, Kubera, YNAB) treats these three fields as the minimum useful loan record | LOW | `label` = "Home Loan - Lodha"; `lender` = "SBI"; `outstandingBalanceInr` in INR |
+| Loan entry: EMI amount | Users need to know monthly cash outflow; it is the most-referenced loan figure in day-to-day finance | LOW | Store as `emiInr`; display in list card; no payoff projection in v1.5 |
+| Standalone liabilities list CRUD | Add / edit / delete loans independent of property assets; every tracker has a dedicated liabilities section | MEDIUM | Sheet slide-in for add/edit; card list with edit/delete icons; matches existing Commodities and Property page conventions already in this codebase |
+| Net worth = gross assets − total debt | The core accounting identity; showing gross assets only once a liabilities section exists is actively misleading | LOW (calc) / MEDIUM (wiring) | `sumForNetWorth` must subtract `sumTotalDebt()`; property equity already nets `outstandingLoanInr`; standalone liabilities subtract from the gross sum |
+| Property liability enrichment | Existing `hasLiability` toggle already captures `outstandingLoanInr`; users with home loans also need lender name and EMI alongside the balance | LOW | Additive schema change: `lender?: string` and `emiInr?: number` added to `PropertyItemSchema` (both optional, Zod already uses `.optional()` for this field style) |
+| Dashboard: Total Debt row | All major net worth apps show a single aggregated liabilities figure on the summary; absence creates a blind spot | LOW | Sum of property outstanding loans (hasLiability items) + all standalone liability outstanding balances |
+| Dashboard: Debt-to-Asset ratio | Standard leverage metric; shows financial risk at a glance without requiring the user to divide manually | LOW (calc) | `totalDebt / grossAssets × 100`; display as percentage to one decimal place; show "—" when grossAssets is 0 |
+| Data migration: existing data loads cleanly | Without migration, any user opening the app post-update sees schema errors or broken state | MEDIUM | `liabilities` array defaults to `[]`; `PropertyItem` lender/EMI fields default to `undefined` (additive Zod change; existing records pass validation unchanged) |
+| Import/reset parity | JSON import and Settings "Reset all data" must handle the new `liabilities` key the same way other sections do | LOW | Import: `DataSchema` validation covers it once schema is updated; reset: `createInitialData()` needs `liabilities: []` |
 
-### Differentiators
+### Differentiators (Valuable Beyond the Minimum)
 
-| Feature | Value Proposition | Complexity | Notes |
-|---------|-------------------|------------|-------|
-| System preference sync on first load | If no saved preference exists, default to OS `prefers-color-scheme` — good first-run experience without requiring user to discover toggle | Low | `window.matchMedia('(prefers-color-scheme: dark)').matches` in the initialisation script. One additional `if` branch. |
-| Toggle placement in sidebar header | For a sidebar app, placing Sun/Moon in the sidebar header is immediately discoverable without a separate settings page | Low | Modify `AppSidebar.tsx` to add a ghost icon button in `SidebarHeader`. |
-
-### Anti-Features
-
-| Anti-Feature | Why Avoid | What to Do Instead |
-|--------------|-----------|-------------------|
-| Using `next-themes` library | This is a Vite app with no SSR and no hydration. `next-themes`'s core value is preventing hydration mismatch — irrelevant here. Adding a 5 kB library for a 10-line problem is unnecessary. | Implement directly: inline script in `index.html` + a `useTheme` hook in ~30 lines. |
-| OS-only automatic dark mode (no manual toggle) | Users of a personal finance app often want to choose their viewing mode independent of system settings | Always provide a manual toggle. System pref can be the default, but not the only control. |
-| Storing dark mode preference in `data.json` | Violates the data model — display preferences are not financial data. Also causes an unnecessary API write on every toggle. | `localStorage` only. |
-| Per-component `dark:` class overrides scattered in pages | Fragile maintenance burden — every new component requires dark variants to be manually specified | Rely exclusively on CSS custom property tokens already in place. Add `dark:` overrides only where a component truly breaks. |
-| Animated theme transition (fade/dissolve) | Finance data tables flash large number changes during transition; this looks like a display glitch, not a polish feature | Apply `disableTransitionOnChange`-equivalent: add a brief `.no-transitions * { transition: none !important; }` class during toggle, remove after 1 frame. Or simply omit transitions entirely. |
-
----
-
-## Mobile Responsive
-
-### Context: What Exists and What Breaks
-
-Current layout structure:
-
-- `SidebarProvider` wraps the app; `AppSidebar` uses `collapsible="none"` — sidebar is always rendered as a fixed left column with no mobile Sheet fallback
-- `<main className="p-6">` has no responsive padding or max-width constraints
-- Each page is a `<div className="space-y-4">` with a flex header row and a Card body
-- Most pages render a list of clickable rows (low-complexity mobile case)
-- Property page renders a `<Table>` with milestone rows inside a Sheet — the hardest mobile case
-- All add/edit flows use shadcn `Sheet` (right-side slide-over) — Sheet is already mobile-friendly natively
-
-Key breakpoints for this app: `sm` (640px) is largely irrelevant. The real split is `md` (768px): below this, sidebar must collapse to a hamburger; above this, sidebar remains fixed.
-
-### Table Stakes
-
-| Feature | Why Expected | Complexity | Notes |
-|---------|--------------|------------|-------|
-| Collapsible sidebar on mobile | At 375px–768px the fixed sidebar eats 40%+ of screen width. Navigation is completely broken without this. | Medium | Change `AppSidebar` from `collapsible="none"` to `collapsible="offcanvas"`. shadcn Sidebar already handles the mobile Sheet internally when `isMobile` is true (based on `768px` breakpoint via `useSidebar`). Add a hamburger `<SidebarTrigger>` button in a mobile header bar above `<main>`. |
-| Mobile header bar with hamburger | Required companion to collapsible sidebar — users need a target to open the nav | Low | A `<header className="flex items-center gap-2 px-4 py-3 border-b md:hidden">` above SidebarInset. Contains `SidebarTrigger` and app title. |
-| Touch target minimum 44px height | iOS HIG and Android Material require 44–48px minimum tap targets. Current `py-3` list rows may be borderline. | Low | Verify all interactive rows have `min-h-[44px]`. Already present on SidebarMenuButton in existing code. Apply same to asset list row buttons. |
-| Readable card/list rows at 375px | Asset list rows show label on left, value on right — this pattern works at narrow widths if font and padding are correct | Low | Verify text does not overflow or truncate. Use `truncate` on labels, `shrink-0` on value columns. Already partially done in DashboardPage. |
-| Page heading + total + Add button fits one row at 375px | The flex header (`justify-between`) with a large INR value and "Add Item" button will overflow at narrow widths | Low-Medium | Stack heading/total above button on mobile: `flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between`. Or shrink button to icon-only on mobile. |
-| Sheet forms usable on mobile keyboard | Sheets must not be obscured by the software keyboard when a text input is focused | Low | shadcn Sheet already uses Radix Dialog under the hood — Radix handles scroll-lock and focus. No special work needed unless specific inputs scroll out of view. Test on device/simulator. |
-| Property milestone Table horizontal scroll | The milestone table (Label, Amount, Paid) will overflow at 375px | Low | Wrap table in `overflow-x-auto`. shadcn Table component already adds `overflow-x-auto` on its container wrapper by default. Verify the Sheet containing it does not clip overflow. |
-
-### Differentiators
+Features that make the debt section meaningfully more useful without scope creep.
 
 | Feature | Value Proposition | Complexity | Notes |
 |---------|-------------------|------------|-------|
-| Icon-only "Add" button on very small screens | Frees horizontal space in page headers without removing functionality | Low | `<Button size="icon" className="shrink-0"><Plus /></Button>` with `aria-label`. Show text label on `sm:` and above with `hidden sm:inline`. |
-| Bottom sheet Drawer for add/edit forms on mobile | shadcn Drawer (built on Vaul) slides up from bottom — matches native iOS/Android modal form conventions better than a right-side Sheet on narrow screens | Medium | Use shadcn `Drawer` on mobile, `Sheet` on desktop. Pattern: `const isDesktop = useMediaQuery("(min-width: 768px)")`. If `isDesktop`, render Sheet; else render Drawer. Requires adding `@radix-ui/react-dialog` is already installed; Vaul/Drawer would be a new dep. Worthwhile for 7 form-heavy sections. |
-| Dashboard category rows never wrap | Dashboard rows (label + %, value) are the most-read layout. Keeping them single-line at 375px with `truncate` and `tabular-nums` prevents visual noise | Low | Already partially implemented with `shrink-0` on value column. Ensure `min-w-0` on label side. |
+| Loan type tag (home / car / personal / other) | Lets users distinguish loan categories at a glance in the list; enables future per-type subtotals with near-zero current cost | LOW | `loanType: 'home' \| 'car' \| 'personal' \| 'other'`; displayed as a shadcn Badge in the card row |
+| Net worth breakdown: Gross Assets / Total Debt / Net Worth | Three-line breakdown above category rows makes the debt deduction visible and understandable; Monarch and PocketSmith both use this layout | LOW | Three stacked summary rows before category detail rows; no new data needed; reuses existing calc values |
+| Empty state with call-to-action on Liabilities page | First-time experience: blank list with "No liabilities yet. Add your first loan." + Add button | LOW | Already a convention in this codebase (CommoditiesPage); copy-forward pattern |
+| Property loan annotation on dashboard row | Property row already shows equity; a small "(loan: ₹X)" annotation makes the deduction transparent without requiring the user to visit the Property page | LOW | Optional line below property total row; uses `outstandingLoanInr` already computed in `sumPropertyInr()` |
 
-### Anti-Features
+### Anti-Features (Avoid These)
 
-| Anti-Feature | Why Avoid | What to Do Instead |
-|--------------|-----------|-------------------|
-| Responsive HTML table with hidden columns | Hiding columns on mobile (e.g. hiding "Created At") degrades functionality and creates confusion when data seems missing | Use a card-per-row pattern for dense tables, OR rely on horizontal scroll with `overflow-x-auto`. For this app's tables (Property milestones only), horizontal scroll is simpler and the columns are all load-bearing. |
-| Separate mobile views/routes | Maintaining two codebases for desktop vs mobile diverges quickly | Single responsive component tree with Tailwind breakpoints only. |
-| Disabling pinch-to-zoom | Viewport meta with `user-scalable=no` fails WCAG accessibility and frustrates users viewing financial numbers | Keep default viewport. If text is sized correctly, zoom is rarely needed. |
-| Bottom navigation bar (tab bar) | This is a sidebar app. Replacing sidebar nav with a tab bar on mobile is a significant nav paradigm shift that conflicts with the existing 9 sections (tab bars max out at 5 items) | Collapsible sidebar to hamburger is the correct mobile pattern for 9 nav items. |
-| Forcing landscape-only for finance tables | Some apps restrict orientation; personal finance tools should work in portrait — users check balances in portrait | Design for portrait 375px as primary mobile target. |
+Features that appear valuable but add disproportionate complexity for this milestone.
+
+| Feature | Why Requested | Why Problematic | Alternative |
+|---------|---------------|-----------------|-------------|
+| Payoff projection / amortization schedule | Users naturally want to know when they'll be debt-free | Requires interest rate, disbursement date, and tenure — 4+ new required fields per loan; turns a tracker into a calculator; high edge-case surface (partial prepayment, rate changes, variable rates) | Store EMI for cash-flow awareness; defer payoff projection to a dedicated future milestone |
+| Interest rate field | Useful for comparing loan costs | Many users do not know their exact rate off the top of their head; a required field that blocks quick entry defeats the purpose of a fast manual tracker | Omit in v1.5; EMI captures payment impact without requiring a rate figure |
+| Credit card tracking | Covers revolving debt | Fundamentally different payment model — statement cycle, minimum payment, credit utilisation; needs separate UX from installment loans | Explicitly out of scope per PROJECT.md; a separate milestone if desired |
+| Multi-currency loans (AED-denominated) | AED bank accounts are already supported in this app | Outstanding loan balances are almost universally in INR for the target user (India-based); AED loan is a rare edge case that would complicate every debt calculation | Keep `outstandingBalanceInr` in INR only; user can convert manually if needed |
+| Automatic balance sync for loan balances | Would eliminate manual updates | Requires OAuth + banking API (Plaid, Salt Edge, or AA framework); fundamentally incompatible with the local-only, no-backend architecture of v1.x | Manual entry with `updatedAt` timestamp so the user can see data staleness |
+| Per-loan debt-to-asset ratio | Granular insight per loan | The aggregate dashboard ratio is the actionable metric; per-loan ratios add noise with no decision-making benefit | Single aggregate debt-to-asset ratio on dashboard |
 
 ---
 
-## Feature Dependencies (within this milestone)
+## Feature Dependencies
 
 ```
-Dark mode toggle UI → index.html inline script (theme initialisation, prevents flash)
-Dark mode toggle UI → AppSidebar.tsx (toggle placement)
-Collapsible sidebar → AppSidebar.tsx collapsible prop change
-Collapsible sidebar → Mobile header bar (SidebarTrigger entry point)
-Mobile header bar → App.tsx layout wrapper (add header above SidebarInset)
-Page header stacking → Each of 7 asset pages + DashboardPage (same pattern, apply uniformly)
-Property Table scroll → PropertyPage.tsx Sheet inner layout
+[Standalone Liabilities CRUD]
+    └──requires──> [DataSchema: liabilities array + LiabilityItemSchema]
+                       └──requires──> [Data migration: liabilities:[] default on load]
+                                          └──requires──> [createInitialData() + import/reset parity]
+
+[Dashboard: Total Debt row]
+    └──requires──> [sumTotalDebt() in dashboardCalcs.ts]
+                       └──requires──> [DataSchema with liabilities]
+
+[Dashboard: Debt-to-Asset ratio]
+    └──requires──> [Dashboard: Total Debt row]
+    └──requires──> [Gross assets sum before deduction (sumForNetWorth() pre-v1.5 value)]
+
+[Net worth = assets − total debt]
+    └──requires──> [sumTotalDebt()]
+    └──enhances──> [existing sumForNetWorth()]
+
+[Property liability enrichment (lender, EMI)]
+    └──enhances──> [existing PropertyItem hasLiability / outstandingLoanInr]
+    └──requires──> [PropertyItemSchema additive update (optional fields only)]
+    (independent of standalone liabilities CRUD — can land in same schema phase)
+
+[Loan type tag Badge]
+    └──enhances──> [Standalone Liabilities CRUD]
+    └──no hard dependency — addable or omittable without blocking anything]
+
+[Net worth history snapshots (existing v1.3 feature)]
+    └──auto-updated──> [once sumForNetWorth() subtracts debt, new snapshots reflect net worth correctly]
+    (no new snapshot work needed — the subtraction flows through the existing snapshot path)
 ```
 
-## MVP Recommendation
+### Dependency Notes
 
-Prioritize in this order:
+- **Schema before everything:** The `liabilities` key must exist on `DataSchema` and `createInitialData()` before the Liabilities page or dashboard debt row can be wired. Phase ordering: data model + migration first, then CRUD UI, then dashboard wiring.
+- **sumTotalDebt() is the central dependency:** `dashboardCalcs.ts` currently deducts property `outstandingLoanInr` inline inside `sumPropertyInr()` (net equity). For v1.5, property outstanding loans must also feed into a new `sumTotalDebt()` that adds standalone liabilities. `sumPropertyInr()` continues to return equity (unchanged); the debt sum is computed separately for the dashboard Total Debt row and the net worth subtraction.
+- **Property liability enrichment is fully independent:** Adding `lender` and `emiInr` to `PropertyItem` is an additive Zod change (both optional) that can be done in the same schema migration phase without touching the liabilities list at all.
+- **Debt-to-asset ratio requires gross assets:** Gross assets = `sumForNetWorth(totals)` computed with the pre-deduction asset sum. The ratio must use the pre-deduction value to avoid circular dependency. Store gross assets as a separate variable before subtracting debt.
+- **Net worth history snapshots are automatically correct:** Once `sumForNetWorth()` subtracts debt, any new snapshot recorded via the existing "Record Snapshot" flow captures post-deduction net worth. Historical snapshots are unaffected (they were recorded before liabilities existed). No snapshot migration needed.
 
-1. Dark mode toggle + persistence + flash-prevention script — highest ROI, lowest risk, zero new dependencies. The CSS is already done.
-2. Collapsible sidebar with hamburger header — without this, mobile is completely broken. Medium complexity but well-supported by shadcn Sidebar's built-in `offcanvas` mode.
-3. Page header stacking on narrow screens — affects all 7 asset pages and Dashboard. Apply one responsive Tailwind pattern uniformly.
-4. Touch target audit — low effort, high impact for usability.
-5. Property Table overflow-x-auto — verify shadcn Table wrapper handles it; likely already works.
+---
 
-Defer: Drawer-vs-Sheet responsive form pattern. The existing Sheet works on mobile (right-side slide covers full width on phones anyway). Only upgrade if manual testing shows it feels wrong.
+## MVP Definition
+
+This is an existing app adding a capability. "MVP" here means the minimum that makes debt tracking correct and non-misleading.
+
+### v1.5 Launch With
+
+- [ ] `LiabilityItemSchema` — `id` (UUID), `label`, `lender`, `outstandingBalanceInr`, `emiInr`, `loanType`, `createdAt`, `updatedAt`
+- [ ] `DataSchema` updated: `liabilities: z.array(LiabilityItemSchema)` at root level alongside `assets`
+- [ ] Migration: `liabilities: []` default on load; `PropertyItem` lender + EMI fields default to `undefined` (Zod additive)
+- [ ] `createInitialData()` updated to include `liabilities: []`
+- [ ] Liabilities page — Sheet-based CRUD; card list with edit/delete; empty state with Add CTA
+- [ ] Property page — lender + EMI fields rendered when `hasLiability` switch is on
+- [ ] `sumTotalDebt(data)` in `dashboardCalcs.ts` — sum of all `outstandingBalanceInr` across property `hasLiability` items + standalone liabilities
+- [ ] `sumForNetWorth()` updated to subtract `sumTotalDebt(data)`
+- [ ] Dashboard: Total Debt row + Debt-to-Asset ratio (one decimal %)
+- [ ] Import + reset parity verified in tests
+
+### Add After Validation
+
+- [ ] Gross / Debt / Net three-line summary breakdown on dashboard — low cost, adds clarity once users have loans to see
+- [ ] Property loan annotation on the dashboard property row
+
+### Future Consideration (v2+)
+
+- [ ] Payoff projection — only when users request it; requires interest rate + tenure + disbursement date; separate milestone
+- [ ] Credit card liability tracking — different UX model; separate milestone
+- [ ] Automatic balance sync via Account Aggregator — requires backend, auth, infrastructure
+
+---
+
+## Feature Prioritization Matrix
+
+| Feature | User Value | Implementation Cost | Priority |
+|---------|------------|---------------------|----------|
+| LiabilityItemSchema + migration | HIGH | LOW | P1 |
+| Standalone liabilities CRUD | HIGH | MEDIUM | P1 |
+| Property: lender + EMI fields | MEDIUM | LOW | P1 |
+| sumTotalDebt() + net worth deduction | HIGH | LOW | P1 |
+| Dashboard Total Debt row | HIGH | LOW | P1 |
+| Dashboard Debt-to-Asset ratio | MEDIUM | LOW | P1 |
+| Import/reset parity | HIGH | LOW | P1 |
+| Loan type tag (Badge) | MEDIUM | LOW | P2 |
+| Gross/Debt/Net three-line dashboard breakdown | MEDIUM | LOW | P2 |
+| Property loan annotation on dashboard row | LOW | LOW | P3 |
+| Payoff projection | MEDIUM | HIGH | Deferred |
+| Interest rate field | LOW | LOW | Deferred |
+
+**Priority key:**
+- P1: Required for a correct, shippable v1.5
+- P2: Adds clarity at low cost; include if time allows
+- P3: Nice to have; no risk to include
+- Deferred: Out of scope for v1.5
+
+---
+
+## Competitor Feature Analysis
+
+| Feature | Monarch Money | Kubera | YNAB | This App v1.5 |
+|---------|--------------|--------|------|---------------|
+| Liability entry fields | Label, account type, balance (auto-synced from bank) | Label, value, currency, institution (manual or connected) | Account name, balance (manual or synced) | Label, lender, outstanding balance INR, EMI, loan type — fully manual, INR only |
+| Net worth formula | Assets − Liabilities (dashboard header) | Assets − Liabilities with per-category breakdown | Assets − Liabilities across all linked accounts | Gross assets − total debt; property equity already net; standalone liabilities deducted separately |
+| Debt metric on dashboard | Net worth figure; ratio in custom reports | "Liabilities / Assets %" shown on balance sheet view | Net worth figure; no standalone ratio | Total Debt row + Debt-to-Asset % shown directly on main dashboard |
+| Liability CRUD UX | Via account connection (mostly automatic); manual add also available | Manual entry per liability card | Manual account add | Sheet slide-in (matches existing Commodities/Property pattern in this codebase) |
+| Loan type grouping | By account type (mortgage, student loan, etc.) | Free-form label | Free-form label | `loanType` enum: home / car / personal / other; displayed as Badge |
+| Property loan linkage | Property asset + mortgage liability tracked as separate accounts; equity computed externally | Separate cards for asset and liability; net equity manual | Property asset + mortgage = two separate accounts | Property item has `hasLiability` + `outstandingLoanInr` already (v1.0); v1.5 enriches with `lender` + `emiInr` |
+
+---
+
+## Existing Codebase Integration Points
+
+Integration requirements specific to this app's architecture.
+
+| Integration Point | Current State | v1.5 Change Required |
+|------------------|---------------|----------------------|
+| `PropertyItemSchema` in `data.ts` | `hasLiability: boolean`, `outstandingLoanInr?: number` | Add `lender?: z.string().optional()` and `emiInr?: z.number().nonnegative().optional()` — additive, backward-compatible |
+| `DataSchema` root in `data.ts` | `{ version, settings, assets, netWorthHistory }` | Add `liabilities: z.array(LiabilityItemSchema)` at root level |
+| `sumPropertyInr()` in `dashboardCalcs.ts` | Deducts `outstandingLoanInr` inline when `hasLiability` is true (returns equity) | No change — equity calc stays; outstanding loan values are separately extracted by `sumTotalDebt()` |
+| `sumForNetWorth()` in `dashboardCalcs.ts` | Sums all category totals from `DASHBOARD_CATEGORY_ORDER` | Subtract `sumTotalDebt(data)` from the asset sum before returning |
+| `DashboardPage.tsx` | Per-category rows + net worth grand total | Add Total Debt row + Debt-to-Asset ratio; update grand total label to "Net Worth" if not already; optionally add three-line gross/debt/net summary header |
+| `createInitialData()` in `AppDataContext` | Initialises all `assets` keys | Add `liabilities: []` |
+| JSON import path | Validates against `DataSchema` via `safeParse` | No change needed; Zod handles the new key automatically once `DataSchema` is updated |
+| Net worth history snapshots | `totalInr` recorded at snapshot time using `sumForNetWorth()` | Automatically correct once `sumForNetWorth()` subtracts debt; no snapshot migration required |
+| Vitest tests in `schema.test.ts` / `dashboardCalcs.test.ts` | Cover existing schema + calc paths | New tests needed for `LiabilityItemSchema`, `sumTotalDebt()`, and net worth deduction path |
+
+---
 
 ## Sources
 
-- shadcn/ui sidebar docs: https://ui.shadcn.com/docs/components/sidebar (collapsible offcanvas, mobile Sheet, isMobile hook) — HIGH confidence, Context7
-- shadcn/ui table docs: https://ui.shadcn.com/docs/components/table (overflow-x-auto container) — HIGH confidence, Context7
-- shadcn/ui drawer docs: https://ui.shadcn.com/docs/components/drawer (responsive Drawer/Dialog pattern) — HIGH confidence, Context7
-- next-themes README: https://github.com/pacocoursey/next-themes (localStorage, ThemeProvider) — HIGH confidence, Context7 (noted: not recommended for this project — Vite/no SSR)
-- Tailwind darkMode class config: tailwind.config.js in repo — HIGH confidence, direct inspection
-- Dark mode CSS tokens: src/index.css in repo — HIGH confidence, direct inspection
-- AppSidebar collapsible="none": src/components/AppSidebar.tsx — HIGH confidence, direct inspection
+- [Monarch Money — Tracking features](https://www.monarch.com/features/tracking)
+- [Kubera — Balance sheet tracker](https://www.kubera.com/)
+- [PocketSmith Net Worth Tour](https://www.pocketsmith.com/tour/net-worth/) — Gross Assets / Total Liabilities / Net Worth three-row layout
+- [10 Best Net Worth Tracker Apps — CreditDonkey 2026](https://www.creditdonkey.com/best-net-worth-tracker.html)
+- [Net Worth Tracker FAQ — FinancialAha](https://www.financialaha.com/spreadsheet-templates/personal-finance/net-worth-tracker/faq/) — debt-to-asset ratio as standard metric
+- Codebase direct inspection: `src/types/data.ts`, `src/lib/dashboardCalcs.ts`, `src/pages/PropertyPage.tsx`, `.planning/PROJECT.md`
+
+---
+
+*Feature research for: debt & liability tracking — Personal Wealth Tracker v1.5*
+*Researched: 2026-05-01*

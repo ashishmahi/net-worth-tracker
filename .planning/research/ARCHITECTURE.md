@@ -1,271 +1,413 @@
 # Architecture Research
 
-**Project:** Personal Wealth Tracker v1.1 — UX Polish (dark mode + mobile responsive)
-**Researched:** 2026-04-26
-**Confidence:** HIGH — based on direct inspection of existing source files and confirmed framework behavior
+**Domain:** Personal finance tracker — debt/liability layer on top of existing React+Vite app
+**Researched:** 2026-05-01
+**Confidence:** HIGH (based on direct code inspection of all relevant source files)
 
 ---
 
-## Dark Mode
+## Existing Architecture (v1.4 baseline)
 
-### How the class strategy works (already half-done)
+```
+┌──────────────────────────────────────────────────────────────┐
+│                       App.tsx (shell)                         │
+│   SidebarProvider → AppSidebar + SidebarInset + MobileTopBar │
+│   activeSection: SectionKey (useState, no router)            │
+└───────────────────────────┬──────────────────────────────────┘
+                            │ renders
+              ┌─────────────┴─────────────┐
+              │ DashboardPage             │ Section Pages
+              │ (onNavigate prop)         │ GoldPage, CommoditiesPage,
+              │                           │ PropertyPage, BankPage…
+              └─────────────┬─────────────┘
+                            │ consume
+        ┌───────────────────┴──────────────────────┐
+        │ AppDataContext                            │
+        │   data: AppData  (from data.json via     │
+        │   GET /api/data → Zod parse)             │
+        │   saveData(newData)  → POST /api/data    │
+        └───────────────────┬──────────────────────┘
+                            │ types from
+        ┌───────────────────┴──────────────────────┐
+        │ src/types/data.ts                        │
+        │   DataSchema (Zod) — single source of    │
+        │   truth for AppData type                 │
+        │   DataSchema.assets.{gold, otherCommod,  │
+        │   mutualFunds, stocks, bitcoin, property,│
+        │   bankSavings, retirement}               │
+        └───────────────────┬──────────────────────┘
+                            │ computed by
+        ┌───────────────────┴──────────────────────┐
+        │ src/lib/dashboardCalcs.ts                │
+        │   calcCategoryTotals() — per-section INR │
+        │   sumForNetWorth()     — gross total     │
+        │   sumPropertyInr()     — deducts         │
+        │     outstandingLoanInr from agreementInr │
+        └──────────────────────────────────────────┘
+```
 
-`tailwind.config.js` already uses `darkMode: ["class"]`. This means Tailwind dark variants
-(`dark:bg-slate-900`, etc.) activate when the `dark` class is present on the `<html>` element.
+### Migration chain (AppDataContext.tsx)
 
-`src/index.css` already defines a complete `.dark { ... }` block with all shadcn/ui CSS custom
-properties (`--background`, `--foreground`, `--card`, `--sidebar-background`, etc.). Every
-shadcn/ui component in the app already consumes those variables via `bg-background`,
-`text-foreground`, `bg-card`, etc.
+Every boot and every JSON import runs the same pipeline:
 
-Conclusion: zero changes needed to Tailwind config, zero changes needed to `index.css`. The
-infrastructure is already correct. The only missing piece is a mechanism to toggle the `dark`
-class on `<html>` and persist the user's choice.
+```
+raw JSON
+  → migrateLegacyBankAccounts()    (Phase 3: balanceInr → {currency,balance})
+  → ensureNetWorthHistory()         (v1.3: inject [] if absent)
+  → ensureOtherCommodities()        (v1.4: inject empty block if absent)
+  → DataSchema.safeParse()
+```
 
-### New components / providers
+`parseAppDataFromImport()` is the single entry point for both boot and Settings import.
 
-**1. `ThemeProvider` — `src/context/ThemeContext.tsx` (NEW)**
+### Key invariants to preserve
 
-Minimal context that owns `theme: 'light' | 'dark'` and exposes `toggleTheme()`. On mount it
-reads `localStorage.getItem('theme')` (or falls back to `'light'`). On every change it writes
-back to localStorage and adds/removes the `dark` class on `document.documentElement`.
+1. All asset section data lives inside `data.assets.*` — never at root level.
+2. Computed totals are never stored; only raw inputs persist.
+3. `createInitialData()` must always produce a valid `AppData` (used for reset + first load).
+4. Migration functions are pure, run pre-parse on `unknown`, and are referentially tested.
 
-```tsx
-// Skeleton only — fill in during implementation
-type Theme = 'light' | 'dark'
+---
 
-interface ThemeContextValue {
-  theme: Theme
-  toggleTheme: () => void
+## Question 1: Where does `liabilities` live on DataSchema?
+
+**Answer: Top-level peer of `assets`, NOT nested inside `assets`.**
+
+Rationale from code inspection:
+
+- `assets` in `DataSchema` is typed as `z.object({ gold, otherCommodities, … })` — every key
+  produces a positive INR value. Adding liabilities inside `assets` is semantically wrong and
+  forces the dashboard to distinguish "which `assets.*` keys are actually liabilities."
+- `netWorthHistory` is already a top-level peer of `assets`, proving the schema supports
+  non-asset sections at root.
+- Keeping liabilities top-level means `dashboardCalcs.ts` can read `data.liabilities` cleanly
+  alongside `data.assets`, with zero risk of conflation with asset sums.
+- `DASHBOARD_CATEGORY_ORDER` and `CategoryTotals` enumerate only asset categories. There is no
+  reason to shoehorn liabilities into that array.
+
+**Concrete schema placement:**
+
+```typescript
+// src/types/data.ts
+export const LiabilityItemSchema = BaseItemSchema.extend({
+  label: z.string().min(1),
+  lender: z.string().default(''),
+  outstandingBalanceInr: z.number().nonnegative(),
+  emiAmountInr: z.number().nonnegative().default(0),
+})
+
+export const DataSchema = z.object({
+  version: z.literal(1),
+  settings: SettingsSchema,
+  assets: z.object({ /* unchanged */ }),
+  liabilities: z.array(LiabilityItemSchema),   // NEW — top-level peer
+  netWorthHistory: z.array(NetWorthPointSchema),
+})
+```
+
+---
+
+## Question 2: How should dashboardCalcs.ts handle total debt?
+
+**Answer: Export a separate `sumLiabilitiesInr()` function; do NOT inline debt deduction into
+`sumForNetWorth()`.**
+
+Rationale:
+
+1. `sumForNetWorth()` currently sums `CategoryTotals` keys. Changing its contract to also
+   subtract liabilities would silently shift per-row asset percentages — DashboardPage uses
+   `grandTotal` as the denominator for percentage columns, which must remain a gross asset sum
+   so that all rows add to 100%.
+
+2. The dashboard needs total debt as an independent number to display "Total Debt" as its own
+   row and to compute `debtToAssetRatio = totalDebt / grossAssets`. That decomposition is
+   impossible if debt is already merged into the total.
+
+3. `sumPropertyInr()` already deducts `outstandingLoanInr` per item to produce equity. That
+   deduction is correct and must not change. Standalone liabilities (car loans, personal loans)
+   are a second independent path.
+
+**Recommended function signatures:**
+
+```typescript
+// src/lib/dashboardCalcs.ts
+
+/** Sum standalone liabilities (INR). Property loans are NOT included — already in property equity. */
+export function sumLiabilitiesInr(data: AppData): number {
+  return (data.liabilities ?? []).reduce(
+    (sum, item) => roundCurrency(sum + roundCurrency(item.outstandingBalanceInr)),
+    0
+  )
 }
 
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>(() => {
-    return (localStorage.getItem('theme') as Theme) ?? 'light'
-  })
-
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', theme === 'dark')
-    localStorage.setItem('theme', theme)
-  }, [theme])
-
-  const toggleTheme = () => setTheme(t => (t === 'dark' ? 'light' : 'dark'))
-
-  return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
-      {children}
-    </ThemeContext.Provider>
+/** Total debt for display: property loans + standalone liabilities. */
+export function sumAllDebtInr(data: AppData): number {
+  const propertyDebt = data.assets.property.items.reduce(
+    (sum, item) => roundCurrency(sum + (item.hasLiability ? (item.outstandingLoanInr ?? 0) : 0)),
+    0
   )
+  return roundCurrency(propertyDebt + sumLiabilitiesInr(data))
+}
+
+/**
+ * True net worth: gross assets (property already at equity) minus standalone liabilities.
+ * Do NOT subtract property loans here — sumPropertyInr() already did that.
+ */
+export function calcNetWorth(grossAssets: number, standaloneLiabilities: number): number {
+  return roundCurrency(grossAssets - standaloneLiabilities)
+}
+
+/** Debt-to-asset ratio as a percentage (uses gross assets as denominator). */
+export function debtToAssetRatio(totalDebt: number, grossAssets: number): number {
+  if (grossAssets <= 0) return 0
+  return roundCurrency((totalDebt / grossAssets) * 100)
 }
 ```
 
-Mount position in `src/main.tsx`: wrap outermost, above `AppDataProvider`, so it controls the
-`<html>` class before any render. Provider order becomes:
-`ThemeProvider > AppDataProvider > LivePricesProvider > App`.
+**Dashboard call-site change:**
 
-**2. `ThemeToggle` — `src/components/ThemeToggle.tsx` (NEW)**
+```typescript
+// DashboardPage.tsx
+const grossTotal = useMemo(() => sumForNetWorth(totals), [totals])        // unchanged
+const standaloneLiabilities = useMemo(() => sumLiabilitiesInr(data), [data]) // NEW
+const netWorth = useMemo(
+  () => calcNetWorth(grossTotal, standaloneLiabilities),
+  [grossTotal, standaloneLiabilities]
+)
+const totalDebt = useMemo(() => sumAllDebtInr(data), [data])              // NEW for display
+```
 
-A small button component that calls `useTheme().toggleTheme()` and renders a Sun/Moon icon from
-lucide-react (already installed). Placed in the sidebar header or as an icon-only button in the
-app top bar.
+The displayed "Net worth" headline changes from `grandTotal` to `netWorth`. Per-row asset
+percentages keep `grossTotal` as denominator so they still add to 100%.
+
+---
+
+## Question 3: Should property.liability be unified with standalone liabilities?
+
+**Answer: Partial unification — enrich `PropertyItemSchema` in-place; do NOT move property loans
+into the top-level `liabilities` list.**
+
+Arguments against full unification:
+
+- `sumPropertyInr()` computes `agreementInr − outstandingLoanInr` per item. If the property
+  loan moved to the top-level list, property would appear at gross value in assets and the loan
+  would be deducted separately. The math still works but the property dashboard row would display
+  the full agreement value, not equity — a regression from current behavior.
+- There is no referential integrity in a flat JSON file. A property item and its paired
+  liability entry in `data.liabilities` could drift out of sync across separate edits.
+- `PropertyPage` manages liability state (`hasLiability`, `loanStr`) as local sheet state
+  coordinated with the property item. Splitting it across sections adds cross-section coupling.
+
+**The enrichment approach:** Extend `PropertyItemSchema` with two optional fields:
+
+```typescript
+export const PropertyItemSchema = BaseItemSchema.extend({
+  label: z.string().min(1),
+  agreementInr: z.number().nonnegative(),
+  milestones: z.array(PropertyMilestoneRowSchema),
+  hasLiability: z.boolean(),
+  outstandingLoanInr: z.number().nonnegative().optional(),  // existing
+  lender: z.string().optional(),                            // NEW
+  emiAmountInr: z.number().nonnegative().optional(),        // NEW
+})
+```
+
+Both new fields are optional so existing `data.json` continues to parse without a migration
+function — Zod `.optional()` on fields that are absent is backward-compatible. PropertyPage
+gains two new form inputs inside the existing `hasLiability` section.
+
+`sumAllDebtInr()` aggregates property loans and standalone liabilities for the "Total Debt"
+display row. The net worth calculation uses `calcNetWorth(grossAssets, sumLiabilitiesInr(data))`
+— only standalone liabilities, because property loans are already subtracted via equity.
+
+---
+
+## Question 4: Build order
+
+**Dependency chain: schema → migration → calcs → property enrichment → liabilities CRUD → dashboard.**
+
+```
+Phase A — Schema + migration (no UI)
+  1. src/types/data.ts
+     - Add LiabilityItemSchema
+     - Add liabilities: z.array(LiabilityItemSchema) to DataSchema
+     - Add lender + emiAmountInr optionals to PropertyItemSchema
+  2. src/context/AppDataContext.tsx
+     - ensureLiabilities(): inject [] when key absent (v1.4 and older files)
+     - Add ensureLiabilities() to parseAppDataFromImport() chain
+     - Add liabilities: [] to createInitialData()
+  3. Unit tests for ensureLiabilities() (follow migration.test.ts pattern)
+  Checkpoint: DataSchema.safeParse() passes on old data.json; new fields round-trip
+
+Phase B — Calculations (no UI)
+  4. src/lib/dashboardCalcs.ts
+     - sumLiabilitiesInr()
+     - sumAllDebtInr()
+     - calcNetWorth()
+     - debtToAssetRatio()
+  5. Unit tests for each new function (follow dashboardCalcs.test.ts pattern)
+  Checkpoint: all calc tests green; all existing tests still green
+
+Phase C — Property enrichment
+  6. src/pages/PropertyPage.tsx
+     - Add lender + emiAmountInr inputs to the hasLiability section
+     - Read/write new fields in openEdit() / onSubmit()
+  Checkpoint: property edit/save round-trips with new fields; old items load unchanged
+
+Phase D — Liabilities page (new CRUD)
+  7. src/pages/LiabilitiesPage.tsx
+     - Single form variant (no discriminated union needed, unlike CommoditiesPage)
+     - Sheet for add/edit/delete (follow CommoditiesPage structure)
+     - Fields: label, lender, outstandingBalanceInr, emiAmountInr
+     - Save: data.liabilities push/replace/filter → saveData({...data, liabilities: ...})
+  8. src/components/AppSidebar.tsx
+     - Add 'liabilities' to SectionKey union + NAV_ITEMS array
+  9. src/App.tsx
+     - Add LiabilitiesPage to SECTION_COMPONENTS
+  Checkpoint: CRUD works; data.json persists liabilities correctly
+
+Phase E — Dashboard integration
+ 10. src/pages/DashboardPage.tsx
+     - Switch net worth headline to calcNetWorth(grossTotal, standaloneLiabilities)
+     - Add "Total Debt" row (using sumAllDebtInr) after asset rows
+     - Add "Debt-to-Asset" ratio display (percentage)
+     - Update noHoldingsYet() to include data.liabilities.length > 0
+     - Snapshot records calcNetWorth() not grossTotal
+ 11. DashboardPage navigation: add liabilities nav key to NAV_KEY map if needed
+  Checkpoint: Dashboard shows correct net worth, Total Debt, D/A ratio
+
+Phase F — Import / reset parity
+ 12. Verify parseAppDataFromImport() chain includes ensureLiabilities() — covered in Phase A
+ 13. Verify createInitialData() has liabilities: [] — covered in Phase A
+ 14. End-to-end: export data.json, clear, import — liabilities survive round-trip
+```
+
+---
+
+## Component Inventory
+
+### New components
+
+| File | Type | Purpose |
+|------|------|---------|
+| `src/pages/LiabilitiesPage.tsx` | Page | CRUD for standalone loans — label, lender, balance, EMI |
 
 ### Modified components
 
-**`src/components/AppSidebar.tsx`**
-
-Currently uses `collapsible="none"`, which bypasses the Sheet-based mobile collapse built into
-the shadcn/ui sidebar. This must change to `collapsible="offcanvas"` for mobile (see Mobile
-section). As part of that change, add `ThemeToggle` to `SidebarHeader` so it appears in the
-sidebar footer or header consistently on both desktop and mobile.
-
-**`src/App.tsx`**
-
-Add a `<SidebarTrigger>` (shadcn/ui export from `sidebar.tsx`) to the `<main>` header area so
-mobile users have a visible hamburger button to open the sidebar. The `<main className="p-6">`
-wrapper needs a top bar row containing the trigger and optionally the page title.
-
-**`src/main.tsx`**
-
-Add `ThemeProvider` as the outermost wrapper (see above).
-
-### Theme persistence strategy
-
-Storage key: `'theme'` in `localStorage`. Value: `'light'` or `'dark'` (string literal).
-
-Read on provider mount using a lazy state initializer (not `useEffect`) so the correct class is
-applied before first paint — this avoids a flash of the wrong theme on load.
-
-Do NOT store the theme preference in `data.json`. It is a UI preference, not financial data.
-Keep it separate from `AppDataContext` entirely. No schema version bump needed.
-
-Do NOT attempt to read `prefers-color-scheme`. The requirement is a manual toggle with session
-persistence, not automatic system-preference matching. Simpler is correct here.
+| File | Change | Risk |
+|------|--------|------|
+| `src/types/data.ts` | Add `LiabilityItemSchema`; add `liabilities` to `DataSchema`; add `lender`/`emiAmountInr` to `PropertyItemSchema` | LOW — new fields are optional or additive |
+| `src/context/AppDataContext.tsx` | Add `ensureLiabilities()`; extend migration chain; extend `createInitialData()` | LOW — follows identical pattern to `ensureOtherCommodities()` |
+| `src/lib/dashboardCalcs.ts` | Add `sumLiabilitiesInr()`, `sumAllDebtInr()`, `calcNetWorth()`, `debtToAssetRatio()` | LOW — pure additions, no changes to existing functions |
+| `src/pages/DashboardPage.tsx` | Switch net worth headline to `calcNetWorth()`; add Total Debt + ratio rows | MEDIUM — changes visible headline value and snapshot storage |
+| `src/pages/PropertyPage.tsx` | Add lender + EMI inputs inside existing liability section | LOW — additive form fields only |
+| `src/components/AppSidebar.tsx` | Add `'liabilities'` to `SectionKey` union + `NAV_ITEMS` | LOW |
+| `src/App.tsx` | Add `LiabilitiesPage` to `SECTION_COMPONENTS` | LOW |
 
 ---
 
-## Mobile Responsive
+## Data Flow
 
-### Current state
+### Liability save
 
-The shadcn/ui `Sidebar` component in `AppSidebar.tsx` is rendered with `collapsible="none"`.
-That prop makes the sidebar a static `<div>` with no collapse logic — it is always visible and
-always takes `16rem` of horizontal space. On small screens this is unusable.
-
-The `SidebarProvider` and `sidebar.tsx` already implement the full mobile Sheet pattern:
-when `isMobile` is true (< 768 px) and `collapsible` is not `"none"`, the sidebar renders
-as a `<Sheet>` overlay with an 18rem width. This code is already written in the installed
-`sidebar.tsx` — it just needs to be enabled.
-
-The `useIsMobile()` hook at `src/hooks/use-mobile.tsx` is already present and used by
-`sidebar.tsx` internally.
-
-### Layout changes needed
-
-**`AppSidebar.tsx` — change `collapsible` prop**
-
-Change `collapsible="none"` to `collapsible="offcanvas"`. This single change activates the
-mobile Sheet overlay path in the existing sidebar component for viewports below 768 px.
-
-**`App.tsx` — add top bar with sidebar trigger**
-
-On desktop the sidebar is always visible, so no trigger is needed. On mobile the sidebar is
-hidden behind a Sheet, so a trigger button must exist in the main content area. Add a sticky
-top bar inside `<SidebarInset>`:
-
-```tsx
-// Inside SidebarInset, above <main>
-<header className="flex items-center gap-2 px-4 h-12 border-b md:hidden">
-  <SidebarTrigger />
-  <span className="text-sm font-semibold">Wealth Tracker</span>
-</header>
+```
+LiabilitiesPage (user submits add/edit form)
+  → build updated liabilities: LiabilityItem[]
+  → saveData({ ...data, liabilities: updatedList })
+  → AppDataContext.saveData()
+  → optimistic setData() + POST /api/data
+  → data.json written
 ```
 
-Use `md:hidden` so the trigger only appears below the `md` breakpoint (768 px) where the
-sidebar collapses.
+### Dashboard net worth computation
 
-**`src/App.tsx` — main content padding**
-
-Current: `<main className="p-6">`. On mobile, `p-6` (24 px) is correct but the content width
-will be the full viewport minus no sidebar. No padding change is needed — the existing `p-6`
-works on mobile once the sidebar is no longer stealing 16rem of horizontal space.
-
-### Component modifications
-
-All 8 pages share the same structure: a `space-y-4` or `space-y-8` wrapper with a page heading,
-a card list, and a `Sheet` for add/edit. The patterns below apply uniformly.
-
-**Page header row (all pages)**
-
-Pattern in every page (example from `GoldPage`):
-```tsx
-<div className="flex items-start justify-between">
-  <div>
-    <h1 className="text-xl font-semibold">Gold</h1>
-    <output>₹1,20,000</output>
-  </div>
-  <Button>Add Item</Button>
-</div>
 ```
-
-On narrow screens the heading block and the button compete for horizontal space. Fix:
-add `flex-wrap gap-2` and let the button wrap below, or add `shrink-0` to the button. Minimal
-class change: `"flex flex-wrap items-start justify-between gap-2"`.
-
-**`DashboardPage.tsx` — category rows**
-
-Each row has a left label block and a right `{value} {pct}` block:
-```tsx
-<div className="flex items-center justify-between gap-2 px-4 py-3">
+DashboardPage (mount or data/live-prices change)
+  → calcCategoryTotals(data, live)               [UNCHANGED]
+  → sumForNetWorth(totals) → grossTotal           [UNCHANGED]
+  → sumLiabilitiesInr(data) → standaloneLiab     [NEW]
+  → calcNetWorth(grossTotal, standaloneLiab)      [NEW] → headline
+  → sumAllDebtInr(data) → totalDebtDisplay        [NEW] → Total Debt row
+  → debtToAssetRatio(totalDebt, grossTotal)       [NEW] → ratio display
+  → asset rows render with grossTotal denominator [UNCHANGED]
 ```
-The percentage column is fixed at `w-10`. On very narrow screens (< 360 px) the INR value
-could truncate. Fix: keep existing layout but ensure the value span has `min-w-0 truncate` so
-it clips rather than overflows. The `gap-2 shrink-0` on the right block is already present and
-correct.
-
-**`PropertyPage.tsx` — milestone Table component**
-
-This is the highest-risk responsive target. It uses `<Table>` with 5 columns (label, amount,
-paid checkbox, cumulative, action). On mobile a full table with 5 columns will overflow its
-container.
-
-Recommended approach: swap to a stacked card list on mobile, or use horizontal scroll on the
-table container. The simpler fix is:
-```tsx
-<div className="overflow-x-auto">
-  <Table>...</Table>
-</div>
-```
-This requires no structural change and is safe for an initial pass. A stacked layout would give
-better UX but is a more significant rewrite — defer to a follow-up if needed.
-
-**`Sheet` components (all pages with add/edit forms)**
-
-shadcn/ui `Sheet` with `side` unset defaults to `"right"` and renders full-height, 70%+ width on
-mobile (Tailwind's default `SheetContent` is `w-3/4`). This already works well on mobile without
-modification. No changes required.
-
-**`SettingsPage.tsx` — live rates `<dl>` rows**
-
-Each row: `<div className="flex justify-between gap-4">`. On narrow screens the long label
-("USD → INR (₹ per $1)") and value may be too close. Already uses `gap-4` which is fine.
-Only change needed: ensure the outer `<Card>` does not have a fixed min-width. Currently it does
-not — no change needed.
-
-**`BitcoinPage.tsx`, `MutualFundsPage.tsx`, `StocksPage.tsx`, `BankSavingsPage.tsx`,
-`RetirementPage.tsx`** — not read in detail but follow the same `flex items-start justify-between`
-header + Card list pattern as GoldPage. Apply the same `flex-wrap gap-2` fix to the header row
-in each.
-
-### Build order
-
-The two features (dark mode and mobile) are independent. Recommended order:
-
-**Step 1 — Dark mode (no layout risk)**
-
-1. Create `src/context/ThemeContext.tsx` — `ThemeProvider`, `useTheme` hook
-2. Wrap `main.tsx` with `ThemeProvider`
-3. Create `src/components/ThemeToggle.tsx` — Sun/Moon toggle button
-4. Add `ThemeToggle` to `AppSidebar.tsx` sidebar header
-5. Manual smoke test: toggle on/off, reload, confirm persistence
-
-Dark mode requires no changes to any page component. All pages inherit dark mode automatically
-via CSS custom properties already defined in `index.css`. This makes it a zero-regression change
-to all 8 pages.
-
-**Step 2 — Mobile sidebar (structural, test on each page after)**
-
-1. Change `AppSidebar.tsx` `collapsible="none"` to `collapsible="offcanvas"`
-2. Add mobile top bar with `<SidebarTrigger>` inside `App.tsx`
-3. Test navigation works on mobile viewport (sidebar opens, page loads, sidebar closes on nav)
-4. Since `onSelect` closes the sidebar after navigation: verify `setOpenMobile(false)` is called.
-   The shadcn/ui `SidebarMenuButton` `onClick` should call `onSelect` and the Sheet should
-   close when the user taps outside — but confirm with a real mobile viewport test.
-
-**Step 3 — Page-level responsive fixes (per page, low risk)**
-
-Apply per-page responsive class fixes in page order: Dashboard, Gold, MF, Stocks, Bitcoin,
-Bank Savings, Retirement, Settings, Property (Property last because of table complexity).
-
-Each fix is a Tailwind class change on 1–3 elements per page — no logic changes.
-
-**Step 4 — Property table overflow (isolated)**
-
-Wrap `<Table>` in `<div className="overflow-x-auto">` inside PropertyPage. If horizontal scroll
-proves unacceptable in testing, escalate to stacked card layout in a separate sub-task.
 
 ---
 
-## Summary: New vs Modified
+## Anti-Patterns to Avoid
 
-| Item | Type | File |
-|------|------|------|
-| `ThemeProvider` + `useTheme` | NEW | `src/context/ThemeContext.tsx` |
-| `ThemeToggle` button | NEW | `src/components/ThemeToggle.tsx` |
-| Wrap with `ThemeProvider` | MODIFIED | `src/main.tsx` |
-| Add `ThemeToggle`, change `collapsible` | MODIFIED | `src/components/AppSidebar.tsx` |
-| Add mobile top bar + `SidebarTrigger` | MODIFIED | `src/App.tsx` |
-| `flex-wrap gap-2` on header row | MODIFIED | All 8 page files |
-| `overflow-x-auto` table wrapper | MODIFIED | `src/pages/PropertyPage.tsx` |
+### Anti-Pattern 1: Storing liabilities inside `data.assets`
 
-No changes to: `index.css`, `tailwind.config.js`, `AppDataContext.tsx`, `LivePricesContext.tsx`,
-`data.json` schema, `priceApi.ts`, or any calculation utilities.
+**What people do:** Add `liabilities: LiabilityItem[]` inside the `assets` object to keep all
+financial data together.
+
+**Why it's wrong:** `DASHBOARD_CATEGORY_ORDER` and `CategoryTotals` enumerate asset keys to
+render dashboard rows. Adding liabilities there forces special-case exclusion logic in the
+render loop and would make `sumForNetWorth()` return a negative subtotal for the liabilities
+row, breaking percentage calculations.
+
+**Do this instead:** Top-level peer key at `DataSchema` root, same placement as `netWorthHistory`.
+
+---
+
+### Anti-Pattern 2: Unifying property loans into the top-level liabilities list
+
+**What people do:** Remove `outstandingLoanInr` from `PropertyItem` and mirror each property
+loan as an entry in `data.liabilities`.
+
+**Why it's wrong:** `sumPropertyInr()` computes equity = `agreementInr − outstandingLoanInr`.
+Moving the loan breaks this equity calculation and would require `sumPropertyInr()` to look up
+a matching liability entry by some external ID — there is no FK integrity in a flat JSON file.
+The property row on the dashboard would revert to showing gross agreement value, not equity.
+
+**Do this instead:** Keep the loan anchored on `PropertyItem` and enrich in place with `lender`
+and `emiAmountInr`. `sumAllDebtInr()` in dashboardCalcs aggregates property loans and standalone
+liabilities for the display-only "Total Debt" row without moving any data.
+
+---
+
+### Anti-Pattern 3: Changing `sumForNetWorth()` to subtract liabilities inline
+
+**What people do:** Modify `sumForNetWorth(totals)` to accept liabilities and return true net
+worth directly, saving a line at each call site.
+
+**Why it's wrong:** `DashboardPage` uses the return value of `sumForNetWorth()` as the
+denominator for per-row asset percentages. If the denominator becomes gross minus debt, the
+percentages lose the invariant that they add to 100% (and can exceed 100% when debt is large).
+
+**Do this instead:** Keep `sumForNetWorth()` unchanged as a gross-assets total. Introduce
+`calcNetWorth(grossAssets, standaloneLiabilities)` as a separate, clearly-named function for
+the headline display.
+
+---
+
+### Anti-Pattern 4: Skipping `ensureLiabilities()` migration function
+
+**What people do:** Add `liabilities: z.array(LiabilityItemSchema)` to `DataSchema` as a
+required field without injecting a default before `safeParse()`, assuming users will always
+have fresh data.
+
+**Why it's wrong:** `DataSchema` root uses `z.object()` without `.passthrough()`. An old
+`data.json` missing the `liabilities` key fails `safeParse()`, triggering the "starting with
+defaults" error path and clearing all of the user's displayed data (though it does not overwrite
+their file until they save).
+
+**Do this instead:** Add `ensureLiabilities()` to inject `liabilities: []` before `safeParse()`,
+following the identical pattern as `ensureOtherCommodities()`. This keeps migration functions
+consistent, separately testable, and guarantees old files always parse.
+
+---
+
+## Sources
+
+- Direct inspection: `src/types/data.ts` — full schema
+- Direct inspection: `src/lib/dashboardCalcs.ts` — all calc functions including `sumPropertyInr()`
+- Direct inspection: `src/context/AppDataContext.tsx` — migration chain, `createInitialData()`
+- Pattern reference: `src/pages/CommoditiesPage.tsx` — CRUD page template
+- Pattern reference: `src/lib/__tests__/migration.test.ts` — migration test pattern
+- Pattern reference: `src/lib/__tests__/dashboardCalcs.test.ts` — calc unit test pattern
+- Context: `.planning/PROJECT.md` — v1.5 milestone goals and constraints
+
+---
+*Architecture research for: v1.5 Debt & Liabilities — Personal Wealth Tracker*
+*Researched: 2026-05-01*

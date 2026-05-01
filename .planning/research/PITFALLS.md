@@ -1,267 +1,255 @@
 # Pitfalls Research
 
-**Domain:** Adding dark mode (manual toggle + localStorage) and mobile responsiveness to an existing React + Vite + Tailwind + shadcn/ui finance app.
-**Researched:** 2026-04-26
-**Codebase inspected:** Full source review — App.tsx, index.css, tailwind.config.js, index.html, all pages, AppSidebar.tsx, sheet.tsx, sidebar.tsx, use-mobile.tsx.
+**Domain:** Adding debt/liability tracking to an existing personal finance app (partial liability already present — property only)
+**Researched:** 2026-05-01
+**Confidence:** HIGH — based on direct code inspection of `dashboardCalcs.ts`, `data.ts`, `AppDataContext.tsx`, `DashboardPage.tsx`
 
 ---
 
-## Dark Mode Pitfalls
+## Critical Pitfalls
 
-### Pitfall DM-01: Flash of Unstyled Content (FOUC) on page load
+### Pitfall 1: Double-Counting Property Debt in Net Worth
 
-**What goes wrong:** The app reads `localStorage` for the saved theme preference inside a React `useEffect`. `useEffect` runs after the browser has already painted, so on the initial render the page always shows light mode for one frame before snapping to dark. On fast machines this is a brief flicker; on slower ones it is a jarring white flash.
+**What goes wrong:**
+`sumPropertyInr()` in `dashboardCalcs.ts` already nets out the property liability. It subtracts `outstandingLoanInr` from `agreementInr` when `hasLiability` is true, returning equity rather than gross value. If v1.5 also introduces a standalone `liabilities` list and a user enters their home loan in both the Property section's liability toggle AND the new Liabilities page, the same debt is subtracted twice. Net worth drops by double the loan balance with no error shown.
 
-**Why it happens in this codebase specifically:** `index.html` has no theme class on `<html>` and no inline script. `main.tsx` renders the React tree with `StrictMode` + two providers before any theme logic could fire. Any `ThemeProvider` component written in React will suffer this gap because React hydration/render is not synchronous with the browser's first paint.
+**Why it happens:**
+The two entry points look independent to the user. The Property form has a "Liability" toggle that sets `outstandingLoanInr` on that property item. The new Liabilities page is a separate form with its own list. Without an explicit guardrail, a thorough user filling in "all debts" enters the home loan in both places. This is the single most likely mistake for first-time users of v1.5.
 
-**Prevention:** Inject a small inline `<script>` tag directly in `index.html`, **before** the `<body>` and before the module bundle loads. This script reads `localStorage` and writes `class="dark"` onto `<html>` synchronously during HTML parsing — before any paint.
+**How to avoid:**
+1. Keep `sumPropertyInr()` returning equity as-is (property already nets its own loan). Do not change this function.
+2. Add a new `calcTotalStandaloneDebt(data)` that sums only `data.liabilities.items[n].outstandingBalance`. This pool is completely separate from property.
+3. Net worth formula: `grossNetWorth = sumForNetWorth(categoryTotals) - calcTotalStandaloneDebt(data)`. The property liability is already embedded in the `property` category total; only standalone debt is subtracted on top.
+4. In the Liabilities page UI, add visible inline copy: "For a home loan on a tracked property, use the Liability toggle on that property — entering it here too will double-count."
+5. In the Dashboard Total Debt row, show the breakdown: "Property loans: X | Other loans: Y" so the user can self-audit.
 
-```html
-<!-- index.html, inside <head>, before </head> -->
-<script>
-  (function () {
-    try {
-      var t = localStorage.getItem('theme');
-      if (t === 'dark') document.documentElement.classList.add('dark');
-    } catch (e) {}
-  })();
-</script>
-```
+**Warning signs:**
+- Net worth on Dashboard is significantly lower than expected immediately after adding standalone liabilities
+- Total Debt row value is larger than any individual loan visible in either the Property or Liabilities page
 
-The `try/catch` handles private-browsing environments where `localStorage` access throws. Keep the script minimal — anything more than class toggling belongs in the React layer.
-
-**Phase:** Must be addressed in the same phase that adds the dark mode toggle. Adding the toggle without the inline script ships the FOUC bug.
+**Phase to address:**
+DEBT-03 (net worth formula). Define the formula precisely and write a unit test before building any UI: one property item with `outstandingLoanInr = 500000` + zero standalone liabilities must produce the same net worth as the current v1.4 output.
 
 ---
 
-### Pitfall DM-02: ThemeProvider written as a React Context causes FOUC even with the inline script
+### Pitfall 2: Snapshot Backward Compatibility — Old `totalInr` Values Are Semantically Ambiguous After v1.5
 
-**What goes wrong:** Developers write a `ThemeContext` that reads `localStorage` in a `useState` initialiser and applies `document.documentElement.classList.toggle('dark', ...)` in a `useEffect`. This appears to work in development (hot-reload masks the flash) but the FOUC reappears in production builds where loading is slower.
+**What goes wrong:**
+All existing `netWorthHistory` entries store `totalInr` computed by `sumForNetWorth(totals)` which calls `sumPropertyInr()`. Those snapshots already deduct property loans (equity is stored, not gross). When v1.5 changes the net worth formula to also subtract standalone liabilities, old snapshots were recorded under the pre-v1.5 formula. The chart will show a discontinuity at the v1.5 adoption point that looks like a sudden drop in wealth — even if the user's actual financial position is unchanged.
 
-**Why it happens:** `useState` initial value is evaluated synchronously but `useEffect` fires after paint. Even if the class is applied in the useState initialiser directly (mutating the DOM in render), React strict mode re-renders cause visible flicker.
+**Why it happens:**
+`NetWorthPointSchema` stores only `{ recordedAt, totalInr }` with no formula version metadata. At render time there is no way to know whether a historical snapshot included standalone liabilities or not.
 
-**Prevention:** The React context is still correct for exposing the current theme and the toggle function to components. The context should just **read** the class on `<html>` as its initial state rather than applying it:
+**How to avoid:**
+1. Do not retroactively alter existing snapshot values. Old entries are immutable history — the established pattern in this codebase (`ensureNetWorthHistory`, `ensureOtherCommodities`) is additive-only. Follow the same discipline.
+2. Accept the discontinuity as legitimate data. The chart drop at v1.5 is real: past snapshots did not capture all debt.
+3. Optionally, add a `formulaVersion: z.number().int().optional()` field to `NetWorthPointSchema` (e.g., `1` = pre-v1.5 assets-only, `2` = full liabilities included). This costs one schema field and enables future chart annotations or tooltips explaining the change.
+4. A UI note on the chart ("Liabilities tracking added — older snapshots may not reflect all debts") is the minimum user-facing mitigation.
 
-```ts
-const [theme, setTheme] = useState<'light' | 'dark'>(() =>
-  document.documentElement.classList.contains('dark') ? 'dark' : 'light'
-);
-```
+**Warning signs:**
+- A migration function that re-computes or modifies existing `netWorthHistory[n].totalInr` values
+- A sharp unexplained drop in the chart at the v1.5 upgrade date
 
-The inline `<script>` in `index.html` (DM-01) does the actual DOM mutation. The React context only syncs to it on toggle. This separation avoids any paint-cycle race.
-
-**Phase:** Architecture decision for dark mode phase — document the pattern in the ThemeContext file.
-
----
-
-### Pitfall DM-03: Hard-coded colour values that bypass the CSS variable system
-
-**What goes wrong:** Any Tailwind class that references a raw colour token (`bg-white`, `bg-gray-100`, `text-gray-900`, `bg-zinc-800`, `border-gray-200`) instead of a semantic token (`bg-background`, `bg-muted`, `text-foreground`, `border-border`) will not respond to dark mode. The page partially dark-modes; cards and sections remain light-coloured.
-
-**Why it happens in this codebase:** The codebase is clean — all pages use semantic tokens — but the risk surfaces when adding new UI or tweaking existing code. The dashboard `hover:bg-muted/50` pattern is correct. The danger is in fast edits during feature work picking up autocomplete suggestions for raw colour classes.
-
-**Specific existing risk spots to audit:**
-- `App.tsx`: `main` element uses `p-6` only — `bg-background` is applied via the global `body` rule in `index.css`, not on `main` itself. If a wrapper div ever gets `bg-white` added, it will break dark mode on all pages.
-- Any future `<table>` overflow wrapper divs that get a background for visual grouping.
-
-**Prevention:** Establish the rule before any dark mode work begins: "only use semantic colour tokens." Run a grep for raw colour tokens as part of the review checklist:
-
-```bash
-grep -r "bg-white\|bg-gray\|bg-zinc\|text-gray\|border-gray" src/
-```
-
-Expect zero results. Any findings must be converted to semantic equivalents before shipping.
-
-**Phase:** Audit in dark mode phase, add grep check to PR review notes.
+**Phase to address:**
+DEBT-05 (migration). The `ensureLiabilities()` migration function must only add the new `liabilities` key with empty items — it must not touch `netWorthHistory`. Document the formula-change discontinuity explicitly in code comments.
 
 ---
 
-### Pitfall DM-04: shadcn/ui Sheet overlay backdrop uses hardcoded black
+### Pitfall 3: Migration Gaps — `outstandingLoanInr` Is Already Optional and New Enrichment Fields Must Follow the Same Pattern
 
-**What goes wrong:** The `SheetOverlay` in `sheet.tsx` uses `bg-black/80` — a hardcoded raw colour. In dark mode this still renders correctly (dark overlay over dark content) but is not theme-aware. If the CSS variable system is ever extended, this overlay will be the first thing that looks wrong.
+**What goes wrong:**
+`PropertyItemSchema` already has `outstandingLoanInr: z.number().nonnegative().optional()`. If v1.5 enriches the property liability with additional fields (`lenderName`, `emiInr`) without careful schema design, two problems arise: (a) existing `data.json` files with `outstandingLoanInr` set but no `lenderName` will fail `DataSchema.safeParse()` if the new fields are required, breaking the entire load; (b) the `parseAppDataFromImport` chain must be extended but a missing step will silently fall through to the schema error path.
 
-**Why it matters:** This is a low-severity issue for v1.1 since `bg-black/80` actually looks fine in both modes. However, editing `sheet.tsx` is common when customising sheet width or scroll behaviour, and developers may not notice the hardcoded class.
+**Why it happens:**
+Adding required fields to an existing optional sub-object is the most common migration error. The developer adds `lenderName: z.string().min(1)` without making it `.optional()`, or forgets to chain a migration step before `safeParse()` that backfills the field for existing records.
 
-**Prevention:** Note this in code comments when touching `sheet.tsx`. It is acceptable to leave as-is for v1.1. The shadcn/ui canonical source uses the same pattern.
+**How to avoid:**
+1. Any new fields on `PropertyItemSchema` (lenderName, emiInr) must be `.optional()`, OR the migration must backfill them for all existing property items before `DataSchema.safeParse()` runs.
+2. Add the migration step inside `parseAppDataFromImport()` in `AppDataContext.tsx`, chained in order before `safeParse()`: `migrateLegacyBankAccounts → ensureNetWorthHistory → ensureOtherCommodities → ensureLiabilities → safeParse`.
+3. Guard debt math against missing enrichment fields: `lenderName` and `emiInr` are display-only and must never enter net worth calculations. Only `outstandingLoanInr` (property) and `outstandingBalance` (standalone) affect numbers.
 
-**Phase:** Acknowledge in dark mode phase; no action required unless visual issues arise.
+**Warning signs:**
+- `DataSchema.safeParse()` failing on load for users upgrading from v1.4
+- `loadError` state appearing immediately after upgrading with existing data
 
----
-
-### Pitfall DM-05: localStorage key collision or silent parse failure
-
-**What goes wrong:** Using a generic key like `'theme'` in `localStorage` can collide if the app is ever served from a shared origin. More practically: if the stored value is neither `'dark'` nor `'light'` (corrupted, renamed key, old value), the inline script must fall back gracefully to avoid applying an unknown class.
-
-**Prevention:** Keep the inline script defensive — only apply `dark` when the value is exactly `'dark'`, and ignore anything else. In the React ThemeContext, validate `localStorage.getItem('theme')` before using it:
-
-```ts
-const stored = localStorage.getItem('theme');
-const initial = stored === 'dark' || stored === 'light' ? stored : 'light';
-```
-
-**Phase:** Dark mode phase. One-line addition to both the inline script and the ThemeContext initialiser.
+**Phase to address:**
+DEBT-05 (migration + schema). Write a test using a real v1.4 `data.json` fixture that has `hasLiability: true` and `outstandingLoanInr` set, and confirm it passes the full migration chain without errors.
 
 ---
 
-### Pitfall DM-06: Toggle button placed inside a component that is not accessible from all pages
+### Pitfall 4: Debt-to-Asset Ratio Division by Zero and Negative Net Worth
 
-**What goes wrong:** The dark mode toggle button gets added to `AppSidebar` or to a specific page header. On mobile, when the sidebar collapses into a drawer (which the shadcn SidebarProvider already supports via `useIsMobile()`), the toggle may be unreachable without opening the sidebar first.
+**What goes wrong:**
+The Dashboard debt insight will compute `Debt-to-Asset Ratio = totalDebt / grossAssets`. Two edge cases cause failures: (a) `grossAssets` is zero — user with liabilities but no assets — resulting in `Infinity` or `NaN`; (b) net worth is negative because debt exceeds assets, and `NetWorthPointSchema.totalInr` has `.nonnegative()` which will reject snapshot recording when this happens.
 
-**Why it matters for this codebase:** `AppSidebar` currently uses `collapsible="none"`, so it is always visible on desktop. On mobile the shadcn sidebar switches to a Sheet-based drawer. If the toggle lives only in the sidebar, mobile users must open the sidebar to switch themes — poor UX for a setting they may change frequently.
+The existing `percentOfTotal()` function guards `grandTotal <= 0` but a new ratio function written separately may not replicate the guard. Display code formatting `Infinity` as a percentage string will crash or render "Infinity%".
 
-**Prevention:** Place the toggle in a persistent top bar (a `SidebarInset` header row), or add it to both the sidebar and the top bar. The top bar approach is also the correct solution for the mobile hamburger menu trigger (see Mobile Pitfall MB-01 below).
+**Why it happens:**
+Standard arithmetic oversight. The existing guard in `dashboardCalcs.ts` (`if (grandTotal <= 0) return 0`) is in one function; a new `calcDebtToAssetRatio` function written in a different pass may not copy it.
 
-**Phase:** Dark mode phase and mobile phase are coupled here. Implement the top bar trigger/header as part of mobile work, then add the theme toggle to the same header row.
+**How to avoid:**
+1. Define `calcDebtToAssetRatio(totalDebt: number, grossAssets: number): number` in `dashboardCalcs.ts` alongside the other calc functions. Guard: `if (grossAssets <= 0 || totalDebt <= 0) return 0`.
+2. Use `grossAssets` (sum of raw category values before subtracting standalone debt) as the denominator, not `grandTotal`. Gross assets remain positive even when net worth is negative.
+3. In Dashboard component: display "—" when the ratio is 0 and there are no debts; display the ratio when 0 means debts exactly equal assets.
+4. Remove `.nonnegative()` from `NetWorthPointSchema.totalInr` — a snapshot of negative net worth is a valid financial state. Replace with `z.number()`.
 
----
+**Warning signs:**
+- Console errors: `NaN` or `Infinity` appearing after adding a loan larger than total assets
+- Snapshot recording fails with a Zod error when net worth goes negative
 
-## Mobile Responsive Pitfalls
-
-### Pitfall MB-01: Sidebar is always visible — no mobile navigation trigger exists
-
-**What goes wrong:** `AppSidebar` is set `collapsible="none"`, which means it never collapses. The shadcn SidebarProvider and `useIsMobile()` hook are already wired in `sidebar.tsx`, and the component supports a Sheet-based mobile drawer mode, but this mode is never activated because `collapsible="none"` disables it entirely. On narrow screens the sidebar and the main content both compete for the same 320-375px of width, making the layout unusable.
-
-**Root cause in code:** `AppSidebar.tsx` line 40:
-```tsx
-<Sidebar collapsible="none" className="border-r">
-```
-
-**Prevention:** Change `collapsible="none"` to `collapsible="offcanvas"`. This activates the existing shadcn mobile Sheet drawer. Add a hamburger/menu trigger button in a new top bar inside `SidebarInset`. shadcn/ui exports `SidebarTrigger` for exactly this purpose.
-
-Expected result: on desktop the sidebar is persistent; on mobile it is hidden behind a trigger button. No new third-party library required — the infrastructure is already in the installed shadcn sidebar component.
-
-**Phase:** First task in mobile phase. Every other mobile fix depends on the viewport being available to the main content.
+**Phase to address:**
+DEBT-04 (dashboard insights). Include unit tests: `calcDebtToAssetRatio(500000, 0)` → 0; `calcDebtToAssetRatio(0, 1000000)` → 0; `calcDebtToAssetRatio(500000, 1000000)` → 0.5.
 
 ---
 
-### Pitfall MB-02: `main` padding (`p-6`) is constant — no mobile-safe padding
+### Pitfall 5: UX Confusion Between Property Liability Toggle and Standalone Liabilities Page
 
-**What goes wrong:** `App.tsx` line 35:
-```tsx
-<main className="p-6">
-```
-`p-6` is 24px on all sides. On a 375px phone this consumes 48px of horizontal space (24px each side), leaving only 327px for content. Cards and list items have additional internal padding. Combined, some content runs very close to the edge or wraps awkwardly.
+**What goes wrong:**
+After v1.5 ships, a user with a home loan sees two places to record it: the Property section's "Liability" toggle (contextual, next to the property it belongs to) and the new Liabilities page (appears to be the authoritative "all debts" view). Without guidance, the user will either: (a) enter the loan in both places (double-counting, Pitfall 1 above); or (b) remove it from the Property toggle and re-enter it on the Liabilities page, causing the Property row to spike to its full `agreementInr` value while the net worth temporarily jumps before the standalone entry is saved.
 
-**Prevention:** Use responsive padding: `p-4 md:p-6`. This gives 16px on mobile and 24px on md+. Apply the same pattern to any full-width card that adds its own padding.
+**Why it happens:**
+The existing property liability is embedded in an asset form — it is not mentally in the "liabilities" category. The new Liabilities page introduces a competing mental model: "I should track all my debts in one place."
 
-**Phase:** Mobile phase. A one-line change with wide visual impact — do it early to accurately judge all other mobile fixes.
+**How to avoid:**
+1. Liabilities page: add inline contextual copy — "For a home loan on a tracked property, use the Liability toggle on that property. Adding it here too will double-count it in your net worth."
+2. Property form liability section: add a sub-label — "This loan is tracked against this property. You do not need to add it to the Liabilities page."
+3. Dashboard Total Debt row: show a labelled breakdown of property loans vs. other loans so users can identify duplication.
+4. Long-term (future milestone): unify property liability into the liabilities schema so there is only one entry point. Do not attempt this in v1.5 — it requires migrating and re-linking existing data.
 
----
+**Warning signs:**
+- User reports "net worth halved after entering liabilities"
+- Property row on Dashboard shows full agreement value while the same loan appears in the standalone liabilities list
 
-### Pitfall MB-03: Property page milestone table is not usable on narrow screens
-
-**What goes wrong:** `PropertyPage.tsx` uses a shadcn `<Table>` with four columns inside a `<SheetContent>`. The Sheet is `w-3/4` on mobile (from `sheet.tsx` line 43), which on a 375px phone is approximately 281px wide. The milestone table has four columns: Label (32%), Amount (28%), Paid (w-24 = 96px), Delete (w-10 = 40px). The fixed-pixel columns force the percentage columns to shrink below usable input widths. Users cannot type in the Label or Amount fields without the inputs being truncated.
-
-**Why this is the hardest mobile fix in the codebase:** The milestone table is inside a Sheet inside a form. Overflow options are limited: `overflow-x-auto` on the table container works but forces horizontal scrolling inside an already narrow sheet — acceptable but awkward. The better fix is replacing the table layout with a stacked card-style layout per milestone row on mobile screens.
-
-**Prevention (ordered by effort):**
-1. Minimum viable: add `overflow-x-auto` wrapper around the `<Table>`. Two-line change. Prevents clipping.
-2. Preferred: replace the `<Table>` with a flex-col milestone card layout on mobile using responsive classes. Each milestone row becomes a stacked form with Label + Amount stacked vertically, and the Paid checkbox + Delete button in a row beneath. More effort but fully usable.
-
-**Phase:** Mobile phase. Flag this as the highest-complexity mobile task. Tackle after the sidebar and padding fixes so the sheet dimensions are stable.
+**Phase to address:**
+DEBT-02 (Liabilities page UI). The UX copy is part of the definition of done for the page, not a polish task. Verify it is present before marking DEBT-02 complete.
 
 ---
 
-### Pitfall MB-04: Sheet forms are not scrollable — content gets clipped on small screens
+### Pitfall 6: `createInitialData()` Does Not Initialize the New `liabilities` Key
 
-**What goes wrong:** `SheetContent` in `sheet.tsx` does not include `overflow-y-auto`. The Property sheet is already aware of this (`className="overflow-y-auto sm:max-w-lg"` in `PropertyPage.tsx` line 255), but the other sheets (Stocks, Gold, Mutual Funds, Bank Savings, Bitcoin, Retirement) do **not** have `overflow-y-auto`. On a phone where the keyboard is open, the sheet content area is reduced to roughly 40-50% of the screen height. Form fields below the fold are unreachable.
+**What goes wrong:**
+`createInitialData()` in `AppDataContext.tsx` is the source for first load, failed parse, and user-initiated data reset. If `liabilities` is added to `DataSchema` but not to `createInitialData()`, the reset path produces an object that fails `DataSchema.safeParse()`. The app enters the error state immediately after the user confirms "clear all data" — an especially bad failure because the user just intentionally wiped their data.
 
-**Specific affected files:**
-- `StocksPage.tsx` — `<SheetContent>` has no overflow class
-- `GoldPage.tsx` — same
-- `MutualFundsPage.tsx` — same
-- `BankSavingsPage.tsx` — same
-- `BitcoinPage.tsx` — same
-- `RetirementPage.tsx` — same
+**Why it happens:**
+`DataSchema` is defined in `src/types/data.ts` and `createInitialData()` is in `src/context/AppDataContext.tsx`. They are updated independently. Every prior version (netWorthHistory in v1.3, otherCommodities in v1.4) required manual updates to both files. Missing one is the most common oversight in this codebase's pattern.
 
-**Prevention:** Add `overflow-y-auto` to every `SheetContent` that does not already have it. Consider adding it to the default `SheetContent` variant in `sheet.tsx` so it applies globally. Test each sheet with a software keyboard open on a 375px viewport.
+**How to avoid:**
+1. After every schema change, search for `createInitialData` and update it to include the new field with its empty default value.
+2. Add (or extend) the test: `expect(DataSchema.safeParse(createInitialData()).success).toBe(true)`. This test already covers v1.4 shapes; it must pass for v1.5 shapes too.
 
-**Phase:** Mobile phase. Systematic fix across all page files. Low risk but must be tested with keyboard open.
+**Warning signs:**
+- Zod errors immediately after data reset: "Required" or "Invalid type" on `liabilities`
+- `loadError` state shows right after the user confirms the danger-zone reset
 
----
-
-### Pitfall MB-05: Header row (`flex items-start justify-between`) wraps badly on narrow screens
-
-**What goes wrong:** Every asset page uses this pattern:
-```tsx
-<div className="flex items-start justify-between">
-  <div>
-    <h1>...</h1>
-    <output>₹ total</output>
-  </div>
-  <Button>Add ...</Button>
-</div>
-```
-On a 375px screen with `p-6` padding (48px consumed), the remaining 327px must fit the page title, section total, and an Add button. For pages with long totals (e.g. `₹1,50,00,000`) or long section names, the button either overlaps text or wraps to a new line misaligning the layout.
-
-**Prevention:** Add `gap-2 flex-wrap` to the outer div, or make the button `shrink-0` and test all INR total string lengths. The total output already uses `tabular-nums` which helps but does not constrain width. A safe fix: `<div className="flex items-start justify-between gap-2 flex-wrap">` — the button drops to a new row only when genuinely needed.
-
-**Phase:** Mobile phase. Check all nine pages.
+**Phase to address:**
+DEBT-05 (schema + migration). Treat `createInitialData()` update as a hard checklist item alongside every `DataSchema` change — not optional.
 
 ---
 
-### Pitfall MB-06: Dashboard percentage column has a fixed width on mobile
+### Pitfall 7: `noHoldingsYet()` Gating Logic Excludes Liabilities
 
-**What goes wrong:** `DashboardPage.tsx` line 201:
-```tsx
-<span className="text-sm text-muted-foreground w-10 text-right">
-```
-The `w-10` (40px) fixed width for the percentage column is fine on desktop. On mobile, combined with the currency value column, the right side of each dashboard row can overflow into the row button's padding if the INR value is wide (eight-digit numbers in Indian formatting like `₹1,50,00,000` are 12 characters).
+**What goes wrong:**
+`noHoldingsYet()` in `DashboardPage.tsx` checks all asset fields to decide whether to show the "No holdings yet" empty state. After v1.5, a user who has entered debts but no assets sees "No holdings yet" even though they have outstanding loans tracked. The net worth could display as 0 (or negative if negative net worth is implemented) while the page shows a "start adding assets" prompt — wrong and confusing.
 
-**Prevention:** Use `min-w-[2.5rem]` instead of `w-10` so the column has a minimum but can shrink if needed. Also ensure the value span has `truncate` or that the right-side `flex` container uses `shrink-0 text-right`. The existing `shrink-0` on the outer container is correct, but the inner spans need explicit protection.
+A secondary issue: `NetWorthPointSchema.totalInr: z.number().nonnegative()` will reject recording a snapshot when net worth is negative (more debt than assets). The "Record snapshot" button will appear enabled but the save will fail Zod validation.
 
-**Phase:** Mobile phase. Low severity — test on an actual 375px viewport with maximum-length INR values.
+**Why it happens:**
+The function was written when only assets existed. The `.nonnegative()` constraint was correct in a world with no liabilities but becomes wrong once debt can exceed assets.
 
----
+**How to avoid:**
+1. Extend `noHoldingsYet()` (or rename it to `hasNothingToDisplay()`) to also check `data.liabilities?.items?.length === 0` or equivalent.
+2. Change `NetWorthPointSchema.totalInr` from `z.number().nonnegative()` to `z.number()` — negative net worth is a valid financial state that should be recordable.
 
-### Pitfall MB-07: `use-mobile.tsx` returns `false` on first render — causes layout jump
+**Warning signs:**
+- Dashboard shows "No holdings yet" when liabilities exist but no assets
+- Snapshot recording silently fails for users with more debt than assets
 
-**What goes wrong:** `useIsMobile()` in `use-mobile.tsx` initialises state as `undefined` (coerced to `false` by the `!!` return). On the first render, `isMobile` is `false` even on a phone. The `useEffect` fires after paint and sets the correct value. Any component that conditionally renders based on `useIsMobile()` will show the desktop layout for one frame before switching to mobile layout — a visible jump, similar to the dark mode FOUC problem.
-
-**Why it matters:** The shadcn Sidebar already uses `useIsMobile()` internally to decide whether to show a Sheet drawer. When `collapsible="offcanvas"` is enabled (MB-01 fix), this means the sidebar briefly renders as a desktop sidebar before collapsing into the mobile drawer on first paint.
-
-**Prevention:** The `useState<boolean | undefined>(undefined)` pattern with `!!` coercion is the shadcn canonical approach, and the jump is usually imperceptible with fast renders. However, if a visible flash occurs in production, the fix is to render nothing (or a skeleton) until `isMobile !== undefined`. This is only worth doing if the flash is confirmed visually.
-
-**Phase:** Mobile phase. Observe in testing; only fix if the flash is actually visible in production build.
+**Phase to address:**
+DEBT-04 (dashboard insights). Check both `noHoldingsYet()` and `NetWorthPointSchema.totalInr` — both require updates.
 
 ---
 
-### Pitfall MB-08: Virtual keyboard pushing content and causing viewport resize on iOS
+## Technical Debt Patterns
 
-**What goes wrong:** On iOS Safari, focusing a form input causes the virtual keyboard to appear, which resizes the viewport. This can cause scrollable Sheet containers to jump — the sheet may scroll to the top when a keyboard appears mid-form. This is a known iOS Safari behaviour that interacts poorly with `position: fixed` elements (sheets are fixed-positioned via Radix Dialog).
-
-**Why it matters for this codebase:** Every asset page uses a Sheet for its add/edit form. On iOS, opening a form and tapping the second or third input field can cause the sheet to scroll unexpectedly.
-
-**Prevention:**
-- Ensure `overflow-y-auto` on SheetContent (MB-04 fix) — this reduces the problem by allowing the sheet to scroll independently.
-- Add `env(safe-area-inset-*)` padding to the sheet footer so Save/Delete buttons remain visible above the keyboard.
-- Set `touch-action: manipulation` on form inputs to disable double-tap zoom on iOS, which otherwise mis-triggers the virtual keyboard.
-- Test specifically on iOS Safari (BrowserStack or real device), not just Chrome DevTools device emulation, which does not replicate the keyboard resize behaviour.
-
-**Phase:** Mobile phase, second pass. Address after all form overflow fixes are in place. Explicitly note "test on iOS Safari" in the phase review checklist.
+| Shortcut | Immediate Benefit | Long-term Cost | When Acceptable |
+|----------|-------------------|----------------|-----------------|
+| Keep property liability embedded in `PropertyItemSchema` rather than unifying it with the standalone liabilities list | No migration complexity in v1.5; Property UI unchanged | Two code paths aggregating total debt forever; debt display logic must aggregate from two sources | Acceptable in v1.5 — unification is a future milestone concern |
+| Store `totalInr` in snapshots without formula version metadata | Simpler `NetWorthPointSchema` | Unexplained chart discontinuity at v1.5 adoption; no recovery for old snapshots | Acceptable only if a UI chart annotation is added |
+| New property liability enrichment fields (`lenderName`, `emiInr`) as `.optional()` | No migration function needed for existing property items | Null-checks scattered through display code | Acceptable — follows the established pattern for this codebase |
+| EMI field stored but not used in net worth calculation | Consistent data model for future cash-flow features | Risk of a future developer accidentally including EMI in debt totals | Acceptable — must be documented clearly in the calc functions |
 
 ---
 
-## Phase-Specific Warnings
+## Integration Gotchas
 
-| Phase / Topic | Pitfall | Mitigation |
-|---|---|---|
-| Dark mode — inline script | DM-01: FOUC | Inline script in index.html before React loads |
-| Dark mode — ThemeContext | DM-02: React useEffect FOUC | Read class from HTML element, not localStorage |
-| Dark mode — all pages | DM-03: Hard-coded colours | Grep for raw colour tokens before shipping |
-| Dark mode — toggle placement | DM-06: Toggle unreachable on mobile | Add to persistent top bar, not just sidebar |
-| Mobile — layout foundation | MB-01: Sidebar never collapses | Change to collapsible="offcanvas", add SidebarTrigger |
-| Mobile — padding | MB-02: Fixed p-6 | Use p-4 md:p-6 responsive padding |
-| Mobile — property page | MB-03: Milestone table overflow | overflow-x-auto wrapper or stacked layout |
-| Mobile — all sheets | MB-04: Sheet not scrollable | Add overflow-y-auto to all SheetContent |
-| Mobile — iOS forms | MB-08: Keyboard viewport resize | Test on real iOS Safari, not DevTools emulation |
+| Integration | Common Mistake | Correct Approach |
+|-------------|----------------|------------------|
+| `dashboardCalcs.calcCategoryTotals` | Adding standalone debt subtraction inside the existing function so the returned `property` total changes | Add a new `calcTotalStandaloneDebt(data)` function; subtract it in `sumForNetWorth` or at the Dashboard consumer level, separate from `calcCategoryTotals` |
+| `parseAppDataFromImport` migration chain | Placing `ensureLiabilities` after `DataSchema.safeParse()` instead of before it | Chain order must be: `migrateLegacyBankAccounts → ensureNetWorthHistory → ensureOtherCommodities → ensureLiabilities → safeParse` |
+| `DataSchema` root structure | Adding `liabilities` inside `assets` (parallel to `property`) | `liabilities` is a peer of `assets` at the root level: `{ version, settings, assets: {...}, liabilities: {...}, netWorthHistory }` — it is not an asset class |
+| Snapshot `handleRecordSnapshot` in `DashboardPage` | Computing `totalInr` from old `sumForNetWorth(totals)` only, forgetting to subtract standalone debt | After v1.5, snapshot `totalInr` must equal the displayed net worth figure — derive it from the same expression used in the Dashboard heading |
+
+---
+
+## UX Pitfalls
+
+| Pitfall | User Impact | Better Approach |
+|---------|-------------|-----------------|
+| No guidance distinguishing property liability from standalone liabilities | User double-counts home loan; net worth is wrong by the full loan amount | Inline copy in both the Liabilities page and the Property liability section, each pointing to the other |
+| Total Debt row on Dashboard shows a single opaque number | User cannot self-audit for accidental double-counting | Show labelled sub-breakdown: "Property loans: X | Other loans: Y" |
+| Debt-to-Asset ratio displayed as "0%" when ratio is genuinely very small | Looks like "no debt" — misleading | Show one decimal place (e.g. "0.5%"); show "—" only when there is literally zero debt |
+| EMI field treated as part of outstanding balance in net worth math | Incorrect double-deduction; EMI is a future payment, not current debt above the outstanding balance | EMI is display-only (cash-flow context); only `outstandingBalance` (standalone) and `outstandingLoanInr` (property) enter net worth math |
+
+---
+
+## "Looks Done But Isn't" Checklist
+
+- [ ] **Net worth formula:** `property` category total already nets property equity; standalone liabilities are subtracted separately — verify no double-subtraction with a manual calculation against known values
+- [ ] **`createInitialData()`:** Returns a `liabilities` key with `{ updatedAt, items: [] }` — verify `DataSchema.safeParse(createInitialData()).success === true`
+- [ ] **Migration chain:** `ensureLiabilities` runs before `safeParse` in `parseAppDataFromImport` — verify a v1.4 fixture file (with and without property liability) loads without errors
+- [ ] **Reset parity:** After data reset, `data.liabilities.items` is an empty array, not `undefined` — verify the Liabilities page does not crash on first render after reset
+- [ ] **Snapshot recording:** `handleRecordSnapshot` computes `totalInr` equal to the displayed Dashboard net worth (including standalone debt subtraction) — verify the recorded value matches what the user sees
+- [ ] **Negative net worth allowed:** `NetWorthPointSchema.totalInr` changed from `.nonnegative()` to `z.number()` — verify snapshot recording succeeds when total debt exceeds total assets
+- [ ] **Division by zero guard:** `calcDebtToAssetRatio(x, 0)` returns 0, not `NaN` or `Infinity` — verify with unit test
+- [ ] **EMI excluded from net worth:** `emiInr` / `emiAmount` fields are stored and displayed but not subtracted anywhere in `dashboardCalcs` — grep for `emi` across `dashboardCalcs.ts` to confirm
+
+---
+
+## Recovery Strategies
+
+| Pitfall | Recovery Cost | Recovery Steps |
+|---------|---------------|----------------|
+| Double-counting discovered after snapshots recorded | MEDIUM | Fix formula in code; old snapshots remain as-is (show inflated past values); user records a new corrective snapshot; chart will show a step-change |
+| `createInitialData()` missing `liabilities` after data reset | LOW | Update function, restart dev server; no data to recover since reset already wiped everything |
+| Migration failed; `data.json` unreadable after upgrade | HIGH | User restores from JSON export backup; emphasise export-before-upgrade prompt in Settings; no automated recovery path |
+| User duplicated home loan across Property toggle and Liabilities page | LOW | User deletes one entry; net worth self-corrects; UX copy prevents recurrence |
+| `NetWorthPointSchema.totalInr` rejects negative value during snapshot | LOW | Change `.nonnegative()` to `z.number()`; re-deploy; no data migration needed since old snapshots are already non-negative |
+
+---
+
+## Pitfall-to-Phase Mapping
+
+| Pitfall | Prevention Phase | Verification |
+|---------|------------------|--------------|
+| Double-counting property debt (Pitfall 1) | DEBT-03 — net worth formula in `dashboardCalcs.ts` | Unit test: property item with loan + zero standalone liabilities → identical net worth to v1.4 |
+| Snapshot backward compatibility (Pitfall 2) | DEBT-05 — migration function | Migration test: v1.4 fixture with `netWorthHistory` entries loads; those entries are untouched |
+| Migration gaps in `PropertyItemSchema` enrichment (Pitfall 3) | DEBT-05 — schema + migration | Integration test: v1.4 `data.json` with `hasLiability: true` and `outstandingLoanInr` loads cleanly through full migration chain |
+| Division by zero and negative net worth (Pitfall 4) | DEBT-04 — dashboard insights + schema | Unit tests for `calcDebtToAssetRatio`; Zod test that negative `totalInr` is accepted |
+| UX confusion between two liability entry points (Pitfall 5) | DEBT-02 — Liabilities page UI | Manual review: inline disambiguation copy present in both Property form and Liabilities page |
+| `createInitialData()` missing new key (Pitfall 6) | DEBT-05 — schema | Automated: `DataSchema.safeParse(createInitialData())` in test suite must pass |
+| `noHoldingsYet()` incomplete gating (Pitfall 7) | DEBT-04 — dashboard insights | Manual test: add a loan with no assets → Dashboard shows debt rows, not the empty state |
 
 ---
 
 ## Sources
 
-- Code inspection: direct review of all files in `src/pages/`, `src/components/`, `src/hooks/use-mobile.tsx`, `src/index.css`, `tailwind.config.js`, `index.html`
-- Tailwind CSS docs: `darkMode: ["class"]` strategy requires class on root element — verified in `tailwind.config.js` line 3
-- shadcn/ui Sheet source: `sheet.tsx` confirmed `bg-black/80` overlay and no default `overflow-y-auto`
-- shadcn/ui Sidebar source: `sidebar.tsx` confirmed `useIsMobile()` integration and Sheet-based mobile drawer support
-- Confidence: HIGH for all DM and MB pitfalls (derived from direct code inspection of actual codebase)
+- Direct code inspection: `src/lib/dashboardCalcs.ts` — `sumPropertyInr()` nets equity; `sumForNetWorth()` iterates `DASHBOARD_CATEGORY_ORDER` (assets only, no liabilities subtraction yet); `percentOfTotal()` guards `grandTotal <= 0`
+- Direct code inspection: `src/types/data.ts` — `PropertyItemSchema.outstandingLoanInr` is `.optional()`; `NetWorthPointSchema.totalInr` is `.nonnegative()`; `DataSchema` root structure (assets, settings, netWorthHistory — no liabilities key)
+- Direct code inspection: `src/context/AppDataContext.tsx` — migration chain pattern (`migrateLegacyBankAccounts → ensureNetWorthHistory → ensureOtherCommodities → safeParse`); `createInitialData()` factory; `parseAppDataFromImport()` as the single path for both boot and import
+- Direct code inspection: `src/pages/DashboardPage.tsx` — `noHoldingsYet()` (assets only); `handleRecordSnapshot()` uses `sumForNetWorth(totals)`; `canRecordSnapshot` gating logic
+- Project history: `.planning/PROJECT.md` — v1.3 net worth history schema, v1.4 commodities migration pattern, v1.5 active requirements (DEBT-01 through DEBT-05)
+
+---
+
+*Pitfalls research for: debt & liability tracking added to existing personal finance app (v1.5)*
+*Researched: 2026-05-01*
