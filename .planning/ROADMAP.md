@@ -39,8 +39,8 @@
   5. A `NetWorthPointSchema` record with a negative `totalInr` passes validation
 **Plans**: 2 plans
 Plans:
-- [ ] 14-01-PLAN.md — Schema: LiabilityItemSchema, DataSchema liabilities, NetWorthPointSchema relaxation, migration function
-- [ ] 14-02-PLAN.md — Tests: LiabilityItemSchema validation and ensureLiabilities() migration unit tests
+- [x] 14-01-PLAN.md — Schema: LiabilityItemSchema, DataSchema liabilities, NetWorthPointSchema relaxation, migration function
+- [x] 14-02-PLAN.md — Tests: LiabilityItemSchema validation and ensureLiabilities() migration unit tests
 
 ### Phase 15: Calculation Utilities
 **Goal**: All debt arithmetic is implemented as pure, tested functions — no ad-hoc inline math in components
