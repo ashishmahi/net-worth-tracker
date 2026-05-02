@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.6
 milestone_name: — Encrypted Export
-status: **Roadmap ready** — v1.6 phases 19–20 defined
-last_updated: "2026-05-02T10:57:52.933Z"
-last_activity: 2026-05-02 — Roadmap created for v1.6 Encrypted Export
+status: ready_to_plan
+last_updated: "2026-05-02T15:25:00.000Z"
+last_activity: 2026-05-02 — Phase 19 complete; focus Phase 20
 progress:
   total_phases: 2
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 1
-  completed_plans: 0
-  percent: 0
+  completed_plans: 1
+  percent: 50
 ---
 
 ## Project
@@ -19,16 +19,16 @@ progress:
 
 ## Current position
 
-Phase: Phase 19 — Crypto Utilities (not started)
-Plan: —
-Status: **Roadmap ready** — v1.6 phases 19–20 defined
-Last activity: 2026-05-02 — Roadmap created for v1.6 Encrypted Export
+Phase: 20
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-05-02
 
-Progress: 0 / 2 phases complete
+Progress: 1 / 2 phases complete
 
 ```
-[          ] 0%
-Phase 19: Crypto Utilities         [ ] Not started
+[█████     ] 50%
+Phase 19: Crypto Utilities         [x] Complete (2026-05-02)
 Phase 20: Settings UI              [ ] Not started
 ```
 
@@ -91,8 +91,8 @@ See [`.planning/PROJECT.md`](PROJECT.md) — **v1.5** shipped and archived (2026
 
 **Completed through:** **v1.5** milestone close — archived 2026-05-02 (`v1.5-ROADMAP`, `v1.5-REQUIREMENTS`, **`.planning/phases/`** → **`milestones/v1.5-phases/`**, root **`REQUIREMENTS.md`** removed).
 
-**Current:** **v1.6 — Encrypted Export** — Roadmap defined 2026-05-02. Next: `/gsd-plan-phase 19`.
+**Current:** **v1.6 — Encrypted Export** — Phase **19** complete (crypto utilities). Next: **Phase 20** — Settings UI for encrypted export/import.
 
-**Last shipped:** **v1.5 — Debt & Liabilities** — 2026-05-02.
+**Last shipped:** **v1.5 — Debt & Liabilities** — 2026-05-02 (v1.6 in progress).
 
-**Planned Phase:** 19 (crypto-utilities) — 1 plans — 2026-05-02T10:57:52.927Z
+**Next:** `/gsd-plan-phase 20` or `/gsd-discuss-phase 20` before executing Phase 20.

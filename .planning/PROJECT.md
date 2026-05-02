@@ -77,11 +77,15 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.5-ROADMAP.md` and matc
 - [x] **DASH-01–DASH-04** — Dashboard debt integration ([`18-VERIFICATION.md`](milestones/v1.5-phases/18-dashboard-net-worth-integration/18-VERIFICATION.md)).  
 - Full list: [`.planning/milestones/v1.5-REQUIREMENTS.md`](milestones/v1.5-REQUIREMENTS.md).
 
-### Active (v1.6)
+### Validated (v1.6 — Phase 19)
 
-- [ ] **ENC-01**: User can export data with an optional passphrase (AES-256-GCM encrypted file)
-- [ ] **ENC-02**: User can import an encrypted export file by providing the correct passphrase
-- [ ] **ENC-03**: Unencrypted export/import path is unchanged
+- [x] **ENC-02** — AES-256-GCM + PBKDF2 encryption primitive (`src/lib/cryptoUtils.ts`) — Phase **19** ([`19-VERIFICATION.md`](phases/19-crypto-utilities/19-VERIFICATION.md)).  
+- [x] **ENC-03** — Self-describing envelope `{ encrypted, version, salt, iv, data }` — Phase **19**.
+
+### Active (v1.6 — Phase 20+)
+
+- [ ] **ENC-01**: Optional passphrase on Export; blank → plain JSON unchanged  
+- [ ] **ENC-04**–**ENC-06**: Import auto-detect, correct passphrase success, wrong passphrase inline error — Phase **20** (see [`.planning/REQUIREMENTS.md`](REQUIREMENTS.md))
 
 ### Deferred (backlog / future)
 
@@ -144,4 +148,4 @@ This file is updated at **milestone completion** to avoid drift between plans an
 </details>  
 
 ---
-*Last updated: 2026-05-02 — **v1.6 milestone started** (Encrypted Export).*  
+*Last updated: 2026-05-02 — Phase **19** complete (`cryptoUtils`); Phase **20** next (Settings UI).*  

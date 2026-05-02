@@ -16,7 +16,7 @@
 
 ### v1.6 — Encrypted Export (Phases 19–20)
 
-- [ ] **Phase 19: Crypto Utilities** — Pure `src/lib/cryptoUtils.ts` with `encryptData`/`decryptData` using Web Crypto API, unit tested
+- [x] **Phase 19: Crypto Utilities** — Pure `src/lib/cryptoUtils.ts` with `encryptData`/`decryptData` using Web Crypto API, unit tested (completed 2026-05-02)
 - [ ] **Phase 20: Settings UI — Encrypted Export & Import** — Passphrase field in Export, auto-detect on Import, inline error handling
 
 ---
@@ -32,7 +32,7 @@
   2. `decryptData(envelope, passphrase)` returns the original plaintext when given the correct passphrase
   3. `decryptData` throws a typed error when given the wrong passphrase
   4. Vitest unit tests pass for all three cases (round-trip, correct decrypt, wrong-passphrase rejection)
-**Plans**: TBD
+**Plans**: 1/1 plans complete
 
 ### Phase 20: Settings UI — Encrypted Export & Import
 **Goal**: Users can export an AES-256-GCM encrypted file with a passphrase and import it back with a matching passphrase, with clear inline feedback at every step
@@ -123,7 +123,7 @@ Artifacts: [`.planning/milestones/v1.5-phases/`](milestones/v1.5-phases/) · [v1
 | 16. Property Liability Enrichment | v1.5 | 1/1 | Complete | 2026-05-01 |
 | 17. Liabilities Page CRUD | v1.5 | 1/1 | Complete | 2026-05-02 |
 | 18. Dashboard & Net Worth Integration | v1.5 | 1/1 | Complete | 2026-05-02 |
-| 19. Crypto Utilities | v1.6 | 0/1 | Not started | - |
+| 19. Crypto Utilities | v1.6 | 1/1 | Complete | 2026-05-02 |
 | 20. Settings UI — Encrypted Export & Import | v1.6 | 0/1 | Not started | - |
 
 ---
