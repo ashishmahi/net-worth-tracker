@@ -95,7 +95,9 @@ Plans:
   2. A Total Debt row on the dashboard shows the combined property + standalone debt figure and links to the Liabilities page
   3. A Debt-to-Asset ratio percentage is displayed on the dashboard; it shows 0% when there are no assets
   4. Recording a new net worth snapshot captures the `calcNetWorth()` result; historical snapshots are unchanged
-**Plans**: TBD
+**Plans**: 1 plan
+Plans:
+- [ ] 18-01-PLAN.md — Wire liability calcs into DashboardPage: net worth, Total Debt row, ratio, snapshots, empty state
 **UI hint**: yes
 
 ---
@@ -159,7 +161,7 @@ Plans:
 | 15. Calculation Utilities | v1.5 | 1/1 | Complete    | 2026-05-01 |
 | 16. Property Liability Enrichment | v1.5 | 1/1 | Complete    | 2026-05-01 |
 | 17. Liabilities Page CRUD | v1.5 | 1/1 | Complete    | 2026-05-02 |
-| 18. Dashboard & Net Worth Integration | v1.5 | 0/? | Not started | - |
+| 18. Dashboard & Net Worth Integration | v1.5 | 0/1 | Ready to execute | - |
 
 ---
 
