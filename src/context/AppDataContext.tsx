@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import React, { createContext, useContext, useState } from 'react'
 import type { ZodError } from 'zod'
 import { nowIso } from '@/lib/financials'
 import { DataSchema, AppData } from '../types/data'
@@ -77,7 +77,7 @@ export function ensureLiabilities(raw: unknown): unknown {
   return raw
 }
 
-/** Same migrate + `DataSchema` path as initial `GET /api/data` load — for import and boot.
+/** Same migrate + `DataSchema` path as initial stored wealth load — for import and boot.
  *  Chain: migrateLegacyBankAccounts → ensureNetWorthHistory → ensureOtherCommodities → ensureLiabilities → safeParse
  */
 export function parseAppDataFromImport(
@@ -94,7 +94,9 @@ export function parseAppDataFromImport(
   return { success: false, zodError: result.error }
 }
 
-// ── Initial empty data structure (used when data.json is absent or invalid) ──
+const WEALTH_STORAGE_KEY = 'wealth-tracker-data'
+
+// ── Initial empty data structure (used when storage is absent or invalid) ──
 
 /** Full empty slate for first load, failed parse, or user-initiated reset. */
 export function createInitialData(): AppData {
@@ -119,6 +121,38 @@ export function createInitialData(): AppData {
 
 export const INITIAL_DATA: AppData = createInitialData()
 
+function readInitialWealthState(): { data: AppData; loadError: string | null } {
+  try {
+    const raw = localStorage.getItem(WEALTH_STORAGE_KEY)
+    if (raw === null || raw === '') {
+      return { data: createInitialData(), loadError: null }
+    }
+    let parsed: unknown
+    try {
+      parsed = JSON.parse(raw)
+    } catch {
+      return {
+        data: createInitialData(),
+        loadError: 'Could not read stored data. Starting with defaults.',
+      }
+    }
+    const result = parseAppDataFromImport(parsed)
+    if (result.success) {
+      return { data: result.data, loadError: null }
+    }
+    console.warn('stored data schema mismatch:', result.zodError.issues)
+    return {
+      data: createInitialData(),
+      loadError: 'Saved data format is unrecognized. Starting with defaults to avoid data loss.',
+    }
+  } catch {
+    return {
+      data: createInitialData(),
+      loadError: 'Could not read stored data. Starting with defaults.',
+    }
+  }
+}
+
 // ── Context type ──────────────────────────────────────────────────────────────
 
 interface AppDataContextValue {
@@ -132,40 +166,17 @@ const AppDataContext = createContext<AppDataContextValue | null>(null)
 // ── Provider ──────────────────────────────────────────────────────────────────
 
 export function AppDataProvider({ children }: { children: React.ReactNode }) {
-  const [data, setData] = useState<AppData>(INITIAL_DATA)
-  const [loadError, setLoadError] = useState<string | null>(null)
-
-  useEffect(() => {
-    fetch('/api/data')
-      .then(r => r.json())
-      .then(raw => {
-        const result = parseAppDataFromImport(raw)
-        if (result.success) {
-          setData(result.data)
-        } else {
-          console.warn('data.json schema mismatch:', result.zodError.issues)
-          setLoadError('Saved data format is unrecognized. Starting with defaults to avoid data loss.')
-        }
-      })
-      .catch(() => setLoadError('Could not load saved data. Starting with defaults.'))
-  }, [])
+  const [data, setData] = useState<AppData>(() => readInitialWealthState().data)
+  const [loadError] = useState<string | null>(() => readInitialWealthState().loadError)
 
   async function saveData(newData: AppData): Promise<void> {
-    const previous = data // snapshot for rollback
-    setData(newData) // optimistic update (D-03)
+    const previous = data
     try {
-      const res = await fetch('/api/data', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newData),
-      })
-      if (!res.ok) {
-        setData(previous) // revert on failure
-        throw new Error(`Save failed: ${res.status}`)
-      }
+      localStorage.setItem(WEALTH_STORAGE_KEY, JSON.stringify(newData))
+      setData(newData)
     } catch (err) {
-      setData(previous) // revert on network error
-      throw err // caller catches and shows inline error (D-02)
+      setData(previous)
+      throw err
     }
   }
 
