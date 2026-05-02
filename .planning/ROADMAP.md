@@ -126,6 +126,16 @@ Artifacts: [`.planning/milestones/v1.5-phases/`](milestones/v1.5-phases/) · [v1
 | 19. Crypto Utilities | v1.6 | 1/1 | Complete | 2026-05-02 |
 | 20. Settings UI — Encrypted Export & Import | v1.6 | 1/1 | Complete    | 2026-05-02 |
 
+### Phase 21: Improve UI for adding passphrase & Macbook like passphrase to files which when we try to open in any editor should ask for password and then show content in it
+
+**Goal:** [To be planned]
+**Requirements**: TBD
+**Depends on:** Phase 20
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd-plan-phase 21 to break down)
+
 ---
 
 _Milestone archives: `.planning/milestones/` · **Current:** v1.6 — Encrypted Export (phases 19–20)._

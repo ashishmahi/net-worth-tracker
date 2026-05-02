@@ -53,7 +53,7 @@ See [`.planning/PROJECT.md`](PROJECT.md) — **v1.5** shipped and archived (2026
 
 - **v1.4** archived: [`.planning/milestones/v1.4-ROADMAP.md`](milestones/v1.4-ROADMAP.md).
 - **v1.5** archived: [`.planning/milestones/v1.5-ROADMAP.md`](milestones/v1.5-ROADMAP.md) · [`.planning/milestones/v1.5-REQUIREMENTS.md`](milestones/v1.5-REQUIREMENTS.md).
-- **Live** [`.planning/ROADMAP.md`](ROADMAP.md): v1.6 phases 19–20 active.
+- **Live** [`.planning/ROADMAP.md`](ROADMAP.md): v1.6 phases 19–20 complete; **Phase 21** added — improve passphrase UI; editor-openable password-protected file format (see roadmap).
 
 ### Key v1.6 design notes
 
