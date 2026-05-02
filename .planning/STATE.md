@@ -22,7 +22,7 @@ progress:
 Phase: —  
 Plan: —  
 Status: **Between milestones** — v1.7 shipped and archived ([`v1.7-ROADMAP.md`](milestones/v1.7-ROADMAP.md)). No active roadmap milestone until **`/gsd-new-milestone`**.  
-Last activity: 2026-05-02 — Milestone close + `git tag v1.7` (pending push).
+Last activity: 2026-05-02 — Milestone close; annotated tag **`v1.7`** created locally.
 
 ```
 Progress: [░░░░░░░░░░░░░░░░░░░░] — define next milestone
