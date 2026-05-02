@@ -9,32 +9,13 @@
 - ✅ **v1.4 — Multiple commodities** — Shipped 2026-05-01 — [full snapshot](milestones/v1.4-ROADMAP.md)  
 - ✅ **v1.5 — Debt & Liabilities** — Shipped 2026-05-02 — [full snapshot](milestones/v1.5-ROADMAP.md)
 - ✅ **v1.6 — Encrypted Export** — Shipped 2026-05-02 — [full snapshot](milestones/v1.6-ROADMAP.md)
-- ✅ **v1.7 — localStorage Migration** — Shipped 2026-05-02
+- ✅ **v1.7 — localStorage Migration** — Shipped 2026-05-02 — [full snapshot](milestones/v1.7-ROADMAP.md)
 
 ---
 
 ## Phases
 
-### v1.7 — localStorage Migration
-
-- [x] **Phase 22: localStorage Migration** — Swap `AppDataContext` from `fetch`/`data.json` to `localStorage`, remove the Vite dev-server plugin, clean up user-facing copy, and verify tests. — **2026-05-02**
-
----
-
-## Phase Details
-
-### Phase 22: localStorage Migration
-**Goal**: The app persists all user data in browser `localStorage` — no Vite dev-server plugin, no `data.json`, no `fetch` calls for persistence.  
-**Depends on**: Nothing (first and only phase of v1.7)  
-**Requirements**: STORE-01, STORE-02, STORE-03, STORE-04, STORE-05, INFRA-01, INFRA-02, INFRA-03, UX-01, TEST-01, TEST-02  
-**Success Criteria** (what must be TRUE):
-  1. App loads and displays all previously saved data immediately on page refresh with no flash-of-empty-state — the boot read is synchronous, not async.
-  2. All edits, additions, and deletions persist across browser sessions and page reloads without any server process or `data.json` file present.
-  3. Changing or toggling the theme (light/dark) does not erase or corrupt app data — the `theme` key in `localStorage` survives every save cycle.
-  4. All user-facing text (Settings danger zone, import dialog, error messages) refers to "browser storage" or "local storage", not to `data.json` or a running server.
-  5. The full Vitest suite passes — fetch-based mocks replaced with `localStorage` mocks, and the boot-parse path (valid data, absent key, invalid/corrupt JSON) is covered by unit tests.
-**Plans**: 1 (`22-01-PLAN.md`)  
-**UI hint**: yes
+_There is no active milestone on the live roadmap. Run **`/gsd-new-milestone`** to define the next version._
 
 ---
 
@@ -61,6 +42,14 @@
 ---
 
 ## Phases (historical)
+
+<details>
+<summary>✅ v1.7 — localStorage Migration (Phase 22) — SHIPPED 2026-05-02</summary>
+
+- [x] **Phase 22: localStorage Migration** (1/1) — 2026-05-02  
+- Artifacts: [`.planning/phases/22-localstorage-migration/`](phases/22-localstorage-migration/) · [`v1.7-ROADMAP.md`](milestones/v1.7-ROADMAP.md) · [`v1.7-REQUIREMENTS.md`](milestones/v1.7-REQUIREMENTS.md)
+
+</details>
 
 <details>
 <summary>✅ v1.6 — Encrypted Export (Phases 19–21) — SHIPPED 2026-05-02</summary>
@@ -129,4 +118,4 @@ Artifacts: [`.planning/milestones/v1.5-phases/`](milestones/v1.5-phases/) · [v1
 
 ---
 
-_Milestone archives: `.planning/milestones/` · **Current milestone:** v1.7 localStorage Migration (Phase 22)._
+_Milestone archives: `.planning/milestones/` · **Next:** run **`/gsd-new-milestone`** — no active milestone defined._

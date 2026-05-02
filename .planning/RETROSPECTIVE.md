@@ -1,5 +1,37 @@
 # Project retrospective — Personal Wealth Tracker
 
+## Milestone: v1.7 — localStorage Migration
+
+**Shipped:** 2026-05-02  
+**Phases:** 22 | **Plans:** 1  
+
+### What was built
+
+- **Phase 22:** **`AppDataContext`** — **`wealth-tracker-data`** **`localStorage`** load/save; synchronous boot; **`saveData`** never **`clear()`**; **`plugins/dataPlugin.ts`** removed; Settings + CLAUDE copy; **`happy-dom`** Vitest coverage ([`22-01-SUMMARY.md`](phases/22-localstorage-migration/22-01-SUMMARY.md)).
+
+### What worked
+
+- Treating persistence swap as **one coherent phase** avoided broken intermediate states (fetch without plugin).
+- **Manual UAT** (`22-UAT.md`) confirmed boot, persistence, theme isolation, and messaging without gaps.
+
+### What was inefficient
+
+- **`gsd-sdk query milestone.complete`** still fails (`version required for phases archive`); v1.7 close used the **manual** archive path (same as v1.6).
+
+### Patterns established
+
+- **Wealth key vs theme key** — document explicitly for any future storage work.
+
+### Key lessons
+
+- **`localStorage`** quota and private-mode failures need **caller-visible** errors — tests stub **`QuotaExceededError`**; prod UX relies on existing **`saveData`** throw path.
+
+### Cost observations
+
+- Not recorded.  
+
+---
+
 ## Milestone: v1.6 — Encrypted Export
 
 **Shipped:** 2026-05-02  

@@ -1,5 +1,32 @@
 # Milestone history — Personal Wealth Tracker
 
+**Pre-ship audit (v1.7):** No `v1.7-MILESTONE-AUDIT.md` on file — optional `/gsd-audit-milestone` before high-stakes releases.  
+**Open-artifact audit at v1.7 close:** all clear (2026-05-02).
+
+## v1.7 localStorage Migration (Shipped: 2026-05-02)
+
+**Scope:** Phase **22** only.  
+**Phase directory (current location):** [`.planning/phases/22-localstorage-migration/`](phases/22-localstorage-migration/)
+
+**Phases completed:** 1 phase, 1 plan
+
+**Key accomplishments:**
+
+- **`AppDataContext`** — reads/writes **`wealth-tracker-data`** in **`localStorage`**; synchronous boot (`useState` initializer); **`saveData`** uses **`setItem`** only (preserves **`theme`** key); quota errors surface to callers.
+- **Infra** — **`plugins/dataPlugin.ts`** removed; **`vite.config.ts`** no data middleware.
+- **UX** — Settings danger zone + zip validation copy no longer frame **`data.json`** as live storage; **`CLAUDE.md`** updated.
+- **Tests** — **`happy-dom`** + **`AppDataContext.test.tsx`** (boot paths, round-trip, corrupt JSON, quota).
+
+**Roadmap / requirements:** [`.planning/milestones/v1.7-ROADMAP.md`](milestones/v1.7-ROADMAP.md), [`v1.7-REQUIREMENTS.md`](milestones/v1.7-REQUIREMENTS.md)
+
+**Tooling note:** `gsd-sdk query milestone.complete` returned `version required for phases archive`; v1.7 archives and **`REQUIREMENTS.md`** removal follow the **manual** path as v1.6. Phase dir **22** left under **`.planning/phases/`** (optional **`/gsd-cleanup`** later).
+
+**UAT:** [`22-UAT.md`](phases/22-localstorage-migration/22-UAT.md) — 5/5 passed (2026-05-02).
+
+**Known deferred (unchanged):** Phase 05 UAT, Phase 01 `human_needed` — see `STATE.md` **Deferred items**.
+
+---
+
 **Pre-ship audit (v1.6):** No `v1.6-MILESTONE-AUDIT.md` on file — optional `/gsd-audit-milestone` before high-stakes releases.  
 **Open-artifact audit at v1.6 close:** all clear (2026-05-02).
 

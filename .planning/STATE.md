@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.7
-milestone_name: — localStorage Migration
-status: milestone_complete
-last_updated: "2026-05-02T19:46:05.123Z"
-last_activity: 2026-05-02 — Phase 22 executed (localStorage migration)
+milestone: —
+milestone_name: —
+status: between_milestones
+last_updated: "2026-05-02T20:45:00.000Z"
+last_activity: 2026-05-02 — v1.7 milestone archived; awaiting /gsd-new-milestone
 progress:
-  total_phases: 1
-  completed_phases: 1
-  total_plans: 1
-  completed_plans: 1
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 ## Project
@@ -19,18 +19,18 @@ progress:
 
 ## Current position
 
-Phase: — (v1.7 milestone complete)
-Plan: 22-01 complete
-Status: Milestone complete — localStorage migration shipped
-Last activity: 2026-05-02 — Phase 22 execution finished
+Phase: —  
+Plan: —  
+Status: **Between milestones** — v1.7 shipped and archived ([`v1.7-ROADMAP.md`](milestones/v1.7-ROADMAP.md)). No active roadmap milestone until **`/gsd-new-milestone`**.  
+Last activity: 2026-05-02 — Milestone close + `git tag v1.7` (pending push).
 
 ```
-Progress: [████████████████████] 100% (1/1 phases complete)
+Progress: [░░░░░░░░░░░░░░░░░░░░] — define next milestone
 ```
 
 ## Project reference
 
-See [`.planning/PROJECT.md`](PROJECT.md) — **v1.6** shipped and archived (2026-05-02); see **`milestones/v1.6-*`** and phase dirs **19–21** under **`.planning/phases/`**.
+See [`.planning/PROJECT.md`](PROJECT.md). **v1.7** archived at [`milestones/v1.7-ROADMAP.md`](milestones/v1.7-ROADMAP.md) · [`milestones/v1.7-REQUIREMENTS.md`](milestones/v1.7-REQUIREMENTS.md). Phase **22** artifacts: [`.planning/phases/22-localstorage-migration/`](phases/22-localstorage-migration/).
 
 **Core value:** Total net worth in INR — liabilities deducted from gross assets, live prices where applicable, minimal repeated data entry.
 
@@ -50,30 +50,8 @@ See [`.planning/PROJECT.md`](PROJECT.md) — **v1.6** shipped and archived (2026
 - **v1.4** archived: [`.planning/milestones/v1.4-ROADMAP.md`](milestones/v1.4-ROADMAP.md).
 - **v1.5** archived: [`.planning/milestones/v1.5-ROADMAP.md`](milestones/v1.5-ROADMAP.md) · [`.planning/milestones/v1.5-REQUIREMENTS.md`](milestones/v1.5-REQUIREMENTS.md).
 - **v1.6** archived: [`.planning/milestones/v1.6-ROADMAP.md`](milestones/v1.6-ROADMAP.md) · [`.planning/milestones/v1.6-REQUIREMENTS.md`](milestones/v1.6-REQUIREMENTS.md).
-- **Live** [`.planning/ROADMAP.md`](ROADMAP.md): v1.7 Phase 22 — not started.
-
-### Key v1.7 migration scope
-
-- All 11 requirements are atomic — removing the plugin while `AppDataContext` still uses `fetch` produces a broken app. Phase 22 must be committed as a single coherent change.
-- `saveData()` must use `localStorage.setItem` only — never `localStorage.clear()` — so the existing `theme` key is preserved across saves.
-- Boot read changes from async `useEffect`/`fetch` to a synchronous `useState` lazy initializer — eliminates flash-of-empty-state.
-- `data.json` removed from active git tracking; `plugins/dataPlugin.ts` deleted; `vite.config.ts` plugin entry removed.
-- `wealthDataZip.ts` and zip export/import flows are persistence-agnostic — untouched.
-- No schema or data model changes in v1.7.
-
-### Key v1.6 design notes
-
-- `cryptoUtils.ts` remains for envelope decrypt if legacy payloads appear elsewhere; **Settings export/download uses zip only** (`@zip.js/zip.js`, `src/lib/wealthDataZip.ts`), not `encryptData`
-- Zip export: single entry **`data.json`**; optional AES-256 via `encryptionStrength: 3` when passphrase set; blank passphrase → uncompressed zip
-- Settings Import accepts **`.zip` only** (legacy `.json` picker flow removed)
-
-### Key v1.5 design notes
-
-- `liabilities` is a root-level list on `DataSchema` (peer of `assets`), not nested inside `assets`
-- Net worth deducts **standalone liabilities only** (not property `outstandingLoanInr`) — property equity calc (`agreementInr - outstandingLoanInr`) is preserved unchanged
-- `sumAllDebtInr` (display total for "Total Debt" row) combines both property + standalone; `calcNetWorth` uses standalone only
-- `NetWorthPointSchema.totalInr` relaxed from `nonneg` to `z.number()` to support debt-exceeds-assets scenarios
-- Property form gains lender + EMI fields under the existing liability toggle (no schema restructure of property model)
+- **v1.7** archived: [`.planning/milestones/v1.7-ROADMAP.md`](milestones/v1.7-ROADMAP.md) · [`.planning/milestones/v1.7-REQUIREMENTS.md`](milestones/v1.7-REQUIREMENTS.md).
+- **Live** [`.planning/ROADMAP.md`](ROADMAP.md): no active milestone — run **`/gsd-new-milestone`**.
 
 ### Pending todos
 
@@ -93,12 +71,8 @@ See [`.planning/PROJECT.md`](PROJECT.md) — **v1.6** shipped and archived (2026
 
 ## Session continuity
 
-**Completed through:** **v1.6 — Encrypted Export** — Phases **19–21** complete (2026-05-02): `cryptoUtils` + Settings + zip modals (`wealthDataZip`, `21-01-SUMMARY.md`).
+**Completed through:** **v1.7 — localStorage Migration** — Phase **22** (2026-05-02): [`22-01-SUMMARY.md`](phases/22-localstorage-migration/22-01-SUMMARY.md); UAT [`22-UAT.md`](phases/22-localstorage-migration/22-UAT.md) 5/5 passed.
 
-**Current:** **v1.7** roadmap created (2026-05-02); Phase **22** — localStorage Migration — ready for planning.
+**Last shipped:** **v1.7** — `localStorage` persistence; data plugin removed.
 
-**Last shipped:** **v1.6 — Encrypted Export** (crypto utils + Settings zip export/import + passphrase modals).
-
-**Next:** `/gsd-plan-phase 22`
-
-**Planned Phase:** 22 (localStorage Migration) — 1 plans — 2026-05-02T19:42:53.756Z
+**Next:** **`/gsd-new-milestone`** — fresh requirements + roadmap for **v1.8** (or next version).

@@ -21,11 +21,11 @@ See **total net worth in INR** at a glance (**debt-adjusted** headline minus sta
 | **v1.6** | **Encrypted Export** — **`cryptoUtils`** (AES-GCM envelope); Settings **zip** export/import via **`@zip.js/zip.js`** (`wealthDataZip`), passphrase **AlertDialogs**, zip-only import | 2026-05-02 |
 | **v1.7** | **localStorage migration** — no Vite data plugin; `AppDataContext` `localStorage` load/save; Settings copy + tests (`happy-dom`) | 2026-05-02 |
 
-Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.6-ROADMAP.md` and matching `*-REQUIREMENTS.md` archives. Executed phase artifacts for shipped milestones live under [`.planning/milestones/`](milestones/) (e.g. `v1.5-phases/`). Phase dirs **19–21** remain under [`.planning/phases/`](phases/) until optional **`/gsd-cleanup`**.
+Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.7-ROADMAP.md` and matching `*-REQUIREMENTS.md` archives. Executed phase artifacts for shipped milestones live under [`.planning/milestones/`](milestones/) (e.g. `v1.5-phases/`). Phase dirs **19–22** remain under [`.planning/phases/`](phases/) until optional **`/gsd-cleanup`**.
 
 ## Current milestone
 
-**v1.7 — localStorage migration** is **shipped** (2026-05-02). Optional: run **`/gsd-new-milestone`** to open the next version line.
+**None defined** — v1.7 is archived. Run **`/gsd-new-milestone`** to open **v1.8** (or the next version line).
 
 ## Current state (shipped through v1.7 — 2026-05-02)
 
@@ -54,7 +54,7 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.6-ROADMAP.md` and matc
 
 - [x] **DATA-01** — Discoverable “clear all” / danger zone in Settings (below Export)  
 - [x] **DATA-02** — Irreversibility + backup hint + non-accidental confirm (AlertDialog)  
-- [x] **DATA-03** — `createInitialData()` + `saveData` / `POST` `/api/data`; in-memory + forms re-sync  
+- [x] **DATA-03** — `createInitialData()` + `saveData` (v1.7+: **`localStorage`**); in-memory + forms re-sync  
 
 ### Validated (v1.3)
 
@@ -88,6 +88,10 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.6-ROADMAP.md` and matc
 
 - [x] **Zip export/import UX** — Password-protected **`.zip`** (`data.json`); shadcn **AlertDialog** passphrases; legacy **`.json`** file picker removed from Settings — Phase **21** ([`21-VERIFICATION.md`](phases/21-improve-ui-for-adding-passphrase-macbook-like-passphrase-to-/21-VERIFICATION.md)).
 
+### Validated (v1.7 — Phase 22)
+
+- [x] **STORE-01**–**STORE-05**, **INFRA-01**–**INFRA-03**, **UX-01**, **TEST-01**, **TEST-02** — browser **`localStorage`** persistence (`wealth-tracker-data`); Vite data plugin removed; copy + Vitest — Phase **22** ([`22-VERIFICATION.md`](phases/22-localstorage-migration/22-VERIFICATION.md)); full list in [`v1.7-REQUIREMENTS.md`](milestones/v1.7-REQUIREMENTS.md).
+
 ### Deferred (backlog / future)
 
 - [ ] Export / reports — PDF or CSV (JSON export exists; richer formats later)  
@@ -105,7 +109,7 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.6-ROADMAP.md` and matc
 ## Context (technical)
 
 - **Stack:** React 18, Vite 5, TypeScript, shadcn/ui, Tailwind, RHF + Zod  
-- **Persistence:** Vite plugin `GET`/`POST` `/api/data` → `data.json`  
+- **Persistence:** Browser **`localStorage`** key **`wealth-tracker-data`** (`AppDataContext`); theme uses separate **`theme`** key  
 - **Prices:** `priceApi` + `useLivePrices()`  
 - **Theme:** `localStorage` `theme` (`light` | `dark`); FOUC script in `index.html`  
 - **Layout:** `AppSidebar` offcanvas on mobile; `MobileTopBar`; `PageHeader` on section pages; asset sheets with scroll regions + property milestone horizontal scroll on narrow widths  
@@ -116,7 +120,7 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.6-ROADMAP.md` and matc
 
 ## Constraints
 
-- Single local JSON file; no server in v1.x local scope  
+- Single-user browser storage + optional zip backup; no hosted backend in shipped local scope  
 - Tech per `package.json` and `CLAUDE.md`  
 
 ## Key decisions
@@ -124,7 +128,7 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.6-ROADMAP.md` and matc
 | Decision | Rationale | Outcome |
 |----------|-----------|--------|
 | React + Vite | Fast dev, simple local app | v1.0+ |
-| JSON + Vite API | No DB for personal use | v1.0+ |
+| JSON / localStorage persistence | No DB for personal use | v1.0+ (v1.7: **`localStorage`** replaces dev API) |
 | v1.1 mobile | Phases 6–8: theme, offcanvas, headers, sheets, table | ✓ v1.1 2026-04-26 |
 | GSD planning | Phased delivery in `.planning/` | Ongoing |
 | v1.1 scope | `localStorage` only for theme; no `data.json` version bump for theme | ✓ Shipped |
@@ -133,6 +137,7 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.6-ROADMAP.md` and matc
 | v1.4 | Commodities beyond gold; silver + manual lines; net worth + import/reset + product UX | ✓ Shipped 2026-05-01 |  
 | v1.5 | Liabilities schema + pure calcs + property enrichment + Liabilities CRUD + dashboard debt UX | ✓ Shipped 2026-05-02 |  
 | v1.6 | Web Crypto `cryptoUtils` + Settings encrypted export/import; then zip + modal UX (`@zip.js/zip.js`) for at-rest export protection | ✓ Shipped 2026-05-02 |  
+| v1.7 | **`localStorage`**-only wealth persistence; remove Vite **`dataPlugin`**; sync boot; Settings copy; **happy-dom** tests | ✓ Shipped 2026-05-02 |  
 
 ## Evolution
 
@@ -146,8 +151,9 @@ This file is updated at **milestone completion** to avoid drift between plans an
 - *v1.3: deliverables moved to **Validated (v1.3)**; roadmap/requirements under `milestones/v1.3-*`.*  
 - *v1.4: deliverables moved to **Validated (v1.4)**; roadmap/requirements under `milestones/v1.4-*`.*  
 - *v1.5: deliverables moved to **Validated (v1.5)**; roadmap/requirements under `milestones/v1.5-*`; phases archived under `milestones/v1.5-phases/`.*  
+- *v1.7: requirements archived at [`v1.7-REQUIREMENTS.md`](milestones/v1.7-REQUIREMENTS.md); live roadmap awaits **`/gsd-new-milestone`**.*  
 
 </details>  
 
 ---
-*Last updated: 2026-05-02 — **v1.7 shipped** — localStorage migration (Phase **22**); v1.6 archived at [`v1.6-REQUIREMENTS.md`](milestones/v1.6-REQUIREMENTS.md).*  
+*Last updated: 2026-05-02 — **v1.7 milestone archived** — Phase **22** + [`v1.7-ROADMAP.md`](milestones/v1.7-ROADMAP.md); root **`REQUIREMENTS.md`** removed for next milestone.*  
