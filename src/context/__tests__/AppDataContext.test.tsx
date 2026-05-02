@@ -1,6 +1,5 @@
 /** @vitest-environment happy-dom */
 
-import React from 'react'
 import { createRoot } from 'react-dom/client'
 import { act } from 'react-dom/test-utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
