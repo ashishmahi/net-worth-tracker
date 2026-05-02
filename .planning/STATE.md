@@ -3,13 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.6
 milestone_name: — Encrypted Export
 status: **Roadmap ready** — v1.6 phases 19–20 defined
-last_updated: "2026-05-02T10:55:17.464Z"
+last_updated: "2026-05-02T10:57:52.933Z"
 last_activity: 2026-05-02 — Roadmap created for v1.6 Encrypted Export
 progress:
   total_phases: 2
   completed_phases: 0
-  total_plans: 0
+  total_plans: 1
   completed_plans: 0
+  percent: 0
 ---
 
 ## Project
@@ -93,3 +94,5 @@ See [`.planning/PROJECT.md`](PROJECT.md) — **v1.5** shipped and archived (2026
 **Current:** **v1.6 — Encrypted Export** — Roadmap defined 2026-05-02. Next: `/gsd-plan-phase 19`.
 
 **Last shipped:** **v1.5 — Debt & Liabilities** — 2026-05-02.
+
+**Planned Phase:** 19 (crypto-utilities) — 1 plans — 2026-05-02T10:57:52.927Z
