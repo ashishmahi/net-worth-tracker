@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.6
 milestone_name: — Encrypted Export
-status: completed
-last_updated: "2026-05-02T14:16:28.374Z"
+status: milestone_complete
+last_updated: "2026-05-02T22:45:00.000Z"
 last_activity: 2026-05-02
 progress:
   total_phases: 3
-  completed_phases: 2
-  total_plans: 2
-  completed_plans: 2
+  completed_phases: 3
+  total_plans: 3
+  completed_plans: 3
   percent: 100
 ---
 
@@ -20,17 +20,18 @@ progress:
 ## Current position
 
 Phase: 21
-Status: UI-SPEC approved — ready for planning
+Status: Milestone complete
 Last activity: 2026-05-02
 
-Resume: `.planning/phases/21-improve-ui-for-adding-passphrase-macbook-like-passphrase-to-/21-UI-SPEC.md`
+Resume: *milestone v1.6 feature set complete* — use `/gsd-new-milestone` or ship v1.6
 
-Progress: 2 / 2 phases complete (v1.6)
+Progress: 3 / 3 phases complete (v1.6)
 
 ```
 [██████████] 100%
 Phase 19: Crypto Utilities         [x] Complete (2026-05-02)
 Phase 20: Settings UI              [x] Complete (2026-05-02)
+Phase 21: Zip + passphrase modals  [x] Complete (2026-05-02)
 ```
 
 ## Project reference
@@ -54,15 +55,13 @@ See [`.planning/PROJECT.md`](PROJECT.md) — **v1.5** shipped and archived (2026
 
 - **v1.4** archived: [`.planning/milestones/v1.4-ROADMAP.md`](milestones/v1.4-ROADMAP.md).
 - **v1.5** archived: [`.planning/milestones/v1.5-ROADMAP.md`](milestones/v1.5-ROADMAP.md) · [`.planning/milestones/v1.5-REQUIREMENTS.md`](milestones/v1.5-REQUIREMENTS.md).
-- **Live** [`.planning/ROADMAP.md`](ROADMAP.md): v1.6 phases 19–20 complete; **Phase 21** added — improve passphrase UI; editor-openable password-protected file format (see roadmap).
+- **Live** [`.planning/ROADMAP.md`](ROADMAP.md): v1.6 phases **19–21** complete (Settings zip export/import + passphrase modals).
 
 ### Key v1.6 design notes
 
-- `cryptoUtils.ts` is a pure utility with no React dependencies — import in Settings page only
-- Web Crypto API (`window.crypto.subtle`) used exclusively — no third-party crypto libraries
-- Encrypted envelope: `{ encrypted: true, version: 1, salt: <hex>, iv: <hex>, data: <base64> }`
-- Import auto-detection: check `envelope.encrypted === true` before prompting for passphrase
-- Unencrypted export/import path (blank passphrase) must remain byte-for-byte identical to v1.5 behavior
+- `cryptoUtils.ts` remains for envelope decrypt if legacy payloads appear elsewhere; **Settings export/download uses zip only** (`@zip.js/zip.js`, `src/lib/wealthDataZip.ts`), not `encryptData`
+- Zip export: single entry **`data.json`**; optional AES-256 via `encryptionStrength: 3` when passphrase set; blank passphrase → uncompressed zip
+- Settings Import accepts **`.zip` only** (legacy `.json` picker flow removed)
 
 ### Key v1.5 design notes
 
@@ -90,7 +89,7 @@ See [`.planning/PROJECT.md`](PROJECT.md) — **v1.5** shipped and archived (2026
 
 ## Session continuity
 
-**Completed through:** **v1.6 — Encrypted Export** — Phases **19–20** complete (2026-05-02): `cryptoUtils` + Settings encrypted export/import UI.
+**Completed through:** **v1.6 — Encrypted Export** — Phases **19–21** complete (2026-05-02): `cryptoUtils` + Settings + zip modals (`wealthDataZip`, `21-01-SUMMARY.md`).
 
 **Current:** v1.6 milestone phases finished — run **`/gsd-new-milestone`** (or archive v1.6) when ready for the next version line.
 

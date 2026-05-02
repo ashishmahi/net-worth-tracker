@@ -8,16 +8,17 @@
 - ✅ **v1.3 — Net worth history** — Shipped 2026-04-28 — [full snapshot](milestones/v1.3-ROADMAP.md)  
 - ✅ **v1.4 — Multiple commodities** — Shipped 2026-05-01 — [full snapshot](milestones/v1.4-ROADMAP.md)  
 - ✅ **v1.5 — Debt & Liabilities** — Shipped 2026-05-02 — [full snapshot](milestones/v1.5-ROADMAP.md)
-- ✅ **v1.6 — Encrypted Export** — Phases 19–20 complete (2026-05-02)
+- ✅ **v1.6 — Encrypted Export** — Phases 19–21 complete (2026-05-02)
 
 ---
 
 ## Phases
 
-### v1.6 — Encrypted Export (Phases 19–20)
+### v1.6 — Encrypted Export (Phases 19–21)
 
 - [x] **Phase 19: Crypto Utilities** — Pure `src/lib/cryptoUtils.ts` with `encryptData`/`decryptData` using Web Crypto API, unit tested (completed 2026-05-02)
 - [x] **Phase 20: Settings UI — Encrypted Export & Import** — Passphrase field in Export, auto-detect on Import, inline error handling (completed 2026-05-02)
+- [x] **Phase 21: Passphrase modals + zip export/import** — `@zip.js/zip.js` helper (`wealthDataZip`), Settings `AlertDialog` export/import, zip-only import (completed 2026-05-02)
 
 ---
 
@@ -125,17 +126,18 @@ Artifacts: [`.planning/milestones/v1.5-phases/`](milestones/v1.5-phases/) · [v1
 | 18. Dashboard & Net Worth Integration | v1.5 | 1/1 | Complete | 2026-05-02 |
 | 19. Crypto Utilities | v1.6 | 1/1 | Complete | 2026-05-02 |
 | 20. Settings UI — Encrypted Export & Import | v1.6 | 1/1 | Complete    | 2026-05-02 |
+| 21. Passphrase modals + zip export/import | v1.6 | 1/1 | Complete    | 2026-05-02 |
 
 ### Phase 21: Improve UI for adding passphrase & Macbook like passphrase to files which when we try to open in any editor should ask for password and then show content in it
 
 **Goal:** Passphrase modals on Settings (shadcn AlertDialog) + export/import as `.zip` with optional AES-256 (`data.json`); import accepts zip only; legacy JSON import path removed
 **Requirements**: TBD
 **Depends on:** Phase 20
-**Plans:** 1 plan ready (`21-01-PLAN.md`)
+**Plans:** 1/1 plans complete
 
 Plans:
 - [x] 21-01 — Zip utility (`@zip.js/zip.js`) + Settings modal export/import (planned 2026-05-02)
 
 ---
 
-_Milestone archives: `.planning/milestones/` · **Current:** v1.6 — Encrypted Export (phases 19–20)._
+_Milestone archives: `.planning/milestones/` · **Current:** v1.6 — Encrypted Export (phases 19–21)._
