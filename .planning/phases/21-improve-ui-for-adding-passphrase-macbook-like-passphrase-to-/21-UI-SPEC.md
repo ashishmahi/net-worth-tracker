@@ -54,13 +54,14 @@ Source: existing `SettingsPage.tsx` spacing patterns (lines 377–969).
 
 | Role | Size | Weight | Line Height |
 |------|------|--------|-------------|
-| Body | 14px (`text-sm`) | 400 (regular) | 1.5 (Tailwind default) |
-| Label | 14px (`text-sm`) | 500 (`font-medium` — via shadcn Label component) | 1.25 |
+| Body | 14px (`text-sm`) | 400 (`font-normal`) | 1.5 (Tailwind default) |
+| Label | 14px (`text-sm`) | 400 (`font-normal`) | 1.25 |
 | Heading / section title | 14px (`text-sm font-semibold`) | 600 (semibold) | 1.25 |
 | Page heading | 20px (`text-xl font-semibold`) | 600 (semibold) | 1.2 |
 
 Notes:
 - Only two weights used in this phase: 400 (regular) and 600 (semibold). Matches existing SettingsPage.tsx pattern.
+- `<Label>` elements in this phase must use `font-normal` (weight 400) to override the shadcn default of `font-medium`. Apply `className="font-normal"` on each `<Label>` instance inside the passphrase modals.
 - `text-muted-foreground` applied to helper/hint text at 14px weight 400.
 - AlertDialog title uses shadcn default `AlertDialogTitle` — maps to `text-lg font-semibold` in shadcn default style.
 
@@ -103,7 +104,7 @@ All components are from shadcn official registry. No third-party registries.
 | `AlertDialog`, `AlertDialogContent`, `AlertDialogHeader`, `AlertDialogFooter`, `AlertDialogTitle`, `AlertDialogDescription`, `AlertDialogCancel` | shadcn official | Export passphrase modal, import passphrase modal, existing import confirmation modal |
 | `Button` | shadcn official | All action buttons; variants: `default` (primary actions), `outline` (Export Data / Import from Zip page buttons), `ghost` (show/hide toggle) |
 | `Input` | shadcn official | Passphrase fields in both modals; `type="password"` with show/hide toggle |
-| `Label` | shadcn official | "Passphrase" label above each input |
+| `Label` | shadcn official | "Passphrase" label above each input; override with `className="font-normal"` |
 | `Separator` | shadcn official | Between page sections (unchanged) |
 | `Card`, `CardContent` | shadcn official | Existing section cards (unchanged) |
 
@@ -119,6 +120,8 @@ All components are from shadcn official registry. No third-party registries.
 
 ## Interaction Contract
 
+**Primary focal point inside each modal:** the passphrase `Input` field. It must receive `autoFocus` so keyboard users can begin typing immediately on dialog open, and it must be visually prominent — full-width, centered in the dialog body, with the `Label` directly above it.
+
 ### Export Flow
 
 1. Single "Export Data" button on SettingsPage (variant: `outline`). Replaces current split button + inline passphrase field.
@@ -126,7 +129,7 @@ All components are from shadcn official registry. No third-party registries.
 3. Export Passphrase AlertDialog contains:
    - Title: "Export data"
    - Description: helper text below title
-   - Passphrase `Input` (type="password", `autoComplete="off"`) with `Label` "Passphrase"
+   - Passphrase `Input` (type="password", `autoFocus`, `autoComplete="off"`) with `Label` "Passphrase"
    - Show/hide toggle (ghost Button, `Eye`/`EyeOff`, positioned absolute right inside Input)
    - Hint text below input: "Leave blank to export without a passphrase" (`text-sm text-muted-foreground`)
    - Inline error area below hint: `<p role="alert" className="text-sm text-destructive">` — visible only on encryption failure
@@ -144,7 +147,7 @@ All components are from shadcn official registry. No third-party registries.
 3. Import Passphrase AlertDialog contains:
    - Title: "This file is password protected"
    - Description: helper text
-   - Passphrase `Input` (type="password", `autoComplete="off"`) with `Label` "Passphrase"
+   - Passphrase `Input` (type="password", `autoFocus`, `autoComplete="off"`) with `Label` "Passphrase"
    - Show/hide toggle (same pattern as export modal)
    - Inline error inside dialog: `<p role="alert" className="text-sm text-destructive">`
      - Wrong passphrase: "Wrong passphrase — the file could not be decrypted."
@@ -176,6 +179,8 @@ Source: CONTEXT.md Claude's Discretion section + existing SettingsPage.tsx state
 
 ## Copywriting Contract
 
+Single-word primary CTAs ("Export", "Decrypt") are intentional. Each modal title already provides the full action context ("Export data", "This file is password protected"), so the button label does not need to repeat the noun. This follows the established pattern in SettingsPage.tsx where short imperative labels are used inside dialogs that have descriptive titles.
+
 | Element | Copy |
 |---------|------|
 | Export Data page button | "Export Data" |
@@ -184,7 +189,7 @@ Source: CONTEXT.md Claude's Discretion section + existing SettingsPage.tsx state
 | Export modal passphrase label | "Passphrase" |
 | Export modal passphrase hint | "Leave blank to export without a passphrase" |
 | Export modal Cancel button | "Cancel" |
-| Export modal primary CTA | "Export" |
+| Export modal primary CTA | "Export" (single-word — modal title provides full context) |
 | Export modal busy state | "Exporting…" (button label) + `Loader2` spinner |
 | Export modal encryption error | "Encryption failed. Check that the app is running and try again." |
 | Import from Zip page button | "Import from Zip" |
@@ -193,7 +198,7 @@ Source: CONTEXT.md Claude's Discretion section + existing SettingsPage.tsx state
 | Import passphrase modal description | "Enter the passphrase you used when exporting this file." |
 | Import passphrase modal passphrase label | "Passphrase" |
 | Import passphrase modal Cancel button | "Cancel" |
-| Import passphrase modal primary CTA | "Decrypt" |
+| Import passphrase modal primary CTA | "Decrypt" (single-word — modal title provides full context) |
 | Import passphrase modal busy state | "Decrypting…" (button label) + `Loader2` spinner |
 | Import wrong passphrase error | "Wrong passphrase — the file could not be decrypted." |
 | Import generic decrypt error | "Decryption failed. Check that the app is running and try again." |
