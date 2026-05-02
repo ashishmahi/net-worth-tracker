@@ -22,6 +22,8 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.4-ROADMAP.md` and matc
 
 ## Current Milestone: v1.5 Debt & Liabilities
 
+**Status (2026-05-02):** Phases **14–18** implemented; dashboard integration shipped in Phase **18**. Use **`/gsd-complete-milestone`** when ready to archive v1.5 and start the next version.
+
 **Goal:** Add a liabilities layer so net worth reflects what you actually owe — loans deducted from gross assets, with a debt-to-asset ratio insight on the dashboard.
 
 **Target features:**
