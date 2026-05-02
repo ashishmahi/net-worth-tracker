@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   sumLiabilitiesInr,
+  sumStandaloneLiabilitiesEmiInr,
   sumAllDebtInr,
   calcNetWorth,
   debtToAssetRatio,
@@ -59,6 +60,24 @@ function propertyRow(
     ...overrides,
   }
 }
+
+describe('sumStandaloneLiabilitiesEmiInr', () => {
+  it('returns 0 when all items omit emiInr', () => {
+    const data = withLiabilities([liability(10_000), liability(20_000)])
+    expect(sumStandaloneLiabilitiesEmiInr(data)).toBe(0)
+  })
+
+  it('sums emiInr for two items with rounding', () => {
+    const a = liability(1)
+    a.emiInr = 32_000
+    const b = liability(2)
+    b.emiInr = 15_000.33
+    const data = withLiabilities([a, b])
+    expect(sumStandaloneLiabilitiesEmiInr(data)).toBe(
+      roundCurrency(32_000 + roundCurrency(15_000.33))
+    )
+  })
+})
 
 describe('sumLiabilitiesInr', () => {
   it('returns 0 for empty liabilities array', () => {
