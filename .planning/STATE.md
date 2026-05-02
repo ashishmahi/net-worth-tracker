@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: — Debt & Liabilities
 status: planning
-last_updated: "2026-05-02T07:41:52.123Z"
+last_updated: "2026-05-02T07:48:31.891Z"
 last_activity: 2026-05-01
 progress:
   total_phases: 5
   completed_phases: 3
-  total_plans: 4
+  total_plans: 5
   completed_plans: 4
-  percent: 100
+  percent: 80
 ---
 
 ## Project
@@ -84,4 +84,4 @@ See [`.planning/PROJECT.md`](PROJECT.md) — **v1.5 in progress**; last shipped 
 
 **Phases 14–16 complete:** schema, liability calculation utilities, property lender/EMI + hint (2026-05-01).
 
-**Planned Phase:** 17 (Liabilities Page CRUD)
+**Planned Phase:** 17 (Liabilities Page CRUD) — 1 plans — 2026-05-02T07:48:31.883Z
