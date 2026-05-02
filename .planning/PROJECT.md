@@ -73,13 +73,11 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.4-ROADMAP.md` and matc
 - [x] **CALC-01–CALC-04** — Pure liability calc helpers in `src/lib/liabilityCalcs.ts` ([`15-VERIFICATION.md`](phases/15-calculation-utilities/15-VERIFICATION.md)); Phase **15** (2026-05-01).
 - [x] **PROP-01**, **PROP-02**, **PROP-03** — Property form lender, EMI, and Liabilities disambiguation hint ([`16-VERIFICATION.md`](phases/16-property-liability-enrichment/16-VERIFICATION.md)); Phase **16** (2026-05-01).
 - [x] **LIAB-01–LIAB-06**, **INFRA-03** — Standalone loans CRUD, aggregates, banner, sidebar nav ([`17-VERIFICATION.md`](phases/17-liabilities-page-crud/17-VERIFICATION.md)); Phase **17** (2026-05-02).
+- [x] **DASH-01–DASH-04** — Debt-aware dashboard headline, Total Debt row, debt-to-asset ratio, snapshots use `calcNetWorth` ([`18-VERIFICATION.md`](phases/18-dashboard-net-worth-integration/18-VERIFICATION.md)); Phase **18** (2026-05-02).
 
 ### Active (v1.5)
 
-- [x] **DEBT-02** — Standalone liabilities list + CRUD (`liabilities` on `DataSchema`; **Liabilities** page in Phase **17**)
-- [ ] **DEBT-03** — Net worth = gross assets − total debt (property + standalone liabilities)
-- [ ] **DEBT-04** — Dashboard Total Debt row + Debt-to-Asset ratio insight
-- [ ] **DEBT-05** — Data migration, import, and reset parity for new liabilities schema
+*None — all v1.5 roadmap phases through 18 are implemented.*
 
 ### Deferred (backlog / future)
 
@@ -139,4 +137,4 @@ This file is updated at **milestone completion** to avoid drift between plans an
 </details>  
 
 ---
-*Last updated: 2026-05-02 — **Phases 14–17 complete** for shipped debt UX through **Liabilities** page (`LIAB-*`, `INFRA-03`); dashboard debt integration remains Phase **18** (`DEBT-03`, `DEBT-04`).*  
+*Last updated: 2026-05-02 — **v1.5 phases 14–18 complete** including **Dashboard** debt integration (`DASH-*` in [`18-VERIFICATION.md`](phases/18-dashboard-net-worth-integration/18-VERIFICATION.md)).*  

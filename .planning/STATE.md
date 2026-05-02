@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: — Debt & Liabilities
-status: planning
-last_updated: "2026-05-02T08:30:48.506Z"
+status: milestone_complete
+last_updated: "2026-05-02T08:39:54.189Z"
 last_activity: 2026-05-02
 progress:
   total_phases: 5
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 6
-  completed_plans: 5
-  percent: 83
+  completed_plans: 6
+  percent: 100
 ---
 
 ## Project
@@ -19,16 +19,16 @@ progress:
 
 ## Current position
 
-Phase: 18
-Plan: Not started
-Status: Ready to plan
+Phase: 18 (complete)
+Plan: 18-01 complete
+Status: Milestone v1.5 — all planned phases executed
 Last activity: 2026-05-02
 
-Progress: `████████████████░░` 80% (4/5 phases complete in v1.5)
+Progress: `████████████████████` 100% (5/5 phases complete in v1.5)
 
 ## Project reference
 
-See [`.planning/PROJECT.md`](PROJECT.md) — **v1.5 in progress**; last shipped **v1.4 Multiple commodities** (2026-05-01).
+See [`.planning/PROJECT.md`](PROJECT.md) — **v1.5** phases 14–18 complete (debt + dashboard integration); last feature milestone **v1.4** shipped 2026-05-01.
 
 **Core value:** Total net worth in INR — liabilities deducted from gross assets, live prices where applicable, minimal repeated data entry.
 
@@ -74,16 +74,10 @@ See [`.planning/PROJECT.md`](PROJECT.md) — **v1.5 in progress**; last shipped 
 
 ## Session continuity
 
-**Completed through:** Milestone **v1.4** closed — phases **12–13** archived.
+**Completed through:** v1.5 **Phase 18** — Dashboard & net worth integration (2026-05-02).
 
-**Current milestone:** v1.5 Debt & Liabilities — roadmap ready, phases 14–18 defined.
+**Current milestone:** v1.5 — all defined phases (14–18) complete; consider `/gsd-complete-milestone` to archive and open the next version.
 
-**Next:** `/gsd-plan-phase 18` or `/gsd-execute-phase 18` (after planning)
+**Last shipped milestone (feature):** v1.4 — 2026-05-01
 
-**Last shipped milestone:** v1.4 — 2026-05-01
-
-**Phases 14–17 complete:** schema, liability calcs, property lender/EMI + hint, Liabilities CRUD page + nav (2026-05-02).
-
-**Current focus:** Phase **18** — Dashboard & net worth integration — not started.
-
-**Planned Phase:** 18 (Dashboard & Net Worth Integration) — 1 plans — 2026-05-02T08:30:48.495Z
+**Phases 14–18:** schema, liability calcs, property lender/EMI + hint, Liabilities CRUD, dashboard debt-aware net worth + Total Debt + ratio.
