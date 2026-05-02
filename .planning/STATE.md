@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.6
-milestone_name: — Encrypted Export
-status: planning_next
-last_updated: "2026-05-02T22:45:00.000Z"
+milestone: v1.7
+milestone_name: localStorage Migration
+status: defining_requirements
+last_updated: "2026-05-02T00:00:00.000Z"
 last_activity: 2026-05-02
 progress:
-  total_phases: 3
-  completed_phases: 3
-  total_plans: 3
-  completed_plans: 3
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 ## Project
@@ -19,20 +19,10 @@ progress:
 
 ## Current position
 
-Phase: —
-Status: v1.6 archived — planning next milestone
-Last activity: 2026-05-02
-
-Resume: **`/gsd-new-milestone`** — fresh requirements + roadmap; phases continue from **22**
-
-Progress: v1.6 shipped (3/3 phases); root **REQUIREMENTS.md** removed at close
-
-```
-[██████████] 100%
-Phase 19: Crypto Utilities         [x] Complete (2026-05-02)
-Phase 20: Settings UI              [x] Complete (2026-05-02)
-Phase 21: Zip + passphrase modals  [x] Complete (2026-05-02)
-```
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-05-02 — Milestone v1.7 started
 
 ## Project reference
 

@@ -22,9 +22,15 @@ See **total net worth in INR** at a glance (**debt-adjusted** headline minus sta
 
 Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.6-ROADMAP.md` and matching `*-REQUIREMENTS.md` archives. Executed phase artifacts for shipped milestones live under [`.planning/milestones/`](milestones/) (e.g. `v1.5-phases/`). Phase dirs **19–21** remain under [`.planning/phases/`](phases/) until optional **`/gsd-cleanup`**.
 
-## Next milestone
+## Current Milestone: v1.7 localStorage Migration
 
-Run **`/gsd-new-milestone`** — creates a fresh **`.planning/REQUIREMENTS.md`**, updates roadmap, and continues phase numbering from **22**.
+**Goal:** Replace the Vite dev-server API (`GET`/`POST` `/api/data` → `data.json`) with browser `localStorage` as the sole persistence layer.
+
+**Target features:**
+- Remove Vite dev-server plugin (data API) from `vite.config.ts`
+- Migrate `AppDataContext` load/save from `fetch()` calls to `localStorage.getItem`/`setItem`
+- Remove or retire `data.json` from active use
+- Preserve full data model, schema versioning, all calculations, live prices, and import/export (zip) flows
 
 ## Current state (shipped through v1.6 — 2026-05-02)
 
@@ -149,4 +155,4 @@ This file is updated at **milestone completion** to avoid drift between plans an
 </details>  
 
 ---
-*Last updated: 2026-05-02 — **v1.6 milestone complete** (Phases **19**–**21**); see [`v1.6-REQUIREMENTS.md`](milestones/v1.6-REQUIREMENTS.md) archive for ENC traceability and Phase 21 UX notes.*  
+*Last updated: 2026-05-02 — **v1.7 milestone started** — localStorage migration (phases from **22**); v1.6 archived at [`v1.6-REQUIREMENTS.md`](milestones/v1.6-REQUIREMENTS.md).*  
