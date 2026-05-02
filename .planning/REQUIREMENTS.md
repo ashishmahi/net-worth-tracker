@@ -11,26 +11,26 @@
 
 ### Persistence Layer Swap
 
-- [ ] **STORE-01**: User's app data loads from `localStorage` on boot (replacing `GET /api/data` fetch call)
-- [ ] **STORE-02**: User's app data saves to `localStorage` on every `saveData()` call (replacing `POST /api/data` fetch call)
-- [ ] **STORE-03**: Boot read uses `useState` lazy initializer (synchronous — eliminates flash-of-empty-state present with async fetch)
-- [ ] **STORE-04**: `saveData()` uses `setItem` only — never `localStorage.clear()` — to preserve the existing `theme` key
-- [ ] **STORE-05**: User sees a meaningful error message if `localStorage` write fails (e.g. `QuotaExceededError` including Safari private mode)
+- [x] **STORE-01**: User's app data loads from `localStorage` on boot (replacing `GET /api/data` fetch call)
+- [x] **STORE-02**: User's app data saves to `localStorage` on every `saveData()` call (replacing `POST /api/data` fetch call)
+- [x] **STORE-03**: Boot read uses `useState` lazy initializer (synchronous — eliminates flash-of-empty-state present with async fetch)
+- [x] **STORE-04**: `saveData()` uses `setItem` only — never `localStorage.clear()` — to preserve the existing `theme` key
+- [x] **STORE-05**: User sees a meaningful error message if `localStorage` write fails (e.g. `QuotaExceededError` including Safari private mode)
 
 ### Infrastructure Removal
 
-- [ ] **INFRA-01**: Vite dev-server plugin (`plugins/dataPlugin.ts`) is removed from `vite.config.ts`
-- [ ] **INFRA-02**: `plugins/dataPlugin.ts` file is deleted from the repo
-- [ ] **INFRA-03**: `data.json` is removed from active git tracking (added to `.gitignore` or removed via `git rm --cached`)
+- [x] **INFRA-01**: Vite dev-server plugin (`plugins/dataPlugin.ts`) is removed from `vite.config.ts`
+- [x] **INFRA-02**: `plugins/dataPlugin.ts` file is deleted from the repo
+- [x] **INFRA-03**: `data.json` is removed from active git tracking (added to `.gitignore` or removed via `git rm --cached`)
 
 ### UX Copy Cleanup
 
-- [ ] **UX-01**: All user-facing text referencing `data.json` or implying a running server (SettingsPage.tsx danger zone, import dialog, error messages) is updated to reference browser local storage
+- [x] **UX-01**: All user-facing text referencing `data.json` or implying a running server (SettingsPage.tsx danger zone, import dialog, error messages) is updated to reference browser local storage
 
 ### Test Coverage
 
-- [ ] **TEST-01**: Existing Vitest tests pass after migration (fetch mocks replaced with `localStorage` mocks where needed)
-- [ ] **TEST-02**: Boot path (localStorage read → `DataSchema.safeParse` → `loadError` on invalid/absent data) is covered by unit tests
+- [x] **TEST-01**: Existing Vitest tests pass after migration (fetch mocks replaced with `localStorage` mocks where needed)
+- [x] **TEST-02**: Boot path (localStorage read → `DataSchema.safeParse` → `loadError` on invalid/absent data) is covered by unit tests
 
 ---
 

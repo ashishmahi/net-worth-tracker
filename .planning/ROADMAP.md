@@ -9,7 +9,7 @@
 - ✅ **v1.4 — Multiple commodities** — Shipped 2026-05-01 — [full snapshot](milestones/v1.4-ROADMAP.md)  
 - ✅ **v1.5 — Debt & Liabilities** — Shipped 2026-05-02 — [full snapshot](milestones/v1.5-ROADMAP.md)
 - ✅ **v1.6 — Encrypted Export** — Shipped 2026-05-02 — [full snapshot](milestones/v1.6-ROADMAP.md)
-- **v1.7 — localStorage Migration** — In progress
+- ✅ **v1.7 — localStorage Migration** — Shipped 2026-05-02
 
 ---
 
@@ -17,7 +17,7 @@
 
 ### v1.7 — localStorage Migration
 
-- [ ] **Phase 22: localStorage Migration** — Swap `AppDataContext` from `fetch`/`data.json` to `localStorage`, remove the Vite dev-server plugin, clean up user-facing copy, and verify tests.
+- [x] **Phase 22: localStorage Migration** — Swap `AppDataContext` from `fetch`/`data.json` to `localStorage`, remove the Vite dev-server plugin, clean up user-facing copy, and verify tests. — **2026-05-02**
 
 ---
 
@@ -56,7 +56,7 @@
 | 19. Crypto Utilities | v1.6 | 1/1 | Complete | 2026-05-02 |
 | 20. Settings UI — Encrypted Export & Import | v1.6 | 1/1 | Complete | 2026-05-02 |
 | 21. Passphrase modals + zip export/import | v1.6 | 1/1 | Complete | 2026-05-02 |
-| 22. localStorage Migration | v1.7 | 0/1 | Ready to execute | - |
+| 22. localStorage Migration | v1.7 | 1/1 | Complete | 2026-05-02 |
 
 ---
 

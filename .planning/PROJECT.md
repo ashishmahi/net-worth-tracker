@@ -2,7 +2,7 @@
 
 ## What this is
 
-A local-only **React + Vite** app for tracking personal net worth across **gold, non-gold commodities (e.g. silver + manual ₹ lines), mutual funds, stocks, Bitcoin, property, bank savings (INR/AED), retirement (NPS/EPF), and standalone liabilities (Liabilities page)**. It replaces a manual Excel workflow: data lives in `data.json` via a small Vite dev-server API. There is no backend, auth, or cloud sync in the shipped local product.
+A local-only **React + Vite** app for tracking personal net worth across **gold, non-gold commodities (e.g. silver + manual ₹ lines), mutual funds, stocks, Bitcoin, property, bank savings (INR/AED), retirement (NPS/EPF), and standalone liabilities (Liabilities page)**. It replaces a manual Excel workflow: wealth data persists in the browser (`localStorage` key **`wealth-tracker-data`** via `AppDataContext`). There is no backend, auth, or cloud sync in the shipped local product.
 
 ## Core value
 
@@ -19,24 +19,19 @@ See **total net worth in INR** at a glance (**debt-adjusted** headline minus sta
 | **v1.4** | **Multiple commodities** — **`otherCommodities`** schema + migration + live silver; **`CommoditiesPage`** CRUD; Dashboard/nav wayfinding; gold UX preserved (**COM-06**) | 2026-05-01 |
 | **v1.5** | **Debt & Liabilities** — root **`liabilities[]`**, **`liabilityCalcs`**, property lender/EMI + hint, **`LiabilitiesPage`** + nav, dashboard net worth + Total Debt + ratio | 2026-05-02 |
 | **v1.6** | **Encrypted Export** — **`cryptoUtils`** (AES-GCM envelope); Settings **zip** export/import via **`@zip.js/zip.js`** (`wealthDataZip`), passphrase **AlertDialogs**, zip-only import | 2026-05-02 |
+| **v1.7** | **localStorage migration** — no Vite data plugin; `AppDataContext` `localStorage` load/save; Settings copy + tests (`happy-dom`) | 2026-05-02 |
 
 Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.6-ROADMAP.md` and matching `*-REQUIREMENTS.md` archives. Executed phase artifacts for shipped milestones live under [`.planning/milestones/`](milestones/) (e.g. `v1.5-phases/`). Phase dirs **19–21** remain under [`.planning/phases/`](phases/) until optional **`/gsd-cleanup`**.
 
-## Current Milestone: v1.7 localStorage Migration
+## Current milestone
 
-**Goal:** Replace the Vite dev-server API (`GET`/`POST` `/api/data` → `data.json`) with browser `localStorage` as the sole persistence layer.
+**v1.7 — localStorage migration** is **shipped** (2026-05-02). Optional: run **`/gsd-new-milestone`** to open the next version line.
 
-**Target features:**
-- Remove Vite dev-server plugin (data API) from `vite.config.ts`
-- Migrate `AppDataContext` load/save from `fetch()` calls to `localStorage.getItem`/`setItem`
-- Remove or retire `data.json` from active use
-- Preserve full data model, schema versioning, all calculations, live prices, and import/export (zip) flows
-
-## Current state (shipped through v1.6 — 2026-05-02)
+## Current state (shipped through v1.7 — 2026-05-02)
 
 - **Liabilities & net worth:** root **`liabilities`** list; **`calcNetWorth(gross, sumLiabilitiesInr)`** for headline + new snapshots; **`sumAllDebtInr`** for dashboard **Total Debt** row; property equity unchanged (`agreementInr − outstandingLoanInr`).  
 - **Commodities (v1.4):** `assets.otherCommodities`; **`CommoditiesPage`**; live silver via **`useLivePrices`**.  
-- **App:** `npm run dev` — local-only; **`GET`/`POST`** `/api/data` → **`data.json`**. **`npm test`** — Vitest.  
+- **App:** `npm run dev` — local-only; persistence via **`localStorage`** (`wealth-tracker-data`). **`npm test`** — Vitest (+ **`happy-dom`** for context tests).  
 - **Encryption & backup (v1.6):** **`cryptoUtils`** (Web Crypto, no npm crypto deps). Settings **Data**: export downloads **`wealth-tracker-YYYY-MM-DD.zip`** with **`data.json`** (optional AES zip encryption via passphrase); import **zip only** — **`wealthDataZip`** + modal passphrase flows; Phase 19 envelope JSON remains in codebase/tests but not on Settings download path after Phase 21.  
 
 ## Requirements
@@ -155,4 +150,4 @@ This file is updated at **milestone completion** to avoid drift between plans an
 </details>  
 
 ---
-*Last updated: 2026-05-02 — **v1.7 milestone started** — localStorage migration (phases from **22**); v1.6 archived at [`v1.6-REQUIREMENTS.md`](milestones/v1.6-REQUIREMENTS.md).*  
+*Last updated: 2026-05-02 — **v1.7 shipped** — localStorage migration (Phase **22**); v1.6 archived at [`v1.6-REQUIREMENTS.md`](milestones/v1.6-REQUIREMENTS.md).*  
