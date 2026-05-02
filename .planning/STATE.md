@@ -2,7 +2,7 @@
 gsd_state_version: 1.0
 milestone: v1.6
 milestone_name: — Encrypted Export
-status: planning
+status: ready_to_execute
 last_updated: "2026-05-02T12:22:50.246Z"
 last_activity: 2026-05-02
 progress:
@@ -20,8 +20,8 @@ progress:
 ## Current position
 
 Phase: 20
-Plan: Not started
-Status: Ready to plan
+Plan: 20-01 (2 tasks, wave 1)
+Status: Ready to execute
 Last activity: 2026-05-02
 
 Progress: 1 / 2 phases complete
@@ -95,6 +95,6 @@ See [`.planning/PROJECT.md`](PROJECT.md) — **v1.5** shipped and archived (2026
 
 **Last shipped:** **v1.5 — Debt & Liabilities** — 2026-05-02 (v1.6 in progress).
 
-**Next:** `/gsd-plan-phase 20` or `/gsd-discuss-phase 20` before executing Phase 20.
+**Next:** `/gsd-execute-phase 20` — plans are in `.planning/phases/20-settings-ui-encrypted-export-import/20-01-PLAN.md`.
 
 **Planned Phase:** 20 (settings-ui-encrypted-export-import) — 1 plans — 2026-05-02T12:22:50.240Z

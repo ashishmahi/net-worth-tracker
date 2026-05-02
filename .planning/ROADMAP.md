@@ -45,7 +45,7 @@
   4. When Import receives an encrypted file, a passphrase field appears automatically before load proceeds
   5. Entering the correct passphrase on an encrypted import loads the data normally with a success state
   6. Entering a wrong or blank passphrase on an encrypted import shows a clear inline error message without changing loaded data
-**Plans**: TBD
+**Plans**: 1/1 planned (`20-01-PLAN.md`)
 **UI hint**: yes
 
 ---
@@ -124,7 +124,7 @@ Artifacts: [`.planning/milestones/v1.5-phases/`](milestones/v1.5-phases/) · [v1
 | 17. Liabilities Page CRUD | v1.5 | 1/1 | Complete | 2026-05-02 |
 | 18. Dashboard & Net Worth Integration | v1.5 | 1/1 | Complete | 2026-05-02 |
 | 19. Crypto Utilities | v1.6 | 1/1 | Complete | 2026-05-02 |
-| 20. Settings UI — Encrypted Export & Import | v1.6 | 0/1 | Not started | - |
+| 20. Settings UI — Encrypted Export & Import | v1.6 | 1/1 planned | Ready to execute | - |
 
 ---
 
