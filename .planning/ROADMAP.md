@@ -124,7 +124,7 @@ Artifacts: [`.planning/milestones/v1.5-phases/`](milestones/v1.5-phases/) · [v1
 | 17. Liabilities Page CRUD | v1.5 | 1/1 | Complete | 2026-05-02 |
 | 18. Dashboard & Net Worth Integration | v1.5 | 1/1 | Complete | 2026-05-02 |
 | 19. Crypto Utilities | v1.6 | 1/1 | Complete | 2026-05-02 |
-| 20. Settings UI — Encrypted Export & Import | v1.6 | 1/1 planned | Ready to execute | - |
+| 20. Settings UI — Encrypted Export & Import | v1.6 | 1/1 | Complete    | 2026-05-02 |
 
 ---
 

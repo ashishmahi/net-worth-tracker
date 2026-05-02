@@ -7,12 +7,12 @@
 
 ### Encrypted Export
 
-- [ ] **ENC-01**: User can enter an optional passphrase in the Export section; leaving it blank exports plain JSON (existing behavior unchanged)
+- [x] **ENC-01**: User can enter an optional passphrase in the Export section; leaving it blank exports plain JSON (existing behavior unchanged)
 - [x] **ENC-02**: When a passphrase is entered, the exported file is AES-256-GCM encrypted with PBKDF2 key derivation and a random salt
 - [x] **ENC-03**: The encrypted file uses a self-describing envelope `{ encrypted, version, salt, iv, data }` so import can auto-detect it
-- [ ] **ENC-04**: Import auto-detects an encrypted file and prompts for a passphrase only when the file is encrypted
-- [ ] **ENC-05**: User can import an encrypted file by entering the correct passphrase; data loads normally on success
-- [ ] **ENC-06**: User sees a clear inline error when import fails due to a wrong or missing passphrase
+- [x] **ENC-04**: Import auto-detects an encrypted file and prompts for a passphrase only when the file is encrypted
+- [x] **ENC-05**: User can import an encrypted file by entering the correct passphrase; data loads normally on success
+- [x] **ENC-06**: User sees a clear inline error when import fails due to a wrong or missing passphrase
 
 ## Future Requirements
 
@@ -30,12 +30,12 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| ENC-01 | Phase 20 | Pending |
+| ENC-01 | Phase 20 | Complete |
 | ENC-02 | Phase 19 | Complete |
 | ENC-03 | Phase 19 | Complete |
-| ENC-04 | Phase 20 | Pending |
-| ENC-05 | Phase 20 | Pending |
-| ENC-06 | Phase 20 | Pending |
+| ENC-04 | Phase 20 | Complete |
+| ENC-05 | Phase 20 | Complete |
+| ENC-06 | Phase 20 | Complete |
 
 **Coverage:**
 - v1.6 requirements: 6 total
