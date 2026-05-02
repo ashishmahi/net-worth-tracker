@@ -30,18 +30,18 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| ENC-01 | — | Pending |
-| ENC-02 | — | Pending |
-| ENC-03 | — | Pending |
-| ENC-04 | — | Pending |
-| ENC-05 | — | Pending |
-| ENC-06 | — | Pending |
+| ENC-01 | Phase 20 | Pending |
+| ENC-02 | Phase 19 | Pending |
+| ENC-03 | Phase 19 | Pending |
+| ENC-04 | Phase 20 | Pending |
+| ENC-05 | Phase 20 | Pending |
+| ENC-06 | Phase 20 | Pending |
 
 **Coverage:**
 - v1.6 requirements: 6 total
-- Mapped to phases: 0 (roadmap pending)
-- Unmapped: 6 ⚠️
+- Mapped to phases: 6 / 6 ✓
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-05-02*
-*Last updated: 2026-05-02 after initial definition*
+*Last updated: 2026-05-02 — traceability mapped after roadmap creation (phases 19–20)*

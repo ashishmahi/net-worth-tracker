@@ -2,11 +2,11 @@
 gsd_state_version: 1.0
 milestone: v1.6
 milestone_name: Encrypted Export
-status: defining_requirements
+status: roadmap_ready
 last_updated: "2026-05-02T00:00:00.000Z"
 last_activity: 2026-05-02
 progress:
-  total_phases: 0
+  total_phases: 2
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -19,12 +19,18 @@ progress:
 
 ## Current position
 
-Phase: Not started (defining requirements)
+Phase: Phase 19 — Crypto Utilities (not started)
 Plan: —
-Status: **v1.6 started** — Defining requirements
-Last activity: 2026-05-02 — Milestone v1.6 started
+Status: **Roadmap ready** — v1.6 phases 19–20 defined
+Last activity: 2026-05-02 — Roadmap created for v1.6 Encrypted Export
 
-Progress: 0 / 0 phases (roadmap not yet created)
+Progress: 0 / 2 phases complete
+
+```
+[          ] 0%
+Phase 19: Crypto Utilities         [ ] Not started
+Phase 20: Settings UI              [ ] Not started
+```
 
 ## Project reference
 
@@ -47,7 +53,15 @@ See [`.planning/PROJECT.md`](PROJECT.md) — **v1.5** shipped and archived (2026
 
 - **v1.4** archived: [`.planning/milestones/v1.4-ROADMAP.md`](milestones/v1.4-ROADMAP.md).
 - **v1.5** archived: [`.planning/milestones/v1.5-ROADMAP.md`](milestones/v1.5-ROADMAP.md) · [`.planning/milestones/v1.5-REQUIREMENTS.md`](milestones/v1.5-REQUIREMENTS.md).
-- **Live** [`.planning/ROADMAP.md`](ROADMAP.md): collapsed history + pointer to next milestone (**`/gsd-new-milestone`**).
+- **Live** [`.planning/ROADMAP.md`](ROADMAP.md): v1.6 phases 19–20 active.
+
+### Key v1.6 design notes
+
+- `cryptoUtils.ts` is a pure utility with no React dependencies — import in Settings page only
+- Web Crypto API (`window.crypto.subtle`) used exclusively — no third-party crypto libraries
+- Encrypted envelope: `{ encrypted: true, version: 1, salt: <hex>, iv: <hex>, data: <base64> }`
+- Import auto-detection: check `envelope.encrypted === true` before prompting for passphrase
+- Unencrypted export/import path (blank passphrase) must remain byte-for-byte identical to v1.5 behavior
 
 ### Key v1.5 design notes
 
@@ -77,6 +91,6 @@ See [`.planning/PROJECT.md`](PROJECT.md) — **v1.5** shipped and archived (2026
 
 **Completed through:** **v1.5** milestone close — archived 2026-05-02 (`v1.5-ROADMAP`, `v1.5-REQUIREMENTS`, **`.planning/phases/`** → **`milestones/v1.5-phases/`**, root **`REQUIREMENTS.md`** removed).
 
-**Next:** **`/gsd-new-milestone`** — define requirements and roadmap for **v1.6+** (phase numbering from **19**).
+**Current:** **v1.6 — Encrypted Export** — Roadmap defined 2026-05-02. Next: `/gsd-plan-phase 19`.
 
 **Last shipped:** **v1.5 — Debt & Liabilities** — 2026-05-02.

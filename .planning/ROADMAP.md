@@ -8,8 +8,45 @@
 - ✅ **v1.3 — Net worth history** — Shipped 2026-04-28 — [full snapshot](milestones/v1.3-ROADMAP.md)  
 - ✅ **v1.4 — Multiple commodities** — Shipped 2026-05-01 — [full snapshot](milestones/v1.4-ROADMAP.md)  
 - ✅ **v1.5 — Debt & Liabilities** — Shipped 2026-05-02 — [full snapshot](milestones/v1.5-ROADMAP.md)
+- 🚧 **v1.6 — Encrypted Export** — In progress
 
-**Phase numbering:** **v1.5** ended at **Phase 18**. The next milestone continues numbering from **Phase 19** via **`/gsd-new-milestone`**.
+---
+
+## Phases
+
+### v1.6 — Encrypted Export (Phases 19–20)
+
+- [ ] **Phase 19: Crypto Utilities** — Pure `src/lib/cryptoUtils.ts` with `encryptData`/`decryptData` using Web Crypto API, unit tested
+- [ ] **Phase 20: Settings UI — Encrypted Export & Import** — Passphrase field in Export, auto-detect on Import, inline error handling
+
+---
+
+## Phase Details
+
+### Phase 19: Crypto Utilities
+**Goal**: The app has a tested, dependency-free encryption library that can AES-256-GCM encrypt and decrypt a JSON payload given a passphrase
+**Depends on**: Nothing (self-contained utility)
+**Requirements**: ENC-02, ENC-03
+**Success Criteria** (what must be TRUE):
+  1. `encryptData(plaintext, passphrase)` returns an envelope object with `encrypted: true`, `version`, `salt`, `iv`, and ciphertext `data` fields
+  2. `decryptData(envelope, passphrase)` returns the original plaintext when given the correct passphrase
+  3. `decryptData` throws a typed error when given the wrong passphrase
+  4. Vitest unit tests pass for all three cases (round-trip, correct decrypt, wrong-passphrase rejection)
+**Plans**: TBD
+
+### Phase 20: Settings UI — Encrypted Export & Import
+**Goal**: Users can export an AES-256-GCM encrypted file with a passphrase and import it back with a matching passphrase, with clear inline feedback at every step
+**Depends on**: Phase 19
+**Requirements**: ENC-01, ENC-04, ENC-05, ENC-06
+**Success Criteria** (what must be TRUE):
+  1. User can leave the passphrase field blank on Export and download a plain JSON file (existing behavior unchanged)
+  2. User can enter a passphrase on Export and download a file that is visibly different from plain JSON (envelope with `encrypted: true`)
+  3. When Import receives a plain JSON file, no passphrase is asked and data loads as before
+  4. When Import receives an encrypted file, a passphrase field appears automatically before load proceeds
+  5. Entering the correct passphrase on an encrypted import loads the data normally with a success state
+  6. Entering a wrong or blank passphrase on an encrypted import shows a clear inline error message without changing loaded data
+**Plans**: TBD
+**UI hint**: yes
 
 ---
 
@@ -86,7 +123,9 @@ Artifacts: [`.planning/milestones/v1.5-phases/`](milestones/v1.5-phases/) · [v1
 | 16. Property Liability Enrichment | v1.5 | 1/1 | Complete | 2026-05-01 |
 | 17. Liabilities Page CRUD | v1.5 | 1/1 | Complete | 2026-05-02 |
 | 18. Dashboard & Net Worth Integration | v1.5 | 1/1 | Complete | 2026-05-02 |
+| 19. Crypto Utilities | v1.6 | 0/1 | Not started | - |
+| 20. Settings UI — Encrypted Export & Import | v1.6 | 0/1 | Not started | - |
 
 ---
 
-_Milestone archives: `.planning/milestones/` · **Next:** `/gsd-new-milestone` to define the next version (requirements + roadmap; phase numbering continues from **19**)._
+_Milestone archives: `.planning/milestones/` · **Current:** v1.6 — Encrypted Export (phases 19–20)._
