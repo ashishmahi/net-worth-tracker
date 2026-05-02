@@ -22,6 +22,7 @@ import {
   sumForNetWorth,
   type DashboardCategoryKey,
 } from '@/lib/dashboardCalcs'
+import { calcNetWorth, sumLiabilitiesInr } from '@/lib/liabilityCalcs'
 import { roundCurrency } from '@/lib/financials'
 import type { AppData } from '@/types/data'
 import { NetWorthOverTimeCard } from '@/components/NetWorthOverTimeCard'
@@ -66,7 +67,8 @@ function noHoldingsYet(data: AppData): boolean {
     data.assets.property.items.length === 0 &&
     data.assets.bankSavings.accounts.length === 0 &&
     data.assets.retirement.nps === 0 &&
-    data.assets.retirement.epf === 0
+    data.assets.retirement.epf === 0 &&
+    data.liabilities.length === 0
   )
 }
 
@@ -100,7 +102,11 @@ export function DashboardPage({
       }),
     [data, btcUsd, usdInr, aedInr, silverUsdPerOz]
   )
-  const grandTotal = useMemo(() => sumForNetWorth(totals), [totals])
+  const grossAssets = useMemo(() => sumForNetWorth(totals), [totals])
+  const netWorth = useMemo(
+    () => calcNetWorth(grossAssets, sumLiabilitiesInr(data)),
+    [grossAssets, data]
+  )
   const hasBtcHolding = data.assets.bitcoin.quantity > 0
   const hasAed =
     data.assets.bankSavings.accounts.some(a => a.currency === 'AED')
@@ -162,7 +168,9 @@ export function DashboardPage({
     setSnapshotSaved(false)
     setIsRecording(true)
     try {
-      const totalInr = roundCurrency(sumForNetWorth(totals))
+      const gross = sumForNetWorth(totals)
+      const nw = calcNetWorth(gross, sumLiabilitiesInr(data))
+      const totalInr = roundCurrency(nw)
       await saveData({
         ...data,
         netWorthHistory: [
@@ -205,7 +213,7 @@ export function DashboardPage({
                 <Skeleton className="h-8 w-40" />
               ) : (
                 <CardTitle className="text-2xl font-semibold">
-                  {inrNoDecimals(grandTotal)}
+                  {inrNoDecimals(netWorth)}
                 </CardTitle>
               )}
             </CardHeader>
@@ -281,7 +289,7 @@ export function DashboardPage({
                 const v = totals[key]
                 const pct = percentOfTotal(
                   v === null ? 0 : v,
-                  grandTotal
+                  grossAssets
                 )
                 const isGoldRow = key === 'gold'
                 const isBtcRow = key === 'bitcoin'
@@ -358,7 +366,7 @@ export function DashboardPage({
                           </span>
                         )}
                         <span className="text-sm text-muted-foreground w-10 text-right">
-                          {grandTotal <= 0
+                          {grossAssets <= 0
                             ? '—'
                             : v === null
                               ? '—'
