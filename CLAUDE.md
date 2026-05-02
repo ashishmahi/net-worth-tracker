@@ -31,7 +31,7 @@ This project uses GSD for phased planning and execution.
 5. Dashboard — net worth summary aggregating all sections (implemented: `src/lib/dashboardCalcs.ts`, `src/pages/DashboardPage.tsx`)
 
 ### Next step
-**v1.6 — Encrypted Export** is in progress (`.planning/ROADMAP.md`). Phase **19** (`cryptoUtils`) is complete; next planned phase is **20** (Settings UI for encrypted export/import). Run the app with `npm run dev`; tests: `npm test`. For status: `/gsd-progress`.
+**v1.6 — Encrypted Export** — Phases **19** (`cryptoUtils`) and **20** (Settings encrypted export/import UI) are complete (`.planning/ROADMAP.md`). Next: **`/gsd-new-milestone`** when you want a new version line, or ship/tag v1.6. Run the app with `npm run dev`; tests: `npm test`. For status: `/gsd-progress`.
 
 ## Critical Conventions (must follow in all phases)
 

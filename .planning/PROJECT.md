@@ -25,17 +25,20 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.5-ROADMAP.md` and matc
 
 **Goal:** Add an optional passphrase to the existing JSON export so the file is AES-256-GCM encrypted at rest, and auto-detect + decrypt on import.
 
-**Target features:**
-- Export: optional passphrase field → AES-256-GCM encrypted JSON envelope
-- Import: auto-detect encrypted file → prompt for passphrase → decrypt
-- No new dependencies (Web Crypto API, built into all modern browsers)
-- Unencrypted export/import path unchanged
+**Status:** Phases **19–20** complete (2026-05-02) — `cryptoUtils` + Settings export/import UI.
 
-## Current state (shipped v1.5 — 2026-05-02)
+**Shipped in this milestone:**
+- Export: optional passphrase field → AES-256-GCM encrypted JSON envelope; blank passphrase → same plain export as v1.5
+- Import: auto-detect encrypted file → inline decrypt + passphrase; plain JSON import unchanged
+- No new dependencies (Web Crypto API)
+- Unencrypted export/import path unchanged when passphrase left blank / file is plain JSON
+
+## Current state (shipped v1.5 base + v1.6 encryption — 2026-05-02)
 
 - **Liabilities & net worth:** root **`liabilities`** list; **`calcNetWorth(gross, sumLiabilitiesInr)`** for headline + new snapshots; **`sumAllDebtInr`** for dashboard **Total Debt** row; property equity unchanged (`agreementInr − outstandingLoanInr`).  
 - **Commodities (v1.4):** `assets.otherCommodities`; **`CommoditiesPage`**; live silver via **`useLivePrices`**.  
 - **App:** `npm run dev` — local-only; **`GET`/`POST`** `/api/data` → **`data.json`**. **`npm test`** — Vitest.  
+- **Encryption (v1.6):** Settings **Data** section — optional export passphrase, encrypted import with inline errors before replace dialog.  
 
 ## Requirements
 
@@ -82,10 +85,10 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.5-ROADMAP.md` and matc
 - [x] **ENC-02** — AES-256-GCM + PBKDF2 encryption primitive (`src/lib/cryptoUtils.ts`) — Phase **19** ([`19-VERIFICATION.md`](phases/19-crypto-utilities/19-VERIFICATION.md)).  
 - [x] **ENC-03** — Self-describing envelope `{ encrypted, version, salt, iv, data }` — Phase **19**.
 
-### Active (v1.6 — Phase 20+)
+### Validated (v1.6 — Phase 20)
 
-- [ ] **ENC-01**: Optional passphrase on Export; blank → plain JSON unchanged  
-- [ ] **ENC-04**–**ENC-06**: Import auto-detect, correct passphrase success, wrong passphrase inline error — Phase **20** (see [`.planning/REQUIREMENTS.md`](REQUIREMENTS.md))
+- [x] **ENC-01** — Optional passphrase on Export; blank → plain JSON unchanged — Phase **20** ([`20-VERIFICATION.md`](phases/20-settings-ui-encrypted-export-import/20-VERIFICATION.md)).  
+- [x] **ENC-04**–**ENC-06** — Import auto-detect, decrypt before load, wrong/empty passphrase inline errors — Phase **20**.
 
 ### Deferred (backlog / future)
 
@@ -148,4 +151,4 @@ This file is updated at **milestone completion** to avoid drift between plans an
 </details>  
 
 ---
-*Last updated: 2026-05-02 — Phase **19** complete (`cryptoUtils`); Phase **20** next (Settings UI).*  
+*Last updated: 2026-05-02 — v1.6 Phases **19**–**20** complete (crypto utilities + Settings encrypted export/import).*  
