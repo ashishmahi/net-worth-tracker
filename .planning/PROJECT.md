@@ -25,7 +25,16 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.7-ROADMAP.md` and matc
 
 ## Current milestone
 
-**None defined** — v1.7 is archived. Run **`/gsd-new-milestone`** to open **v1.8** (or the next version line).
+### v2.0 — Deploy & Beta (GitHub Pages)
+
+**Goal:** Ship a **dockerized** production build and **automated GitHub Actions** pipeline that **builds, tests, and deploys** the static app to **GitHub Pages** so **beta users** can open a public URL.
+
+**Target features:**
+
+- **Docker** — multi-stage image builds Vite output and serves it (e.g. nginx) with SPA-safe static hosting.
+- **Build config** — Vite **`base`** matches GitHub Project Pages path (`/<repo>/`) in CI while **`npm run dev`** stays root `/`.
+- **CI/CD** — workflow on PR + **`main`**: install, test, build; deploy **`dist`** to Pages on **`main`**.
+- **Beta readiness** — README (or equivalent) documents live URL, beta nature, and **client-only** data (localStorage).
 
 ## Current state (shipped through v1.7 — 2026-05-02)
 
@@ -156,4 +165,4 @@ This file is updated at **milestone completion** to avoid drift between plans an
 </details>  
 
 ---
-*Last updated: 2026-05-02 — **v1.7 milestone archived** — Phase **22** + [`v1.7-ROADMAP.md`](milestones/v1.7-ROADMAP.md); root **`REQUIREMENTS.md`** removed for next milestone.*  
+*Last updated: 2026-05-02 — **v2.0 milestone opened** — deploy / Docker / GitHub Pages; see [`.planning/REQUIREMENTS.md`](REQUIREMENTS.md).*  
