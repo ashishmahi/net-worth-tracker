@@ -3,7 +3,7 @@ import type { ZodError } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Eye, EyeOff } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -24,6 +24,12 @@ import { cn } from '@/lib/utils'
 import { createInitialData, parseAppDataFromImport, useAppData } from '@/context/AppDataContext'
 import { useLivePrices } from '@/context/LivePricesContext'
 import { parseFinancialInput, nowIso } from '@/lib/financials'
+import {
+  encryptData,
+  decryptData,
+  isCryptoError,
+  type EncryptedEnvelope,
+} from '@/lib/cryptoUtils'
 import type { AppData } from '@/types/data'
 
 // ── Export handler (D-18 — keep exactly as original) ─────────────────────────
@@ -46,6 +52,21 @@ function zodFirstHint(err: ZodError): string {
   if (!i) return `${err.issues.length} validation issues`
   const p = i.path.length ? i.path.join('.') : 'root'
   return `${p}: ${i.message}${err.issues.length > 1 ? ` (+${err.issues.length - 1} more)` : ''}`
+}
+
+function isEncryptedEnvelope(raw: unknown): raw is EncryptedEnvelope {
+  if (raw === null || typeof raw !== 'object') return false
+  const o = raw as Record<string, unknown>
+  return (
+    o.encrypted === true &&
+    o.version === 1 &&
+    typeof o.salt === 'string' &&
+    o.salt.length > 0 &&
+    typeof o.iv === 'string' &&
+    o.iv.length > 0 &&
+    typeof o.data === 'string' &&
+    o.data.length > 0
+  )
 }
 
 // ── Form schemas (string inputs — parse to number on submit) ─────────────────
@@ -118,6 +139,17 @@ export function SettingsPage() {
   const [importValidationHint, setImportValidationHint] = useState<string | null>(null)
   const [importSaveError, setImportSaveError] = useState<string | null>(null)
   const [importDataSuccess, setImportDataSuccess] = useState(false)
+
+  const [exportPassphrase, setExportPassphrase] = useState('')
+  const [exportBusy, setExportBusy] = useState(false)
+  const [exportEncryptError, setExportEncryptError] = useState<string | null>(null)
+  const [showExportPassphrase, setShowExportPassphrase] = useState(false)
+
+  const [pendingEncryptedEnvelope, setPendingEncryptedEnvelope] =
+    useState<EncryptedEnvelope | null>(null)
+  const [importDecryptPassphrase, setImportDecryptPassphrase] = useState('')
+  const [importDecryptError, setImportDecryptError] = useState<string | null>(null)
+  const [showImportDecryptPassphrase, setShowImportDecryptPassphrase] = useState(false)
 
   // Block 1: Gold Prices form (D-16)
   const goldForm = useForm<GoldPricesValues>({
@@ -226,6 +258,10 @@ export function SettingsPage() {
     setImportValidationHint(null)
     setImportSaveError(null)
     setImportDataSuccess(false)
+    setPendingEncryptedEnvelope(null)
+    setImportDecryptPassphrase('')
+    setImportDecryptError(null)
+    setShowImportDecryptPassphrase(false)
     setImportBusy(true)
     try {
       const text = await file.text()
@@ -238,6 +274,22 @@ export function SettingsPage() {
         )
         return
       }
+      if (
+        raw !== null &&
+        typeof raw === 'object' &&
+        'encrypted' in raw &&
+        (raw as { encrypted?: unknown }).encrypted === true
+      ) {
+        if (!isEncryptedEnvelope(raw)) {
+          setImportValidationError(
+            'This file claims to be encrypted but is missing required fields or is invalid.',
+          )
+          setImportValidationHint(null)
+          return
+        }
+        setPendingEncryptedEnvelope(raw)
+        return
+      }
       const result = parseAppDataFromImport(raw)
       if (!result.success) {
         setImportValidationError(
@@ -248,6 +300,56 @@ export function SettingsPage() {
       }
       setPendingImport(result.data)
       setImportDialogOpen(true)
+    } finally {
+      setImportBusy(false)
+    }
+  }
+
+  const onDecryptImport = async () => {
+    if (!pendingEncryptedEnvelope) return
+    setImportDecryptError(null)
+    setImportBusy(true)
+    try {
+      if (importDecryptPassphrase.trim() === '') {
+        setImportDecryptError('Wrong passphrase — the file could not be decrypted.')
+        return
+      }
+      let plaintext: string
+      try {
+        plaintext = await decryptData(
+          pendingEncryptedEnvelope,
+          importDecryptPassphrase.trim(),
+        )
+      } catch (e) {
+        if (isCryptoError(e)) {
+          setImportDecryptError('Wrong passphrase — the file could not be decrypted.')
+        } else {
+          setImportDecryptError(
+            'Decryption failed. Check that the app is running and try again.',
+          )
+        }
+        return
+      }
+      let parsed: unknown
+      try {
+        parsed = JSON.parse(plaintext) as unknown
+      } catch {
+        setImportValidationError('Decrypted content is not valid JSON.')
+        return
+      }
+      const result = parseAppDataFromImport(parsed)
+      if (!result.success) {
+        setImportValidationError(
+          'This file is not valid app data or does not match this app’s expected format.',
+        )
+        setImportValidationHint(zodFirstHint(result.zodError))
+        return
+      }
+      setPendingImport(result.data)
+      setImportDialogOpen(true)
+      setPendingEncryptedEnvelope(null)
+      setImportDecryptPassphrase('')
+      setImportDecryptError(null)
     } finally {
       setImportBusy(false)
     }
@@ -556,6 +658,39 @@ export function SettingsPage() {
       {/* Block 3: Data (export + import) */}
       <div>
         <p className="text-sm font-semibold mb-4">Data</p>
+        <div className="space-y-2 mb-4 max-w-md">
+          <Label htmlFor="export-passphrase">Passphrase (optional)</Label>
+          <div className="relative">
+            <Input
+              id="export-passphrase"
+              type={showExportPassphrase ? 'text' : 'password'}
+              value={exportPassphrase}
+              onChange={e => {
+                setExportPassphrase(e.target.value)
+                setExportEncryptError(null)
+              }}
+              className="pr-10"
+              autoComplete="off"
+            />
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="absolute right-2 top-1/2 h-8 w-8 -translate-y-1/2 shrink-0"
+              onClick={() => setShowExportPassphrase(v => !v)}
+              aria-label={showExportPassphrase ? 'Hide passphrase' : 'Show passphrase'}
+            >
+              {showExportPassphrase ? (
+                <EyeOff className="h-4 w-4" aria-hidden />
+              ) : (
+                <Eye className="h-4 w-4" aria-hidden />
+              )}
+            </Button>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Leave blank to export unencrypted JSON
+          </p>
+        </div>
         <input
           ref={importFileInputRef}
           type="file"
@@ -568,16 +703,49 @@ export function SettingsPage() {
           <Button
             type="button"
             variant="outline"
-            disabled={importBusy}
+            disabled={importBusy || exportBusy}
             aria-label="Export data as JSON"
-            onClick={() => handleExport(data)}
+            onClick={async () => {
+              if (exportPassphrase.trim() === '') {
+                handleExport(data)
+                return
+              }
+              setExportBusy(true)
+              setExportEncryptError(null)
+              try {
+                const envelope = await encryptData(JSON.stringify(data, null, 2), exportPassphrase)
+                const json = JSON.stringify(envelope, null, 2)
+                const blob = new Blob([json], { type: 'application/json' })
+                const url = URL.createObjectURL(blob)
+                const a = document.createElement('a')
+                a.href = url
+                a.download = `wealth-tracker-${new Date().toISOString().slice(0, 10)}.json`
+                document.body.appendChild(a)
+                a.click()
+                document.body.removeChild(a)
+                URL.revokeObjectURL(url)
+              } catch (e) {
+                setExportEncryptError(
+                  e instanceof Error ? e.message : 'Encryption failed.',
+                )
+              } finally {
+                setExportBusy(false)
+              }
+            }}
           >
-            Export Data
+            {exportBusy ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin shrink-0" aria-hidden />
+                Exporting…
+              </>
+            ) : (
+              'Export Data'
+            )}
           </Button>
           <Button
             type="button"
             variant="outline"
-            disabled={importBusy}
+            disabled={importBusy || exportBusy}
             aria-label="Import wealth data from a JSON file"
             onClick={() => importFileInputRef.current?.click()}
           >
@@ -587,6 +755,67 @@ export function SettingsPage() {
             Import from JSON
           </Button>
         </div>
+        {exportEncryptError && (
+          <p role="alert" className="text-sm text-destructive mt-2">
+            {exportEncryptError}
+          </p>
+        )}
+        {pendingEncryptedEnvelope !== null && (
+          <div className="mt-4 space-y-2 max-w-md">
+            <Label htmlFor="import-decrypt-passphrase">Passphrase</Label>
+            <div className="relative">
+              <Input
+                id="import-decrypt-passphrase"
+                type={showImportDecryptPassphrase ? 'text' : 'password'}
+                value={importDecryptPassphrase}
+                onChange={e => {
+                  setImportDecryptPassphrase(e.target.value)
+                  setImportDecryptError(null)
+                }}
+                className="pr-10"
+                autoComplete="off"
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="absolute right-2 top-1/2 h-8 w-8 -translate-y-1/2 shrink-0"
+                onClick={() => setShowImportDecryptPassphrase(v => !v)}
+                aria-label={
+                  showImportDecryptPassphrase ? 'Hide passphrase' : 'Show passphrase'
+                }
+              >
+                {showImportDecryptPassphrase ? (
+                  <EyeOff className="h-4 w-4" aria-hidden />
+                ) : (
+                  <Eye className="h-4 w-4" aria-hidden />
+                )}
+              </Button>
+            </div>
+            <Button
+              type="button"
+              variant="default"
+              disabled={importBusy}
+              onClick={() => {
+                void onDecryptImport()
+              }}
+            >
+              {importBusy ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin shrink-0" aria-hidden />
+                  Decrypt…
+                </>
+              ) : (
+                'Decrypt'
+              )}
+            </Button>
+            {importDecryptError && (
+              <p role="alert" className="text-sm text-destructive">
+                {importDecryptError}
+              </p>
+            )}
+          </div>
+        )}
         {(importParseError || importValidationError) && (
           <div className="mt-2 space-y-1">
             <p role="alert" className="text-sm text-destructive">
@@ -610,6 +839,10 @@ export function SettingsPage() {
             if (!open) {
               setPendingImport(null)
               setImportSaveError(null)
+              setPendingEncryptedEnvelope(null)
+              setImportDecryptPassphrase('')
+              setImportDecryptError(null)
+              setShowImportDecryptPassphrase(false)
             }
           }}
         >
