@@ -20,6 +20,7 @@ export type SectionKey =
   | 'stocks'
   | 'bitcoin'
   | 'property'
+  | 'liabilities'
   | 'bankSavings'
   | 'retirement'
   | 'settings'
@@ -32,6 +33,7 @@ const NAV_ITEMS: { key: SectionKey; label: string }[] = [
   { key: 'stocks', label: 'Stocks' },
   { key: 'bitcoin', label: 'Bitcoin' },
   { key: 'property', label: 'Property' },
+  { key: 'liabilities', label: 'Liabilities' },
   { key: 'bankSavings', label: 'Bank Savings' },
   { key: 'retirement', label: 'Retirement' },
   { key: 'settings', label: 'Settings' },

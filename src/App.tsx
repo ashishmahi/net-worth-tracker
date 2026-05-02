@@ -11,6 +11,7 @@ import { MutualFundsPage } from '@/pages/MutualFundsPage'
 import { StocksPage } from '@/pages/StocksPage'
 import { BitcoinPage } from '@/pages/BitcoinPage'
 import { PropertyPage } from '@/pages/PropertyPage'
+import { LiabilitiesPage } from '@/pages/LiabilitiesPage'
 import { BankSavingsPage } from '@/pages/BankSavingsPage'
 import { RetirementPage } from '@/pages/RetirementPage'
 import { SettingsPage } from '@/pages/SettingsPage'
@@ -22,6 +23,7 @@ const SECTION_COMPONENTS: Record<Exclude<SectionKey, 'dashboard'>, React.Compone
   stocks: StocksPage,
   bitcoin: BitcoinPage,
   property: PropertyPage,
+  liabilities: LiabilitiesPage,
   bankSavings: BankSavingsPage,
   retirement: RetirementPage,
   settings: SettingsPage,
