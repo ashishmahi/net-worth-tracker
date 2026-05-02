@@ -22,7 +22,12 @@ import {
   sumForNetWorth,
   type DashboardCategoryKey,
 } from '@/lib/dashboardCalcs'
-import { calcNetWorth, sumLiabilitiesInr } from '@/lib/liabilityCalcs'
+import {
+  calcNetWorth,
+  debtToAssetRatio,
+  sumAllDebtInr,
+  sumLiabilitiesInr,
+} from '@/lib/liabilityCalcs'
 import { roundCurrency } from '@/lib/financials'
 import type { AppData } from '@/types/data'
 import { NetWorthOverTimeCard } from '@/components/NetWorthOverTimeCard'
@@ -107,6 +112,7 @@ export function DashboardPage({
     () => calcNetWorth(grossAssets, sumLiabilitiesInr(data)),
     [grossAssets, data]
   )
+  const totalDebtAll = useMemo(() => sumAllDebtInr(data), [data])
   const hasBtcHolding = data.assets.bitcoin.quantity > 0
   const hasAed =
     data.assets.bankSavings.accounts.some(a => a.currency === 'AED')
@@ -212,9 +218,20 @@ export function DashboardPage({
               {showNetWorthSkeleton ? (
                 <Skeleton className="h-8 w-40" />
               ) : (
-                <CardTitle className="text-2xl font-semibold">
-                  {inrNoDecimals(netWorth)}
-                </CardTitle>
+                <>
+                  <CardTitle className="text-2xl font-semibold">
+                    {inrNoDecimals(netWorth)}
+                  </CardTitle>
+                  {totalDebtAll > 0 ? (
+                    <p className="text-sm text-muted-foreground">
+                      Debt-to-asset ratio:{' '}
+                      {Math.round(
+                        debtToAssetRatio(totalDebtAll, grossAssets)
+                      )}
+                      %
+                    </p>
+                  ) : null}
+                </>
               )}
             </CardHeader>
             {showExclusionNote && (
@@ -377,6 +394,27 @@ export function DashboardPage({
                   </div>
                 )
               })}
+              {totalDebtAll > 0 ? (
+                <>
+                  <Separator />
+                  <button
+                    type="button"
+                    className="hover:bg-muted/50 flex w-full items-center justify-between gap-2 px-4 py-3 text-left transition-colors"
+                    onClick={() => onNavigate('liabilities')}
+                    aria-label="Open Liabilities section"
+                  >
+                    <span className="text-sm font-semibold">Total Debt</span>
+                    <div className="flex items-center gap-3 shrink-0 text-right">
+                      <span className="text-sm font-normal tabular-nums text-destructive">
+                        {inrNoDecimals(totalDebtAll)}
+                      </span>
+                      <span className="text-sm text-muted-foreground w-10 text-right">
+                        —
+                      </span>
+                    </div>
+                  </button>
+                </>
+              ) : null}
             </CardContent>
           </Card>
         </>
