@@ -287,7 +287,9 @@ export function SettingsPage() {
         encrypted = await isDataJsonEntryEncrypted(file)
       } catch (err) {
         if (err instanceof WealthZipError && err.message === WEALTH_ZIP_NO_DATA_JSON) {
-          setImportValidationError('This zip archive does not contain data.json.')
+          setImportValidationError(
+            'This zip archive does not contain the expected app data export.',
+          )
           setImportValidationHint(null)
           return
         }
@@ -959,7 +961,7 @@ export function SettingsPage() {
         <CardContent className="pt-6 space-y-4">
           <p className="text-sm font-semibold">Danger zone</p>
           <p className="text-sm text-muted-foreground">
-            This permanently removes all net-worth and asset data stored in your local <code>data.json</code> file.
+            This permanently removes all net-worth and asset data stored in this browser (local storage).
             This is not a normal save and cannot be undone in the app.
           </p>
           {clearDataError && (

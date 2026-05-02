@@ -2,7 +2,7 @@
 
 ## Project
 
-A local-only React + Vite web app for tracking personal net worth across 7 asset classes (Gold, Mutual Funds, Stocks, Bitcoin, Property, Bank Savings, Retirement). Replaces a manual Excel spreadsheet. Data is stored in `data.json` via a Vite plugin. No backend, no auth, no deployment in v1.
+A local-only React + Vite web app for tracking personal net worth across 7 asset classes (Gold, Mutual Funds, Stocks, Bitcoin, Property, Bank Savings, Retirement). Replaces a manual Excel spreadsheet. Wealth data persists in the browser under the **`wealth-tracker-data`** `localStorage` key (see `AppDataContext`). No backend, no auth, no deployment in v1.
 
 ## Tech Stack
 
@@ -10,7 +10,7 @@ A local-only React + Vite web app for tracking personal net worth across 7 asset
 - **UI:** shadcn/ui + Tailwind CSS 3.4.x
 - **Forms:** React Hook Form 7.x + Zod 3.x
 - **State:** React Context (`AppDataContext`)
-- **Persistence:** Vite dev-server plugin (~50 lines) exposing `GET /api/data` and `POST /api/data` reading/writing `data.json`
+- **Persistence:** Browser `localStorage` via `AppDataContext` (key `wealth-tracker-data`); never `localStorage.clear()` in app code (theme uses a separate key)
 - **Live prices:** Custom `useLivePrices()` hook; CoinGecko (BTC/USD), Frankfurter or open.er-api.com (USD/INR, AED/INR)
 
 ## GSD Workflow
@@ -35,9 +35,9 @@ This project uses GSD for phased planning and execution.
 
 ## Critical Conventions (must follow in all phases)
 
-1. **Never store computed totals in `data.json`** — recompute from raw inputs at render time in `calculations.js`
+1. **Never store computed totals in the saved app document** — recompute from raw inputs at render time in `calculations.js`
 2. **Floating-point safety** — round to 2 decimal places after every multiplication; use `parseFinancialInput()` for all user input
 3. **Currency inputs** — use `type="text" inputmode="decimal"` (not `type="number"`) to support Indian formatting like "1,50,000"
 4. **Live price caching** — all market `fetch` calls go through `src/lib/priceApi.ts`; pages consume **`useLivePrices()`** (no ad-hoc `fetch` in `src/pages/`). **BTC/USD** cache TTL **5 min**; **forex (USD/INR, AED/INR)** **~1 hour** (Phase 3 hourly forex, D-02).
-5. **Schema versioning** — `data.json` root must have `"version": 1` from day one; check on load and warn if unknown
+5. **Schema versioning** — the stored document root must have `"version": 1` from day one; check on load and warn if unknown
 6. **UUIDs and timestamps** — all list items (accounts, milestones, etc.) have `id` (UUID), `createdAt`, `updatedAt` from the start
