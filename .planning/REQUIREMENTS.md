@@ -28,25 +28,25 @@
 
 ### Liabilities Page
 
-- [ ] **LIAB-01**: User can add a standalone loan (label, lender, outstanding balance, EMI, loan type)
-- [ ] **LIAB-02**: User can edit an existing loan entry
-- [ ] **LIAB-03**: User can delete a loan entry
-- [ ] **LIAB-04**: Each loan entry displays a `loanType` badge (Home / Car / Personal / Other)
-- [ ] **LIAB-05**: Empty state shown when no loans exist, with prompt to add first loan
-- [ ] **LIAB-06**: Page shows disambiguation copy: home loans tied to a property should use the property's liability section
+- [x] **LIAB-01**: User can add a standalone loan (label, lender, outstanding balance, EMI, loan type)
+- [x] **LIAB-02**: User can edit an existing loan entry
+- [x] **LIAB-03**: User can delete a loan entry
+- [x] **LIAB-04**: Each loan entry displays a `loanType` badge (Home / Car / Personal / Other)
+- [x] **LIAB-05**: Empty state shown when no loans exist, with prompt to add first loan
+- [x] **LIAB-06**: Page shows disambiguation copy: home loans tied to a property should use the property's liability section
 
 ### Dashboard & Net Worth
 
-- [ ] **DASH-01**: Dashboard headline net worth uses `calcNetWorth()` (gross assets − standalone liabilities)
-- [ ] **DASH-02**: Dashboard shows a Total Debt row with `sumAllDebtInr()` linking to the Liabilities page
-- [ ] **DASH-03**: Dashboard shows Debt-to-Asset ratio from `debtToAssetRatio()`
-- [ ] **DASH-04**: New net worth snapshots record `calcNetWorth()` result (historical snapshots unchanged)
+- [x] **DASH-01**: Dashboard headline net worth uses `calcNetWorth()` (gross assets − standalone liabilities)
+- [x] **DASH-02**: Dashboard shows a Total Debt row with `sumAllDebtInr()` linking to the Liabilities page
+- [x] **DASH-03**: Dashboard shows Debt-to-Asset ratio from `debtToAssetRatio()`
+- [x] **DASH-04**: New net worth snapshots record `calcNetWorth()` result (historical snapshots unchanged)
 
 ### Import / Reset / Nav
 
 - [x] **INFRA-01**: Import from JSON handles `liabilities` array (validated via `DataSchema`; migration runs before parse)
 - [x] **INFRA-02**: Data reset (`createInitialData()`) clears liabilities list
-- [ ] **INFRA-03**: Liabilities added to sidebar navigation
+- [x] **INFRA-03**: Liabilities added to sidebar navigation
 
 ## Future Requirements
 
@@ -90,17 +90,17 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PROP-01 | Phase 16 | Complete |
 | PROP-02 | Phase 16 | Complete |
 | PROP-03 | Phase 16 | Complete |
-| LIAB-01 | Phase 17 | Pending |
-| LIAB-02 | Phase 17 | Pending |
-| LIAB-03 | Phase 17 | Pending |
-| LIAB-04 | Phase 17 | Pending |
-| LIAB-05 | Phase 17 | Pending |
-| LIAB-06 | Phase 17 | Pending |
-| INFRA-03 | Phase 17 | Pending |
-| DASH-01 | Phase 18 | Pending |
-| DASH-02 | Phase 18 | Pending |
-| DASH-03 | Phase 18 | Pending |
-| DASH-04 | Phase 18 | Pending |
+| LIAB-01 | Phase 17 | Complete |
+| LIAB-02 | Phase 17 | Complete |
+| LIAB-03 | Phase 17 | Complete |
+| LIAB-04 | Phase 17 | Complete |
+| LIAB-05 | Phase 17 | Complete |
+| LIAB-06 | Phase 17 | Complete |
+| INFRA-03 | Phase 17 | Complete |
+| DASH-01 | Phase 18 | Complete |
+| DASH-02 | Phase 18 | Complete |
+| DASH-03 | Phase 18 | Complete |
+| DASH-04 | Phase 18 | Complete |
 | INFRA-01 | Phase 14 | Complete |
 | INFRA-02 | Phase 14 | Complete |
 
