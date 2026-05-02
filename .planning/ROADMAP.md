@@ -9,14 +9,54 @@
 - ✅ **v1.4 — Multiple commodities** — Shipped 2026-05-01 — [full snapshot](milestones/v1.4-ROADMAP.md)  
 - ✅ **v1.5 — Debt & Liabilities** — Shipped 2026-05-02 — [full snapshot](milestones/v1.5-ROADMAP.md)
 - ✅ **v1.6 — Encrypted Export** — Shipped 2026-05-02 — [full snapshot](milestones/v1.6-ROADMAP.md)
+- **v1.7 — localStorage Migration** — In progress
 
 ---
 
 ## Phases
 
-### Next milestone
+### v1.7 — localStorage Migration
 
-Planning starts with **`/gsd-new-milestone`** — fresh `.planning/REQUIREMENTS.md`, roadmap entries, and execution under `.planning/phases/` (phase numbering continues from **22**).
+- [ ] **Phase 22: localStorage Migration** — Swap `AppDataContext` from `fetch`/`data.json` to `localStorage`, remove the Vite dev-server plugin, clean up user-facing copy, and verify tests.
+
+---
+
+## Phase Details
+
+### Phase 22: localStorage Migration
+**Goal**: The app persists all user data in browser `localStorage` — no Vite dev-server plugin, no `data.json`, no `fetch` calls for persistence.  
+**Depends on**: Nothing (first and only phase of v1.7)  
+**Requirements**: STORE-01, STORE-02, STORE-03, STORE-04, STORE-05, INFRA-01, INFRA-02, INFRA-03, UX-01, TEST-01, TEST-02  
+**Success Criteria** (what must be TRUE):
+  1. App loads and displays all previously saved data immediately on page refresh with no flash-of-empty-state — the boot read is synchronous, not async.
+  2. All edits, additions, and deletions persist across browser sessions and page reloads without any server process or `data.json` file present.
+  3. Changing or toggling the theme (light/dark) does not erase or corrupt app data — the `theme` key in `localStorage` survives every save cycle.
+  4. All user-facing text (Settings danger zone, import dialog, error messages) refers to "browser storage" or "local storage", not to `data.json` or a running server.
+  5. The full Vitest suite passes — fetch-based mocks replaced with `localStorage` mocks, and the boot-parse path (valid data, absent key, invalid/corrupt JSON) is covered by unit tests.
+**Plans**: TBD  
+**UI hint**: yes
+
+---
+
+## Progress
+
+| Phase | Milestone | Plans complete | Status | Completed |
+|-------|-----------|----------------|--------|-----------|
+| 1-5 | v1.0 | (see snapshot) | Complete | 2026-04-26 |
+| 6-8 | v1.1 | (see snapshot) | Complete | 2026-04-26 |
+| 9 | v1.2 | 2/2 | Complete | 2026-04-26 |
+| 10, 10.1, 11 | v1.3 | 3/3 | Complete | 2026-04-26 / 2026-04-28 |
+| 12 | v1.4 | 3/3 | Complete | 2026-04-30 |
+| 13 | v1.4 | 2/2 | Complete | 2026-05-01 |
+| 14. Schema & Migration | v1.5 | 2/2 | Complete | 2026-05-01 |
+| 15. Calculation Utilities | v1.5 | 1/1 | Complete | 2026-05-01 |
+| 16. Property Liability Enrichment | v1.5 | 1/1 | Complete | 2026-05-01 |
+| 17. Liabilities Page CRUD | v1.5 | 1/1 | Complete | 2026-05-02 |
+| 18. Dashboard & Net Worth Integration | v1.5 | 1/1 | Complete | 2026-05-02 |
+| 19. Crypto Utilities | v1.6 | 1/1 | Complete | 2026-05-02 |
+| 20. Settings UI — Encrypted Export & Import | v1.6 | 1/1 | Complete | 2026-05-02 |
+| 21. Passphrase modals + zip export/import | v1.6 | 1/1 | Complete | 2026-05-02 |
+| 22. localStorage Migration | v1.7 | 0/1 | Not started | - |
 
 ---
 
@@ -89,25 +129,4 @@ Artifacts: [`.planning/milestones/v1.5-phases/`](milestones/v1.5-phases/) · [v1
 
 ---
 
-## Progress
-
-| Phase | Milestone | Plans complete | Status | Completed |
-|-------|-----------|----------------|--------|-----------|
-| 1-5 | v1.0 | (see snapshot) | Complete | 2026-04-26 |
-| 6-8 | v1.1 | (see snapshot) | Complete | 2026-04-26 |
-| 9 | v1.2 | 2/2 | Complete | 2026-04-26 |
-| 10, 10.1, 11 | v1.3 | 3/3 | Complete | 2026-04-26 / 2026-04-28 |
-| 12 | v1.4 | 3/3 | Complete | 2026-04-30 |
-| 13 | v1.4 | 2/2 | Complete | 2026-05-01 |
-| 14. Schema & Migration | v1.5 | 2/2 | Complete | 2026-05-01 |
-| 15. Calculation Utilities | v1.5 | 1/1 | Complete | 2026-05-01 |
-| 16. Property Liability Enrichment | v1.5 | 1/1 | Complete | 2026-05-01 |
-| 17. Liabilities Page CRUD | v1.5 | 1/1 | Complete | 2026-05-02 |
-| 18. Dashboard & Net Worth Integration | v1.5 | 1/1 | Complete | 2026-05-02 |
-| 19. Crypto Utilities | v1.6 | 1/1 | Complete | 2026-05-02 |
-| 20. Settings UI — Encrypted Export & Import | v1.6 | 1/1 | Complete | 2026-05-02 |
-| 21. Passphrase modals + zip export/import | v1.6 | 1/1 | Complete | 2026-05-02 |
-
----
-
-_Milestone archives: `.planning/milestones/` · **Current milestone:** none defined — use `/gsd-new-milestone`._
+_Milestone archives: `.planning/milestones/` · **Current milestone:** v1.7 localStorage Migration (Phase 22)._
