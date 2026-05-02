@@ -25,48 +25,20 @@ import { createInitialData, parseAppDataFromImport, useAppData } from '@/context
 import { useLivePrices } from '@/context/LivePricesContext'
 import { parseFinancialInput, nowIso } from '@/lib/financials'
 import {
-  encryptData,
-  decryptData,
-  isCryptoError,
-  type EncryptedEnvelope,
-} from '@/lib/cryptoUtils'
+  createWealthExportZip,
+  extractDataJsonFromZip,
+  isDataJsonEntryEncrypted,
+  isZipInvalidPassword,
+  WealthZipError,
+  WEALTH_ZIP_NO_DATA_JSON,
+} from '@/lib/wealthDataZip'
 import type { AppData } from '@/types/data'
-
-// ── Export handler (D-18 — keep exactly as original) ─────────────────────────
-
-function handleExport(data: AppData) {
-  const json = JSON.stringify(data, null, 2)
-  const blob = new Blob([json], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `wealth-tracker-${new Date().toISOString().slice(0, 10)}.json`
-  document.body.appendChild(a)
-  a.click()
-  document.body.removeChild(a)
-  URL.revokeObjectURL(url)
-}
 
 function zodFirstHint(err: ZodError): string {
   const i = err.issues[0]
   if (!i) return `${err.issues.length} validation issues`
   const p = i.path.length ? i.path.join('.') : 'root'
   return `${p}: ${i.message}${err.issues.length > 1 ? ` (+${err.issues.length - 1} more)` : ''}`
-}
-
-function isEncryptedEnvelope(raw: unknown): raw is EncryptedEnvelope {
-  if (raw === null || typeof raw !== 'object') return false
-  const o = raw as Record<string, unknown>
-  return (
-    o.encrypted === true &&
-    o.version === 1 &&
-    typeof o.salt === 'string' &&
-    o.salt.length > 0 &&
-    typeof o.iv === 'string' &&
-    o.iv.length > 0 &&
-    typeof o.data === 'string' &&
-    o.data.length > 0
-  )
 }
 
 // ── Form schemas (string inputs — parse to number on submit) ─────────────────
@@ -140,13 +112,14 @@ export function SettingsPage() {
   const [importSaveError, setImportSaveError] = useState<string | null>(null)
   const [importDataSuccess, setImportDataSuccess] = useState(false)
 
+  const [exportModalOpen, setExportModalOpen] = useState(false)
   const [exportPassphrase, setExportPassphrase] = useState('')
   const [exportBusy, setExportBusy] = useState(false)
   const [exportEncryptError, setExportEncryptError] = useState<string | null>(null)
   const [showExportPassphrase, setShowExportPassphrase] = useState(false)
 
-  const [pendingEncryptedEnvelope, setPendingEncryptedEnvelope] =
-    useState<EncryptedEnvelope | null>(null)
+  const [importPassphraseModalOpen, setImportPassphraseModalOpen] = useState(false)
+  const [pendingImportZipFile, setPendingImportZipFile] = useState<File | null>(null)
   const [importDecryptPassphrase, setImportDecryptPassphrase] = useState('')
   const [importDecryptError, setImportDecryptError] = useState<string | null>(null)
   const [showImportDecryptPassphrase, setShowImportDecryptPassphrase] = useState(false)
@@ -249,6 +222,32 @@ export function SettingsPage() {
     }
   }
 
+  const runExportZip = async () => {
+    setExportEncryptError(null)
+    setExportBusy(true)
+    try {
+      const json = JSON.stringify(data, null, 2)
+      const blob = await createWealthExportZip(json, exportPassphrase.trim() || null)
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `wealth-tracker-${new Date().toISOString().slice(0, 10)}.zip`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+      setExportModalOpen(false)
+      setExportPassphrase('')
+      setExportEncryptError(null)
+    } catch {
+      setExportEncryptError(
+        'Encryption failed. Check that the app is running and try again.',
+      )
+    } finally {
+      setExportBusy(false)
+    }
+  }
+
   const onImportFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     e.target.value = ''
@@ -258,55 +257,84 @@ export function SettingsPage() {
     setImportValidationHint(null)
     setImportSaveError(null)
     setImportDataSuccess(false)
-    setPendingEncryptedEnvelope(null)
+    setPendingImportZipFile(null)
     setImportDecryptPassphrase('')
     setImportDecryptError(null)
     setShowImportDecryptPassphrase(false)
+    setImportPassphraseModalOpen(false)
+
+    if (!file.name.toLowerCase().endsWith('.zip')) {
+      setImportParseError(
+        'This file format is no longer supported. Please re-export from the app.',
+      )
+      return
+    }
+    if (
+      file.type &&
+      file.type !== 'application/zip' &&
+      file.type !== 'application/x-zip-compressed'
+    ) {
+      setImportParseError(
+        'This file format is no longer supported. Please re-export from the app.',
+      )
+      return
+    }
+
     setImportBusy(true)
     try {
-      const text = await file.text()
-      let raw: unknown
+      let encrypted: boolean
       try {
-        raw = JSON.parse(text) as unknown
-      } catch {
-        setImportParseError(
-          'The file is not valid JSON. Use a file exported from this app or a compatible editor.',
-        )
-        return
-      }
-      if (
-        raw !== null &&
-        typeof raw === 'object' &&
-        'encrypted' in raw &&
-        (raw as { encrypted?: unknown }).encrypted === true
-      ) {
-        if (!isEncryptedEnvelope(raw)) {
-          setImportValidationError(
-            'This file claims to be encrypted but is missing required fields or is invalid.',
-          )
+        encrypted = await isDataJsonEntryEncrypted(file)
+      } catch (err) {
+        if (err instanceof WealthZipError && err.message === WEALTH_ZIP_NO_DATA_JSON) {
+          setImportValidationError('This zip archive does not contain data.json.')
           setImportValidationHint(null)
           return
         }
-        setPendingEncryptedEnvelope(raw)
-        return
-      }
-      const result = parseAppDataFromImport(raw)
-      if (!result.success) {
-        setImportValidationError(
-          'This file is not valid app data or does not match this app’s expected format.',
+        setImportParseError(
+          'This file format is no longer supported. Please re-export from the app.',
         )
-        setImportValidationHint(zodFirstHint(result.zodError))
         return
       }
-      setPendingImport(result.data)
-      setImportDialogOpen(true)
+
+      if (!encrypted) {
+        let text: string
+        try {
+          text = await extractDataJsonFromZip(file)
+        } catch {
+          setImportParseError(
+            'This file format is no longer supported. Please re-export from the app.',
+          )
+          return
+        }
+        let raw: unknown
+        try {
+          raw = JSON.parse(text) as unknown
+        } catch {
+          setImportValidationError('The file is not valid JSON.')
+          return
+        }
+        const result = parseAppDataFromImport(raw)
+        if (!result.success) {
+          setImportValidationError(
+            'This file is not valid app data or does not match this app’s expected format.',
+          )
+          setImportValidationHint(zodFirstHint(result.zodError))
+          return
+        }
+        setPendingImport(result.data)
+        setImportDialogOpen(true)
+      } else {
+        setPendingImportZipFile(file)
+        setImportPassphraseModalOpen(true)
+      }
     } finally {
       setImportBusy(false)
     }
   }
 
-  const onDecryptImport = async () => {
-    if (!pendingEncryptedEnvelope) return
+  const onDecryptZipImport = async () => {
+    if (!pendingImportZipFile) return
     setImportDecryptError(null)
     setImportBusy(true)
     try {
@@ -314,14 +342,14 @@ export function SettingsPage() {
         setImportDecryptError('Wrong passphrase — the file could not be decrypted.')
         return
       }
-      let plaintext: string
+      let text: string
       try {
-        plaintext = await decryptData(
-          pendingEncryptedEnvelope,
+        text = await extractDataJsonFromZip(
+          pendingImportZipFile,
           importDecryptPassphrase.trim(),
         )
       } catch (e) {
-        if (isCryptoError(e)) {
+        if (isZipInvalidPassword(e)) {
           setImportDecryptError('Wrong passphrase — the file could not be decrypted.')
         } else {
           setImportDecryptError(
@@ -332,7 +360,7 @@ export function SettingsPage() {
       }
       let parsed: unknown
       try {
-        parsed = JSON.parse(plaintext) as unknown
+        parsed = JSON.parse(text) as unknown
       } catch {
         setImportValidationError('Decrypted content is not valid JSON.')
         return
@@ -346,10 +374,11 @@ export function SettingsPage() {
         return
       }
       setPendingImport(result.data)
-      setImportDialogOpen(true)
-      setPendingEncryptedEnvelope(null)
+      setImportPassphraseModalOpen(false)
+      setPendingImportZipFile(null)
       setImportDecryptPassphrase('')
       setImportDecryptError(null)
+      setImportDialogOpen(true)
     } finally {
       setImportBusy(false)
     }
@@ -658,43 +687,10 @@ export function SettingsPage() {
       {/* Block 3: Data (export + import) */}
       <div>
         <p className="text-sm font-semibold mb-4">Data</p>
-        <div className="space-y-2 mb-4 max-w-md">
-          <Label htmlFor="export-passphrase">Passphrase (optional)</Label>
-          <div className="relative">
-            <Input
-              id="export-passphrase"
-              type={showExportPassphrase ? 'text' : 'password'}
-              value={exportPassphrase}
-              onChange={e => {
-                setExportPassphrase(e.target.value)
-                setExportEncryptError(null)
-              }}
-              className="pr-10"
-              autoComplete="off"
-            />
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="absolute right-2 top-1/2 h-8 w-8 -translate-y-1/2 shrink-0"
-              onClick={() => setShowExportPassphrase(v => !v)}
-              aria-label={showExportPassphrase ? 'Hide passphrase' : 'Show passphrase'}
-            >
-              {showExportPassphrase ? (
-                <EyeOff className="h-4 w-4" aria-hidden />
-              ) : (
-                <Eye className="h-4 w-4" aria-hidden />
-              )}
-            </Button>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Leave blank to export unencrypted JSON
-          </p>
-        </div>
         <input
           ref={importFileInputRef}
           type="file"
-          accept="application/json,.json"
+          accept=".zip,application/zip"
           className="hidden"
           tabIndex={-1}
           onChange={onImportFileChange}
@@ -704,118 +700,27 @@ export function SettingsPage() {
             type="button"
             variant="outline"
             disabled={importBusy || exportBusy}
-            aria-label="Export data as JSON"
-            onClick={async () => {
-              if (exportPassphrase.trim() === '') {
-                handleExport(data)
-                return
-              }
-              setExportBusy(true)
+            aria-label="Export data"
+            onClick={() => {
               setExportEncryptError(null)
-              try {
-                const envelope = await encryptData(JSON.stringify(data, null, 2), exportPassphrase)
-                const json = JSON.stringify(envelope, null, 2)
-                const blob = new Blob([json], { type: 'application/json' })
-                const url = URL.createObjectURL(blob)
-                const a = document.createElement('a')
-                a.href = url
-                a.download = `wealth-tracker-${new Date().toISOString().slice(0, 10)}.json`
-                document.body.appendChild(a)
-                a.click()
-                document.body.removeChild(a)
-                URL.revokeObjectURL(url)
-              } catch (e) {
-                setExportEncryptError(
-                  e instanceof Error ? e.message : 'Encryption failed.',
-                )
-              } finally {
-                setExportBusy(false)
-              }
+              setExportModalOpen(true)
             }}
           >
-            {exportBusy ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin shrink-0" aria-hidden />
-                Exporting…
-              </>
-            ) : (
-              'Export Data'
-            )}
+            Export Data
           </Button>
           <Button
             type="button"
             variant="outline"
             disabled={importBusy || exportBusy}
-            aria-label="Import wealth data from a JSON file"
+            aria-label="Import wealth data from a zip file"
             onClick={() => importFileInputRef.current?.click()}
           >
-            {importBusy && !importDialogOpen ? (
+            {importBusy && !importDialogOpen && !importPassphraseModalOpen ? (
               <Loader2 className="h-4 w-4 mr-2 animate-spin shrink-0" aria-hidden />
             ) : null}
-            Import from JSON
+            Import from Zip
           </Button>
         </div>
-        {exportEncryptError && (
-          <p role="alert" className="text-sm text-destructive mt-2">
-            {exportEncryptError}
-          </p>
-        )}
-        {pendingEncryptedEnvelope !== null && (
-          <div className="mt-4 space-y-2 max-w-md">
-            <Label htmlFor="import-decrypt-passphrase">Passphrase</Label>
-            <div className="relative">
-              <Input
-                id="import-decrypt-passphrase"
-                type={showImportDecryptPassphrase ? 'text' : 'password'}
-                value={importDecryptPassphrase}
-                onChange={e => {
-                  setImportDecryptPassphrase(e.target.value)
-                  setImportDecryptError(null)
-                }}
-                className="pr-10"
-                autoComplete="off"
-              />
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="absolute right-2 top-1/2 h-8 w-8 -translate-y-1/2 shrink-0"
-                onClick={() => setShowImportDecryptPassphrase(v => !v)}
-                aria-label={
-                  showImportDecryptPassphrase ? 'Hide passphrase' : 'Show passphrase'
-                }
-              >
-                {showImportDecryptPassphrase ? (
-                  <EyeOff className="h-4 w-4" aria-hidden />
-                ) : (
-                  <Eye className="h-4 w-4" aria-hidden />
-                )}
-              </Button>
-            </div>
-            <Button
-              type="button"
-              variant="default"
-              disabled={importBusy}
-              onClick={() => {
-                void onDecryptImport()
-              }}
-            >
-              {importBusy ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin shrink-0" aria-hidden />
-                  Decrypt…
-                </>
-              ) : (
-                'Decrypt'
-              )}
-            </Button>
-            {importDecryptError && (
-              <p role="alert" className="text-sm text-destructive">
-                {importDecryptError}
-              </p>
-            )}
-          </div>
-        )}
         {(importParseError || importValidationError) && (
           <div className="mt-2 space-y-1">
             <p role="alert" className="text-sm text-destructive">
@@ -833,13 +738,173 @@ export function SettingsPage() {
         )}
 
         <AlertDialog
+          open={exportModalOpen}
+          onOpenChange={open => {
+            setExportModalOpen(open)
+            if (!open) {
+              setExportPassphrase('')
+              setExportEncryptError(null)
+              setShowExportPassphrase(false)
+            }
+          }}
+        >
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Export data</AlertDialogTitle>
+              <AlertDialogDescription asChild>
+                <div className="text-left text-sm text-muted-foreground">
+                  Your data will be downloaded as a zip file. Enter a passphrase to encrypt the zip, or
+                  leave it blank to export without encryption.
+                </div>
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <div className="space-y-4 py-2">
+              <div className="space-y-2">
+                <Label htmlFor="export-modal-passphrase" className="font-normal">
+                  Passphrase
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="export-modal-passphrase"
+                    type={showExportPassphrase ? 'text' : 'password'}
+                    value={exportPassphrase}
+                    onChange={e => {
+                      setExportPassphrase(e.target.value)
+                      setExportEncryptError(null)
+                    }}
+                    className="pr-10"
+                    autoComplete="off"
+                    autoFocus
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-2 top-1/2 h-8 w-8 -translate-y-1/2 shrink-0"
+                    onClick={() => setShowExportPassphrase(v => !v)}
+                    aria-label={showExportPassphrase ? 'Hide passphrase' : 'Show passphrase'}
+                  >
+                    {showExportPassphrase ? (
+                      <EyeOff className="h-4 w-4" aria-hidden />
+                    ) : (
+                      <Eye className="h-4 w-4" aria-hidden />
+                    )}
+                  </Button>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Leave blank to export without a passphrase
+                </p>
+                {exportEncryptError && (
+                  <p role="alert" className="text-sm text-destructive">
+                    {exportEncryptError}
+                  </p>
+                )}
+              </div>
+            </div>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={exportBusy}>Cancel</AlertDialogCancel>
+              <Button type="button" disabled={exportBusy} onClick={() => void runExportZip()}>
+                {exportBusy ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin shrink-0" aria-hidden />
+                    Exporting…
+                  </>
+                ) : (
+                  'Export'
+                )}
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        <AlertDialog
+          open={importPassphraseModalOpen}
+          onOpenChange={open => {
+            setImportPassphraseModalOpen(open)
+            if (!open) {
+              setPendingImportZipFile(null)
+              setImportDecryptPassphrase('')
+              setImportDecryptError(null)
+              setShowImportDecryptPassphrase(false)
+            }
+          }}
+        >
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>This file is password protected</AlertDialogTitle>
+              <AlertDialogDescription asChild>
+                <div className="text-left text-sm text-muted-foreground">
+                  Enter the passphrase you used when exporting this file.
+                </div>
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <div className="space-y-4 py-2">
+              <div className="space-y-2">
+                <Label htmlFor="import-modal-passphrase" className="font-normal">
+                  Passphrase
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="import-modal-passphrase"
+                    type={showImportDecryptPassphrase ? 'text' : 'password'}
+                    value={importDecryptPassphrase}
+                    onChange={e => {
+                      setImportDecryptPassphrase(e.target.value)
+                      setImportDecryptError(null)
+                    }}
+                    className="pr-10"
+                    autoComplete="off"
+                    autoFocus
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-2 top-1/2 h-8 w-8 -translate-y-1/2 shrink-0"
+                    onClick={() => setShowImportDecryptPassphrase(v => !v)}
+                    aria-label={
+                      showImportDecryptPassphrase ? 'Hide passphrase' : 'Show passphrase'
+                    }
+                  >
+                    {showImportDecryptPassphrase ? (
+                      <EyeOff className="h-4 w-4" aria-hidden />
+                    ) : (
+                      <Eye className="h-4 w-4" aria-hidden />
+                    )}
+                  </Button>
+                </div>
+                {importDecryptError && (
+                  <p role="alert" className="text-sm text-destructive">
+                    {importDecryptError}
+                  </p>
+                )}
+              </div>
+            </div>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={importBusy}>Cancel</AlertDialogCancel>
+              <Button type="button" disabled={importBusy} onClick={() => void onDecryptZipImport()}>
+                {importBusy ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin shrink-0" aria-hidden />
+                    Decrypting…
+                  </>
+                ) : (
+                  'Decrypt'
+                )}
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        <AlertDialog
           open={importDialogOpen}
           onOpenChange={open => {
             setImportDialogOpen(open)
             if (!open) {
               setPendingImport(null)
               setImportSaveError(null)
-              setPendingEncryptedEnvelope(null)
+              setPendingImportZipFile(null)
+              setImportPassphraseModalOpen(false)
               setImportDecryptPassphrase('')
               setImportDecryptError(null)
               setShowImportDecryptPassphrase(false)
