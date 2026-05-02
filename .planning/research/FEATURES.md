@@ -1,195 +1,179 @@
-# Feature Research
+# Feature Landscape: localStorage Migration (v1.7)
 
-**Domain:** Debt & Liability tracking in a personal net worth tracker (v1.5 milestone)
-**Researched:** 2026-05-01
-**Confidence:** HIGH (milestone scope fixed in PROJECT.md; patterns verified against Monarch/Kubera/YNAB + existing codebase direct inspection)
+**Domain:** Persistence layer replacement — Vite API (data.json) → browser localStorage
+**Researched:** 2026-05-02
+**Confidence:** HIGH (localStorage behavior is stable web platform API; codebase inspected directly; patterns verified against MDN and React ecosystem sources)
 
 ---
 
-## Feature Landscape
+## Scope Note
 
-### Table Stakes (Users Expect These)
+This research covers only **what changes or becomes newly observable** when persistence moves from `fetch('/api/data')` (Vite dev-server plugin → `data.json`) to `localStorage.getItem`/`setItem`. Existing features (asset tracking, live prices, zip export/import, net worth history, data reset, dark mode) are unchanged in purpose; only their persistence plumbing changes.
 
-Features a debt tracker must have to feel complete. Missing any means the feature is broken or actively misleading.
+---
 
-| Feature | Why Expected | Complexity | Notes |
-|---------|--------------|------------|-------|
-| Loan entry: label + lender + outstanding balance | Every net worth tracker (Monarch, Kubera, YNAB) treats these three fields as the minimum useful loan record | LOW | `label` = "Home Loan - Lodha"; `lender` = "SBI"; `outstandingBalanceInr` in INR |
-| Loan entry: EMI amount | Users need to know monthly cash outflow; it is the most-referenced loan figure in day-to-day finance | LOW | Store as `emiInr`; display in list card; no payoff projection in v1.5 |
-| Standalone liabilities list CRUD | Add / edit / delete loans independent of property assets; every tracker has a dedicated liabilities section | MEDIUM | Sheet slide-in for add/edit; card list with edit/delete icons; matches existing Commodities and Property page conventions already in this codebase |
-| Net worth = gross assets − total debt | The core accounting identity; showing gross assets only once a liabilities section exists is actively misleading | LOW (calc) / MEDIUM (wiring) | `sumForNetWorth` must subtract `sumTotalDebt()`; property equity already nets `outstandingLoanInr`; standalone liabilities subtract from the gross sum |
-| Property liability enrichment | Existing `hasLiability` toggle already captures `outstandingLoanInr`; users with home loans also need lender name and EMI alongside the balance | LOW | Additive schema change: `lender?: string` and `emiInr?: number` added to `PropertyItemSchema` (both optional, Zod already uses `.optional()` for this field style) |
-| Dashboard: Total Debt row | All major net worth apps show a single aggregated liabilities figure on the summary; absence creates a blind spot | LOW | Sum of property outstanding loans (hasLiability items) + all standalone liability outstanding balances |
-| Dashboard: Debt-to-Asset ratio | Standard leverage metric; shows financial risk at a glance without requiring the user to divide manually | LOW (calc) | `totalDebt / grossAssets × 100`; display as percentage to one decimal place; show "—" when grossAssets is 0 |
-| Data migration: existing data loads cleanly | Without migration, any user opening the app post-update sees schema errors or broken state | MEDIUM | `liabilities` array defaults to `[]`; `PropertyItem` lender/EMI fields default to `undefined` (additive Zod change; existing records pass validation unchanged) |
-| Import/reset parity | JSON import and Settings "Reset all data" must handle the new `liabilities` key the same way other sections do | LOW | Import: `DataSchema` validation covers it once schema is updated; reset: `createInitialData()` needs `liabilities: []` |
+## Table Stakes
 
-### Differentiators (Valuable Beyond the Minimum)
+Behaviors users expect to hold after the migration. If any of these regress, the migration is a product step backward.
 
-Features that make the debt section meaningfully more useful without scope creep.
+| Behavior | Why Expected | Complexity | Current Status (pre-migration) |
+|----------|--------------|------------|-------------------------------|
+| Data survives page refresh | Fundamental persistence contract; any data app without this is useless | LOW | Met — Vite plugin writes to `data.json`; page reload fetches from disk |
+| Data survives browser close and reopen | `localStorage` is persistent (not `sessionStorage`); users expect long-term storage | LOW | Met — `data.json` survives browser close |
+| Data survives tab close and reopen | Same origin, same localStorage | LOW | Met — `data.json` survives tab close |
+| First load shows existing data with no flash | Avoidance of an "empty state flash" before data is available | MEDIUM | Currently: async `fetch` with optimistic empty initial state means same flash risk exists today; localStorage read is synchronous, so a correct implementation can eliminate the flash |
+| Save is immediate and atomic per key | User edits must not be lost between press and browser close | LOW | Currently: async POST to Vite plugin; localStorage.setItem is synchronous — faster and simpler, but blocks main thread momentarily for large JSON |
+| Optimistic update + rollback on failure | AppDataContext already implements this (D-03 in codebase) | LOW | Pattern is in place; must be preserved; with localStorage the only failure mode is QuotaExceededError (not a network error) |
+| Data reset ("Clear all data") writes correctly | `saveData(createInitialData())` → must overwrite localStorage key, not append | LOW | Met via `saveData()` call; no change to call site needed |
+| Zip export/import reads from in-memory `data` state | Export serializes `data` from React state (not from storage directly); import calls `saveData()` | LOW | Already correct; the zip export in SettingsPage.tsx reads `data` from context, not from disk; no change required |
+| Schema migration chain runs on load | `parseAppDataFromImport()` migration chain must run on localStorage load the same way it runs on `fetch()` response | LOW | Chain is already isolated in `parseAppDataFromImport()`; swap load source, keep the same call |
+| `version` field preserved in storage | Schema versioning (`"version": 1`) must survive round-trips through localStorage | LOW | `JSON.stringify(data)` → `localStorage.setItem` → `JSON.parse(localStorage.getItem())` round-trip is lossless |
+| Dark mode theme key is unaffected | Theme is already stored under a separate `localStorage` key (`"theme"`); migration must not collide | LOW | `ThemeContext.tsx` uses key `"theme"`; data must use a different key (e.g. `"wealthData"`) |
+| Private browsing behavior is disclosed or handled | In private mode, localStorage behaves like sessionStorage: data is lost when the tab closes. This is a regime change from `data.json` | MEDIUM | Currently never applies (file-based); after migration users in private mode will silently lose data on tab close without warning |
 
-| Feature | Value Proposition | Complexity | Notes |
-|---------|-------------------|------------|-------|
-| Loan type tag (home / car / personal / other) | Lets users distinguish loan categories at a glance in the list; enables future per-type subtotals with near-zero current cost | LOW | `loanType: 'home' \| 'car' \| 'personal' \| 'other'`; displayed as a shadcn Badge in the card row |
-| Net worth breakdown: Gross Assets / Total Debt / Net Worth | Three-line breakdown above category rows makes the debt deduction visible and understandable; Monarch and PocketSmith both use this layout | LOW | Three stacked summary rows before category detail rows; no new data needed; reuses existing calc values |
-| Empty state with call-to-action on Liabilities page | First-time experience: blank list with "No liabilities yet. Add your first loan." + Add button | LOW | Already a convention in this codebase (CommoditiesPage); copy-forward pattern |
-| Property loan annotation on dashboard row | Property row already shows equity; a small "(loan: ₹X)" annotation makes the deduction transparent without requiring the user to visit the Property page | LOW | Optional line below property total row; uses `outstandingLoanInr` already computed in `sumPropertyInr()` |
+---
 
-### Anti-Features (Avoid These)
+## Differentiators
 
-Features that appear valuable but add disproportionate complexity for this milestone.
+Behaviors that improve UX beyond the minimum but are not required for correctness.
 
-| Feature | Why Requested | Why Problematic | Alternative |
-|---------|---------------|-----------------|-------------|
-| Payoff projection / amortization schedule | Users naturally want to know when they'll be debt-free | Requires interest rate, disbursement date, and tenure — 4+ new required fields per loan; turns a tracker into a calculator; high edge-case surface (partial prepayment, rate changes, variable rates) | Store EMI for cash-flow awareness; defer payoff projection to a dedicated future milestone |
-| Interest rate field | Useful for comparing loan costs | Many users do not know their exact rate off the top of their head; a required field that blocks quick entry defeats the purpose of a fast manual tracker | Omit in v1.5; EMI captures payment impact without requiring a rate figure |
-| Credit card tracking | Covers revolving debt | Fundamentally different payment model — statement cycle, minimum payment, credit utilisation; needs separate UX from installment loans | Explicitly out of scope per PROJECT.md; a separate milestone if desired |
-| Multi-currency loans (AED-denominated) | AED bank accounts are already supported in this app | Outstanding loan balances are almost universally in INR for the target user (India-based); AED loan is a rare edge case that would complicate every debt calculation | Keep `outstandingBalanceInr` in INR only; user can convert manually if needed |
-| Automatic balance sync for loan balances | Would eliminate manual updates | Requires OAuth + banking API (Plaid, Salt Edge, or AA framework); fundamentally incompatible with the local-only, no-backend architecture of v1.x | Manual entry with `updatedAt` timestamp so the user can see data staleness |
-| Per-loan debt-to-asset ratio | Granular insight per loan | The aggregate dashboard ratio is the actionable metric; per-loan ratios add noise with no decision-making benefit | Single aggregate debt-to-asset ratio on dashboard |
+| Behavior | Value Proposition | Complexity | Dependency / Notes |
+|----------|-------------------|------------|-------------------|
+| Synchronous read on mount — no loading spinner for data | Because `localStorage.getItem` is synchronous, `AppDataProvider` can read and populate state before first render, eliminating the "empty → loaded" flash that exists with the async fetch today | LOW | Replace `useState(INITIAL_DATA)` + async `useEffect` with synchronous initialization via a lazy `useState(() => loadFromLocalStorage())` pattern |
+| QuotaExceededError inline save error | localStorage throws `QuotaExceededError` when storage is full (~5 MB per origin). The app's wealth data is typically 10–100 KB; quota is unlikely to be hit in practice, but if it is, a silent failure would cause lost edits. Catch and surface inline. | LOW | Same try/catch shape as the current fetch error path; different error message: "Could not save — browser storage may be full. Try clearing unused data or exporting first." |
+| Clear-data also clears the localStorage key | "Clear all data" in Settings currently calls `saveData(createInitialData())`. After migration, this writes an empty slate to localStorage, which is correct. The existing UX copy references `data.json`; the Danger Zone description text must be updated to say "your local browser storage" instead of "your local data.json file" | LOW | Text-only change to SettingsPage.tsx; no functional change |
+| Explicit localStorage key constant | Define `const WEALTH_DATA_KEY = 'wealthData'` (or similar) in a single place, the same way `STORAGE_KEY = 'theme'` is defined in `ThemeContext.tsx` | LOW | Prevents typos; makes key visible for debugging via DevTools |
+| "Storage not available" fallback | In extremely rare scenarios (browser policy, extension, corrupted storage), `localStorage` itself may throw on access. The existing `ThemeContext` already demonstrates the correct pattern: wrap in `try/catch`, return `null`, continue with defaults. | LOW | Already solved for theme; replicate for data layer |
+
+### Cross-Tab Sync — Intentionally Not a Differentiator
+
+Cross-tab sync (listening to `window.storage` events to push changes from one tab to another) is technically possible and has community demand. However, for this app:
+
+- It is a single-user personal finance tool; concurrent editing across tabs is not a real use case
+- Automatic reloads triggered by the storage event mid-edit could clobber unsaved in-memory form state
+- The existing architecture has no concept of "live document" semantics
+
+**Verdict:** Do not implement cross-tab sync in v1.7. If the user edits in two tabs simultaneously, the last-save-wins behavior of localStorage is adequate for this use case.
+
+---
+
+## Anti-Features
+
+Behaviors to explicitly avoid.
+
+| Anti-Feature | Why It Seems Appealing | Why to Avoid | What to Do Instead |
+|--------------|------------------------|--------------|-------------------|
+| Migrating data.json → localStorage automatically on first load | Nice to have for users upgrading from the Vite-API version | Requires the Vite plugin to still be present to read `data.json` during migration; this defeats the purpose of removing it. The user base is one person (personal app); a one-time manual export → import is simpler and already supported | Document: "Before switching to v1.7, export your data from Settings. After upgrade, import the zip." No code migration needed. |
+| sessionStorage instead of localStorage | Simpler to reason about per-session | Data lost on every tab close; regresses persistence contract vs current `data.json` | Use localStorage exclusively |
+| Debounced auto-save on every state change | Feels like real-time persistence; avoids needing explicit "Save" buttons | This app already uses explicit Save buttons per section (SettingsPage confirms this). Auto-save on every context write would trigger on every live price tick, every form keystroke via optimistic update, etc. — chatty and unnecessary. | Keep explicit Save buttons; `saveData()` remains the single write path |
+| Storing each asset section under a separate localStorage key | Finer-grained writes; easier to inspect individual sections | Breaks the atomic all-or-nothing data model; zip export/import, schema migration, and data reset all operate on the whole `AppData` blob; splitting storage adds reconciliation complexity for no user-visible benefit | One key, one JSON string: `localStorage.setItem(WEALTH_DATA_KEY, JSON.stringify(data))` |
+| IndexedDB instead of localStorage | Async API; no 5 MB quota; better for large data | Massive complexity increase (async API, versioned schema, cursor-based reads); wealth data is ~10–100 KB, far under localStorage quota; the synchronous read benefit of localStorage for eliminating first-render flash is lost with IndexedDB | localStorage is correct for this data size and use case |
+| Keeping data.json as a fallback alongside localStorage | Belt-and-suspenders; no data loss | Requires both Vite plugin and localStorage to stay in sync; migration logic for divergence; two sources of truth; doubles the complexity of every save path | Remove data.json and Vite plugin entirely; localStorage is the sole persistence layer from v1.7 forward |
+| Encrypting data at rest in localStorage | Security hardening | Web Crypto encryption at rest would require a passphrase on every app load — poor UX for a personal app. The zip export already provides encryption for the backup/transfer use case. Data at rest in localStorage is accessible to any JS on the same origin, but this is a local-only app with no third-party scripts. | Encrypted zip export covers the at-rest threat model for backups; no localStorage-level encryption needed |
+
+---
+
+## Interaction with Existing Features
+
+### Zip Export / Import
+
+No change to the export or import code paths. Export reads `data` from React context state (already in memory). Import calls `saveData(parsed)`, which after migration writes to localStorage instead of POSTing to the Vite server. The zip format, `createWealthExportZip()`, `extractDataJsonFromZip()`, and all passphrase flows are untouched.
+
+One UX copy update: the import confirmation dialog currently says "replace the wealth data in memory and in your local data file." After migration, change "local data file" to "local browser storage."
+
+### Data Reset ("Clear all data")
+
+`saveData(createInitialData())` is the mechanism. After migration this writes the initial empty blob to localStorage. No logic change.
+
+UX copy in the Danger Zone card currently references `data.json` by name ("permanently removes all net-worth and asset data stored in your local `data.json` file"). This must be updated to reference browser storage.
+
+### Schema Versioning
+
+`data.json` always had `"version": 1` at the root. The same field survives in localStorage because the full `AppData` object is stringified and stored. The `parseAppDataFromImport()` migration chain runs identically on the parsed JSON from localStorage. No schema version bump required for this migration.
+
+### Dark Mode Theme
+
+`ThemeContext.tsx` already uses localStorage with key `"theme"`. The wealth data migration must use a **distinct key** (e.g. `"wealthData"`). These two keys are independent and do not interfere.
+
+### Net Worth History
+
+`netWorthHistory` is part of `AppData` and is persisted as part of the single localStorage blob. No separate treatment needed. Snapshots recorded after migration are stored the same way as all other data.
+
+### Live Prices / Session Rates
+
+Live prices and session-only rate overrides are in-memory state (`LivePricesContext`). They are intentionally not persisted (the Settings page explicitly documents "These values stay in memory only"). No change needed.
 
 ---
 
 ## Feature Dependencies
 
 ```
-[Standalone Liabilities CRUD]
-    └──requires──> [DataSchema: liabilities array + LiabilityItemSchema]
-                       └──requires──> [Data migration: liabilities:[] default on load]
-                                          └──requires──> [createInitialData() + import/reset parity]
+[localStorage persistence]
+    └──replaces──> [fetch('/api/data') load in AppDataProvider useEffect]
+    └──replaces──> [fetch('/api/data', POST) save in AppDataProvider saveData()]
+    └──replaces──> [dataPlugin() in vite.config.ts]
+    └──replaces──> [data.json file]
+    └──preserves──> [parseAppDataFromImport() migration chain — called identically]
+    └──preserves──> [optimistic update + rollback pattern in saveData()]
+    └──preserves──> [all call sites: saveData() in SettingsPage, all asset pages]
 
-[Dashboard: Total Debt row]
-    └──requires──> [sumTotalDebt() in dashboardCalcs.ts]
-                       └──requires──> [DataSchema with liabilities]
+[QuotaExceededError handling]
+    └──requires──> [try/catch around localStorage.setItem in saveData()]
+    └──mirrors──> [existing network error catch in saveData()]
 
-[Dashboard: Debt-to-Asset ratio]
-    └──requires──> [Dashboard: Total Debt row]
-    └──requires──> [Gross assets sum before deduction (sumForNetWorth() pre-v1.5 value)]
+[Synchronous init (no loading spinner)]
+    └──requires──> [lazy useState initializer reading localStorage on mount]
+    └──replaces──> [useEffect + fetch on mount]
+    └──eliminates──> [INITIAL_DATA empty-state flash]
 
-[Net worth = assets − total debt]
-    └──requires──> [sumTotalDebt()]
-    └──enhances──> [existing sumForNetWorth()]
+[UX copy updates]
+    └──requires──> [SettingsPage.tsx: import dialog, Danger Zone description]
+    └──independent of all functional changes]
 
-[Property liability enrichment (lender, EMI)]
-    └──enhances──> [existing PropertyItem hasLiability / outstandingLoanInr]
-    └──requires──> [PropertyItemSchema additive update (optional fields only)]
-    (independent of standalone liabilities CRUD — can land in same schema phase)
-
-[Loan type tag Badge]
-    └──enhances──> [Standalone Liabilities CRUD]
-    └──no hard dependency — addable or omittable without blocking anything]
-
-[Net worth history snapshots (existing v1.3 feature)]
-    └──auto-updated──> [once sumForNetWorth() subtracts debt, new snapshots reflect net worth correctly]
-    (no new snapshot work needed — the subtraction flows through the existing snapshot path)
+[WEALTH_DATA_KEY constant]
+    └──must not collide with──> ['theme' key used by ThemeContext.tsx]
 ```
 
-### Dependency Notes
-
-- **Schema before everything:** The `liabilities` key must exist on `DataSchema` and `createInitialData()` before the Liabilities page or dashboard debt row can be wired. Phase ordering: data model + migration first, then CRUD UI, then dashboard wiring.
-- **sumTotalDebt() is the central dependency:** `dashboardCalcs.ts` currently deducts property `outstandingLoanInr` inline inside `sumPropertyInr()` (net equity). For v1.5, property outstanding loans must also feed into a new `sumTotalDebt()` that adds standalone liabilities. `sumPropertyInr()` continues to return equity (unchanged); the debt sum is computed separately for the dashboard Total Debt row and the net worth subtraction.
-- **Property liability enrichment is fully independent:** Adding `lender` and `emiInr` to `PropertyItem` is an additive Zod change (both optional) that can be done in the same schema migration phase without touching the liabilities list at all.
-- **Debt-to-asset ratio requires gross assets:** Gross assets = `sumForNetWorth(totals)` computed with the pre-deduction asset sum. The ratio must use the pre-deduction value to avoid circular dependency. Store gross assets as a separate variable before subtracting debt.
-- **Net worth history snapshots are automatically correct:** Once `sumForNetWorth()` subtracts debt, any new snapshot recorded via the existing "Record Snapshot" flow captures post-deduction net worth. Historical snapshots are unaffected (they were recorded before liabilities existed). No snapshot migration needed.
-
 ---
 
-## MVP Definition
+## MVP for v1.7
 
-This is an existing app adding a capability. "MVP" here means the minimum that makes debt tracking correct and non-misleading.
+### Required (migration is broken without these)
 
-### v1.5 Launch With
+- [ ] Remove `dataPlugin()` from `vite.config.ts`; remove `plugins/dataPlugin.ts`
+- [ ] `AppDataProvider`: replace async `useEffect` + `fetch` load with synchronous `localStorage.getItem(WEALTH_DATA_KEY)` + `parseAppDataFromImport()` (same migration chain)
+- [ ] `AppDataProvider`: replace async `fetch POST` save with synchronous `localStorage.setItem(WEALTH_DATA_KEY, JSON.stringify(newData))`; wrap in try/catch for `QuotaExceededError`
+- [ ] Define `WEALTH_DATA_KEY` constant in one place
+- [ ] Rollback on save failure preserved (catch `QuotaExceededError`, revert state, re-throw so call sites see the error)
+- [ ] Update `loadError` message wording: remove references to "Could not load saved data" implying network/server; replace with storage-appropriate message
+- [ ] `data.json` retired from active use (can be deleted or left as an ignored artifact)
+- [ ] Vitest tests for `AppDataContext` updated to mock `localStorage` instead of `fetch`
 
-- [ ] `LiabilityItemSchema` — `id` (UUID), `label`, `lender`, `outstandingBalanceInr`, `emiInr`, `loanType`, `createdAt`, `updatedAt`
-- [ ] `DataSchema` updated: `liabilities: z.array(LiabilityItemSchema)` at root level alongside `assets`
-- [ ] Migration: `liabilities: []` default on load; `PropertyItem` lender + EMI fields default to `undefined` (Zod additive)
-- [ ] `createInitialData()` updated to include `liabilities: []`
-- [ ] Liabilities page — Sheet-based CRUD; card list with edit/delete; empty state with Add CTA
-- [ ] Property page — lender + EMI fields rendered when `hasLiability` switch is on
-- [ ] `sumTotalDebt(data)` in `dashboardCalcs.ts` — sum of all `outstandingBalanceInr` across property `hasLiability` items + standalone liabilities
-- [ ] `sumForNetWorth()` updated to subtract `sumTotalDebt(data)`
-- [ ] Dashboard: Total Debt row + Debt-to-Asset ratio (one decimal %)
-- [ ] Import + reset parity verified in tests
+### Recommended (UX polish, low cost)
 
-### Add After Validation
+- [ ] Update SettingsPage.tsx Danger Zone description: `data.json` → "browser storage"
+- [ ] Update import confirmation dialog: "local data file" → "local browser storage"
+- [ ] Update save error messages: "Check that the app is running and try again" → "Browser storage may be full or unavailable. Try exporting first." (the old message implies a running server, which no longer applies)
 
-- [ ] Gross / Debt / Net three-line summary breakdown on dashboard — low cost, adds clarity once users have loans to see
-- [ ] Property loan annotation on the dashboard property row
+### Defer (not needed for v1.7)
 
-### Future Consideration (v2+)
-
-- [ ] Payoff projection — only when users request it; requires interest rate + tenure + disbursement date; separate milestone
-- [ ] Credit card liability tracking — different UX model; separate milestone
-- [ ] Automatic balance sync via Account Aggregator — requires backend, auth, infrastructure
-
----
-
-## Feature Prioritization Matrix
-
-| Feature | User Value | Implementation Cost | Priority |
-|---------|------------|---------------------|----------|
-| LiabilityItemSchema + migration | HIGH | LOW | P1 |
-| Standalone liabilities CRUD | HIGH | MEDIUM | P1 |
-| Property: lender + EMI fields | MEDIUM | LOW | P1 |
-| sumTotalDebt() + net worth deduction | HIGH | LOW | P1 |
-| Dashboard Total Debt row | HIGH | LOW | P1 |
-| Dashboard Debt-to-Asset ratio | MEDIUM | LOW | P1 |
-| Import/reset parity | HIGH | LOW | P1 |
-| Loan type tag (Badge) | MEDIUM | LOW | P2 |
-| Gross/Debt/Net three-line dashboard breakdown | MEDIUM | LOW | P2 |
-| Property loan annotation on dashboard row | LOW | LOW | P3 |
-| Payoff projection | MEDIUM | HIGH | Deferred |
-| Interest rate field | LOW | LOW | Deferred |
-
-**Priority key:**
-- P1: Required for a correct, shippable v1.5
-- P2: Adds clarity at low cost; include if time allows
-- P3: Nice to have; no risk to include
-- Deferred: Out of scope for v1.5
-
----
-
-## Competitor Feature Analysis
-
-| Feature | Monarch Money | Kubera | YNAB | This App v1.5 |
-|---------|--------------|--------|------|---------------|
-| Liability entry fields | Label, account type, balance (auto-synced from bank) | Label, value, currency, institution (manual or connected) | Account name, balance (manual or synced) | Label, lender, outstanding balance INR, EMI, loan type — fully manual, INR only |
-| Net worth formula | Assets − Liabilities (dashboard header) | Assets − Liabilities with per-category breakdown | Assets − Liabilities across all linked accounts | Gross assets − total debt; property equity already net; standalone liabilities deducted separately |
-| Debt metric on dashboard | Net worth figure; ratio in custom reports | "Liabilities / Assets %" shown on balance sheet view | Net worth figure; no standalone ratio | Total Debt row + Debt-to-Asset % shown directly on main dashboard |
-| Liability CRUD UX | Via account connection (mostly automatic); manual add also available | Manual entry per liability card | Manual account add | Sheet slide-in (matches existing Commodities/Property pattern in this codebase) |
-| Loan type grouping | By account type (mortgage, student loan, etc.) | Free-form label | Free-form label | `loanType` enum: home / car / personal / other; displayed as Badge |
-| Property loan linkage | Property asset + mortgage liability tracked as separate accounts; equity computed externally | Separate cards for asset and liability; net equity manual | Property asset + mortgage = two separate accounts | Property item has `hasLiability` + `outstandingLoanInr` already (v1.0); v1.5 enriches with `lender` + `emiInr` |
-
----
-
-## Existing Codebase Integration Points
-
-Integration requirements specific to this app's architecture.
-
-| Integration Point | Current State | v1.5 Change Required |
-|------------------|---------------|----------------------|
-| `PropertyItemSchema` in `data.ts` | `hasLiability: boolean`, `outstandingLoanInr?: number` | Add `lender?: z.string().optional()` and `emiInr?: z.number().nonnegative().optional()` — additive, backward-compatible |
-| `DataSchema` root in `data.ts` | `{ version, settings, assets, netWorthHistory }` | Add `liabilities: z.array(LiabilityItemSchema)` at root level |
-| `sumPropertyInr()` in `dashboardCalcs.ts` | Deducts `outstandingLoanInr` inline when `hasLiability` is true (returns equity) | No change — equity calc stays; outstanding loan values are separately extracted by `sumTotalDebt()` |
-| `sumForNetWorth()` in `dashboardCalcs.ts` | Sums all category totals from `DASHBOARD_CATEGORY_ORDER` | Subtract `sumTotalDebt(data)` from the asset sum before returning |
-| `DashboardPage.tsx` | Per-category rows + net worth grand total | Add Total Debt row + Debt-to-Asset ratio; update grand total label to "Net Worth" if not already; optionally add three-line gross/debt/net summary header |
-| `createInitialData()` in `AppDataContext` | Initialises all `assets` keys | Add `liabilities: []` |
-| JSON import path | Validates against `DataSchema` via `safeParse` | No change needed; Zod handles the new key automatically once `DataSchema` is updated |
-| Net worth history snapshots | `totalInr` recorded at snapshot time using `sumForNetWorth()` | Automatically correct once `sumForNetWorth()` subtracts debt; no snapshot migration required |
-| Vitest tests in `schema.test.ts` / `dashboardCalcs.test.ts` | Cover existing schema + calc paths | New tests needed for `LiabilityItemSchema`, `sumTotalDebt()`, and net worth deduction path |
+- [ ] Automatic data.json → localStorage migration on first load (manual export/import covers this)
+- [ ] Cross-tab sync (not a real use case for this app)
+- [ ] Private browsing detection / warning (edge case; document in release notes if desired)
 
 ---
 
 ## Sources
 
-- [Monarch Money — Tracking features](https://www.monarch.com/features/tracking)
-- [Kubera — Balance sheet tracker](https://www.kubera.com/)
-- [PocketSmith Net Worth Tour](https://www.pocketsmith.com/tour/net-worth/) — Gross Assets / Total Liabilities / Net Worth three-row layout
-- [10 Best Net Worth Tracker Apps — CreditDonkey 2026](https://www.creditdonkey.com/best-net-worth-tracker.html)
-- [Net Worth Tracker FAQ — FinancialAha](https://www.financialaha.com/spreadsheet-templates/personal-finance/net-worth-tracker/faq/) — debt-to-asset ratio as standard metric
-- Codebase direct inspection: `src/types/data.ts`, `src/lib/dashboardCalcs.ts`, `src/pages/PropertyPage.tsx`, `.planning/PROJECT.md`
+- [MDN: Storage quotas and eviction criteria](https://developer.mozilla.org/en-US/docs/Web/API/Storage_API/Storage_quotas_and_eviction_criteria) — quota limits by browser, private mode behavior
+- [MDN: Web Storage API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API) — localStorage vs sessionStorage persistence contracts
+- [TrackJS: QuotaExceededError handling](https://trackjs.com/javascript-errors/failed-to-execute-setitem-on-storage/) — error surface and catch pattern
+- [Felix Gerschau: React localStorage patterns](https://felixgerschau.com/react-localstorage/) — lazy useState init, synchronous read on mount
+- [LogRocket: localStorage with React Hooks](https://blog.logrocket.com/using-localstorage-react-hooks/) — useSyncExternalStore patterns, cross-tab events
+- [RxDB: localStorage in modern applications](https://rxdb.info/articles/localstorage.html) — serialization costs, localStorage vs IndexedDB tradeoffs
+- Codebase direct inspection: `src/context/AppDataContext.tsx`, `src/context/ThemeContext.tsx`, `plugins/dataPlugin.ts`, `vite.config.ts`, `src/pages/SettingsPage.tsx`
 
 ---
 
-*Feature research for: debt & liability tracking — Personal Wealth Tracker v1.5*
-*Researched: 2026-05-01*
+*Feature research for: localStorage migration — Personal Wealth Tracker v1.7*
+*Researched: 2026-05-02*

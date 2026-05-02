@@ -1,231 +1,198 @@
-# Stack Research: v1.5 Debt & Liabilities
+# Technology Stack: v1.7 localStorage Migration
 
-**Project:** Personal Wealth Tracker
-**Researched:** 2026-05-01
-**Confidence:** HIGH — all conclusions drawn from direct codebase inspection; no speculative library additions required
+**Project:** Personal Wealth Tracker — fin
+**Milestone:** v1.7 — Migrate persistence from Vite dev-server plugin to browser localStorage
+**Researched:** 2026-05-02
+**Overall confidence:** HIGH — conclusions drawn from direct codebase inspection and verified browser API behaviour
 
 ---
 
 ## Verdict: No new npm dependencies needed
 
-Every capability required for debt/liability tracking already exists in the installed stack. This section documents each concern and which existing mechanism handles it.
+The migration is a targeted swap of the I/O layer inside `AppDataContext.tsx`. Every existing capability — Zod schema, migration chain, `parseAppDataFromImport`, rollback pattern, `saveData` async signature — remains intact. The Web Storage API is already used in this codebase (`ThemeContext.tsx`) and provides the exact same pattern needed at larger scale.
 
 ---
 
-## Existing Stack Coverage by Concern
+## Recommended Approach: Plain `localStorage`
 
-### 1. Data Schema — Zod 4.3.x (already installed)
+Replace the two `fetch('/api/data')` call sites in `AppDataContext.tsx` with `localStorage.getItem` / `localStorage.setItem`. Remove `dataPlugin` from `vite.config.ts`. Zero new packages.
 
-The existing pattern in `src/types/data.ts` is the exact model to follow:
+**Why this is sufficient:**
 
-- `BaseItemSchema` (uuid `id`, `createdAt`, `updatedAt`) — reuse as-is for each `LiabilityItem`
-- `z.object({...})` with `z.string().min(1)` for label/lender, `z.number().nonnegative()` for balances and EMI — same field shapes as `PropertyItemSchema`
-- `DataSchema` root needs a new top-level `liabilities` key (parallel to `assets`, not nested inside it — debts are not assets)
+| Factor | Detail |
+|--------|--------|
+| Data size | `data.json` is currently **4.5 KB** serialised. Even with 10 years of daily `netWorthHistory` snapshots (~1,500 entries) the blob stays under ~250 KB — well inside the 5 MB localStorage quota on every modern browser. |
+| Existing pattern | `ThemeContext.tsx` already uses `localStorage.getItem` / `setItem` wrapped in `try/catch`. This is the proven in-project template. |
+| Scope | The migration is only about swapping I/O. The data model, Zod schema, migration chain, and all callers are unchanged. |
+| Async contract | `saveData` is already declared `async`. `localStorage.setItem` is synchronous; the `async` wrapper is kept to preserve the caller contract with no changes needed downstream. |
 
-**New schema addition** (`src/types/data.ts`):
+---
 
-```typescript
-export const LiabilityItemSchema = BaseItemSchema.extend({
-  label: z.string().min(1),          // e.g. "Home Loan – HDFC"
-  lender: z.string().optional(),     // e.g. "HDFC Bank"
-  outstandingInr: z.number().nonnegative(),
-  emiInr: z.number().nonnegative().optional(),
-})
+## Storage Key
 
-export const LiabilitiesSchema = z.object({
-  updatedAt: z.string().datetime(),
-  items: z.array(LiabilityItemSchema),
-})
+Use a single key for the full app blob:
+
+```ts
+export const APP_DATA_KEY = 'wealthTrackerData' as const
 ```
 
-Then in `DataSchema`:
-```typescript
-export const DataSchema = z.object({
-  version: z.literal(1),
-  settings: SettingsSchema,
-  assets: z.object({ ... }),          // unchanged
-  liabilities: LiabilitiesSchema,     // NEW — top-level, not inside assets
-  netWorthHistory: z.array(NetWorthPointSchema),
-})
-```
+Keep the theme key (`'theme'`) unchanged in `ThemeContext.tsx`. Do not merge the two.
 
-The `PropertyItemSchema` also gains `lender` and `emiInr` fields for DEBT-01:
-```typescript
-export const PropertyItemSchema = BaseItemSchema.extend({
-  ...existing fields...,
-  hasLiability: z.boolean(),
-  outstandingLoanInr: z.number().nonnegative().optional(),
-  loanLender: z.string().optional(),   // NEW for DEBT-01
-  loanEmiInr: z.number().nonnegative().optional(),  // NEW for DEBT-01
-})
-```
+---
 
-### 2. Migration — Pattern from `AppDataContext.tsx` (no new tools)
+## Implementation Pattern
 
-The established migration pattern is pure functions that transform `unknown → unknown` before `DataSchema.safeParse`. Add one more function in the chain:
+### Load (replaces `fetch('/api/data')`)
 
-```typescript
-/** v1.5: inject empty liabilities block for pre-v1.5 data.json files */
-export function ensureLiabilities(raw: unknown): unknown {
-  if (raw === null || typeof raw !== 'object') return raw
-  const o = raw as Record<string, unknown>
-  if (!('liabilities' in o) || o.liabilities === undefined) {
-    return { ...o, liabilities: { updatedAt: nowIso(), items: [] } }
+```ts
+useEffect(() => {
+  try {
+    const raw = localStorage.getItem(APP_DATA_KEY)
+    if (!raw) return // first run or after deliberate clear — keep INITIAL_DATA, no error
+    const result = parseAppDataFromImport(JSON.parse(raw))
+    if (result.success) {
+      setData(result.data)
+    } else {
+      console.warn('localStorage schema mismatch:', result.zodError.issues)
+      setLoadError('Saved data format is unrecognised. Starting with defaults.')
+    }
+  } catch {
+    setLoadError('Could not load saved data. Starting with defaults.')
   }
-  return raw
+}, [])
+```
+
+- `JSON.parse` throws on corrupt stored strings — the outer `catch` handles it.
+- `parseAppDataFromImport` runs the full migration chain unchanged (legacy bank accounts → netWorthHistory → otherCommodities → liabilities → safeParse).
+- `null` return from `getItem` (first run, private browsing, or after data reset) falls through silently to `INITIAL_DATA`.
+
+### Save (replaces `fetch('/api/data', { method: 'POST' })`)
+
+```ts
+async function saveData(newData: AppData): Promise<void> {
+  const previous = data
+  setData(newData) // optimistic update preserved (D-03)
+  try {
+    localStorage.setItem(APP_DATA_KEY, JSON.stringify(newData))
+  } catch (err) {
+    setData(previous) // revert on QuotaExceededError or SecurityError
+    throw err // caller catches and shows inline error (D-02)
+  }
 }
 ```
 
-Chain: `migrateLegacyBankAccounts → ensureNetWorthHistory → ensureOtherCommodities → ensureLiabilities → safeParse`
-
-This function is exported so `migration.test.ts` can test it directly — same pattern as `ensureOtherCommodities`.
-
-### 3. Calculation Utilities — `src/lib/financials.ts` and `dashboardCalcs.ts` (extend in-place)
-
-No new libraries. Two additions to existing files:
-
-**`src/lib/financials.ts`** — no changes needed; `roundCurrency` and `parseFinancialInput` cover all liability arithmetic.
-
-**`src/lib/dashboardCalcs.ts`** — add:
-
-```typescript
-export function sumLiabilitiesInr(data: AppData): number {
-  // standalone liabilities list
-  const standaloneLiabilities = data.liabilities.items.reduce(
-    (sum, item) => roundCurrency(sum + roundCurrency(item.outstandingInr)),
-    0
-  )
-  // property liabilities (already deducted per-item in sumPropertyInr, so no double-count)
-  return standaloneLiabilities
-}
-
-export function calcDebtToAssetRatio(totalDebt: number, grossAssets: number): number {
-  if (grossAssets <= 0) return 0
-  return roundCurrency((totalDebt / grossAssets) * 100)
-}
-```
-
-Net worth formula change in `sumForNetWorth`:
-- Current: sum of `CategoryTotals` (property already nets out its own loan via `sumPropertyInr`)
-- After: `sumForNetWorth(totals) - sumLiabilitiesInr(data)` — standalone loans subtract from gross net worth
-
-The dashboard needs two new derived values: `totalDebt` (property outstanding loans + standalone liabilities) and `debtToAssetRatio`. Both are pure arithmetic on existing data — no state, no hooks, no new libraries.
-
-### 4. Forms — React Hook Form 7.x + Zod (already installed)
-
-`CommoditiesPage.tsx` is the reference implementation: `useForm<FormValues>({ resolver: zodResolver(formSchema) })`. The liabilities page uses the identical pattern.
-
-Form schema for a liability entry (local to the page file, same as commodities approach):
-
-```typescript
-const liabilityFormSchema = z.object({
-  label: z.string().min(1, 'Label is required.'),
-  lender: z.string().optional(),
-  outstandingInr: z.string().min(1, 'Outstanding balance is required.'),
-  emiInr: z.string().optional(),
-})
-```
-
-String inputs parsed via `parseFinancialInput()` on submit — same as every other page.
-
-### 5. UI Components — shadcn/ui (already installed, no new installs)
-
-All needed components are installed:
-
-| Component | Already in codebase | Used for |
-|-----------|--------------------|----|
-| `Sheet` / `SheetContent` / `SheetHeader` / `SheetFooter` | Yes — all asset pages | Add/edit liability slide-over |
-| `Card` / `CardContent` | Yes | Liabilities list card |
-| `Input` | Yes | label, lender, outstanding balance, EMI fields |
-| `Label` | Yes | Field labels |
-| `Button` | Yes | Add / Save / Delete |
-| `Separator` | Yes | Between list items |
-| `Switch` | Yes | Property "has home loan" toggle (already used) |
-| `Table` / `TableBody` / etc. | Yes | Dashboard debt rows |
-| `AlertDialog` | Yes | Not needed for basic CRUD (no irreversible action pattern here — delete is enough with a destructive button) |
-| `Badge` | Yes | Optional: "Debt" label badge on liability items |
-
-The `Trash2` and `Plus` icons from `lucide-react` are already imported on other pages. No additional Radix primitives or shadcn/ui components need installing.
-
-### 6. Navigation — `AppSidebar.tsx` (extend in-place)
-
-`AppSidebar.tsx` defines `SectionKey` as a union type and the nav items array. Add `'liabilities'` to the union and add a nav entry. The Landmark or `HandCoins` icon from `lucide-react` works — `lucide-react` is already at `^1.12.0` which includes both.
-
-### 7. Persistence — Vite plugin `GET/POST /api/data` (unchanged)
-
-`saveData(nextData)` in `AppDataContext` does a full-document `POST /api/data`. Adding a `liabilities` key to the document requires no plugin changes — the plugin passes the JSON body through verbatim. The `createInitialData()` function needs updating to include an empty `liabilities` block.
-
-### 8. Tests — Vitest (already installed)
-
-Follow the test file pattern in `src/lib/__tests__/migration.test.ts` and `schema.test.ts`:
-
-- `migration.test.ts` — add tests for `ensureLiabilities` (same pattern as `ensureOtherCommodities` tests)
-- `schema.test.ts` — add `LiabilityItemSchema` validation tests (required fields, optional fields, negative balance rejection)
-- `dashboardCalcs.test.ts` — add tests for `sumLiabilitiesInr` and `calcDebtToAssetRatio`
-
-No new test tooling needed.
+- Rollback-on-failure behaviour is preserved identically.
+- `QuotaExceededError` (storage full) and `SecurityError` (private-browsing block) are both thrown by `setItem` — the existing error-display path in callers handles them without changes.
 
 ---
 
-## What NOT to Add
+## Libraries Considered and Rejected
 
-| Temptation | Why to skip |
-|---|---|
-| A debt-specific calculation library | All loan math needed is: `sum(outstandingInr)`, `totalDebt / grossAssets * 100`, and `grossAssets - totalDebt`. The existing `roundCurrency` + plain arithmetic is sufficient. No amortisation schedule, no compound interest projection in v1.5 scope. |
-| `@radix-ui/react-progress` for a debt ratio bar | A plain Tailwind `div` with `style={{ width: \`${ratio}%\` }}` on a colored container is the shadcn/ui pattern for progress indicators; the full Radix primitive isn't needed for a display-only ratio bar. |
-| A separate "loans" data service / API route | The existing single-document `POST /api/data` pattern handles all persistence. Introducing a separate endpoint would break the "one JSON file" invariant. |
-| `immer` for immutable state updates | The existing spread-to-update pattern (`{ ...data, liabilities: { ...data.liabilities, items: nextItems } }`) is used throughout and is fine at this data volume. |
-| `date-fns` for EMI date tracking | No date-based EMI features are in v1.5 scope. Outstanding balance is a point-in-time number the user updates manually, same as every other value in the app. |
-| A `LiabilityContext` | The existing `AppDataContext` already provides `data` and `saveData`. A separate context would be unnecessary layering for a list that's structurally identical to `otherCommodities`. |
+### localforage (v1.10.0)
+
+- **What it does:** Wraps IndexedDB / WebSQL / localStorage with an async `getItem` / `setItem` API; auto-selects the best backend.
+- **Why considered:** Async-first, broadly cited in React persistence guides.
+- **Why rejected:**
+  - Last released in 2021 (v1.10.0) — effectively in maintenance mode. Confidence in long-term maintenance is LOW.
+  - Async API means every `getItem` call in the boot `useEffect` needs `.then()` or `await`, and `saveData` needs genuine async unwrapping — more code, not less.
+  - 8.8 KB minzipped for no user-visible benefit on a 4.5 KB blob.
+  - IndexedDB backend adds no value for a single serialised document with no queries or indexes.
+
+### idb-keyval (v6.2.x)
+
+- **What it does:** Minimal promisified IndexedDB key-value wrapper; ~600 bytes minzipped.
+- **Why considered:** Smallest possible IndexedDB abstraction, tree-shakeable.
+- **Why rejected:** Same async-API overhead as localforage. IndexedDB is designed for large structured datasets with indexes — none of which this app uses. For a single JSON blob, the complexity is pure overhead.
+
+### zustand + persist middleware (v5.x)
+
+- **What it does:** Replaces React Context with a global store; the `persist` middleware serialises selected state to localStorage automatically.
+- **Why considered:** Would eliminate manual `getItem` / `setItem`; handles partitioning persistent vs transient state.
+- **Why rejected:** Migrating from `AppDataContext` to Zustand is a separate, larger refactor that is orthogonal to v1.7's goal. The existing context is well-tested, has clear rollback semantics, and its `saveData` async contract is used throughout the codebase. Expanding scope to a state-management rewrite introduces unnecessary risk for a 10-line I/O swap.
+
+### use-local-storage-state / use-local-storage (hook wrappers)
+
+- **Why rejected:** These hooks replace the context's load/save with a hook-level primitive, which would require redesigning `AppDataProvider`. The existing context abstraction is the right boundary — do not dissolve it into a hook.
 
 ---
 
-## Integration Points Summary
+## Files to Change
 
-| Concern | File to change | Type of change |
-|---------|---------------|---------------|
-| Zod schema + TypeScript types | `src/types/data.ts` | Add `LiabilityItemSchema`, `LiabilitiesSchema`; extend `PropertyItemSchema`; add `liabilities` to `DataSchema` root |
-| Migration function | `src/context/AppDataContext.tsx` | Add `ensureLiabilities()`, add to chain in `parseAppDataFromImport` and boot load |
-| `createInitialData()` | `src/context/AppDataContext.tsx` | Add `liabilities: { updatedAt: nowIso(), items: [] }` to initial document |
-| Calculation utilities | `src/lib/dashboardCalcs.ts` | Add `sumLiabilitiesInr()`, `calcDebtToAssetRatio()`; update `sumForNetWorth` signature if needed |
-| New page | `src/pages/LiabilitiesPage.tsx` | New file — follows `CommoditiesPage.tsx` structure |
-| Dashboard debt rows | `src/pages/DashboardPage.tsx` | Add Total Debt row and Debt-to-Asset ratio after net worth total |
-| Property form enrichment | `src/pages/PropertyPage.tsx` | Add lender + EMI fields inside the `hasLiability` conditional section |
-| Navigation | `src/components/AppSidebar.tsx` | Add `'liabilities'` to `SectionKey`, add nav item |
-| App routing | `src/App.tsx` | Add `case 'liabilities': return <LiabilitiesPage />` |
-| Tests | `src/lib/__tests__/migration.test.ts`, `schema.test.ts`, `dashboardCalcs.test.ts` | New test cases for new functions/schemas |
+| File | Change |
+|------|--------|
+| `src/context/AppDataContext.tsx` | Replace `fetch('/api/data')` GET with `localStorage.getItem(APP_DATA_KEY)` + `JSON.parse`; replace `fetch('/api/data', POST)` with `localStorage.setItem(APP_DATA_KEY, JSON.stringify(newData))` |
+| `vite.config.ts` | Remove `dataPlugin()` from the `plugins` array; remove `import { dataPlugin }` |
+| `plugins/dataPlugin.ts` | Delete entirely |
+| `data.json` | Delete (active persistence moves to localStorage; zip export/import is the backup path) |
 
 ---
 
-## Version Compatibility
+## What Does NOT Change
 
-All existing packages are compatible. No version changes needed.
+| Concern | Status |
+|---------|--------|
+| `AppData` schema, Zod types, `DataSchema` | Unchanged |
+| `parseAppDataFromImport` full migration chain | Unchanged |
+| `createInitialData()` | Unchanged |
+| `saveData` async signature and rollback pattern | Unchanged |
+| `loadError` state and error UI | Unchanged |
+| `netWorthHistory`, snapshots | Unchanged |
+| Zip export / import (`wealthDataZip`, `cryptoUtils`) | Unchanged — operates on `AppData` objects; persistence layer is transparent |
+| `useLivePrices`, `priceApi` | Unchanged |
+| `ThemeContext` and `'theme'` key | Unchanged |
+| All page components, hooks, callers of `useAppData()` | Unchanged |
+| Vitest test suite | Unchanged — context tests mock `fetch`; after migration they mock `localStorage` |
 
-| Package | Installed version | Relevance | Notes |
-|---------|------------------|-----------|-------|
-| `zod` | `^4.3.6` | Schema definition | Discriminated unions not needed for liabilities (simpler flat schema) |
-| `react-hook-form` | `^7.73.1` | Liability form | `zodResolver` from `@hookform/resolvers` already installed |
-| `@hookform/resolvers` | `^5.2.2` | RHF+Zod bridge | Already in use on `CommoditiesPage` |
-| `lucide-react` | `^1.12.0` | Nav icon | `HandCoins` or `Landmark` available in this version |
-| `recharts` | `^2.15.4` | No change needed | Dashboard chart not affected |
+---
+
+## Test Considerations
+
+`src/context/__tests__/AppDataContext.test.ts` currently tests `parseAppDataFromImport` and `createInitialData` only — it does not test the `fetch` calls. After migration, if integration tests for boot/save are added, use `vitest`'s `vi.stubGlobal('localStorage', ...)` or a `localStorage` mock — no new test library needed.
+
+---
+
+## Storage Size Headroom
+
+| Scenario | Estimated size |
+|----------|---------------|
+| Current `data.json` (v1.6) | 4.5 KB |
+| 365 snapshots (1 year daily) | ~55 KB |
+| 3,650 snapshots (10 years daily) | ~550 KB |
+| localStorage quota (all modern browsers) | 5 MB |
+
+Quota is not a practical concern for this app's data model.
+
+---
+
+## Version / Compatibility Notes
+
+| Item | Notes |
+|------|-------|
+| `localStorage` Web API | Native browser API; no polyfill; available in all environments this app targets |
+| `JSON.stringify` / `JSON.parse` | Native; no library |
+| `QuotaExceededError` | Thrown by `setItem` when storage is full; `SecurityError` thrown in some private-browsing contexts — both caught by the existing `try/catch` pattern |
+| No new npm packages | Zero version pinning concerns for this milestone |
 
 ---
 
 ## Installation
 
 ```bash
-# No new packages required.
-# All debt/liability work is new files + modifications to existing files.
+# No new packages. No version changes.
+# This milestone is a pure code change + file deletion.
 ```
 
 ---
 
 ## Sources
 
-- Direct codebase inspection: `src/types/data.ts`, `src/lib/dashboardCalcs.ts`, `src/lib/financials.ts`, `src/context/AppDataContext.tsx`, `src/pages/CommoditiesPage.tsx`, `src/pages/PropertyPage.tsx`, `src/pages/DashboardPage.tsx`, `package.json`
-- Established migration pattern confirmed from `src/lib/__tests__/migration.test.ts`
-- Schema pattern confirmed from `src/lib/__tests__/schema.test.ts`
+- In-project: `src/context/AppDataContext.tsx`, `src/context/ThemeContext.tsx`, `plugins/dataPlugin.ts`, `vite.config.ts`, `package.json`
+- MDN Web Storage API: https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage
+- localStorage limits and QuotaExceededError: https://rxdb.info/articles/localstorage.html
+- localforage npm (maintenance status): https://www.npmjs.com/package/localforage
+- idb-keyval vs localforage comparison: https://npm-compare.com/dexie,idb-keyval,localforage
+- zustand persist middleware: https://zustand.docs.pmnd.rs/reference/middlewares/persist
 
 ---
-*Stack research for: v1.5 Debt & Liabilities — Personal Wealth Tracker*
-*Researched: 2026-05-01*
+*Stack research for: v1.7 localStorage Migration — Personal Wealth Tracker*
+*Researched: 2026-05-02*

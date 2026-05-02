@@ -1,413 +1,381 @@
-# Architecture Research
+# Architecture Research — v1.7 localStorage Migration
 
-**Domain:** Personal finance tracker — debt/liability layer on top of existing React+Vite app
-**Researched:** 2026-05-01
+**Domain:** Personal finance tracker — replacing Vite dev-server persistence with browser localStorage
+**Researched:** 2026-05-02
 **Confidence:** HIGH (based on direct code inspection of all relevant source files)
 
 ---
 
-## Existing Architecture (v1.4 baseline)
+## Summary
 
-```
-┌──────────────────────────────────────────────────────────────┐
-│                       App.tsx (shell)                         │
-│   SidebarProvider → AppSidebar + SidebarInset + MobileTopBar │
-│   activeSection: SectionKey (useState, no router)            │
-└───────────────────────────┬──────────────────────────────────┘
-                            │ renders
-              ┌─────────────┴─────────────┐
-              │ DashboardPage             │ Section Pages
-              │ (onNavigate prop)         │ GoldPage, CommoditiesPage,
-              │                           │ PropertyPage, BankPage…
-              └─────────────┬─────────────┘
-                            │ consume
-        ┌───────────────────┴──────────────────────┐
-        │ AppDataContext                            │
-        │   data: AppData  (from data.json via     │
-        │   GET /api/data → Zod parse)             │
-        │   saveData(newData)  → POST /api/data    │
-        └───────────────────┬──────────────────────┘
-                            │ types from
-        ┌───────────────────┴──────────────────────┐
-        │ src/types/data.ts                        │
-        │   DataSchema (Zod) — single source of    │
-        │   truth for AppData type                 │
-        │   DataSchema.assets.{gold, otherCommod,  │
-        │   mutualFunds, stocks, bitcoin, property,│
-        │   bankSavings, retirement}               │
-        └───────────────────┬──────────────────────┘
-                            │ computed by
-        ┌───────────────────┴──────────────────────┐
-        │ src/lib/dashboardCalcs.ts                │
-        │   calcCategoryTotals() — per-section INR │
-        │   sumForNetWorth()     — gross total     │
-        │   sumPropertyInr()     — deducts         │
-        │     outstandingLoanInr from agreementInr │
-        └──────────────────────────────────────────┘
-```
-
-### Migration chain (AppDataContext.tsx)
-
-Every boot and every JSON import runs the same pipeline:
-
-```
-raw JSON
-  → migrateLegacyBankAccounts()    (Phase 3: balanceInr → {currency,balance})
-  → ensureNetWorthHistory()         (v1.3: inject [] if absent)
-  → ensureOtherCommodities()        (v1.4: inject empty block if absent)
-  → DataSchema.safeParse()
-```
-
-`parseAppDataFromImport()` is the single entry point for both boot and Settings import.
-
-### Key invariants to preserve
-
-1. All asset section data lives inside `data.assets.*` — never at root level.
-2. Computed totals are never stored; only raw inputs persist.
-3. `createInitialData()` must always produce a valid `AppData` (used for reset + first load).
-4. Migration functions are pure, run pre-parse on `unknown`, and are referentially tested.
+The migration is a surgical swap inside `AppDataContext.tsx`. The public contract of the context
+(`data`, `saveData`, `loadError`) does not change, so all 11 pages and every test that only
+imports from `AppDataContext` need zero modifications. The Vite plugin and `data.json` are the
+only things being retired. Everything else — schema, migration chain, zip export/import, reset,
+schema versioning — stays exactly as-is.
 
 ---
 
-## Question 1: Where does `liabilities` live on DataSchema?
+## What Changes (Modified)
 
-**Answer: Top-level peer of `assets`, NOT nested inside `assets`.**
+### 1. `src/context/AppDataContext.tsx` — THE only required change
 
-Rationale from code inspection:
+This file is the sole coupling point between the app and the persistence layer. Only the
+`useEffect` (load) and `saveData` function body change. The public API — exported types,
+`createInitialData()`, `parseAppDataFromImport()`, `useAppData()`, migration helpers — is
+**unchanged**.
 
-- `assets` in `DataSchema` is typed as `z.object({ gold, otherCommodities, … })` — every key
-  produces a positive INR value. Adding liabilities inside `assets` is semantically wrong and
-  forces the dashboard to distinguish "which `assets.*` keys are actually liabilities."
-- `netWorthHistory` is already a top-level peer of `assets`, proving the schema supports
-  non-asset sections at root.
-- Keeping liabilities top-level means `dashboardCalcs.ts` can read `data.liabilities` cleanly
-  alongside `data.assets`, with zero risk of conflation with asset sums.
-- `DASHBOARD_CATEGORY_ORDER` and `CategoryTotals` enumerate only asset categories. There is no
-  reason to shoehorn liabilities into that array.
-
-**Concrete schema placement:**
-
+**Current load (lines 138–151):**
 ```typescript
-// src/types/data.ts
-export const LiabilityItemSchema = BaseItemSchema.extend({
-  label: z.string().min(1),
-  lender: z.string().default(''),
-  outstandingBalanceInr: z.number().nonnegative(),
-  emiAmountInr: z.number().nonnegative().default(0),
-})
-
-export const DataSchema = z.object({
-  version: z.literal(1),
-  settings: SettingsSchema,
-  assets: z.object({ /* unchanged */ }),
-  liabilities: z.array(LiabilityItemSchema),   // NEW — top-level peer
-  netWorthHistory: z.array(NetWorthPointSchema),
-})
+useEffect(() => {
+  fetch('/api/data')
+    .then(r => r.json())
+    .then(raw => {
+      const result = parseAppDataFromImport(raw)
+      if (result.success) {
+        setData(result.data)
+      } else {
+        console.warn('data.json schema mismatch:', result.zodError.issues)
+        setLoadError('Saved data format is unrecognized. Starting with defaults to avoid data loss.')
+      }
+    })
+    .catch(() => setLoadError('Could not load saved data. Starting with defaults.'))
+}, [])
 ```
+
+**Replacement load:**
+```typescript
+const LS_KEY = 'wealthData'
+
+useEffect(() => {
+  try {
+    const stored = localStorage.getItem(LS_KEY)
+    if (stored === null) {
+      // First launch — no stored data, stay with createInitialData() defaults, no error
+      return
+    }
+    let raw: unknown
+    try {
+      raw = JSON.parse(stored) as unknown
+    } catch {
+      setLoadError('Saved data is corrupted. Starting with defaults to avoid data loss.')
+      return
+    }
+    const result = parseAppDataFromImport(raw)
+    if (result.success) {
+      setData(result.data)
+    } else {
+      console.warn('localStorage schema mismatch:', result.zodError.issues)
+      setLoadError('Saved data format is unrecognised. Starting with defaults to avoid data loss.')
+    }
+  } catch {
+    // localStorage unavailable (private browsing, quota, security policy)
+    setLoadError('Could not access local storage. Data will not persist across reloads.')
+  }
+}, [])
+```
+
+**Current saveData (lines 153–170):**
+```typescript
+async function saveData(newData: AppData): Promise<void> {
+  const previous = data
+  setData(newData)
+  try {
+    const res = await fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newData),
+    })
+    if (!res.ok) {
+      setData(previous)
+      throw new Error(`Save failed: ${res.status}`)
+    }
+  } catch (err) {
+    setData(previous)
+    throw err
+  }
+}
+```
+
+**Replacement saveData:**
+```typescript
+async function saveData(newData: AppData): Promise<void> {
+  const previous = data
+  setData(newData)  // optimistic update preserved
+  try {
+    localStorage.setItem(LS_KEY, JSON.stringify(newData))
+  } catch (err) {
+    setData(previous)  // rollback preserved
+    throw err  // caller error surfaces unchanged
+  }
+}
+```
+
+The `async` signature and error-throwing contract are preserved verbatim. All callers (`saveData`
+is awaited with try/catch in every page) continue to work without changes.
+
+**`LS_KEY` constant:** `'wealthData'` — a new key separate from the existing `'theme'` key
+(used by `ThemeContext`). Coexistence is safe; no conflicts.
 
 ---
 
-## Question 2: How should dashboardCalcs.ts handle total debt?
+### 2. `vite.config.ts` — Plugin reference removed
 
-**Answer: Export a separate `sumLiabilitiesInr()` function; do NOT inline debt deduction into
-`sumForNetWorth()`.**
-
-Rationale:
-
-1. `sumForNetWorth()` currently sums `CategoryTotals` keys. Changing its contract to also
-   subtract liabilities would silently shift per-row asset percentages — DashboardPage uses
-   `grandTotal` as the denominator for percentage columns, which must remain a gross asset sum
-   so that all rows add to 100%.
-
-2. The dashboard needs total debt as an independent number to display "Total Debt" as its own
-   row and to compute `debtToAssetRatio = totalDebt / grossAssets`. That decomposition is
-   impossible if debt is already merged into the total.
-
-3. `sumPropertyInr()` already deducts `outstandingLoanInr` per item to produce equity. That
-   deduction is correct and must not change. Standalone liabilities (car loans, personal loans)
-   are a second independent path.
-
-**Recommended function signatures:**
-
+**Current:**
 ```typescript
-// src/lib/dashboardCalcs.ts
-
-/** Sum standalone liabilities (INR). Property loans are NOT included — already in property equity. */
-export function sumLiabilitiesInr(data: AppData): number {
-  return (data.liabilities ?? []).reduce(
-    (sum, item) => roundCurrency(sum + roundCurrency(item.outstandingBalanceInr)),
-    0
-  )
-}
-
-/** Total debt for display: property loans + standalone liabilities. */
-export function sumAllDebtInr(data: AppData): number {
-  const propertyDebt = data.assets.property.items.reduce(
-    (sum, item) => roundCurrency(sum + (item.hasLiability ? (item.outstandingLoanInr ?? 0) : 0)),
-    0
-  )
-  return roundCurrency(propertyDebt + sumLiabilitiesInr(data))
-}
-
-/**
- * True net worth: gross assets (property already at equity) minus standalone liabilities.
- * Do NOT subtract property loans here — sumPropertyInr() already did that.
- */
-export function calcNetWorth(grossAssets: number, standaloneLiabilities: number): number {
-  return roundCurrency(grossAssets - standaloneLiabilities)
-}
-
-/** Debt-to-asset ratio as a percentage (uses gross assets as denominator). */
-export function debtToAssetRatio(totalDebt: number, grossAssets: number): number {
-  if (grossAssets <= 0) return 0
-  return roundCurrency((totalDebt / grossAssets) * 100)
-}
-```
-
-**Dashboard call-site change:**
-
-```typescript
-// DashboardPage.tsx
-const grossTotal = useMemo(() => sumForNetWorth(totals), [totals])        // unchanged
-const standaloneLiabilities = useMemo(() => sumLiabilitiesInr(data), [data]) // NEW
-const netWorth = useMemo(
-  () => calcNetWorth(grossTotal, standaloneLiabilities),
-  [grossTotal, standaloneLiabilities]
-)
-const totalDebt = useMemo(() => sumAllDebtInr(data), [data])              // NEW for display
-```
-
-The displayed "Net worth" headline changes from `grandTotal` to `netWorth`. Per-row asset
-percentages keep `grossTotal` as denominator so they still add to 100%.
-
----
-
-## Question 3: Should property.liability be unified with standalone liabilities?
-
-**Answer: Partial unification — enrich `PropertyItemSchema` in-place; do NOT move property loans
-into the top-level `liabilities` list.**
-
-Arguments against full unification:
-
-- `sumPropertyInr()` computes `agreementInr − outstandingLoanInr` per item. If the property
-  loan moved to the top-level list, property would appear at gross value in assets and the loan
-  would be deducted separately. The math still works but the property dashboard row would display
-  the full agreement value, not equity — a regression from current behavior.
-- There is no referential integrity in a flat JSON file. A property item and its paired
-  liability entry in `data.liabilities` could drift out of sync across separate edits.
-- `PropertyPage` manages liability state (`hasLiability`, `loanStr`) as local sheet state
-  coordinated with the property item. Splitting it across sections adds cross-section coupling.
-
-**The enrichment approach:** Extend `PropertyItemSchema` with two optional fields:
-
-```typescript
-export const PropertyItemSchema = BaseItemSchema.extend({
-  label: z.string().min(1),
-  agreementInr: z.number().nonnegative(),
-  milestones: z.array(PropertyMilestoneRowSchema),
-  hasLiability: z.boolean(),
-  outstandingLoanInr: z.number().nonnegative().optional(),  // existing
-  lender: z.string().optional(),                            // NEW
-  emiAmountInr: z.number().nonnegative().optional(),        // NEW
+import { dataPlugin } from './plugins/dataPlugin'
+export default defineConfig({
+  plugins: [react(), dataPlugin()],
+  ...
 })
 ```
 
-Both new fields are optional so existing `data.json` continues to parse without a migration
-function — Zod `.optional()` on fields that are absent is backward-compatible. PropertyPage
-gains two new form inputs inside the existing `hasLiability` section.
+**After:**
+```typescript
+export default defineConfig({
+  plugins: [react()],
+  ...
+})
+```
 
-`sumAllDebtInr()` aggregates property loans and standalone liabilities for the "Total Debt"
-display row. The net worth calculation uses `calcNetWorth(grossAssets, sumLiabilitiesInr(data))`
-— only standalone liabilities, because property loans are already subtracted via equity.
+The `dataPlugin` import line and the plugin entry in the array are deleted.
 
 ---
 
-## Question 4: Build order
+## What Is Removed
 
-**Dependency chain: schema → migration → calcs → property enrichment → liabilities CRUD → dashboard.**
+### `plugins/dataPlugin.ts`
+
+The entire file is deleted. It is not imported anywhere except `vite.config.ts`.
+
+No test references this file. No `src/` code imports from `plugins/`.
+
+### `data.json` — Retire, Do Not Remove Immediately
+
+`data.json` at the repo root is no longer read or written by the running app after migration.
+
+**Recommended handling:**
+
+1. **Keep the file in the repo for v1.7** as a migration seed reference and historical record.
+   Add a comment in `data.json` or a note in the commit message. Do not automatically seed
+   localStorage from it — that would require server-side access during the Vite plugin era and
+   adds complexity for zero user value.
+2. **Add `data.json` to `.gitignore`** (or remove from tracking) in a follow-on cleanup if
+   desired. It is safe to do either during the same milestone.
+
+**Rationale for not seeding from `data.json`:** Users who have been running the app already have
+their data in `data.json` via the Vite plugin. To migrate their data to localStorage, the app
+would need to either (a) still serve `/api/data` temporarily alongside localStorage, or (b)
+require a manual export/import step. For a personal local app with one known user, a one-time
+manual import using the existing zip export/import flow in Settings is the cleanest path with no
+added code complexity. Document this in migration notes.
+
+---
+
+## What Stays Exactly the Same
+
+| Component | Why Unchanged |
+|-----------|--------------|
+| `src/types/data.ts` | Schema, types, `DataSchema`, `AppData` — untouched |
+| `parseAppDataFromImport()` | Migration chain is persistence-agnostic; same function handles zip import, localStorage, and future sources |
+| `createInitialData()` | First-launch and reset logic unchanged |
+| `INITIAL_DATA` export | Unchanged |
+| `ensureLiabilities()`, `ensureOtherCommodities()`, `ensureNetWorthHistory()`, `migrateLegacyBankAccounts()` | All migration helpers unchanged |
+| All 11 page components | Consume only `useAppData()` — zero awareness of storage backend |
+| `src/lib/wealthDataZip.ts` | Export/import zip flows are in-memory (`JSON.stringify(data)` → zip). They call `saveData()` via `onConfirmImport()` in SettingsPage, which now writes to localStorage. Zero changes needed. |
+| `src/context/ThemeContext.tsx` | Already uses `localStorage` with key `'theme'`. No changes, no key conflicts. |
+| `src/context/LivePricesContext.tsx` | Price caching is in-memory session state. Unchanged. |
+| `src/lib/dashboardCalcs.ts` | Pure computation, no I/O. Unchanged. |
+| `src/lib/cryptoUtils.ts` | Web Crypto utility, no I/O. Unchanged. |
+| `src/lib/__tests__/` | All existing tests remain valid |
+| `src/context/__tests__/AppDataContext.test.ts` | Tests `createInitialData()` and `parseAppDataFromImport()` — no fetch or filesystem. Remain valid. |
+| Schema versioning (`"version": 1`) | Lives in `createInitialData()` and `DataSchema`. Load path still runs `parseAppDataFromImport()` which enforces `z.literal(1)`. Unchanged. |
+
+---
+
+## Data Flow Diagram (Before and After)
+
+### Before (v1.6)
 
 ```
-Phase A — Schema + migration (no UI)
-  1. src/types/data.ts
-     - Add LiabilityItemSchema
-     - Add liabilities: z.array(LiabilityItemSchema) to DataSchema
-     - Add lender + emiAmountInr optionals to PropertyItemSchema
-  2. src/context/AppDataContext.tsx
-     - ensureLiabilities(): inject [] when key absent (v1.4 and older files)
-     - Add ensureLiabilities() to parseAppDataFromImport() chain
-     - Add liabilities: [] to createInitialData()
-  3. Unit tests for ensureLiabilities() (follow migration.test.ts pattern)
-  Checkpoint: DataSchema.safeParse() passes on old data.json; new fields round-trip
+Browser                        Vite Dev Server              Filesystem
+──────                         ────────────────             ──────────
+AppDataProvider boot
+  fetch('GET /api/data') ──►  dataPlugin handler
+                               fs.readFileSync(data.json) ──► data.json
+                          ◄──  200 { …AppData JSON… }
+  JSON.parse → parseAppDataFromImport → setData
 
-Phase B — Calculations (no UI)
-  4. src/lib/dashboardCalcs.ts
-     - sumLiabilitiesInr()
-     - sumAllDebtInr()
-     - calcNetWorth()
-     - debtToAssetRatio()
-  5. Unit tests for each new function (follow dashboardCalcs.test.ts pattern)
-  Checkpoint: all calc tests green; all existing tests still green
+user action → page calls saveData(newData)
+  setData(newData) [optimistic]
+  fetch('POST /api/data') ──► dataPlugin handler
+                               JSON.parse(body)
+                               fs.writeFileSync(data.json) ──► data.json
+                         ◄──  200 { ok: true }
+```
 
-Phase C — Property enrichment
-  6. src/pages/PropertyPage.tsx
-     - Add lender + emiAmountInr inputs to the hasLiability section
-     - Read/write new fields in openEdit() / onSubmit()
-  Checkpoint: property edit/save round-trips with new fields; old items load unchanged
+### After (v1.7)
 
-Phase D — Liabilities page (new CRUD)
-  7. src/pages/LiabilitiesPage.tsx
-     - Single form variant (no discriminated union needed, unlike CommoditiesPage)
-     - Sheet for add/edit/delete (follow CommoditiesPage structure)
-     - Fields: label, lender, outstandingBalanceInr, emiAmountInr
-     - Save: data.liabilities push/replace/filter → saveData({...data, liabilities: ...})
-  8. src/components/AppSidebar.tsx
-     - Add 'liabilities' to SectionKey union + NAV_ITEMS array
-  9. src/App.tsx
-     - Add LiabilitiesPage to SECTION_COMPONENTS
-  Checkpoint: CRUD works; data.json persists liabilities correctly
+```
+Browser                                           Filesystem (unchanged)
+──────                                            ──────────────────────
+AppDataProvider boot
+  localStorage.getItem('wealthData')              [data.json ignored]
+  → JSON.parse → parseAppDataFromImport → setData
 
-Phase E — Dashboard integration
- 10. src/pages/DashboardPage.tsx
-     - Switch net worth headline to calcNetWorth(grossTotal, standaloneLiabilities)
-     - Add "Total Debt" row (using sumAllDebtInr) after asset rows
-     - Add "Debt-to-Asset" ratio display (percentage)
-     - Update noHoldingsYet() to include data.liabilities.length > 0
-     - Snapshot records calcNetWorth() not grossTotal
- 11. DashboardPage navigation: add liabilities nav key to NAV_KEY map if needed
-  Checkpoint: Dashboard shows correct net worth, Total Debt, D/A ratio
+user action → page calls saveData(newData)
+  setData(newData) [optimistic, preserved]
+  localStorage.setItem('wealthData', JSON.stringify(newData))
+  (synchronous — no network, no promise needed)
+  [saveData is still async, throw on setItem failure]
+```
 
-Phase F — Import / reset parity
- 12. Verify parseAppDataFromImport() chain includes ensureLiabilities() — covered in Phase A
- 13. Verify createInitialData() has liabilities: [] — covered in Phase A
- 14. End-to-end: export data.json, clear, import — liabilities survive round-trip
+### Export/Import Flow (v1.7 — unchanged path)
+
+```
+Export: data (AppData in memory) → JSON.stringify → createWealthExportZip → .zip download
+Import: .zip file → extractDataJsonFromZip → JSON.parse → parseAppDataFromImport
+         → setPendingImport → onConfirmImport → saveData(pendingImport)
+         → localStorage.setItem('wealthData', …)   ← only this line changes
+```
+
+### Data Reset Flow (v1.7 — unchanged path)
+
+```
+SettingsPage "Clear all data"
+  → saveData(createInitialData())
+  → localStorage.setItem('wealthData', JSON.stringify(createInitialData()))
+  ← same as before, different storage target
 ```
 
 ---
 
-## Component Inventory
+## Schema Versioning Interaction
 
-### New components
+`version: 1` is enforced by `DataSchema = z.object({ version: z.literal(1), … })`.
 
-| File | Type | Purpose |
-|------|------|---------|
-| `src/pages/LiabilitiesPage.tsx` | Page | CRUD for standalone loans — label, lender, balance, EMI |
+The load path runs `parseAppDataFromImport()` on the string parsed from localStorage, which
+includes the full migration chain and `DataSchema.safeParse()`. If a future version bumps to
+`version: 2`, the load fails the literal check and falls into the `setLoadError` path — same
+behaviour as with the file-based approach.
 
-### Modified components
-
-| File | Change | Risk |
-|------|--------|------|
-| `src/types/data.ts` | Add `LiabilityItemSchema`; add `liabilities` to `DataSchema`; add `lender`/`emiAmountInr` to `PropertyItemSchema` | LOW — new fields are optional or additive |
-| `src/context/AppDataContext.tsx` | Add `ensureLiabilities()`; extend migration chain; extend `createInitialData()` | LOW — follows identical pattern to `ensureOtherCommodities()` |
-| `src/lib/dashboardCalcs.ts` | Add `sumLiabilitiesInr()`, `sumAllDebtInr()`, `calcNetWorth()`, `debtToAssetRatio()` | LOW — pure additions, no changes to existing functions |
-| `src/pages/DashboardPage.tsx` | Switch net worth headline to `calcNetWorth()`; add Total Debt + ratio rows | MEDIUM — changes visible headline value and snapshot storage |
-| `src/pages/PropertyPage.tsx` | Add lender + EMI inputs inside existing liability section | LOW — additive form fields only |
-| `src/components/AppSidebar.tsx` | Add `'liabilities'` to `SectionKey` union + `NAV_ITEMS` | LOW |
-| `src/App.tsx` | Add `LiabilitiesPage` to `SECTION_COMPONENTS` | LOW |
+**No changes needed to schema versioning for this migration.** The key insight is that
+`parseAppDataFromImport()` is persistence-agnostic: it accepts `unknown` and returns a typed
+result. The localStorage migration does not change the invariant at all.
 
 ---
 
-## Data Flow
+## `localStorage` Storage Capacity Consideration
 
-### Liability save
+A typical full `AppData` payload (all asset classes with real data, hundreds of net-worth history
+points) serialises to roughly 50–200 KB of JSON. `localStorage` quota is 5 MB in all major
+browsers. This is not a concern for this personal local app.
+
+The quota guard is handled by the `try/catch` around `localStorage.setItem()` in `saveData` —
+a `QuotaExceededError` will be caught, the optimistic `setData` will roll back, and the error
+propagates to the page's inline error state (existing pattern).
+
+---
+
+## Integration Points: New vs Modified
+
+| Artifact | Status | Change |
+|----------|--------|--------|
+| `src/context/AppDataContext.tsx` | **Modified** | Replace `useEffect` fetch with `localStorage.getItem`; replace `saveData` body with `localStorage.setItem`; add `LS_KEY` constant |
+| `vite.config.ts` | **Modified** | Remove `dataPlugin` import and plugin entry |
+| `plugins/dataPlugin.ts` | **Deleted** | Entire file deleted |
+| `data.json` | **Retired** | No longer read/written; keep in repo for v1.7, optional cleanup after |
+| All `src/pages/*.tsx` | **Unchanged** | Consume `useAppData()` — zero awareness of storage backend |
+| `src/lib/wealthDataZip.ts` | **Unchanged** | Works with in-memory data; `saveData()` target is transparent |
+| `src/context/ThemeContext.tsx` | **Unchanged** | Already uses localStorage with different key |
+| `src/types/data.ts` | **Unchanged** | Schema and types unaffected |
+| All `src/lib/*.ts` | **Unchanged** | Pure utilities, no I/O |
+| All existing tests | **Unchanged** | AppDataContext tests test pure functions only |
+
+---
+
+## Suggested Build Order
+
+Dependencies flow strictly from the context layer outward. There is only one phase of real work.
 
 ```
-LiabilitiesPage (user submits add/edit form)
-  → build updated liabilities: LiabilityItem[]
-  → saveData({ ...data, liabilities: updatedList })
-  → AppDataContext.saveData()
-  → optimistic setData() + POST /api/data
-  → data.json written
+Phase 22 (single phase — all changes in one coherent unit)
+
+  Step 1: Add LS_KEY constant to AppDataContext.tsx
+  Step 2: Replace useEffect fetch block with localStorage.getItem + JSON.parse
+          (preserves same error message strings for loadError)
+  Step 3: Replace saveData async body with localStorage.setItem
+          (preserves async signature, optimistic update, rollback on error)
+  Step 4: Remove dataPlugin import and array entry from vite.config.ts
+  Step 5: Delete plugins/dataPlugin.ts
+  Step 6: Run npm test — all existing tests pass without changes
+  Step 7: Manual smoke test: reload page, edit data, confirm persistence across reload
+  Step 8: Manual migration test: export via zip in Settings, clear, import, verify round-trip
+  Step 9: Update danger-zone copy in SettingsPage.tsx (line 963):
+          "local data.json file" → "browser's local storage"
+          (Minor copy-only change — no logic change)
+  Step 10: Update AppDataContext comment at line 80 from
+           "GET /api/data load" to "localStorage load"
 ```
 
-### Dashboard net worth computation
-
-```
-DashboardPage (mount or data/live-prices change)
-  → calcCategoryTotals(data, live)               [UNCHANGED]
-  → sumForNetWorth(totals) → grossTotal           [UNCHANGED]
-  → sumLiabilitiesInr(data) → standaloneLiab     [NEW]
-  → calcNetWorth(grossTotal, standaloneLiab)      [NEW] → headline
-  → sumAllDebtInr(data) → totalDebtDisplay        [NEW] → Total Debt row
-  → debtToAssetRatio(totalDebt, grossTotal)       [NEW] → ratio display
-  → asset rows render with grossTotal denominator [UNCHANGED]
-```
+All 10 steps are in one phase because they are tightly coupled — an intermediate state where
+`vite.config.ts` has `dataPlugin` removed but `AppDataContext` still calls `fetch('/api/data')`
+is non-functional. The phase should be committed atomically.
 
 ---
 
 ## Anti-Patterns to Avoid
 
-### Anti-Pattern 1: Storing liabilities inside `data.assets`
+### Anti-Pattern 1: Adding a localStorage abstraction layer
 
-**What people do:** Add `liabilities: LiabilityItem[]` inside the `assets` object to keep all
-financial data together.
+**What some do:** Create a `src/lib/storage.ts` with `getItem`/`setItem` wrappers, then call
+those from `AppDataContext`, to make the persistence layer swappable.
 
-**Why it's wrong:** `DASHBOARD_CATEGORY_ORDER` and `CategoryTotals` enumerate asset keys to
-render dashboard rows. Adding liabilities there forces special-case exclusion logic in the
-render loop and would make `sumForNetWorth()` return a negative subtotal for the liabilities
-row, breaking percentage calculations.
+**Why to skip it for this project:** The project constraints explicitly state there is no backend,
+no deployment, no cloud sync in v1.x. Abstraction adds indirection with zero current benefit.
+`ThemeContext` calls `localStorage` directly with no wrapper and has been correct since v1.1.
+Follow the same pattern.
 
-**Do this instead:** Top-level peer key at `DataSchema` root, same placement as `netWorthHistory`.
+### Anti-Pattern 2: Seeding localStorage from data.json on first load
 
----
+**What some do:** On first boot, if `localStorage.getItem('wealthData')` is null, serve a
+one-time fallback `GET /api/data` to migrate existing `data.json` into localStorage.
 
-### Anti-Pattern 2: Unifying property loans into the top-level liabilities list
+**Why to skip it:** This requires keeping the Vite plugin alive during migration, adds async
+complexity to the boot path, and creates a two-step "load from file, then save to localStorage"
+path that is indistinguishable from normal load to the user. For a personal local app, the
+clean path is: document the one-time manual export/import step, remove the plugin cleanly, and
+start fresh from localStorage. Fewer moving parts.
 
-**What people do:** Remove `outstandingLoanInr` from `PropertyItem` and mirror each property
-loan as an entry in `data.liabilities`.
+### Anti-Pattern 3: Making saveData synchronous
 
-**Why it's wrong:** `sumPropertyInr()` computes equity = `agreementInr − outstandingLoanInr`.
-Moving the loan breaks this equity calculation and would require `sumPropertyInr()` to look up
-a matching liability entry by some external ID — there is no FK integrity in a flat JSON file.
-The property row on the dashboard would revert to showing gross agreement value, not equity.
+**What some do:** Change `saveData` from `async function` to a plain function since
+`localStorage.setItem` is synchronous.
 
-**Do this instead:** Keep the loan anchored on `PropertyItem` and enrich in place with `lender`
-and `emiAmountInr`. `sumAllDebtInr()` in dashboardCalcs aggregates property loans and standalone
-liabilities for the display-only "Total Debt" row without moving any data.
+**Why to skip it:** The public contract of `AppDataContextValue` is `saveData: (newData: AppData) => Promise<void>`. Every page awaits it inside a `try/catch`. Changing the return type to `void`
+breaks all 11 call sites and changes the TypeScript type. Keep `async` — an async function that
+does synchronous work is perfectly valid and zero cost.
 
----
+### Anti-Pattern 4: Parsing localStorage value inside saveData callers
 
-### Anti-Pattern 3: Changing `sumForNetWorth()` to subtract liabilities inline
+**What some do:** Have pages call `localStorage.getItem` directly for reading, bypassing context.
 
-**What people do:** Modify `sumForNetWorth(totals)` to accept liabilities and return true net
-worth directly, saving a line at each call site.
-
-**Why it's wrong:** `DashboardPage` uses the return value of `sumForNetWorth()` as the
-denominator for per-row asset percentages. If the denominator becomes gross minus debt, the
-percentages lose the invariant that they add to 100% (and can exceed 100% when debt is large).
-
-**Do this instead:** Keep `sumForNetWorth()` unchanged as a gross-assets total. Introduce
-`calcNetWorth(grossAssets, standaloneLiabilities)` as a separate, clearly-named function for
-the headline display.
-
----
-
-### Anti-Pattern 4: Skipping `ensureLiabilities()` migration function
-
-**What people do:** Add `liabilities: z.array(LiabilityItemSchema)` to `DataSchema` as a
-required field without injecting a default before `safeParse()`, assuming users will always
-have fresh data.
-
-**Why it's wrong:** `DataSchema` root uses `z.object()` without `.passthrough()`. An old
-`data.json` missing the `liabilities` key fails `safeParse()`, triggering the "starting with
-defaults" error path and clearing all of the user's displayed data (though it does not overwrite
-their file until they save).
-
-**Do this instead:** Add `ensureLiabilities()` to inject `liabilities: []` before `safeParse()`,
-following the identical pattern as `ensureOtherCommodities()`. This keeps migration functions
-consistent, separately testable, and guarantees old files always parse.
+**Why it's wrong:** `AppDataContext` is the single source of truth for `AppData`. Direct
+localStorage reads in pages bypass the migration chain, Zod parsing, and the `data` state
+reference. All reads must go through `useAppData()`.
 
 ---
 
 ## Sources
 
-- Direct inspection: `src/types/data.ts` — full schema
-- Direct inspection: `src/lib/dashboardCalcs.ts` — all calc functions including `sumPropertyInr()`
-- Direct inspection: `src/context/AppDataContext.tsx` — migration chain, `createInitialData()`
-- Pattern reference: `src/pages/CommoditiesPage.tsx` — CRUD page template
-- Pattern reference: `src/lib/__tests__/migration.test.ts` — migration test pattern
-- Pattern reference: `src/lib/__tests__/dashboardCalcs.test.ts` — calc unit test pattern
-- Context: `.planning/PROJECT.md` — v1.5 milestone goals and constraints
+- Direct inspection: `src/context/AppDataContext.tsx` — full load/save implementation
+- Direct inspection: `plugins/dataPlugin.ts` — complete Vite plugin (48 lines, no hidden behaviour)
+- Direct inspection: `vite.config.ts` — plugin registration
+- Direct inspection: `src/context/ThemeContext.tsx` — existing localStorage pattern in this codebase
+- Direct inspection: `src/pages/SettingsPage.tsx` — zip export/import flow, saveData call sites
+- Direct inspection: `src/types/data.ts` — DataSchema, version literal
+- Context: `.planning/PROJECT.md` — v1.7 milestone goals
 
 ---
-*Architecture research for: v1.5 Debt & Liabilities — Personal Wealth Tracker*
-*Researched: 2026-05-01*
+*Architecture research for: v1.7 localStorage Migration — Personal Wealth Tracker*
+*Researched: 2026-05-02*
