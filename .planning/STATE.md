@@ -2,12 +2,12 @@
 gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: — Debt & Liabilities
-status: planning
-last_updated: "2026-05-02T08:00:49.790Z"
-last_activity: 2026-05-01
+status: ready_to_plan
+last_updated: "2026-05-02T08:10:00.000Z"
+last_activity: 2026-05-02 — Phase 17 executed
 progress:
   total_phases: 5
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 5
   completed_plans: 4
   percent: 80
@@ -19,12 +19,12 @@ progress:
 
 ## Current position
 
-Phase: 17
-Plan: 1 planned — not executed
-Status: Ready to execute
+Phase: 18
+Plan: Not started
+Status: Ready to plan
 Last activity: 2026-05-02
 
-Progress: `██████████░░` 60% (3/5 phases in v1.5)
+Progress: `████████████████░░` 80% (4/5 phases complete in v1.5)
 
 ## Project reference
 
@@ -78,10 +78,10 @@ See [`.planning/PROJECT.md`](PROJECT.md) — **v1.5 in progress**; last shipped 
 
 **Current milestone:** v1.5 Debt & Liabilities — roadmap ready, phases 14–18 defined.
 
-**Next:** `/gsd-execute-phase 17`
+**Next:** `/gsd-plan-phase 18` or `/gsd-execute-phase 18` (after planning)
 
 **Last shipped milestone:** v1.4 — 2026-05-01
 
-**Phases 14–16 complete:** schema, liability calculation utilities, property lender/EMI + hint (2026-05-01).
+**Phases 14–17 complete:** schema, liability calcs, property lender/EMI + hint, Liabilities CRUD page + nav (2026-05-02).
 
-**Planned Phase:** 17 (Liabilities Page CRUD) — 1 plans — 2026-05-02T08:00:49.780Z
+**Current focus:** Phase **18** — Dashboard & net worth integration — not started.

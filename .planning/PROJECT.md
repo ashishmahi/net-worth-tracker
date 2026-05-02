@@ -72,10 +72,11 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.4-ROADMAP.md` and matc
 
 - [x] **CALC-01–CALC-04** — Pure liability calc helpers in `src/lib/liabilityCalcs.ts` ([`15-VERIFICATION.md`](phases/15-calculation-utilities/15-VERIFICATION.md)); Phase **15** (2026-05-01).
 - [x] **PROP-01**, **PROP-02**, **PROP-03** — Property form lender, EMI, and Liabilities disambiguation hint ([`16-VERIFICATION.md`](phases/16-property-liability-enrichment/16-VERIFICATION.md)); Phase **16** (2026-05-01).
+- [x] **LIAB-01–LIAB-06**, **INFRA-03** — Standalone loans CRUD, aggregates, banner, sidebar nav ([`17-VERIFICATION.md`](phases/17-liabilities-page-crud/17-VERIFICATION.md)); Phase **17** (2026-05-02).
 
 ### Active (v1.5)
 
-- [ ] **DEBT-02** — Standalone liabilities list (`liabilities` on `DataSchema`) with label, lender, outstanding balance, EMI
+- [x] **DEBT-02** — Standalone liabilities list + CRUD (`liabilities` on `DataSchema`; **Liabilities** page in Phase **17**)
 - [ ] **DEBT-03** — Net worth = gross assets − total debt (property + standalone liabilities)
 - [ ] **DEBT-04** — Dashboard Total Debt row + Debt-to-Asset ratio insight
 - [ ] **DEBT-05** — Data migration, import, and reset parity for new liabilities schema
@@ -138,4 +139,4 @@ This file is updated at **milestone completion** to avoid drift between plans an
 </details>  
 
 ---
-*Last updated: 2026-05-01 — **Phases 14–16 complete** — as above, plus **Phase 16** property lender/EMI fields and disambiguation hint (`PROP-01`–`PROP-03`).*  
+*Last updated: 2026-05-02 — **Phases 14–17 complete** for shipped debt UX through **Liabilities** page (`LIAB-*`, `INFRA-03`); dashboard debt integration remains Phase **18** (`DEBT-03`, `DEBT-04`).*  

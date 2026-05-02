@@ -20,7 +20,7 @@
 - [x] **Phase 14: Schema & Migration** (2/2) — 2026-05-01 — Add `liabilities` to `DataSchema`, migration, import/reset parity
 - [x] **Phase 15: Calculation Utilities** (1/1) — 2026-05-01 — Pure functions for debt totals, net worth, and debt-to-asset ratio
 - [x] **Phase 16: Property Liability Enrichment** (1/1) — 2026-05-01 — Extend property form with lender, EMI, and disambiguation hint
-- [ ] **Phase 17: Liabilities Page CRUD** — New standalone loans page with full add/edit/delete and sidebar nav
+- [x] **Phase 17: Liabilities Page CRUD** (1/1) — 2026-05-02 — New standalone loans page with full add/edit/delete and sidebar nav
 - [ ] **Phase 18: Dashboard & Net Worth Integration** — Wire debt into headline net worth, Total Debt row, and ratio insight
 
 ---
@@ -82,7 +82,7 @@ Plans:
   6. The Liabilities page is reachable from the sidebar navigation
 **Plans**: 1 plan
 Plans:
-- [ ] 17-01-PLAN.md — EMI aggregate helper + LiabilitiesPage CRUD + sidebar wiring
+- [x] 17-01-PLAN.md — EMI aggregate helper + LiabilitiesPage CRUD + sidebar wiring
 
 **UI hint**: yes
 
@@ -158,9 +158,9 @@ Plans:
 | 14. Schema & Migration | v1.5 | 2/2 | Complete    | 2026-05-01 |
 | 15. Calculation Utilities | v1.5 | 1/1 | Complete    | 2026-05-01 |
 | 16. Property Liability Enrichment | v1.5 | 1/1 | Complete    | 2026-05-01 |
-| 17. Liabilities Page CRUD | v1.5 | 1/? | Ready to execute | - |
+| 17. Liabilities Page CRUD | v1.5 | 1/1 | Complete    | 2026-05-02 |
 | 18. Dashboard & Net Worth Integration | v1.5 | 0/? | Not started | - |
 
 ---
 
-_Milestone archives: `.planning/milestones/` · Next: `/gsd-discuss-phase 17` or `/gsd-plan-phase 17`_
+_Milestone archives: `.planning/milestones/` · Next: `/gsd-discuss-phase 18` or `/gsd-plan-phase 18` · Phase 17 artifacts: [17-liabilities-page-crud](phases/17-liabilities-page-crud/)_
