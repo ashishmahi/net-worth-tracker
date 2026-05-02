@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: — Debt & Liabilities
 status: planning
-last_updated: "2026-05-02T07:48:31.891Z"
+last_updated: "2026-05-02T08:00:49.790Z"
 last_activity: 2026-05-01
 progress:
   total_phases: 5
@@ -20,9 +20,9 @@ progress:
 ## Current position
 
 Phase: 17
-Plan: Not started
-Status: Ready to plan
-Last activity: 2026-05-01
+Plan: 1 planned — not executed
+Status: Ready to execute
+Last activity: 2026-05-02
 
 Progress: `██████████░░` 60% (3/5 phases in v1.5)
 
@@ -78,10 +78,10 @@ See [`.planning/PROJECT.md`](PROJECT.md) — **v1.5 in progress**; last shipped 
 
 **Current milestone:** v1.5 Debt & Liabilities — roadmap ready, phases 14–18 defined.
 
-**Next:** `/gsd-discuss-phase 17` (or `/gsd-plan-phase 17` if CONTEXT exists)
+**Next:** `/gsd-execute-phase 17`
 
 **Last shipped milestone:** v1.4 — 2026-05-01
 
 **Phases 14–16 complete:** schema, liability calculation utilities, property lender/EMI + hint (2026-05-01).
 
-**Planned Phase:** 17 (Liabilities Page CRUD) — 1 plans — 2026-05-02T07:48:31.883Z
+**Planned Phase:** 17 (Liabilities Page CRUD) — 1 plans — 2026-05-02T08:00:49.780Z
