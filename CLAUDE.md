@@ -19,7 +19,7 @@ This project uses GSD for phased planning and execution.
 
 - Planning docs: `.planning/`
 - Roadmap: `.planning/ROADMAP.md` (v1.0 detail: `.planning/milestones/v1.0-ROADMAP.md`)
-- Requirements: *live* `.planning/REQUIREMENTS.md` is created/updated by `/gsd-new-milestone` (between milestones it may be absent). Archives: e.g. `.planning/milestones/v1.5-REQUIREMENTS.md`, `v1.4-REQUIREMENTS.md`, `v1.3-REQUIREMENTS.md`, …
+- Requirements: *live* `.planning/REQUIREMENTS.md` is created/updated by `/gsd-new-milestone` (between milestones it may be absent). Archives: e.g. `.planning/milestones/v1.6-REQUIREMENTS.md`, `v1.5-REQUIREMENTS.md`, `v1.4-REQUIREMENTS.md`, …
 - Milestone history: `.planning/MILESTONES.md`
 - **Git + GSD:** `.planning/config.json` sets **`commit_docs: true`** (GSD default) so workflows commit planning artifacts instead of only staging. Use **`gsd-sdk query commit "docs(…)" <paths>`** after each major artifact (context, research, plans, UAT) and separate **`feat(NN):`** (or `fix`) commits for `src/` work — same style as prior phases in `git log` (e.g. `docs(09):…` / `docs(state):…` / `feat(09):…`). Do not squash a whole phase into one commit unless the user asks.
 
