@@ -1,16 +1,15 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.6
-milestone_name: Encrypted Export
-status: roadmap_ready
-last_updated: "2026-05-02T00:00:00.000Z"
-last_activity: 2026-05-02
+milestone_name: — Encrypted Export
+status: **Roadmap ready** — v1.6 phases 19–20 defined
+last_updated: "2026-05-02T10:55:17.464Z"
+last_activity: 2026-05-02 — Roadmap created for v1.6 Encrypted Export
 progress:
   total_phases: 2
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
-  percent: 0
 ---
 
 ## Project
