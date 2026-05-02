@@ -80,7 +80,10 @@ Plans:
   4. Each loan entry displays a badge showing its loan type (Home / Car / Personal / Other)
   5. When no loans exist the page shows an empty state with a prompt to add the first loan
   6. The Liabilities page is reachable from the sidebar navigation
-**Plans**: TBD
+**Plans**: 1 plan
+Plans:
+- [ ] 17-01-PLAN.md — EMI aggregate helper + LiabilitiesPage CRUD + sidebar wiring
+
 **UI hint**: yes
 
 ### Phase 18: Dashboard & Net Worth Integration
@@ -155,7 +158,7 @@ Plans:
 | 14. Schema & Migration | v1.5 | 2/2 | Complete    | 2026-05-01 |
 | 15. Calculation Utilities | v1.5 | 1/1 | Complete    | 2026-05-01 |
 | 16. Property Liability Enrichment | v1.5 | 1/1 | Complete    | 2026-05-01 |
-| 17. Liabilities Page CRUD | v1.5 | 0/? | Not started | - |
+| 17. Liabilities Page CRUD | v1.5 | 1/? | Ready to execute | - |
 | 18. Dashboard & Net Worth Integration | v1.5 | 0/? | Not started | - |
 
 ---
