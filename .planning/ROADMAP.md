@@ -7,7 +7,7 @@
 - ✅ **v1.2 — Data reset** — Shipped 2026-04-26 — [full snapshot](milestones/v1.2-ROADMAP.md)  
 - ✅ **v1.3 — Net worth history** — Shipped 2026-04-28 — [full snapshot](milestones/v1.3-ROADMAP.md)  
 - ✅ **v1.4 — Multiple commodities** — Shipped 2026-05-01 — [full snapshot](milestones/v1.4-ROADMAP.md)
-- 🔄 **v1.5 — Debt & Liabilities** — In progress
+- ✅ **v1.5 — Debt & Liabilities** — Phases 14–18 complete — 2026-05-02
 
 **Phase numbering:** v1.4 ended at **Phase 13**. v1.5 continues from **Phase 14**.
 
