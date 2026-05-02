@@ -33,7 +33,7 @@
   3. Changing or toggling the theme (light/dark) does not erase or corrupt app data — the `theme` key in `localStorage` survives every save cycle.
   4. All user-facing text (Settings danger zone, import dialog, error messages) refers to "browser storage" or "local storage", not to `data.json` or a running server.
   5. The full Vitest suite passes — fetch-based mocks replaced with `localStorage` mocks, and the boot-parse path (valid data, absent key, invalid/corrupt JSON) is covered by unit tests.
-**Plans**: TBD  
+**Plans**: 1 (`22-01-PLAN.md`)  
 **UI hint**: yes
 
 ---
@@ -56,7 +56,7 @@
 | 19. Crypto Utilities | v1.6 | 1/1 | Complete | 2026-05-02 |
 | 20. Settings UI — Encrypted Export & Import | v1.6 | 1/1 | Complete | 2026-05-02 |
 | 21. Passphrase modals + zip export/import | v1.6 | 1/1 | Complete | 2026-05-02 |
-| 22. localStorage Migration | v1.7 | 0/1 | Not started | - |
+| 22. localStorage Migration | v1.7 | 0/1 | Ready to execute | - |
 
 ---
 
