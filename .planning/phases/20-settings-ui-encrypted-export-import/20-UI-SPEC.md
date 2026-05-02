@@ -55,10 +55,12 @@ Inherits from existing SettingsPage.tsx. No new type roles introduced. Phase 20 
 |------|------|--------|-------------|-------------------|--------|
 | Body / label | 14px (`text-sm`) | 400 (regular) | 1.5 | All inline labels (`Label`), error text, helper text, passphrase field labels | Existing SettingsPage pattern |
 | Section heading | 14px (`text-sm font-semibold`) | 600 (semibold) | 1.5 | "Data" section label — no change needed | Existing SettingsPage line 558 |
-| Button label | 14px (`text-sm`) | 500 (medium, from Button component) | auto | "Export Data", "Import from JSON", "Decrypt" | shadcn Button default |
+| Button label | 14px (`text-sm`) | 500 (medium — component default, not a declared token) | auto | "Export Data", "Import from JSON", "Decrypt" | shadcn Button default |
 | Error / hint | 14px (`text-sm`) | 400 | 1.5 | `text-destructive` errors, `text-muted-foreground` hints | Existing pattern lines 591-598 |
 
 No heading larger than 14px is introduced by this phase. No Display role is used.
+
+Note: weight 500 is the shadcn Button component's built-in default and is not an independently declared design token. Executors must not treat three distinct weights as intentional design choices — the declared weights for this phase are 400 (regular) and 600 (semibold) only.
 
 ---
 
@@ -236,6 +238,8 @@ Revised Data section structure:
 </div>
 ```
 
+Spacing note: `mt-4` (16px) is the authoritative top margin for the inline decrypt block. The RESEARCH.md code example shows `mt-3` (12px) — that value is incorrect and must not be followed. Use `mt-4` as specified here.
+
 ---
 
 ## State Variable Naming
@@ -303,3 +307,5 @@ No new shadcn components are added by this phase. All components are already ins
 | shadcn zinc CSS variable colors | components.json + src/index.css |
 | lucide-react Eye/EyeOff/Loader2 icons | RESEARCH.md Standard Stack |
 | `pr-10` on Input for eye button clearance | RESEARCH.md Pitfall 5 |
+| weight 500 is component default, not declared token | checker FLAG — Dimension 4 clarification |
+| `mt-4` authoritative over RESEARCH.md `mt-3` example | checker FLAG — Dimension 5 clarification |
