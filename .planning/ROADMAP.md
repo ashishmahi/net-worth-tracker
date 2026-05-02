@@ -8,7 +8,7 @@
 - ✅ **v1.3 — Net worth history** — Shipped 2026-04-28 — [full snapshot](milestones/v1.3-ROADMAP.md)  
 - ✅ **v1.4 — Multiple commodities** — Shipped 2026-05-01 — [full snapshot](milestones/v1.4-ROADMAP.md)  
 - ✅ **v1.5 — Debt & Liabilities** — Shipped 2026-05-02 — [full snapshot](milestones/v1.5-ROADMAP.md)
-- 🚧 **v1.6 — Encrypted Export** — In progress
+- ✅ **v1.6 — Encrypted Export** — Phases 19–20 complete (2026-05-02)
 
 ---
 
@@ -17,7 +17,7 @@
 ### v1.6 — Encrypted Export (Phases 19–20)
 
 - [x] **Phase 19: Crypto Utilities** — Pure `src/lib/cryptoUtils.ts` with `encryptData`/`decryptData` using Web Crypto API, unit tested (completed 2026-05-02)
-- [ ] **Phase 20: Settings UI — Encrypted Export & Import** — Passphrase field in Export, auto-detect on Import, inline error handling
+- [x] **Phase 20: Settings UI — Encrypted Export & Import** — Passphrase field in Export, auto-detect on Import, inline error handling (completed 2026-05-02)
 
 ---
 
@@ -45,7 +45,7 @@
   4. When Import receives an encrypted file, a passphrase field appears automatically before load proceeds
   5. Entering the correct passphrase on an encrypted import loads the data normally with a success state
   6. Entering a wrong or blank passphrase on an encrypted import shows a clear inline error message without changing loaded data
-**Plans**: 1/1 planned (`20-01-PLAN.md`)
+**Plans**: 1/1 plans complete
 **UI hint**: yes
 
 ---

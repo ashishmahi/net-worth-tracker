@@ -4,12 +4,12 @@ milestone: v1.6
 milestone_name: — Encrypted Export
 status: milestone_complete
 last_updated: "2026-05-02T12:25:09.867Z"
-last_activity: 2026-05-02 -- Phase --phase execution started
+last_activity: 2026-05-02
 progress:
   total_phases: 2
   completed_phases: 2
   total_plans: 2
-  completed_plans: 1
+  completed_plans: 2
   percent: 100
 ---
 
@@ -20,16 +20,16 @@ progress:
 ## Current position
 
 Phase: 20
-Plan: Not started
+Plan: 20-01 complete
 Status: Milestone complete
 Last activity: 2026-05-02
 
-Progress: 1 / 2 phases complete
+Progress: 2 / 2 phases complete (v1.6)
 
 ```
-[█████     ] 50%
+[██████████] 100%
 Phase 19: Crypto Utilities         [x] Complete (2026-05-02)
-Phase 20: Settings UI              [ ] Not started
+Phase 20: Settings UI              [x] Complete (2026-05-02)
 ```
 
 ## Project reference
@@ -89,12 +89,10 @@ See [`.planning/PROJECT.md`](PROJECT.md) — **v1.5** shipped and archived (2026
 
 ## Session continuity
 
-**Completed through:** **v1.5** milestone close — archived 2026-05-02 (`v1.5-ROADMAP`, `v1.5-REQUIREMENTS`, **`.planning/phases/`** → **`milestones/v1.5-phases/`**, root **`REQUIREMENTS.md`** removed).
+**Completed through:** **v1.6 — Encrypted Export** — Phases **19–20** complete (2026-05-02): `cryptoUtils` + Settings encrypted export/import UI.
 
-**Current:** **v1.6 — Encrypted Export** — Phase **19** complete (crypto utilities). Next: **Phase 20** — Settings UI for encrypted export/import.
+**Current:** v1.6 milestone phases finished — run **`/gsd-new-milestone`** (or archive v1.6) when ready for the next version line.
 
-**Last shipped:** **v1.5 — Debt & Liabilities** — 2026-05-02 (v1.6 in progress).
+**Last shipped:** **v1.6 feature work** (encryption + Settings UI) complete in repo; tag or **`/gsd-complete-milestone`** when you want the snapshot archived.
 
-**Next:** `/gsd-execute-phase 20` — plans are in `.planning/phases/20-settings-ui-encrypted-export-import/20-01-PLAN.md`.
-
-**Planned Phase:** 20 (settings-ui-encrypted-export-import) — 1 plans — 2026-05-02T12:22:50.240Z
+**Next:** `/gsd-progress` · `/gsd-verify-work 20` (optional manual UAT) · `/gsd-new-milestone` for v1.7+.
