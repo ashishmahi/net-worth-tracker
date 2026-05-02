@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: none
-milestone_name: (next — use /gsd-new-milestone)
-status: between_milestones
-last_updated: "2026-05-02T08:39:54.189Z"
+milestone: v1.6
+milestone_name: Encrypted Export
+status: defining_requirements
+last_updated: "2026-05-02T00:00:00.000Z"
 last_activity: 2026-05-02
 progress:
-  total_phases: 5
-  completed_phases: 5
-  total_plans: 6
-  completed_plans: 6
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 ## Project
@@ -19,12 +19,12 @@ progress:
 
 ## Current position
 
-Phase: —
+Phase: Not started (defining requirements)
 Plan: —
-Status: **v1.5 archived** — awaiting **`/gsd-new-milestone`** to open the next version
-Last activity: 2026-05-02
+Status: **v1.6 started** — Defining requirements
+Last activity: 2026-05-02 — Milestone v1.6 started
 
-Progress: between milestones (no active roadmap until **`/gsd-new-milestone`**)
+Progress: 0 / 0 phases (roadmap not yet created)
 
 ## Project reference
 

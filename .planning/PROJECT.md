@@ -21,9 +21,15 @@ See **total net worth in INR** at a glance (**debt-adjusted** headline minus sta
 
 Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.5-ROADMAP.md` and matching `*-REQUIREMENTS.md` archives. Executed phase artifacts for shipped milestones live under [`.planning/milestones/`](milestones/) (e.g. `v1.5-phases/`). **Next** milestone: run **`/gsd-new-milestone`** — it creates a fresh root **`.planning/REQUIREMENTS.md`** and new work under [`.planning/phases/`](phases/) (phase numbering continues from **19**).
 
-## Next milestone
+## Current Milestone: v1.6 Encrypted Export
 
-**Not opened.** Define the next version with **`/gsd-new-milestone`** (questioning → requirements → roadmap). v1.5 is archived; there is no active milestone until you start one.
+**Goal:** Add an optional passphrase to the existing JSON export so the file is AES-256-GCM encrypted at rest, and auto-detect + decrypt on import.
+
+**Target features:**
+- Export: optional passphrase field → AES-256-GCM encrypted JSON envelope
+- Import: auto-detect encrypted file → prompt for passphrase → decrypt
+- No new dependencies (Web Crypto API, built into all modern browsers)
+- Unencrypted export/import path unchanged
 
 ## Current state (shipped v1.5 — 2026-05-02)
 
@@ -71,9 +77,11 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.5-ROADMAP.md` and matc
 - [x] **DASH-01–DASH-04** — Dashboard debt integration ([`18-VERIFICATION.md`](milestones/v1.5-phases/18-dashboard-net-worth-integration/18-VERIFICATION.md)).  
 - Full list: [`.planning/milestones/v1.5-REQUIREMENTS.md`](milestones/v1.5-REQUIREMENTS.md).
 
-### Active (next milestone)
+### Active (v1.6)
 
-*None until `/gsd-new-milestone` defines requirements.*
+- [ ] **ENC-01**: User can export data with an optional passphrase (AES-256-GCM encrypted file)
+- [ ] **ENC-02**: User can import an encrypted export file by providing the correct passphrase
+- [ ] **ENC-03**: Unencrypted export/import path is unchanged
 
 ### Deferred (backlog / future)
 
@@ -136,4 +144,4 @@ This file is updated at **milestone completion** to avoid drift between plans an
 </details>  
 
 ---
-*Last updated: 2026-05-02 — **v1.5 milestone archived**; next requirements via **`/gsd-new-milestone`**.*  
+*Last updated: 2026-05-02 — **v1.6 milestone started** (Encrypted Export).*  
