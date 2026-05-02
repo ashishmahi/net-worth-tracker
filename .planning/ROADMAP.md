@@ -8,50 +8,30 @@
 - ✅ **v1.3 — Net worth history** — Shipped 2026-04-28 — [full snapshot](milestones/v1.3-ROADMAP.md)  
 - ✅ **v1.4 — Multiple commodities** — Shipped 2026-05-01 — [full snapshot](milestones/v1.4-ROADMAP.md)  
 - ✅ **v1.5 — Debt & Liabilities** — Shipped 2026-05-02 — [full snapshot](milestones/v1.5-ROADMAP.md)
-- ✅ **v1.6 — Encrypted Export** — Phases 19–21 complete (2026-05-02)
+- ✅ **v1.6 — Encrypted Export** — Shipped 2026-05-02 — [full snapshot](milestones/v1.6-ROADMAP.md)
 
 ---
 
 ## Phases
 
-### v1.6 — Encrypted Export (Phases 19–21)
+### Next milestone
 
-- [x] **Phase 19: Crypto Utilities** — Pure `src/lib/cryptoUtils.ts` with `encryptData`/`decryptData` using Web Crypto API, unit tested (completed 2026-05-02)
-- [x] **Phase 20: Settings UI — Encrypted Export & Import** — Passphrase field in Export, auto-detect on Import, inline error handling (completed 2026-05-02)
-- [x] **Phase 21: Passphrase modals + zip export/import** — `@zip.js/zip.js` helper (`wealthDataZip`), Settings `AlertDialog` export/import, zip-only import (completed 2026-05-02)
-
----
-
-## Phase Details
-
-### Phase 19: Crypto Utilities
-**Goal**: The app has a tested, dependency-free encryption library that can AES-256-GCM encrypt and decrypt a JSON payload given a passphrase
-**Depends on**: Nothing (self-contained utility)
-**Requirements**: ENC-02, ENC-03
-**Success Criteria** (what must be TRUE):
-  1. `encryptData(plaintext, passphrase)` returns an envelope object with `encrypted: true`, `version`, `salt`, `iv`, and ciphertext `data` fields
-  2. `decryptData(envelope, passphrase)` returns the original plaintext when given the correct passphrase
-  3. `decryptData` throws a typed error when given the wrong passphrase
-  4. Vitest unit tests pass for all three cases (round-trip, correct decrypt, wrong-passphrase rejection)
-**Plans**: 1/1 plans complete
-
-### Phase 20: Settings UI — Encrypted Export & Import
-**Goal**: Users can export an AES-256-GCM encrypted file with a passphrase and import it back with a matching passphrase, with clear inline feedback at every step
-**Depends on**: Phase 19
-**Requirements**: ENC-01, ENC-04, ENC-05, ENC-06
-**Success Criteria** (what must be TRUE):
-  1. User can leave the passphrase field blank on Export and download a plain JSON file (existing behavior unchanged)
-  2. User can enter a passphrase on Export and download a file that is visibly different from plain JSON (envelope with `encrypted: true`)
-  3. When Import receives a plain JSON file, no passphrase is asked and data loads as before
-  4. When Import receives an encrypted file, a passphrase field appears automatically before load proceeds
-  5. Entering the correct passphrase on an encrypted import loads the data normally with a success state
-  6. Entering a wrong or blank passphrase on an encrypted import shows a clear inline error message without changing loaded data
-**Plans**: 1/1 plans complete
-**UI hint**: yes
+Planning starts with **`/gsd-new-milestone`** — fresh `.planning/REQUIREMENTS.md`, roadmap entries, and execution under `.planning/phases/` (phase numbering continues from **22**).
 
 ---
 
 ## Phases (historical)
+
+<details>
+<summary>✅ v1.6 — Encrypted Export (Phases 19–21) — SHIPPED 2026-05-02</summary>
+
+- [x] **Phase 19: Crypto Utilities** (1/1) — 2026-05-02  
+- [x] **Phase 20: Settings UI — Encrypted Export & Import** (1/1) — 2026-05-02  
+- [x] **Phase 21: Passphrase modals + zip export/import** (1/1) — 2026-05-02  
+
+Artifacts: [`.planning/phases/19-crypto-utilities/`](phases/19-crypto-utilities/) · [`.planning/phases/20-settings-ui-encrypted-export-import/`](phases/20-settings-ui-encrypted-export-import/) · [`.planning/phases/21-improve-ui-for-adding-passphrase-macbook-like-passphrase-to-/`](phases/21-improve-ui-for-adding-passphrase-macbook-like-passphrase-to-/) · [v1.6-ROADMAP.md](milestones/v1.6-ROADMAP.md) · [v1.6-REQUIREMENTS.md](milestones/v1.6-REQUIREMENTS.md)
+
+</details>
 
 <details>
 <summary>✅ v1.5 — Debt & Liabilities (Phases 14–18) — SHIPPED 2026-05-02</summary>
@@ -125,19 +105,9 @@ Artifacts: [`.planning/milestones/v1.5-phases/`](milestones/v1.5-phases/) · [v1
 | 17. Liabilities Page CRUD | v1.5 | 1/1 | Complete | 2026-05-02 |
 | 18. Dashboard & Net Worth Integration | v1.5 | 1/1 | Complete | 2026-05-02 |
 | 19. Crypto Utilities | v1.6 | 1/1 | Complete | 2026-05-02 |
-| 20. Settings UI — Encrypted Export & Import | v1.6 | 1/1 | Complete    | 2026-05-02 |
-| 21. Passphrase modals + zip export/import | v1.6 | 1/1 | Complete    | 2026-05-02 |
-
-### Phase 21: Improve UI for adding passphrase & Macbook like passphrase to files which when we try to open in any editor should ask for password and then show content in it
-
-**Goal:** Passphrase modals on Settings (shadcn AlertDialog) + export/import as `.zip` with optional AES-256 (`data.json`); import accepts zip only; legacy JSON import path removed
-**Requirements**: TBD
-**Depends on:** Phase 20
-**Plans:** 1/1 plans complete
-
-Plans:
-- [x] 21-01 — Zip utility (`@zip.js/zip.js`) + Settings modal export/import (planned 2026-05-02)
+| 20. Settings UI — Encrypted Export & Import | v1.6 | 1/1 | Complete | 2026-05-02 |
+| 21. Passphrase modals + zip export/import | v1.6 | 1/1 | Complete | 2026-05-02 |
 
 ---
 
-_Milestone archives: `.planning/milestones/` · **Current:** v1.6 — Encrypted Export (phases 19–21)._
+_Milestone archives: `.planning/milestones/` · **Current milestone:** none defined — use `/gsd-new-milestone`._

@@ -1,5 +1,40 @@
 # Project retrospective — Personal Wealth Tracker
 
+## Milestone: v1.6 — Encrypted Export
+
+**Shipped:** 2026-05-02  
+**Phases:** 19–21 | **Plans:** 3  
+
+### What was built
+
+- **Phase 19:** **`cryptoUtils.ts`** — PBKDF2 + AES-GCM envelope; **`isCryptoError`**; Vitest.  
+- **Phase 20:** Settings inline passphrase + JSON envelope export/import; auto-detect encrypted import.  
+- **Phase 21:** **`@zip.js/zip.js`** — **`wealthDataZip`**; Settings **AlertDialog** export/import; download always **`.zip`**; import **zip-only**; modal passphrase UX per UI-SPEC.  
+
+### What worked
+
+- Shipping **crypto primitives first** (Phase 19) isolated Web Crypto edge cases before UI.  
+- **zip.js** AES-256 zip entries avoided weak ZipCrypto and matched “editor asks password” intent better than envelope JSON alone.  
+
+### What was inefficient
+
+- **`gsd-sdk query milestone.complete`** still fails (`version required for phases archive`); v1.6 close used the **manual** archive path (same as v1.5).  
+- Requirements text (**ENC-01**, etc.) was written for envelope UX; Phase 21 required an explicit **ship outcomes** note in the archived requirements file.  
+
+### Patterns established
+
+- **Two export stories:** **`cryptoUtils`** envelope remains testable and reusable; **Settings** download path uses **zip** only after Phase 21.  
+
+### Key lessons
+
+- Product iteration mid-milestone (Phase 21) is easier when crypto and parsing stay in **`src/lib/`** with Vitest coverage.  
+
+### Cost observations
+
+- Not recorded.  
+
+---
+
 ## Milestone: v1.5 — Debt & Liabilities
 
 **Shipped:** 2026-05-02  

@@ -2,7 +2,7 @@
 gsd_state_version: 1.0
 milestone: v1.6
 milestone_name: — Encrypted Export
-status: milestone_complete
+status: planning_next
 last_updated: "2026-05-02T22:45:00.000Z"
 last_activity: 2026-05-02
 progress:
@@ -19,13 +19,13 @@ progress:
 
 ## Current position
 
-Phase: 21
-Status: Milestone complete
+Phase: —
+Status: v1.6 archived — planning next milestone
 Last activity: 2026-05-02
 
-Resume: *milestone v1.6 feature set complete* — use `/gsd-new-milestone` or ship v1.6
+Resume: **`/gsd-new-milestone`** — fresh requirements + roadmap; phases continue from **22**
 
-Progress: 3 / 3 phases complete (v1.6)
+Progress: v1.6 shipped (3/3 phases); root **REQUIREMENTS.md** removed at close
 
 ```
 [██████████] 100%
@@ -36,7 +36,7 @@ Phase 21: Zip + passphrase modals  [x] Complete (2026-05-02)
 
 ## Project reference
 
-See [`.planning/PROJECT.md`](PROJECT.md) — **v1.5** shipped and archived (2026-05-02); artifacts under **`.planning/milestones/v1.5-phases/`**.
+See [`.planning/PROJECT.md`](PROJECT.md) — **v1.6** shipped and archived (2026-05-02); see **`milestones/v1.6-*`** and phase dirs **19–21** under **`.planning/phases/`**.
 
 **Core value:** Total net worth in INR — liabilities deducted from gross assets, live prices where applicable, minimal repeated data entry.
 
@@ -91,8 +91,8 @@ See [`.planning/PROJECT.md`](PROJECT.md) — **v1.5** shipped and archived (2026
 
 **Completed through:** **v1.6 — Encrypted Export** — Phases **19–21** complete (2026-05-02): `cryptoUtils` + Settings + zip modals (`wealthDataZip`, `21-01-SUMMARY.md`).
 
-**Current:** v1.6 milestone phases finished — run **`/gsd-new-milestone`** (or archive v1.6) when ready for the next version line.
+**Current:** **v1.6** archived (`milestones/v1.6-ROADMAP.md`, `v1.6-REQUIREMENTS.md`); git tag **`v1.6`** created at close.
 
-**Last shipped:** **v1.6 feature work** (encryption + Settings UI) complete in repo; tag or **`/gsd-complete-milestone`** when you want the snapshot archived.
+**Last shipped:** **v1.6 — Encrypted Export** (crypto utils + Settings zip export/import + passphrase modals).
 
-**Next:** `/gsd-progress` · `/gsd-verify-work 20` (optional manual UAT) · `/gsd-new-milestone` for v1.7+.
+**Next:** **`/gsd-new-milestone`** for v1.7+ · `/gsd-progress`

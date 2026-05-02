@@ -1,5 +1,29 @@
 # Milestone history — Personal Wealth Tracker
 
+**Pre-ship audit (v1.6):** No `v1.6-MILESTONE-AUDIT.md` on file — optional `/gsd-audit-milestone` before high-stakes releases.  
+**Open-artifact audit at v1.6 close:** all clear (2026-05-02).
+
+## v1.6 Encrypted Export (Shipped: 2026-05-02)
+
+**Scope:** Phases 19–21.  
+**Phase directories (current location):** [`.planning/phases/19-crypto-utilities/`](phases/19-crypto-utilities/) · [20-settings-ui-encrypted-export-import](phases/20-settings-ui-encrypted-export-import/) · [21-improve-ui-for-adding-passphrase-macbook-like-passphrase-to-](phases/21-improve-ui-for-adding-passphrase-macbook-like-passphrase-to/)
+
+**Phases completed:** 3 phases, 3 plans
+
+**Key accomplishments:**
+
+- **`src/lib/cryptoUtils.ts`** — AES-256-GCM + PBKDF2 envelope; wrong-passphrase **`CryptoError`**; unit tests (**ENC-02**, **ENC-03**).
+- Settings **Data** (Phase 20) — passphrase export/import, envelope auto-detect, inline errors (**ENC-01**, **ENC-04**–**ENC-06**).
+- **`src/lib/wealthDataZip.ts`** + **`@zip.js/zip.js`** — zip with **`data.json`**; optional AES-256 entry encryption; **`SettingsPage`** modal UX; zip-only import; removes legacy JSON picker flow (**Phase 21**).
+
+**Roadmap / requirements:** [`.planning/milestones/v1.6-ROADMAP.md`](milestones/v1.6-ROADMAP.md), [`v1.6-REQUIREMENTS.md`](milestones/v1.6-REQUIREMENTS.md)
+
+**Tooling note:** `gsd-sdk query milestone.complete` returned `version required for phases archive`; v1.6 archives and **`REQUIREMENTS.md`** removal follow the **manual** path as v1.5. Phase dirs left under **`.planning/phases/`** (optional **`/gsd-cleanup`** later).
+
+**Known deferred (unchanged):** Phase 05 UAT, Phase 01 `human_needed` — see `STATE.md` **Deferred items**.
+
+---
+
 **Pre-ship audit (v1.5):** No `v1.5-MILESTONE-AUDIT.md` on file — optional `/gsd-audit-milestone` before high-stakes releases.  
 **Open-artifact audit at v1.5 close:** all clear (2026-05-02).
 

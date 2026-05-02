@@ -18,27 +18,20 @@ See **total net worth in INR** at a glance (**debt-adjusted** headline minus sta
 | **v1.3** | **Net worth history** — persisted **`netWorthHistory`**, **Record snapshot**, **JSON import** (10.1), **Dashboard** line/area chart + **NWH-04** empty state | 2026-04-28 |
 | **v1.4** | **Multiple commodities** — **`otherCommodities`** schema + migration + live silver; **`CommoditiesPage`** CRUD; Dashboard/nav wayfinding; gold UX preserved (**COM-06**) | 2026-05-01 |
 | **v1.5** | **Debt & Liabilities** — root **`liabilities[]`**, **`liabilityCalcs`**, property lender/EMI + hint, **`LiabilitiesPage`** + nav, dashboard net worth + Total Debt + ratio | 2026-05-02 |
+| **v1.6** | **Encrypted Export** — **`cryptoUtils`** (AES-GCM envelope); Settings **zip** export/import via **`@zip.js/zip.js`** (`wealthDataZip`), passphrase **AlertDialogs**, zip-only import | 2026-05-02 |
 
-Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.5-ROADMAP.md` and matching `*-REQUIREMENTS.md` archives. Executed phase artifacts for shipped milestones live under [`.planning/milestones/`](milestones/) (e.g. `v1.5-phases/`). **Next** milestone: run **`/gsd-new-milestone`** — it creates a fresh root **`.planning/REQUIREMENTS.md`** and new work under [`.planning/phases/`](phases/) (phase numbering continues from **19**).
+Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.6-ROADMAP.md` and matching `*-REQUIREMENTS.md` archives. Executed phase artifacts for shipped milestones live under [`.planning/milestones/`](milestones/) (e.g. `v1.5-phases/`). Phase dirs **19–21** remain under [`.planning/phases/`](phases/) until optional **`/gsd-cleanup`**.
 
-## Current Milestone: v1.6 Encrypted Export
+## Next milestone
 
-**Goal:** Add an optional passphrase to the existing JSON export so the file is AES-256-GCM encrypted at rest, and auto-detect + decrypt on import.
+Run **`/gsd-new-milestone`** — creates a fresh **`.planning/REQUIREMENTS.md`**, updates roadmap, and continues phase numbering from **22**.
 
-**Status:** Phases **19–20** complete (2026-05-02) — `cryptoUtils` + Settings export/import UI.
-
-**Shipped in this milestone:**
-- Export: optional passphrase field → AES-256-GCM encrypted JSON envelope; blank passphrase → same plain export as v1.5
-- Import: auto-detect encrypted file → inline decrypt + passphrase; plain JSON import unchanged
-- No new dependencies (Web Crypto API)
-- Unencrypted export/import path unchanged when passphrase left blank / file is plain JSON
-
-## Current state (shipped v1.5 base + v1.6 encryption — 2026-05-02)
+## Current state (shipped through v1.6 — 2026-05-02)
 
 - **Liabilities & net worth:** root **`liabilities`** list; **`calcNetWorth(gross, sumLiabilitiesInr)`** for headline + new snapshots; **`sumAllDebtInr`** for dashboard **Total Debt** row; property equity unchanged (`agreementInr − outstandingLoanInr`).  
 - **Commodities (v1.4):** `assets.otherCommodities`; **`CommoditiesPage`**; live silver via **`useLivePrices`**.  
 - **App:** `npm run dev` — local-only; **`GET`/`POST`** `/api/data` → **`data.json`**. **`npm test`** — Vitest.  
-- **Encryption (v1.6):** Settings **Data** section — optional export passphrase, encrypted import with inline errors before replace dialog.  
+- **Encryption & backup (v1.6):** **`cryptoUtils`** (Web Crypto, no npm crypto deps). Settings **Data**: export downloads **`wealth-tracker-YYYY-MM-DD.zip`** with **`data.json`** (optional AES zip encryption via passphrase); import **zip only** — **`wealthDataZip`** + modal passphrase flows; Phase 19 envelope JSON remains in codebase/tests but not on Settings download path after Phase 21.  
 
 ## Requirements
 
@@ -87,8 +80,12 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.5-ROADMAP.md` and matc
 
 ### Validated (v1.6 — Phase 20)
 
-- [x] **ENC-01** — Optional passphrase on Export; blank → plain JSON unchanged — Phase **20** ([`20-VERIFICATION.md`](phases/20-settings-ui-encrypted-export-import/20-VERIFICATION.md)).  
-- [x] **ENC-04**–**ENC-06** — Import auto-detect, decrypt before load, wrong/empty passphrase inline errors — Phase **20**.
+- [x] **ENC-01** — Optional passphrase on Export; blank → plain JSON unchanged — Phase **20** ([`20-VERIFICATION.md`](phases/20-settings-ui-encrypted-export-import/20-VERIFICATION.md)) — *superseded for Settings UX by Phase 21 zip export.*  
+- [x] **ENC-04**–**ENC-06** — Import auto-detect, decrypt before load, wrong/empty passphrase inline errors — Phase **20** — *Settings import path superseded by zip + modals in Phase 21.*
+
+### Validated (v1.6 — Phase 21)
+
+- [x] **Zip export/import UX** — Password-protected **`.zip`** (`data.json`); shadcn **AlertDialog** passphrases; legacy **`.json`** file picker removed from Settings — Phase **21** ([`21-VERIFICATION.md`](phases/21-improve-ui-for-adding-passphrase-macbook-like-passphrase-to-/21-VERIFICATION.md)).
 
 ### Deferred (backlog / future)
 
@@ -134,6 +131,7 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.5-ROADMAP.md` and matc
 | v1.3 | Snapshot list + chart on dashboard; import; migration; NWH-04 empty state | ✓ v1.3 2026-04-28 |  
 | v1.4 | Commodities beyond gold; silver + manual lines; net worth + import/reset + product UX | ✓ Shipped 2026-05-01 |  
 | v1.5 | Liabilities schema + pure calcs + property enrichment + Liabilities CRUD + dashboard debt UX | ✓ Shipped 2026-05-02 |  
+| v1.6 | Web Crypto `cryptoUtils` + Settings encrypted export/import; then zip + modal UX (`@zip.js/zip.js`) for at-rest export protection | ✓ Shipped 2026-05-02 |  
 
 ## Evolution
 
@@ -151,4 +149,4 @@ This file is updated at **milestone completion** to avoid drift between plans an
 </details>  
 
 ---
-*Last updated: 2026-05-02 — v1.6 Phases **19**–**20** complete (crypto utilities + Settings encrypted export/import).*  
+*Last updated: 2026-05-02 — **v1.6 milestone complete** (Phases **19**–**21**); see [`v1.6-REQUIREMENTS.md`](milestones/v1.6-REQUIREMENTS.md) archive for ENC traceability and Phase 21 UX notes.*  
