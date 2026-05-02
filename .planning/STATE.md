@@ -2,11 +2,11 @@
 gsd_state_version: 1.0
 milestone: v1.6
 milestone_name: — Encrypted Export
-status: milestone_complete
-last_updated: "2026-05-02T12:25:09.867Z"
+status: completed
+last_updated: "2026-05-02T14:16:28.374Z"
 last_activity: 2026-05-02
 progress:
-  total_phases: 2
+  total_phases: 3
   completed_phases: 2
   total_plans: 2
   completed_plans: 2
@@ -19,10 +19,11 @@ progress:
 
 ## Current position
 
-Phase: 20
-Plan: 20-01 complete
-Status: Milestone complete
+Phase: 21
+Status: UI-SPEC approved — ready for planning
 Last activity: 2026-05-02
+
+Resume: `.planning/phases/21-improve-ui-for-adding-passphrase-macbook-like-passphrase-to-/21-UI-SPEC.md`
 
 Progress: 2 / 2 phases complete (v1.6)
 
