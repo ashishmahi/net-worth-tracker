@@ -128,13 +128,13 @@ Artifacts: [`.planning/milestones/v1.5-phases/`](milestones/v1.5-phases/) · [v1
 
 ### Phase 21: Improve UI for adding passphrase & Macbook like passphrase to files which when we try to open in any editor should ask for password and then show content in it
 
-**Goal:** [To be planned]
+**Goal:** Passphrase modals on Settings (shadcn AlertDialog) + export/import as `.zip` with optional AES-256 (`data.json`); import accepts zip only; legacy JSON import path removed
 **Requirements**: TBD
 **Depends on:** Phase 20
-**Plans:** 0 plans
+**Plans:** 1 plan ready (`21-01-PLAN.md`)
 
 Plans:
-- [ ] TBD (run /gsd-plan-phase 21 to break down)
+- [x] 21-01 — Zip utility (`@zip.js/zip.js`) + Settings modal export/import (planned 2026-05-02)
 
 ---
 
