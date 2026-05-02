@@ -1,5 +1,31 @@
 # Milestone history — Personal Wealth Tracker
 
+**Pre-ship audit (v1.5):** No `v1.5-MILESTONE-AUDIT.md` on file — optional `/gsd-audit-milestone` before high-stakes releases.  
+**Open-artifact audit at v1.5 close:** all clear (2026-05-02).
+
+## v1.5 Debt & Liabilities (Shipped: 2026-05-02)
+
+**Scope:** Phases 14–18.  
+**Phase directories:** [`.planning/milestones/v1.5-phases/14-schema-migration/`](milestones/v1.5-phases/14-schema-migration/) · [15](milestones/v1.5-phases/15-calculation-utilities/) · [16](milestones/v1.5-phases/16-property-liability-enrichment/) · [17](milestones/v1.5-phases/17-liabilities-page-crud/) · [18](milestones/v1.5-phases/18-dashboard-net-worth-integration/)
+
+**Phases completed:** 5 phases, 6 plans
+
+**Key accomplishments:**
+
+- **`liabilities`** on **`DataSchema`**, **`LiabilityItemSchema`**, **`ensureLiabilities()`**; **`NetWorthPointSchema.totalInr`** allows negative values; import/reset parity (**DEBT-01–05**, **INFRA-01–02**).
+- **`src/lib/liabilityCalcs.ts`**: **`sumLiabilitiesInr`**, **`sumAllDebtInr`**, **`calcNetWorth`**, **`debtToAssetRatio`** with Vitest coverage (**CALC-01–04**).
+- **Property** optional **lender** + **EMI** + disambiguation hint to **Liabilities** (**PROP-01–03**).
+- **`LiabilitiesPage`**: CRUD, type badges, aggregates, empty state; **`AppSidebar`** **`liabilities`** (**LIAB-01–06**, **INFRA-03**).
+- **Dashboard**: debt-adjusted headline, **Total Debt** row, debt-to-asset ratio, **Record snapshot** uses **`calcNetWorth`** (**DASH-01–04**).
+
+**Roadmap / requirements:** [`.planning/milestones/v1.5-ROADMAP.md`](milestones/v1.5-ROADMAP.md), [`v1.5-REQUIREMENTS.md`](milestones/v1.5-REQUIREMENTS.md)
+
+**Tooling note:** `gsd-sdk query milestone.complete` returned `version required for phases archive`; v1.5 archives, phase moves, and `REQUIREMENTS.md` removal follow the **manual** path as v1.4 / v1.3.
+
+**Known deferred (unchanged):** Phase 05 UAT, Phase 01 `human_needed` — see `STATE.md` **Deferred items**.
+
+---
+
 **Pre-ship audit (v1.4):** No `v1.4-MILESTONE-AUDIT.md` on file — optional `/gsd-audit-milestone` before high-stakes releases.  
 **Open-artifact audit at v1.4 close:** all clear (2026-05-01).
 

@@ -2,11 +2,11 @@
 
 ## What this is
 
-A local-only **React + Vite** app for tracking personal net worth across **gold, non-gold commodities (e.g. silver + manual ₹ lines), mutual funds, stocks, Bitcoin, property, bank savings (INR/AED), and retirement (NPS/EPF)**. It replaces a manual Excel workflow: data lives in `data.json` via a small Vite dev-server API. There is no backend, auth, or cloud sync in the shipped local product.
+A local-only **React + Vite** app for tracking personal net worth across **gold, non-gold commodities (e.g. silver + manual ₹ lines), mutual funds, stocks, Bitcoin, property, bank savings (INR/AED), retirement (NPS/EPF), and standalone liabilities (Liabilities page)**. It replaces a manual Excel workflow: data lives in `data.json` via a small Vite dev-server API. There is no backend, auth, or cloud sync in the shipped local product.
 
 ## Core value
 
-See **total net worth in INR** at a glance, with **live BTC, FX, and silver (USD→INR)** where applicable, **manual** gold prices, and **manual / gram-based commodity lines** — minimal repeated data entry, everything else editable in the app.
+See **total net worth in INR** at a glance (**debt-adjusted** headline minus standalone loans), with **live BTC, FX, and silver (USD→INR)** where applicable, **manual** gold prices, and **manual / gram-based commodity lines** — minimal repeated data entry, everything else editable in the app.
 
 ## Shipped versions
 
@@ -17,26 +17,18 @@ See **total net worth in INR** at a glance, with **live BTC, FX, and silver (USD
 | **v1.2** | **Data reset** — Settings danger zone, AlertDialog, `createInitialData()` + `saveData` full clear, inline error/success; `localStorage` theme unchanged | 2026-04-26 |
 | **v1.3** | **Net worth history** — persisted **`netWorthHistory`**, **Record snapshot**, **JSON import** (10.1), **Dashboard** line/area chart + **NWH-04** empty state | 2026-04-28 |
 | **v1.4** | **Multiple commodities** — **`otherCommodities`** schema + migration + live silver; **`CommoditiesPage`** CRUD; Dashboard/nav wayfinding; gold UX preserved (**COM-06**) | 2026-05-01 |
+| **v1.5** | **Debt & Liabilities** — root **`liabilities[]`**, **`liabilityCalcs`**, property lender/EMI + hint, **`LiabilitiesPage`** + nav, dashboard net worth + Total Debt + ratio | 2026-05-02 |
 
-Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.4-ROADMAP.md` and matching `*-REQUIREMENTS.md` archives. Executed phase artifacts for shipped milestones live under [`.planning/milestones/`](milestones/) (e.g. `v1.4-phases/`). New work uses [`.planning/phases/`](phases/) once **`/gsd-new-milestone`** opens the next version.
+Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.5-ROADMAP.md` and matching `*-REQUIREMENTS.md` archives. Executed phase artifacts for shipped milestones live under [`.planning/milestones/`](milestones/) (e.g. `v1.5-phases/`). **Next** milestone: run **`/gsd-new-milestone`** — it creates a fresh root **`.planning/REQUIREMENTS.md`** and new work under [`.planning/phases/`](phases/) (phase numbering continues from **19**).
 
-## Current Milestone: v1.5 Debt & Liabilities
+## Next milestone
 
-**Status (2026-05-02):** Phases **14–18** implemented; dashboard integration shipped in Phase **18**. Use **`/gsd-complete-milestone`** when ready to archive v1.5 and start the next version.
+**Not opened.** Define the next version with **`/gsd-new-milestone`** (questioning → requirements → roadmap). v1.5 is archived; there is no active milestone until you start one.
 
-**Goal:** Add a liabilities layer so net worth reflects what you actually owe — loans deducted from gross assets, with a debt-to-asset ratio insight on the dashboard.
+## Current state (shipped v1.5 — 2026-05-02)
 
-**Target features:**
-- Property liability extension — enrich existing property liability toggle with lender name, outstanding balance, and EMI amount
-- Standalone loans section — new Liabilities page for home/personal/car loans (label, lender, outstanding balance, EMI)
-- Net worth = assets − total debt (property liability + standalone loans both subtract)
-- Dashboard debt insights — Total Debt row + Debt-to-Asset ratio
-- Data model + migration — `liabilities` list on `DataSchema`, migration, import/reset parity
-
-## Current state (shipped v1.4 — 2026-05-01)
-
-- **Commodities:** `assets.otherCommodities` (**standard** silver by gram + **manual** ₹ lines); **`sumCommoditiesInr`** + Dashboard row; **Commodities** nav page; live silver via **`useLivePrices`** (with exclusion semantics when rates missing).  
-- **Prior milestones:** v1.3 snapshots + chart + import; v1.2 reset; v1.1 responsive + theme; v1.0 core assets.  
+- **Liabilities & net worth:** root **`liabilities`** list; **`calcNetWorth(gross, sumLiabilitiesInr)`** for headline + new snapshots; **`sumAllDebtInr`** for dashboard **Total Debt** row; property equity unchanged (`agreementInr − outstandingLoanInr`).  
+- **Commodities (v1.4):** `assets.otherCommodities`; **`CommoditiesPage`**; live silver via **`useLivePrices`**.  
 - **App:** `npm run dev` — local-only; **`GET`/`POST`** `/api/data` → **`data.json`**. **`npm test`** — Vitest.  
 
 ## Requirements
@@ -70,16 +62,18 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.4-ROADMAP.md` and matc
 - [x] **COM-01**, **COM-02**, **COM-05** — data model, net worth/snapshot alignment, import/reset/schema ([`12-VERIFICATION.md`](milestones/v1.4-phases/12-commodities-data-net-worth/12-VERIFICATION.md)).  
 - [x] **COM-03**, **COM-04**, **COM-06** — commodity CRUD UI, dashboard/nav wayfinding, gold UX preserved ([`13-VERIFICATION.md`](milestones/v1.4-phases/13-commodities-product-ux/13-VERIFICATION.md)).
 
-### Validated (v1.5 — partial)
+### Validated (v1.5)
 
-- [x] **CALC-01–CALC-04** — Pure liability calc helpers in `src/lib/liabilityCalcs.ts` ([`15-VERIFICATION.md`](phases/15-calculation-utilities/15-VERIFICATION.md)); Phase **15** (2026-05-01).
-- [x] **PROP-01**, **PROP-02**, **PROP-03** — Property form lender, EMI, and Liabilities disambiguation hint ([`16-VERIFICATION.md`](phases/16-property-liability-enrichment/16-VERIFICATION.md)); Phase **16** (2026-05-01).
-- [x] **LIAB-01–LIAB-06**, **INFRA-03** — Standalone loans CRUD, aggregates, banner, sidebar nav ([`17-VERIFICATION.md`](phases/17-liabilities-page-crud/17-VERIFICATION.md)); Phase **17** (2026-05-02).
-- [x] **DASH-01–DASH-04** — Debt-aware dashboard headline, Total Debt row, debt-to-asset ratio, snapshots use `calcNetWorth` ([`18-VERIFICATION.md`](phases/18-dashboard-net-worth-integration/18-VERIFICATION.md)); Phase **18** (2026-05-02).
+- [x] **DEBT-01–DEBT-05**, **INFRA-01**, **INFRA-02** — `LiabilityItemSchema`, root `liabilities`, migration, negative snapshot totals, import/reset ([`14-VERIFICATION.md`](milestones/v1.5-phases/14-schema-migration/14-VERIFICATION.md)).  
+- [x] **CALC-01–CALC-04** — `src/lib/liabilityCalcs.ts` ([`15-VERIFICATION.md`](milestones/v1.5-phases/15-calculation-utilities/15-VERIFICATION.md)).  
+- [x] **PROP-01–PROP-03** — Property lender, EMI, hint ([`16-VERIFICATION.md`](milestones/v1.5-phases/16-property-liability-enrichment/16-VERIFICATION.md)).  
+- [x] **LIAB-01–LIAB-06**, **INFRA-03** — `LiabilitiesPage`, sidebar ([`17-VERIFICATION.md`](milestones/v1.5-phases/17-liabilities-page-crud/17-VERIFICATION.md)).  
+- [x] **DASH-01–DASH-04** — Dashboard debt integration ([`18-VERIFICATION.md`](milestones/v1.5-phases/18-dashboard-net-worth-integration/18-VERIFICATION.md)).  
+- Full list: [`.planning/milestones/v1.5-REQUIREMENTS.md`](milestones/v1.5-REQUIREMENTS.md).
 
-### Active (v1.5)
+### Active (next milestone)
 
-*None — all v1.5 roadmap phases through 18 are implemented.*
+*None until `/gsd-new-milestone` defines requirements.*
 
 ### Deferred (backlog / future)
 
@@ -105,6 +99,7 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.4-ROADMAP.md` and matc
 - **Data reset (v1.2):** `createInitialData()` in `AppDataContext`; shadcn `AlertDialog` in Settings danger zone  
 - **Net worth history (v1.3):** `netWorthHistory` list; **Recharts** + `--chart-*` tokens; import uses same `DataSchema` path as boot  
 - **Commodities (v1.4):** `otherCommodities` items; **`CommoditiesPage`**; silver **`TROY_OZ_TO_GRAMS`** INR/gram derivation aligned with **`dashboardCalcs`**  
+- **Debt (v1.5):** **`liabilityCalcs`** + **`LiabilitiesPage`**; Dashboard **`grossAssets`** denominator for **%** column; headline **`netWorth`** deducts standalone **`liabilities`** only  
 
 ## Constraints
 
@@ -123,6 +118,7 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.4-ROADMAP.md` and matc
 | v1.2 data reset | Danger zone + dialog + `createInitialData` + `saveData`; no theme wipe | ✓ v1.2 2026-04-26 |
 | v1.3 | Snapshot list + chart on dashboard; import; migration; NWH-04 empty state | ✓ v1.3 2026-04-28 |  
 | v1.4 | Commodities beyond gold; silver + manual lines; net worth + import/reset + product UX | ✓ Shipped 2026-05-01 |  
+| v1.5 | Liabilities schema + pure calcs + property enrichment + Liabilities CRUD + dashboard debt UX | ✓ Shipped 2026-05-02 |  
 
 ## Evolution
 
@@ -135,8 +131,9 @@ This file is updated at **milestone completion** to avoid drift between plans an
 
 - *v1.3: deliverables moved to **Validated (v1.3)**; roadmap/requirements under `milestones/v1.3-*`.*  
 - *v1.4: deliverables moved to **Validated (v1.4)**; roadmap/requirements under `milestones/v1.4-*`.*  
+- *v1.5: deliverables moved to **Validated (v1.5)**; roadmap/requirements under `milestones/v1.5-*`; phases archived under `milestones/v1.5-phases/`.*  
 
 </details>  
 
 ---
-*Last updated: 2026-05-02 — **v1.5 phases 14–18 complete** including **Dashboard** debt integration (`DASH-*` in [`18-VERIFICATION.md`](phases/18-dashboard-net-worth-integration/18-VERIFICATION.md)).*  
+*Last updated: 2026-05-02 — **v1.5 milestone archived**; next requirements via **`/gsd-new-milestone`**.*  

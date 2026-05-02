@@ -1,8 +1,8 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.5
-milestone_name: — Debt & Liabilities
-status: milestone_complete
+milestone: none
+milestone_name: (next — use /gsd-new-milestone)
+status: between_milestones
 last_updated: "2026-05-02T08:39:54.189Z"
 last_activity: 2026-05-02
 progress:
@@ -19,16 +19,16 @@ progress:
 
 ## Current position
 
-Phase: 18 (complete)
-Plan: 18-01 complete
-Status: Milestone v1.5 — all planned phases executed
+Phase: —
+Plan: —
+Status: **v1.5 archived** — awaiting **`/gsd-new-milestone`** to open the next version
 Last activity: 2026-05-02
 
-Progress: `████████████████████` 100% (5/5 phases complete in v1.5)
+Progress: between milestones (no active roadmap until **`/gsd-new-milestone`**)
 
 ## Project reference
 
-See [`.planning/PROJECT.md`](PROJECT.md) — **v1.5** phases 14–18 complete (debt + dashboard integration); last feature milestone **v1.4** shipped 2026-05-01.
+See [`.planning/PROJECT.md`](PROJECT.md) — **v1.5** shipped and archived (2026-05-02); artifacts under **`.planning/milestones/v1.5-phases/`**.
 
 **Core value:** Total net worth in INR — liabilities deducted from gross assets, live prices where applicable, minimal repeated data entry.
 
@@ -46,7 +46,8 @@ See [`.planning/PROJECT.md`](PROJECT.md) — **v1.5** phases 14–18 complete (d
 ### Roadmap evolution
 
 - **v1.4** archived: [`.planning/milestones/v1.4-ROADMAP.md`](milestones/v1.4-ROADMAP.md).
-- **v1.5** live roadmap: [`.planning/ROADMAP.md`](ROADMAP.md) — phases 14–18.
+- **v1.5** archived: [`.planning/milestones/v1.5-ROADMAP.md`](milestones/v1.5-ROADMAP.md) · [`.planning/milestones/v1.5-REQUIREMENTS.md`](milestones/v1.5-REQUIREMENTS.md).
+- **Live** [`.planning/ROADMAP.md`](ROADMAP.md): collapsed history + pointer to next milestone (**`/gsd-new-milestone`**).
 
 ### Key v1.5 design notes
 
@@ -74,10 +75,8 @@ See [`.planning/PROJECT.md`](PROJECT.md) — **v1.5** phases 14–18 complete (d
 
 ## Session continuity
 
-**Completed through:** v1.5 **Phase 18** — Dashboard & net worth integration (2026-05-02).
+**Completed through:** **v1.5** milestone close — archived 2026-05-02 (`v1.5-ROADMAP`, `v1.5-REQUIREMENTS`, **`.planning/phases/`** → **`milestones/v1.5-phases/`**, root **`REQUIREMENTS.md`** removed).
 
-**Current milestone:** v1.5 — all defined phases (14–18) complete; consider `/gsd-complete-milestone` to archive and open the next version.
+**Next:** **`/gsd-new-milestone`** — define requirements and roadmap for **v1.6+** (phase numbering from **19**).
 
-**Last shipped milestone (feature):** v1.4 — 2026-05-01
-
-**Phases 14–18:** schema, liability calcs, property lender/EMI + hint, Liabilities CRUD, dashboard debt-aware net worth + Total Debt + ratio.
+**Last shipped:** **v1.5 — Debt & Liabilities** — 2026-05-02.

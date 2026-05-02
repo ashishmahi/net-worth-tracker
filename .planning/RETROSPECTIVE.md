@@ -1,5 +1,41 @@
 # Project retrospective — Personal Wealth Tracker
 
+## Milestone: v1.5 — Debt & Liabilities
+
+**Shipped:** 2026-05-02  
+**Phases:** 14–18 | **Plans:** 6  
+
+### What was built
+
+- **Phase 14:** **`liabilities`** on **`DataSchema`**, **`LiabilityItemSchema`**, **`ensureLiabilities()`**, **`NetWorthPointSchema`** supports negative **`totalInr`**, import/reset parity.  
+- **Phase 15:** **`src/lib/liabilityCalcs.ts`** — **`sumLiabilitiesInr`**, **`sumAllDebtInr`**, **`calcNetWorth`**, **`debtToAssetRatio`** + Vitest.  
+- **Phase 16:** Property optional **lender** / **EMI** + Liabilities disambiguation hint.  
+- **Phase 17:** **`LiabilitiesPage`** CRUD; **`AppSidebar`** **`liabilities`**; EMI aggregate helper.  
+- **Phase 18:** Dashboard headline + snapshots use **`calcNetWorth`**; **Total Debt** row + debt-to-asset ratio; **`noHoldingsYet`** respects liabilities-only users.  
+
+### What worked
+
+- Keeping **gross** assets as the **%** denominator while headline uses **net** avoided double-counting property mortgage vs standalone list.  
+- Pure **`liabilityCalcs`** kept UI wiring thin (**Dashboard**, **Liabilities**).  
+
+### What was inefficient
+
+- **`gsd-sdk query milestone.complete`** still fails (`version required for phases archive`); close-out used the **manual** archive path (**move phases**, **`git rm` REQUIREMENTS**, tag).  
+
+### Patterns established
+
+- **Two debt figures:** **`sumAllDebtInr`** for disclosure vs **`sumLiabilitiesInr`** inside **`calcNetWorth`** — documented in **TECH.md** / CONTEXT.  
+
+### Key lessons
+
+- **Standalone vs property:** Users need explicit copy + hint so home loans are not duplicated across Property equity and **Liabilities**.  
+
+### Cost observations
+
+- Not recorded.  
+
+---
+
 ## Milestone: v1.4 — Multiple commodities
 
 **Shipped:** 2026-05-01  
