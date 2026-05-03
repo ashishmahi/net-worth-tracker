@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useForm, useFormState } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -92,13 +92,34 @@ export function SettingsGoldPricingCard() {
     usdInr != null &&
     !goldError
 
+  const snap = effectiveGoldSnapshot(data.settings, k24Hint, k22Hint, k18Hint)
+  const eff = data.settings.goldPrices ?? (
+    k24Hint != null && k22Hint != null && k18Hint != null
+      ? { k24: k24Hint, k22: k22Hint, k18: k18Hint }
+      : null
+  )
+
   const [goldPricingEditing, setGoldPricingEditing] = useState(false)
   const [goldSaving, setGoldSaving] = useState(false)
   const [goldSaveError, setGoldSaveError] = useState<string | null>(null)
 
-  const showGoldReadOnly = pricingHealthyGold && !goldPricingEditing
-  const showGoldEditForm =
-    !goldHintLoading && (!pricingHealthyGold || goldPricingEditing)
+  /** Tracks feed health across renders — expand form when outage starts or on first load if unhealthy (UX-06). */
+  const wasPricingHealthyGoldRef = useRef<boolean | null>(null)
+  useEffect(() => {
+    if (goldHintLoading) return
+    const prev = wasPricingHealthyGoldRef.current
+    wasPricingHealthyGoldRef.current = pricingHealthyGold
+    if (prev === null) {
+      if (!pricingHealthyGold) setGoldPricingEditing(true)
+      return
+    }
+    if (prev && !pricingHealthyGold) setGoldPricingEditing(true)
+  }, [goldHintLoading, pricingHealthyGold])
+
+  const showGoldEditForm = !goldHintLoading && goldPricingEditing
+  const showGoldSummaryStrip = !goldPricingEditing && Boolean(eff)
+  const showGoldEditButton =
+    !goldPricingEditing && (pricingHealthyGold || Boolean(eff))
 
   const goldForm = useForm<GoldPricesValues>({
     resolver: zodResolver(goldPricesSchema),
@@ -207,19 +228,12 @@ export function SettingsGoldPricingCard() {
     }
   }
 
-  const snap = effectiveGoldSnapshot(data.settings, k24Hint, k22Hint, k18Hint)
-  const eff = data.settings.goldPrices ?? (
-    k24Hint != null && k22Hint != null && k18Hint != null
-      ? { k24: k24Hint, k22: k22Hint, k18: k18Hint }
-      : null
-  )
-
   return (
     <Card>
       <CardContent className="pt-6 space-y-4">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
           <p className="text-sm font-semibold">Gold prices (₹/g)</p>
-          {showGoldReadOnly ? (
+          {showGoldEditButton ? (
             <Button
               type="button"
               variant="outline"
@@ -228,7 +242,7 @@ export function SettingsGoldPricingCard() {
               disabled={goldSaving}
               onClick={() => {
                 setGoldPricingEditing(true)
-                goldForm.reset(effectiveGoldSnapshot(data.settings, k24Hint, k22Hint, k18Hint))
+                goldForm.reset(snap)
               }}
             >
               Edit
@@ -268,7 +282,7 @@ export function SettingsGoldPricingCard() {
             </Button>
           </div>
         )}
-        {showGoldReadOnly && eff ? (
+        {showGoldSummaryStrip && eff ? (
           <p className="text-sm text-muted-foreground">
             <span className="font-medium text-foreground">{goldSourceLabel(data.settings)}</span>
             {' · '}
@@ -384,19 +398,17 @@ export function SettingsGoldPricingCard() {
               </p>
             )}
             <div className="flex flex-wrap gap-2">
-              {pricingHealthyGold ? (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  disabled={goldSaving}
-                  onClick={() => {
-                    setGoldPricingEditing(false)
-                    goldForm.reset(snap)
-                  }}
-                >
-                  Cancel
-                </Button>
-              ) : null}
+              <Button
+                type="button"
+                variant="ghost"
+                disabled={goldSaving}
+                onClick={() => {
+                  setGoldPricingEditing(false)
+                  goldForm.reset(snap)
+                }}
+              >
+                Cancel
+              </Button>
               <Button type="submit" disabled={goldSaving}>
                 {goldSaving ? 'Saving…' : 'Save'}
               </Button>

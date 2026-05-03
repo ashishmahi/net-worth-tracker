@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useForm, useFormState } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -55,20 +55,35 @@ export function SettingsSilverPricingCard() {
     usdInr != null &&
     !silverError
 
-  const [silverPricingEditing, setSilverPricingEditing] = useState(false)
-  const [silverSaving, setSilverSaving] = useState(false)
-  const [silverSaveError, setSilverSaveError] = useState<string | null>(null)
-
-  const showSilverReadOnly = pricingHealthySilver && !silverPricingEditing
-  const showSilverEditForm =
-    !silverHintLoading && (!pricingHealthySilver || silverPricingEditing)
-
   const effectiveSilver = effectiveSilverInrPerGramForNetWorth(data.settings, {
     silverUsdPerOz,
     usdInr,
   })
 
   const silverSpotAutoSync = shouldAutoSyncSilverFromSpot(data.settings)
+
+  const [silverPricingEditing, setSilverPricingEditing] = useState(false)
+  const [silverSaving, setSilverSaving] = useState(false)
+  const [silverSaveError, setSilverSaveError] = useState<string | null>(null)
+
+  const wasPricingHealthySilverRef = useRef<boolean | null>(null)
+  useEffect(() => {
+    if (silverHintLoading) return
+    const prev = wasPricingHealthySilverRef.current
+    wasPricingHealthySilverRef.current = pricingHealthySilver
+    if (prev === null) {
+      if (!pricingHealthySilver) setSilverPricingEditing(true)
+      return
+    }
+    if (prev && !pricingHealthySilver) setSilverPricingEditing(true)
+  }, [silverHintLoading, pricingHealthySilver])
+
+  const showSilverEditForm = !silverHintLoading && silverPricingEditing
+  const showSilverSummaryStrip =
+    !silverPricingEditing && effectiveSilver != null
+  const showSilverEditButton =
+    !silverPricingEditing &&
+    (pricingHealthySilver || effectiveSilver != null)
 
   const silverForm = useForm<SilverPriceValues>({
     resolver: zodResolver(silverPriceSchema),
@@ -177,7 +192,7 @@ export function SettingsSilverPricingCard() {
       <CardContent className="pt-6 space-y-4">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
           <p className="text-sm font-semibold">Silver price (₹/g)</p>
-          {showSilverReadOnly ? (
+          {showSilverEditButton ? (
             <Button
               type="button"
               variant="outline"
@@ -220,7 +235,7 @@ export function SettingsSilverPricingCard() {
             </Button>
           </div>
         )}
-        {showSilverReadOnly ? (
+        {showSilverSummaryStrip ? (
           <p className="text-sm text-muted-foreground">
             <span className="font-medium text-foreground">
               {silverSourceLabel(data.settings)}
@@ -272,19 +287,17 @@ export function SettingsSilverPricingCard() {
               </p>
             )}
             <div className="flex flex-wrap gap-2">
-              {pricingHealthySilver ? (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  disabled={silverSaving}
-                  onClick={() => {
-                    setSilverPricingEditing(false)
-                    silverForm.reset(snapSilver())
-                  }}
-                >
-                  Cancel
-                </Button>
-              ) : null}
+              <Button
+                type="button"
+                variant="ghost"
+                disabled={silverSaving}
+                onClick={() => {
+                  setSilverPricingEditing(false)
+                  silverForm.reset(snapSilver())
+                }}
+              >
+                Cancel
+              </Button>
               <Button type="submit" disabled={silverSaving}>
                 {silverSaving ? 'Saving…' : 'Save'}
               </Button>

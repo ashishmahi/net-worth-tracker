@@ -3,15 +3,15 @@ status: testing
 phase: 27-settings-commodity-pricing-ux
 source: [27-01-SUMMARY.md, 27-UI-SPEC.md]
 started: 2026-05-03T17:30:00.000Z
-updated: 2026-05-03T18:10:00.000Z
+updated: 2026-05-03T18:40:00.000Z
 ---
 
 ## Current Test
 
-number: 2
-name: Edit expands forms with Save and Cancel
+number: 4
+name: Save locks prices
 expected: |
-  From the same healthy-feed state, tap Edit on Gold and on Silver. Each card shows inputs prefilled from the effective snapshot, plus Save and Cancel. (Re-check after fix: inputs must accept typing while Edit mode is open.)
+  After editing Gold or Silver prices and tapping Save, fixed prices persist (goldPricesLocked or silverPricesLocked true) and net worth reflects saved ₹/g. With healthy feed, the card returns to read-only (inputs close) after Save.
 awaiting: user response
 
 ## Tests
@@ -24,15 +24,14 @@ result: pass
 ### 2. Edit expands forms with Save and Cancel
 expected: |
   From the same healthy-feed state, tap Edit on Gold and on Silver. Each card shows inputs prefilled from the effective snapshot, plus Save and Cancel.
-result: issue
-reported: "Edit is visible but inputs do not let me edit anything — is that intentional?"
-severity: major
-fix: "Hydration useEffect called reset() whenever saved gold/silver settings existed, without checking isDirty. Live spot sync updates those keys often, so the form kept resetting. Guard with !isDirty (matches hint branches)."
+result: pass
+previously: |
+  issue (inputs reset by sync) — fixed in 62654cd; user re-tested pass.
 
 ### 3. Unhealthy feed — inputs without Edit
 expected: |
   When gold or silver spot fails (or stays unavailable after loading settles), open Settings. Pricing inputs are visible immediately without tapping Edit; an error may appear with role="alert".
-result: [pending]
+result: pass
 
 ### 4. Save locks prices
 expected: |
@@ -52,16 +51,16 @@ result: [pending]
 ## Summary
 
 total: 6
-passed: 1
-issues: 1
-pending: 4
+passed: 3
+issues: 0
+pending: 3
 skipped: 0
 blocked: 0
 
 ## Gaps
 
 - truth: "Edit mode shows inputs that accept typing until Save/Cancel"
-  status: failed
+  status: resolved
   reason: "User reported: Edit visible but inputs did not accept edits (hydration reset wiped drafts)."
   severity: major
   test: 2
@@ -69,5 +68,13 @@ blocked: 0
   artifacts:
     - src/components/settings/SettingsGoldPricingCard.tsx
     - src/components/settings/SettingsSilverPricingCard.tsx
-  missing: []
-  fix_applied: "Only reset from server/hints when !goldFormIsDirty / !silverFormIsDirty in those branches."
+  fix_applied: "Only reset from server/hints when !goldFormIsDirty / !silverFormIsDirty in those branches (62654cd)."
+  verified: 2026-05-03 user pass
+
+- truth: "After Save with healthy feed, return to read-only summary (collapse inputs); after Save during outage, show summary strip + Edit when saved values exist"
+  status: resolved
+  reason: "User reported: inputs stayed open after Save — unclear if intentional."
+  severity: minor
+  test: 4
+  root_cause: "show*EditForm used (!pricingHealthy || editing), so unhealthy feed kept the form open even after setEditing(false)."
+  fix_applied: "Drive expanded form only by *PricingEditing; auto-expand when feed is/becomes unhealthy (ref); summary strip when collapsed and effective prices exist; Cancel always in form."
