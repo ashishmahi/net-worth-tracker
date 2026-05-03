@@ -18,7 +18,7 @@
 
 ### v2.0 — Deploy & Beta (GitHub Pages)
 
-- [ ] **Phase 23: Docker & containerized static server** — Multi-stage **`Dockerfile`**, nginx (or equivalent) serves **`dist/`** with SPA-safe static hosting; documented **`docker build` / `docker run`**.  
+- [x] **Phase 23: Docker & containerized static server** — Multi-stage **`Dockerfile`**, nginx (or equivalent) serves **`dist/`** with SPA-safe static hosting; documented **`docker build` / `docker run`**. — **2026-05-03**  
   **Requirements:** DOCKER-01, DOCKER-02, DOCKER-03
 
 - [ ] **Phase 24: Production build & GitHub Pages base path** — Configurable Vite **`base`** for `/<repo>/` on Pages; **`npm run build`** verified with same base CI uses; no broken asset paths.  
