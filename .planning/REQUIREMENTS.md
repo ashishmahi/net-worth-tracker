@@ -16,9 +16,9 @@
 
 ### Build / GitHub Pages
 
-- [ ] **BUILD-01**: Vite **`base`** is configurable for GitHub Project Pages (`/<repository>/`), without breaking local **`npm run dev`** (default base `/`).
-- [ ] **BUILD-02**: **`npm run build`** succeeds with production base set the same way CI uses for deployment.
-- [ ] **BUILD-03**: Built assets resolve under the Pages URL (no hard-coded absolute `/` paths that ignore `base`).
+- [x] **BUILD-01**: Vite **`base`** is configurable for GitHub Project Pages (`/<repository>/`), without breaking local **`npm run dev`** (default base `/`).
+- [x] **BUILD-02**: **`npm run build`** succeeds with production base set the same way CI uses for deployment.
+- [x] **BUILD-03**: Built assets resolve under the Pages URL (no hard-coded absolute `/` paths that ignore `base`).
 
 ### CI (GitHub Actions)
 
@@ -62,9 +62,9 @@
 | DOCKER-01 | 23 | Complete |
 | DOCKER-02 | 23 | Complete |
 | DOCKER-03 | 23 | Complete |
-| BUILD-01 | 24 | Pending |
-| BUILD-02 | 24 | Pending |
-| BUILD-03 | 24 | Pending |
+| BUILD-01 | 24 | Complete |
+| BUILD-02 | 24 | Complete |
+| BUILD-03 | 24 | Complete |
 | CI-01 | 25 | Pending |
 | CI-02 | 25 | Pending |
 | CI-03 | 25 | Pending |

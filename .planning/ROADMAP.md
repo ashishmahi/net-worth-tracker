@@ -21,7 +21,7 @@
 - [x] **Phase 23: Docker & containerized static server** — Multi-stage **`Dockerfile`**, nginx (or equivalent) serves **`dist/`** with SPA-safe static hosting; documented **`docker build` / `docker run`**. — **2026-05-03**  
   **Requirements:** DOCKER-01, DOCKER-02, DOCKER-03
 
-- [ ] **Phase 24: Production build & GitHub Pages base path** — Configurable Vite **`base`** for `/<repo>/` on Pages; **`npm run build`** verified with same base CI uses; no broken asset paths.  
+- [x] **Phase 24: Production build & GitHub Pages base path** — Configurable Vite **`base`** for `/<repo>/` on Pages; **`npm run build`** verified with same base CI uses; no broken asset paths. — **2026-05-03**  
   **Requirements:** BUILD-01, BUILD-02, BUILD-03
 
 - [ ] **Phase 25: GitHub Actions CI/CD & beta access** — PR + **`main`** workflows (install, test, build); automated deploy to **GitHub Pages**; README beta URL + client-only data disclaimer.  
@@ -82,7 +82,7 @@
 | 21. Passphrase modals + zip export/import | v1.6 | 1/1 | Complete | 2026-05-02 |
 | 22. localStorage Migration | v1.7 | 1/1 | Complete | 2026-05-02 |
 | 23. Docker & containerized static server | v2.0 | 1/1 | Complete    | 2026-05-03 |
-| 24. Production build & GitHub Pages base path | v2.0 | 0/1 | Not started | — |
+| 24. Production build & GitHub Pages base path | v2.0 | 1/1 | Complete    | 2026-05-03 |
 | 25. GitHub Actions CI/CD & beta access | v2.0 | 0/1 | Not started | — |
 
 ---

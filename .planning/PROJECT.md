@@ -43,6 +43,7 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.7-ROADMAP.md` and matc
 - **App:** `npm run dev` — local-only; persistence via **`localStorage`** (`wealth-tracker-data`). **`npm test`** — Vitest (+ **`happy-dom`** for context tests).  
 - **Encryption & backup (v1.6):** **`cryptoUtils`** (Web Crypto, no npm crypto deps). Settings **Data**: export downloads **`wealth-tracker-YYYY-MM-DD.zip`** with **`data.json`** (optional AES zip encryption via passphrase); import **zip only** — **`wealthDataZip`** + modal passphrase flows; Phase 19 envelope JSON remains in codebase/tests but not on Settings download path after Phase 21.  
 - **Docker preview (v2.0 — Phase 23, 2026-05-03):** production **`dist/`** is buildable as a static image — **`Dockerfile`** + **`docker/default.conf`** (SPA fallback); **`README`** documents **`docker build -t fin-wealth:local .`** and **`docker run --rm -p 8080:80 fin-wealth:local`** (no server-side wealth data).  
+- **GitHub Pages base (v2.0 — Phase 24, 2026-05-03):** **`vite.config.ts`** sets **`base`** from **`BASE_URL`** (default **`/`**); **`BASE_URL=/net-worth-tracker/`** documented for Project Pages; **`README`** production build + **`npm run preview`** instructions.
 
 ## Requirements
 
@@ -105,6 +106,10 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.7-ROADMAP.md` and matc
 ### Validated (v2.0 — Phase 23)
 
 - [x] **DOCKER-01**–**DOCKER-03** — multi-stage **`Dockerfile`** (Node build → **`nginx:alpine`**), SPA **`try_files`** config, **`.dockerignore`**, README **`docker build` / `docker run`** — Phase **23** ([`23-VERIFICATION.md`](phases/23-docker-containerized-static-server/23-VERIFICATION.md)).
+
+### Validated (v2.0 — Phase 24)
+
+- [x] **BUILD-01**–**BUILD-03** — Vite **`base`** from **`BASE_URL`** (`loadEnv` + **`normalizeBaseUrl`**); production build + **`dist/index.html`** asset paths under **`/net-worth-tracker/`**; **`.env.example`** + README — Phase **24** ([`24-VERIFICATION.md`](phases/24-production-build-github-pages-base-path/24-VERIFICATION.md)).
 
 ### Deferred (backlog / future)
 
@@ -170,4 +175,4 @@ This file is updated at **milestone completion** to avoid drift between plans an
 </details>  
 
 ---
-*Last updated: 2026-05-03 — **v2.0** — Phase **23** (Docker static server) validated; next: Vite **`base`** / Pages (**Phase 24**); see [`.planning/REQUIREMENTS.md`](REQUIREMENTS.md).*  
+*Last updated: 2026-05-03 — **v2.0** — Phase **24** (Vite **`base`** / GitHub Pages path) validated; next: **Phase 25** (GitHub Actions CI/CD); see [`.planning/REQUIREMENTS.md`](REQUIREMENTS.md).*  

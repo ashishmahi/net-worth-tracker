@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: — Deploy & Beta (GitHub Pages)
-status: planning
-last_updated: "2026-05-03T10:43:02.625Z"
-last_activity: 2026-05-03
+status: ready_to_plan
+last_updated: "2026-05-03T15:00:00.000Z"
+last_activity: 2026-05-03 — Phase 24 executed; focus Phase 25
 progress:
   total_phases: 3
-  completed_phases: 1
-  total_plans: 1
-  completed_plans: 1
-  percent: 100
+  completed_phases: 2
+  total_plans: 3
+  completed_plans: 2
+  percent: 67
 ---
 
 ## Project
@@ -19,13 +19,13 @@ progress:
 
 ## Current position
 
-Phase: 24
+Phase: 25
 Plan: Not started
 Status: Ready to plan
 Last activity: 2026-05-03
 
 ```
-Progress: [░░░░░░░░░░░░░░░░░░░░] 0% (0/3 phases complete)
+Progress: [██████████████░░░░░░] 67% (2/3 v2.0 phases complete)
 ```
 
 ## Project reference
@@ -63,6 +63,6 @@ See [`.planning/PROJECT.md`](PROJECT.md). Prior shipped: **v1.7** [`milestones/v
 
 **Current milestone:** **v2.0** — Deploy & Beta.
 
-**Next:** `/gsd-plan-phase 23` — Docker & containerized static server.
+**Next:** `/gsd-plan-phase 25` — GitHub Actions CI/CD & beta access (or `/gsd-execute-phase 25` if planned).
 
-**Planned Phase:** 23 (docker-containerized-static-server) — 1 plans — 2026-05-03T09:48:18.468Z
+**Completed:** Phase 24 (production build & GitHub Pages base path) — 2026-05-03
