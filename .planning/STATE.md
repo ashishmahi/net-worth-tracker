@@ -1,14 +1,14 @@
 ---
 gsd_state_version: 1.0
-milestone: null
-milestone_name: null
-status: between_milestones
-last_updated: "2026-05-03T18:00:00.000Z"
-last_activity: 2026-05-03 — **v2.0.1** milestone archived — ROADMAP/requirements · PROJECT · tag **`v2.0.1`**
+milestone: v1.0
+milestone_name: milestone
+status: Between milestones — define next via **`/gsd-new-milestone`**
+last_updated: "2026-05-03T19:51:51.639Z"
+last_activity: 2026-05-03
 progress:
-  total_phases: 0
+  total_phases: 1
   completed_phases: 0
-  total_plans: 0
+  total_plans: 1
   completed_plans: 0
   percent: 0
 ---
@@ -42,6 +42,7 @@ See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](
 
 ### Roadmap evolution
 
+- Phase **28** added: section URL routing (refresh stays on section), header **home → dashboard** especially on mobile — directory [`.planning/phases/28-section-routing-home-header/`](phases/28-section-routing-home-header/).
 - **v2.0.1** shipped 2026-05-03: live **gold** spot + Settings **gold/silver** pricing UX — archives [`v2.0.1-ROADMAP.md`](milestones/v2.0.1-ROADMAP.md) · [`v2.0.1-REQUIREMENTS.md`](milestones/v2.0.1-REQUIREMENTS.md).
 
 ### Pending todos
@@ -66,3 +67,5 @@ See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](
 **Prior:** **v2.0** — Deploy & Beta (Phases **23–25**) — 2026-05-03
 
 **Next:** **`/gsd-new-milestone`** — fresh requirements and roadmap for the next version
+
+**Planned Phase:** 28 (Section routing & dashboard home link) — 1 plans — 2026-05-03T19:51:51.634Z
