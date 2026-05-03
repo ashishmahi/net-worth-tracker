@@ -1,5 +1,38 @@
 # Project retrospective — Personal Wealth Tracker
 
+## Milestone: v2.0.1 — Live gold spot + commodity pricing UX
+
+**Shipped:** 2026-05-03  
+**Phases:** 26–27 | **Plans:** 2  
+
+### What was built
+
+- **Phase 26:** **`fetchGoldUsdPerOz`** (gold-api **XAU**), **`goldUsdPerOz`** on **`LivePricesContext`**, **`goldLiveHints`** + Settings/Gold **₹/g** hints, **`GoldSpotPricesSync`** ([`26-01-SUMMARY.md`](phases/26-live-gold-spot-price/26-01-SUMMARY.md)).  
+- **Phase 27:** **`silverInrPerGram`** / lock + **`SilverSpotPricesSync`**; **`SettingsGoldPricingCard`** / **`SettingsSilverPricingCard`**; effective silver in **`dashboardCalcs`**; dashboard loading skeleton tweak ([`27-01-SUMMARY.md`](phases/27-settings-commodity-pricing-ux/27-01-SUMMARY.md)).  
+
+### What worked
+
+- Mirroring **silver** patterns for **gold** kept **`LivePricesContext`** and tests predictable.  
+- Extracting **Settings** pricing into cards reduced **`SettingsPage`** churn.  
+
+### What was inefficient
+
+- **`gsd-sdk query milestone.complete`** still fails (`version required for phases archive`); **v2.0.1** close used the **manual** archive path again.  
+
+### Patterns established
+
+- **Effective silver** ordering: locked manual → live spot → unlocked cache → null.  
+
+### Key lessons
+
+- **isDirty** guards and **collapse after Save** when feed is unhealthy avoid confusing read-only states (Phase 27 UAT).  
+
+### Cost observations
+
+- Not recorded.  
+
+---
+
 ## Milestone: v2.0 — Deploy & Beta (GitHub Pages)
 
 **Shipped:** 2026-05-03  

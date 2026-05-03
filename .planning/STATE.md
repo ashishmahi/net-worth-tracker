@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.0.1
-milestone_name: Live gold spot
-status: milestone_complete
-last_updated: "2026-05-03T16:45:00.000Z"
-last_activity: 2026-05-03 — Phase **26** plan **01** executed — **`feat(26)`** · **`26-01-SUMMARY.md`**
+milestone: null
+milestone_name: null
+status: between_milestones
+last_updated: "2026-05-03T18:00:00.000Z"
+last_activity: 2026-05-03 — **v2.0.1** milestone archived — ROADMAP/requirements · PROJECT · tag **`v2.0.1`**
 progress:
-  total_phases: 1
-  completed_phases: 2
-  total_plans: 1
-  completed_plans: 1
-  percent: 200
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 ## Project
@@ -19,18 +19,18 @@ progress:
 
 ## Current position
 
-Phase: 27
-Plan: Not started
-Status: Milestone complete
+Phase: —
+Plan: —
+Status: Between milestones — define next via **`/gsd-new-milestone`**
 Last activity: 2026-05-03
 
 ```
-Progress: [████████████████████] — Phase 26 plan 01 done · verify or ship milestone
+Progress: [ ] — no active milestone; live REQUIREMENTS.md removed at v2.0.1 close
 ```
 
 ## Project reference
 
-See [`.planning/PROJECT.md`](PROJECT.md). **Current milestone:** **v2.0.1** — [`.planning/ROADMAP.md`](ROADMAP.md).
+See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](ROADMAP.md) — last shipped **v2.0.1** (Phases **26–27**).
 
 **Core value:** Total net worth in INR — liabilities deducted from gross assets, live prices where applicable, minimal repeated data entry.
 
@@ -42,7 +42,7 @@ See [`.planning/PROJECT.md`](PROJECT.md). **Current milestone:** **v2.0.1** — 
 
 ### Roadmap evolution
 
-- **v2.0.1** started 2026-05-03: live **gold** spot via **gold-api.com** (parity with **silver** / `useLivePrices`), derived **₹/g** hints for **24K / 22K / 18K**; manual `settings.goldPrices` remains the source of saved values unless extended in execution.
+- **v2.0.1** shipped 2026-05-03: live **gold** spot + Settings **gold/silver** pricing UX — archives [`v2.0.1-ROADMAP.md`](milestones/v2.0.1-ROADMAP.md) · [`v2.0.1-REQUIREMENTS.md`](milestones/v2.0.1-REQUIREMENTS.md).
 
 ### Pending todos
 
@@ -61,10 +61,8 @@ See [`.planning/PROJECT.md`](PROJECT.md). **Current milestone:** **v2.0.1** — 
 
 ## Session continuity
 
-**Current milestone:** **v2.0.1** — Live gold spot
+**Last shipped:** **v2.0.1** — Live gold spot (Phases **26–27**) — 2026-05-03
 
-**Last shipped:** **v2.0** — Deploy & Beta (Phases 23–25) — 2026-05-03
+**Prior:** **v2.0** — Deploy & Beta (Phases **23–25**) — 2026-05-03
 
-**Next:** `/gsd-discuss-phase 26` or `/gsd-plan-phase 26`
-
-**Planned Phase:** 26 (Live gold spot price) — 1 plans — 2026-05-03T12:40:02.230Z
+**Next:** **`/gsd-new-milestone`** — fresh requirements and roadmap for the next version

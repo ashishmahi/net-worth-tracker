@@ -6,7 +6,7 @@ A local-only **React + Vite** app for tracking personal net worth across **gold,
 
 ## Core value
 
-See **total net worth in INR** at a glance (**debt-adjusted** headline minus standalone loans), with **live BTC, FX, and silver (USD→INR)** where applicable, **manual** gold prices, and **manual / gram-based commodity lines** — minimal repeated data entry, everything else editable in the app.
+See **total net worth in INR** at a glance (**debt-adjusted** headline minus standalone loans), with **live BTC, FX, gold and silver (USD→INR)** where applicable, **user-controlled** saved gold/silver ₹/g (with live hints when feeds are healthy), and **manual / gram-based commodity lines** — minimal repeated data entry, everything else editable in the app.
 
 ## Shipped versions
 
@@ -21,26 +21,15 @@ See **total net worth in INR** at a glance (**debt-adjusted** headline minus sta
 | **v1.6** | **Encrypted Export** — **`cryptoUtils`** (AES-GCM envelope); Settings **zip** export/import via **`@zip.js/zip.js`** (`wealthDataZip`), passphrase **AlertDialogs**, zip-only import | 2026-05-02 |
 | **v1.7** | **localStorage migration** — no Vite data plugin; `AppDataContext` `localStorage` load/save; Settings copy + tests (`happy-dom`) | 2026-05-02 |
 | **v2.0** | **Deploy & Beta** — Docker static image; Vite **`BASE_URL`** for GitHub Pages; **CI** (PR + **`main`**) + **Pages** deploy; README beta URL + client-only data | 2026-05-03 |
-| **v2.0.1** | **Live gold spot** — gold spot fetch + context + Settings **₹/g** hints (silver parity); *in progress* | — |
+| **v2.0.1** | **Live gold spot + commodity pricing UX** — **`fetchGoldUsdPerOz`** + **`LivePricesContext`** + **`GoldSpotPricesSync`**; Settings **₹/g** hints; **`SettingsGoldPricingCard` / `SettingsSilverPricingCard`**, **`SilverSpotPricesSync`**, effective silver in **`dashboardCalcs`** | 2026-05-03 |
 
-Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.0-ROADMAP.md` and matching `*-REQUIREMENTS.md` archives. Executed phase artifacts for shipped milestones live under [`.planning/milestones/`](milestones/) (e.g. `v1.5-phases/`). Phase dirs **19–25** remain under [`.planning/phases/`](phases/) until optional **`/gsd-cleanup`**.
-
-## Current Milestone: v2.0.1 Live gold spot
-
-**Goal:** Fetch **gold** spot **USD per troy ounce** using the same **client-side** pattern as **silver** (gold-api.com + `LivePricesContext`), and surface **live-derived ₹/gram hints** for **24K / 22K / 18K** so users can align manual **Settings** prices with the market.
-
-**Target features:**
-
-- **`priceApi`:** `fetchGoldUsdPerOz` (e.g. **XAU** on gold-api.com), **`GOLD_TTL_MS`** aligned with silver/forex cadence, shared **`TROY_OZ_TO_GRAMS`** math.
-- **`LivePricesContext`:** `goldUsdPerOz`, loading, error, and **`refetch`** parity with silver; interval + visibility refresh behavior unchanged in spirit.
-- **Product UX:** **Settings → Gold Prices** (and/or **Gold** page, if needed for consistency) shows **read-only live ₹/g hints** per karat when **spot + USD→INR** are available (mirrors **Commodities** silver hint pattern). Persisted `goldPrices` remain user-controlled; optional **“apply live spot”**-style control is in scope for the phase plan if it keeps a single clear save path.
-- **Tests:** Unit coverage for **API parse**, **INR/gram derivation** (purity factors), and any new calc helpers.
+Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.0.1-ROADMAP.md` and matching `*-REQUIREMENTS.md` archives. Executed phase artifacts for shipped milestones live under [`.planning/milestones/`](milestones/) (e.g. `v1.5-phases/`). Phase dirs **19–27** remain under [`.planning/phases/`](phases/) until optional **`/gsd-cleanup`**.
 
 ## Next milestone
 
-*After v2.0.1 ships:* run **`/gsd-complete-milestone`**, then **`/gsd-new-milestone`** for the following version.
+Run **`/gsd-new-milestone`** to define requirements and roadmap for the next version (live **`REQUIREMENTS.md`** was removed at **v2.0.1** close).
 
-## Current state (shipped through v2.0 — 2026-05-03)
+## Current state (shipped through v2.0.1 — 2026-05-03)
 
 - **Liabilities & net worth:** root **`liabilities`** list; **`calcNetWorth(gross, sumLiabilitiesInr)`** for headline + new snapshots; **`sumAllDebtInr`** for dashboard **Total Debt** row; property equity unchanged (`agreementInr − outstandingLoanInr`).  
 - **Commodities (v1.4):** `assets.otherCommodities`; **`CommoditiesPage`**; live silver via **`useLivePrices`**.  
@@ -49,6 +38,8 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.0-ROADMAP.md` and matc
 - **Docker preview (v2.0 — Phase 23, 2026-05-03):** production **`dist/`** is buildable as a static image — **`Dockerfile`** + **`docker/default.conf`** (SPA fallback); **`README`** documents **`docker build -t fin-wealth:local .`** and **`docker run --rm -p 8080:80 fin-wealth:local`** (no server-side wealth data).  
 - **GitHub Pages base (v2.0 — Phase 24, 2026-05-03):** **`vite.config.ts`** sets **`base`** from **`BASE_URL`** (default **`/`**); **`BASE_URL=/net-worth-tracker/`** documented for Project Pages; **`README`** production build + **`npm run preview`** instructions.  
 - **CI/CD & beta docs (v2.0 — Phase 25, 2026-05-03):** **`.github/workflows/ci-pages.yml`** — **`npm ci`**, **`npm test`**, **`npm run build`** with **`BASE_URL`**; artifact + deploy to Pages on **`push`** to **`main`** only; **`README`** **Beta (GitHub Pages)** section with **`https://…github.io/net-worth-tracker/`**, beta labeling, client-only persistence, and **Settings → Pages → Source: GitHub Actions** setup.
+- **Live gold spot (v2.0.1 — Phase 26, 2026-05-03):** **`fetchGoldUsdPerOz`** (gold-api.com **XAU**), **`GOLD_TTL_MS`** parity with silver; **`goldUsdPerOz`** on **`LivePricesContext`**; **`goldLiveHints`** + Settings/Gold page **₹/g** read-only hints; **`GoldSpotPricesSync`** when **`goldPricesLocked`** is off.
+- **Settings commodity pricing UX (v2.0.1 — Phase 27, 2026-05-03):** **`silverInrPerGram`** / **`silverPricesLocked`**; **`SilverSpotPricesSync`**; **`SettingsGoldPricingCard`** / **`SettingsSilverPricingCard`** (healthy-feed read-only + **Edit**; failure paths editable); **`effectiveSilverInrPerGramForNetWorth`** in **`calcCategoryTotals`**; dashboard skeleton skips silver loading when only locked standard silver holdings.
 
 ## Requirements
 
@@ -120,6 +111,14 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.0-ROADMAP.md` and matc
 
 - [x] **CI-01**–**CI-03**, **DEPLOY-01**–**DEPLOY-02**, **BETA-01** — PR + **`main`** CI; **`npm ci`** / **`npm test`** / **`npm run build`** with **`BASE_URL=/net-worth-tracker/`**; pinned **`actions/*`** majors; deploy on **`main`** **`push`** only; README beta URL + **localStorage**-only data — Phase **25** ([`25-VERIFICATION.md`](phases/25-github-actions-ci-cd-beta-access/25-VERIFICATION.md)).
 
+### Validated (v2.0.1 — Phase 26)
+
+- [x] **SPOT-01**–**SPOT-03**, **UX-01**–**UX-03**, **CALC-01**, **TEST-01** — gold spot fetch + context parity with silver; **`goldLiveHints`**; Settings/Gold hints and **`GoldSpotPricesSync`** — Phase **26** ([`26-01-SUMMARY.md`](phases/26-live-gold-spot-price/26-01-SUMMARY.md)).
+
+### Validated (v2.0.1 — Phase 27)
+
+- [x] **UX-04**–**UX-07** — compact read-only + **Edit** commodity pricing for gold and silver; silver lock/sync + effective ₹/g for net worth — Phase **27** ([`27-01-SUMMARY.md`](phases/27-settings-commodity-pricing-ux/27-01-SUMMARY.md)); UAT: [`27-UAT.md`](phases/27-settings-commodity-pricing-ux/27-UAT.md).
+
 ### Deferred (backlog / future)
 
 - [ ] Export / reports — PDF or CSV (JSON export exists; richer formats later)  
@@ -138,7 +137,7 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.0-ROADMAP.md` and matc
 
 - **Stack:** React 18, Vite 5, TypeScript, shadcn/ui, Tailwind, RHF + Zod  
 - **Persistence:** Browser **`localStorage`** key **`wealth-tracker-data`** (`AppDataContext`); theme uses separate **`theme`** key  
-- **Prices:** `priceApi` + `useLivePrices()`  
+- **Prices:** `priceApi` + `useLivePrices()` — **BTC**, **USD→INR**, **silver (XAG)**, **gold (XAU)**; **`goldLiveHints`** / **`silverLiveHints`** for Settings hints  
 - **Theme:** `localStorage` `theme` (`light` | `dark`); FOUC script in `index.html`  
 - **Layout:** `AppSidebar` offcanvas on mobile; `MobileTopBar`; `PageHeader` on section pages; asset sheets with scroll regions + property milestone horizontal scroll on narrow widths  
 - **Data reset (v1.2):** `createInitialData()` in `AppDataContext`; shadcn `AlertDialog` in Settings danger zone  
@@ -167,6 +166,7 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.0-ROADMAP.md` and matc
 | v1.6 | Web Crypto `cryptoUtils` + Settings encrypted export/import; then zip + modal UX (`@zip.js/zip.js`) for at-rest export protection | ✓ Shipped 2026-05-02 |  
 | v1.7 | **`localStorage`**-only wealth persistence; remove Vite **`dataPlugin`**; sync boot; Settings copy; **happy-dom** tests | ✓ Shipped 2026-05-02 |  
 | v2.0 | Docker + **`BASE_URL`** + GitHub Actions CI/Pages; static hosting only; README beta URL + client-only data | ✓ Shipped 2026-05-03 |  
+| v2.0.1 | Live **gold** spot (gold-api **XAU**) + **`GoldSpotPricesSync`**; Settings **gold/silver** pricing cards + **`SilverSpotPricesSync`**; effective silver in **`dashboardCalcs`** | ✓ Shipped 2026-05-03 |  
 
 ## Evolution
 
@@ -182,8 +182,9 @@ This file is updated at **milestone completion** to avoid drift between plans an
 - *v1.5: deliverables moved to **Validated (v1.5)**; roadmap/requirements under `milestones/v1.5-*`; phases archived under `milestones/v1.5-phases/`.*  
 - *v1.7: requirements archived at [`v1.7-REQUIREMENTS.md`](milestones/v1.7-REQUIREMENTS.md); live roadmap awaits **`/gsd-new-milestone`**.*  
 - *v2.0: requirements archived at [`v2.0-REQUIREMENTS.md`](milestones/v2.0-REQUIREMENTS.md); live **`REQUIREMENTS.md`** removed at close — start next milestone with **`/gsd-new-milestone`**.*  
+- *v2.0.1: requirements archived at [`v2.0.1-REQUIREMENTS.md`](milestones/v2.0.1-REQUIREMENTS.md); live **`REQUIREMENTS.md`** removed at close — **`/gsd-new-milestone`** next.*
 
 </details>  
 
 ---
-*Last updated: 2026-05-03 — **v2.0.1** milestone opened; v2.0 archive: [`v2.0-ROADMAP.md`](milestones/v2.0-ROADMAP.md) · [`v2.0-REQUIREMENTS.md`](milestones/v2.0-REQUIREMENTS.md).*  
+*Last updated: 2026-05-03 — **v2.0.1** shipped; archives: [`v2.0.1-ROADMAP.md`](milestones/v2.0.1-ROADMAP.md) · [`v2.0.1-REQUIREMENTS.md`](milestones/v2.0.1-REQUIREMENTS.md).*  

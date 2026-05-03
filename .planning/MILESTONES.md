@@ -1,5 +1,28 @@
 # Milestone history — Personal Wealth Tracker
 
+**Pre-ship audit (v2.0.1):** No `v2.0.1-MILESTONE-AUDIT.md` on file — optional `/gsd-audit-milestone` before high-stakes releases.  
+**Open-artifact audit at v2.0.1 close:** all clear (2026-05-03).
+
+## v2.0.1 Live gold spot + commodity pricing UX (Shipped: 2026-05-03)
+
+**Scope:** Phases **26–27**.  
+**Phase directories (current location):** [`.planning/phases/26-live-gold-spot-price/`](phases/26-live-gold-spot-price/) · [27-settings-commodity-pricing-ux](phases/27-settings-commodity-pricing-ux/)
+
+**Phases completed:** 2 phases, 2 plans
+
+**Key accomplishments:**
+
+- **Phase 26:** **`fetchGoldUsdPerOz`** + **`GOLD_TTL_MS`** parity with silver; **`goldUsdPerOz`** on **`LivePricesContext`**; **`goldLiveHints`** and Settings/Gold **₹/g** read-only hints; **`GoldSpotPricesSync`** when unlocked (**SPOT-01–03**, **UX-01–03**, **CALC-01**, **TEST-01**).
+- **Phase 27:** **`silverInrPerGram`** / **`silverPricesLocked`** + **`SilverSpotPricesSync`**; **`SettingsGoldPricingCard`** / **`SettingsSilverPricingCard`** (healthy-feed read-only + **Edit**; failure paths editable); **`effectiveSilverInrPerGramForNetWorth`** in net-worth calcs; dashboard skeleton skips silver loading for locked-only standard silver (**UX-04–UX-07**). UAT: [`27-UAT.md`](phases/27-settings-commodity-pricing-ux/27-UAT.md).
+
+**Roadmap / requirements:** [`.planning/milestones/v2.0.1-ROADMAP.md`](milestones/v2.0.1-ROADMAP.md), [`v2.0.1-REQUIREMENTS.md`](milestones/v2.0.1-REQUIREMENTS.md)
+
+**Tooling note:** `gsd-sdk query milestone.complete` returned `version required for phases archive`; v2.0.1 archives and **`REQUIREMENTS.md`** removal follow the **manual** path (same as v2.0 / v1.7). Phase dirs **26–27** left under **`.planning/phases/`** (optional **`/gsd-cleanup`** later).
+
+**Known deferred (unchanged):** Phase 05 UAT, Phase 01 `human_needed` — see `STATE.md` **Deferred items**.
+
+---
+
 **Pre-ship audit (v2.0):** No `v2.0-MILESTONE-AUDIT.md` on file — optional `/gsd-audit-milestone` before high-stakes releases.  
 **Open-artifact audit at v2.0 close:** all clear (2026-05-03).
 
