@@ -22,8 +22,9 @@
 | # | Phase | Goal | Requirements | Success criteria (observable) |
 |---|--------|------|--------------|------------------------------|
 | **26** | **Live gold spot price** | Gold spot **USD/oz** via **gold-api.com** (XAU), **`LivePricesContext`** parity with silver, **Settings** (± **Gold** page) **₹/g** hints + tests | SPOT-01–03, UX-01–03, CALC-01, TEST-01 | (1) Loading the app triggers gold fetch alongside silver; **Refresh**/visibility refresh updates stale gold quotes. (2) With spot + INR/USD, Settings shows **live ₹/g** for **24K / 22K / 18K**. (3) Missing data shows loading/error consistent with existing live channels. (4) Unit tests pass for API + math. |
+| **27** | **Settings gold & silver pricing UX** | **Same Settings pattern** for **gold** and **silver**: compact **read-only** effective prices when live data is healthy; **Edit** reveals inputs **prefilled** from fetch (and saved values); **editable by default** when fetch **fails** or data **missing**; silver gains parity with gold (visible + overridable, not live-only silent) | UX-04–UX-07 | (1) With successful live feeds, gold and silver pricing blocks are **not** large always-on forms—user sees read-only summary until **Edit**. (2) **Edit** opens editable fields with sensible defaults from live (and persistence rules unchanged unless plan says otherwise). (3) On live **error** or missing quotes, inputs are **editable without** an extra Edit click. (4) Silver is no longer “auto price with no user control” in Settings relative to gold. |
 
-**Depends on:** prior **`usdInr`** / forex fetch (unchanged). **Build order:** `priceApi` → `LivePricesContext` → Settings/Gold UI → tests.
+**Depends on:** prior **`usdInr`** / forex fetch (unchanged). **Phase 26** before **27** for gold spot + settings wiring. **Build order (26):** `priceApi` → `LivePricesContext` → Settings/Gold UI → tests. **Build order (27):** UX spec → Settings layout refactor → silver parity (schema/calcs if needed) → tests/UAT.
 
 ---
 
@@ -32,6 +33,7 @@
 | Phase | Milestone | Plans complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | **26** | **v2.0.1** | 1/1 | Implemented — verify/UAT | 2026-05-03 |
+| **27** | **v2.0.1** | 1/1 | Planned — ready to execute | — |
 | 1-5 | v1.0 | (see snapshot) | Complete | 2026-04-26 |
 | 6-8 | v1.1 | (see snapshot) | Complete | 2026-04-26 |
 | 9 | v1.2 | 2/2 | Complete | 2026-04-26 |
@@ -141,4 +143,4 @@ Artifacts: [`.planning/milestones/v1.5-phases/`](milestones/v1.5-phases/) · [v1
 
 ---
 
-_Milestone archives: `.planning/milestones/` · **Current:** **v2.0.1** Phase **26** — **`/gsd-plan-phase 26`**._
+_Milestone archives: `.planning/milestones/` · **Current:** **v2.0.1** — Phase **26** shipped; Phase **27** (commodity pricing UX) next — **`/gsd-plan-phase 27`**._
