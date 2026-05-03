@@ -11,12 +11,19 @@
 - ✅ **v1.6 — Encrypted Export** — Shipped 2026-05-02 — [full snapshot](milestones/v1.6-ROADMAP.md)
 - ✅ **v1.7 — localStorage Migration** — Shipped 2026-05-02 — [full snapshot](milestones/v1.7-ROADMAP.md)
 - ✅ **v2.0 — Deploy & Beta (GitHub Pages)** — Shipped 2026-05-03 — [full snapshot](milestones/v2.0-ROADMAP.md)
+- 🚧 **v2.0.1 — Live gold spot** — In progress — [`.planning/REQUIREMENTS.md`](REQUIREMENTS.md)
 
 ---
 
 ## Phases
 
-*Next milestone not defined — run **`/gsd-new-milestone`**.*
+### v2.0.1 — Live gold spot
+
+| # | Phase | Goal | Requirements | Success criteria (observable) |
+|---|--------|------|--------------|------------------------------|
+| **26** | **Live gold spot price** | Gold spot **USD/oz** via **gold-api.com** (XAU), **`LivePricesContext`** parity with silver, **Settings** (± **Gold** page) **₹/g** hints + tests | SPOT-01–03, UX-01–03, CALC-01, TEST-01 | (1) Loading the app triggers gold fetch alongside silver; **Refresh**/visibility refresh updates stale gold quotes. (2) With spot + INR/USD, Settings shows **live ₹/g** for **24K / 22K / 18K**. (3) Missing data shows loading/error consistent with existing live channels. (4) Unit tests pass for API + math. |
+
+**Depends on:** prior **`usdInr`** / forex fetch (unchanged). **Build order:** `priceApi` → `LivePricesContext` → Settings/Gold UI → tests.
 
 ---
 
@@ -24,6 +31,7 @@
 
 | Phase | Milestone | Plans complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
+| **26** | **v2.0.1** | 0/1 | Not started | — |
 | 1-5 | v1.0 | (see snapshot) | Complete | 2026-04-26 |
 | 6-8 | v1.1 | (see snapshot) | Complete | 2026-04-26 |
 | 9 | v1.2 | 2/2 | Complete | 2026-04-26 |
@@ -133,4 +141,4 @@ Artifacts: [`.planning/milestones/v1.5-phases/`](milestones/v1.5-phases/) · [v1
 
 ---
 
-_Milestone archives: `.planning/milestones/` · **Next:** define a new milestone with **`/gsd-new-milestone`**._
+_Milestone archives: `.planning/milestones/` · **Current:** **v2.0.1** Phase **26** — **`/gsd-plan-phase 26`**._
