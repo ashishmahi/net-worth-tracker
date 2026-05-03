@@ -1,50 +1,20 @@
-# React + TypeScript + Vite
+# Personal Wealth Tracker
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Local-only React + Vite app for tracking personal net worth. Develop with `npm run dev`; run tests with `npm test`.
 
-Currently, two official plugins are available:
+## Docker
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Build and run the production static bundle in a container (nginx serves `dist/`):
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```bash
+docker build -t fin-wealth:local .
+docker run --rm -p 8080:80 fin-wealth:local
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+Then open **http://localhost:8080/**.
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+GitHub Pages URL and Vite **`base`** configuration are covered in **Phases 24–25**. Wealth data remains **client-only** (browser **localStorage**); the container serves static files only.
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+## Development
+
+Stack: React 18, TypeScript, Vite 5, Tailwind CSS, shadcn/ui. ESLint config lives in `eslint.config.js`.
