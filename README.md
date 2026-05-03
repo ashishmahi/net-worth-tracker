@@ -26,6 +26,16 @@ npm run preview
 
 After the build, **`npm run preview`** serves `dist/` locally so you can confirm the app loads and assets request paths under **`/net-worth-tracker/`**. Phase 25 CI will set the same **`BASE_URL`** for automated deploys.
 
+## Beta (GitHub Pages)
+
+This app is distributed as a **beta** preview on **GitHub Pages**. The public URL follows Project Pages:
+
+**`https://<your-github-username>.github.io/net-worth-tracker/`**
+
+Wealth and portfolio data stay in your browser only (**`localStorage`**). Nothing is uploaded to GitHub or synced server-side—there is no backend; persistence is client-only.
+
+**One-time repo setup:** In the GitHub repository, open **Settings → Pages → Build and deployment** and set **Source** to **GitHub Actions** so the workflow’s deploy job can publish the site.
+
 ## Development
 
 Stack: React 18, TypeScript, Vite 5, Tailwind CSS, shadcn/ui. ESLint config lives in `eslint.config.js`.
