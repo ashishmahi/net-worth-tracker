@@ -1,5 +1,27 @@
 # Milestone history — Personal Wealth Tracker
 
+**Pre-ship audit (v2.1):** No `v2.1-MILESTONE-AUDIT.md` on file — optional `/gsd-audit-milestone` before high-stakes releases.  
+**Open-artifact audit at v2.1 close:** all clear (2026-05-04).
+
+## v2.1 Section routing & home nav (Shipped: 2026-05-04)
+
+**Scope:** Phase **28**.  
+**Phase directory (current location):** [`.planning/phases/28-section-routing-home-header/`](phases/28-section-routing-home-header/)
+
+**Phases completed:** 1 phase, 1 plan
+
+**Key accomplishments:**
+
+- **`react-router-dom`** + **`BrowserRouter`** **`basename={import.meta.env.BASE_URL}`**; **`src/lib/sectionRoutes.ts`** (whitelist paths + **`pathToSection`**) + Vitest; **`App`** **`Routes`**/**`Outlet`**/**`Navigate`**; sidebar **`NavLink`**; **`MobileTopBar`** **Home** (`House`) off-dashboard; dashboard drill-ins use **`navigate(sectionToPath(key))`** ([`28-01-SUMMARY.md`](phases/28-section-routing-home-header/28-01-SUMMARY.md)). UAT: [`28-UAT.md`](phases/28-section-routing-home-header/28-UAT.md) — 4/4 passed (2026-05-04).
+
+**Roadmap / requirements:** [`.planning/milestones/v2.1-ROADMAP.md`](milestones/v2.1-ROADMAP.md), [`v2.1-REQUIREMENTS.md`](milestones/v2.1-REQUIREMENTS.md)
+
+**Tooling note:** `gsd-sdk query milestone.complete` returned `version required for phases archive`; v2.1 archives follow the **manual** path (same as v2.0.1). Phase dir **28** left under **`.planning/phases/`** (optional **`/gsd-cleanup`** later).
+
+**Known deferred (unchanged):** Phase 05 UAT, Phase 01 `human_needed` — see `STATE.md` **Deferred items**.
+
+---
+
 **Pre-ship audit (v2.0.1):** No `v2.0.1-MILESTONE-AUDIT.md` on file — optional `/gsd-audit-milestone` before high-stakes releases.  
 **Open-artifact audit at v2.0.1 close:** all clear (2026-05-03).
 

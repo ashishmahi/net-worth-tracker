@@ -22,16 +22,17 @@ See **total net worth in INR** at a glance (**debt-adjusted** headline minus sta
 | **v1.7** | **localStorage migration** — no Vite data plugin; `AppDataContext` `localStorage` load/save; Settings copy + tests (`happy-dom`) | 2026-05-02 |
 | **v2.0** | **Deploy & Beta** — Docker static image; Vite **`BASE_URL`** for GitHub Pages; **CI** (PR + **`main`**) + **Pages** deploy; README beta URL + client-only data | 2026-05-03 |
 | **v2.0.1** | **Live gold spot + commodity pricing UX** — **`fetchGoldUsdPerOz`** + **`LivePricesContext`** + **`GoldSpotPricesSync`**; Settings **₹/g** hints; **`SettingsGoldPricingCard` / `SettingsSilverPricingCard`**, **`SilverSpotPricesSync`**, effective silver in **`dashboardCalcs`** | 2026-05-03 |
+| **v2.1** | **Section routing & home nav** — **`react-router-dom`**, **`sectionRoutes`** + Vitest, **`Routes`**/**`Outlet`**, sidebar **`NavLink`**, mobile **Home**, **`Navigate`** catch-all; **`basename`** from **`import.meta.env.BASE_URL`** | 2026-05-04 |
 
-Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.0.1-ROADMAP.md` and matching `*-REQUIREMENTS.md` archives. Executed phase artifacts for shipped milestones live under [`.planning/milestones/`](milestones/) (e.g. `v1.5-phases/`). Phase dirs **19–27** remain under [`.planning/phases/`](phases/) until optional **`/gsd-cleanup`**.
+Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.1-ROADMAP.md` and matching `*-REQUIREMENTS.md` archives. Executed phase artifacts for shipped milestones live under [`.planning/milestones/`](milestones/) (e.g. `v1.5-phases/`). Phase dirs **19–28** remain under [`.planning/phases/`](phases/) until optional **`/gsd-cleanup`**.
 
 ## Next milestone
 
-Run **`/gsd-new-milestone`** to define requirements and roadmap for the next version (live **`REQUIREMENTS.md`** was removed at **v2.0.1** close).
+Run **`/gsd-new-milestone`** to define requirements and roadmap for the next version (no live **`REQUIREMENTS.md`** until then — last removal at **v2.0.1** close; **v2.1** archive stands alone).
 
-## Current state (shipped through v2.0.1 — 2026-05-03; Phase **28** executed 2026-05-03)
+## Current state (shipped through **v2.1** — 2026-05-04)
 
-- **Section URLs (Phase 28, 2026-05-03):** **`react-router-dom`** with **`BrowserRouter`** **`basename={import.meta.env.BASE_URL}`**; canonical paths in **`src/lib/sectionRoutes.ts`**; sidebar **`NavLink`**; mobile **Home** on non-dashboard routes; unknown paths **`Navigate`** to **`/`**.
+- **Section URLs & routing (v2.1 — Phase 28):** **`react-router-dom`** with **`BrowserRouter`** **`basename={import.meta.env.BASE_URL}`**; canonical paths in **`src/lib/sectionRoutes.ts`**; sidebar **`NavLink`**; mobile **Home** on non-dashboard routes; unknown paths **`Navigate`** to **`/`**. UAT complete ([`28-UAT.md`](phases/28-section-routing-home-header/28-UAT.md)).
 - **Liabilities & net worth:** root **`liabilities`** list; **`calcNetWorth(gross, sumLiabilitiesInr)`** for headline + new snapshots; **`sumAllDebtInr`** for dashboard **Total Debt** row; property equity unchanged (`agreementInr − outstandingLoanInr`).  
 - **Commodities (v1.4):** `assets.otherCommodities`; **`CommoditiesPage`**; live silver via **`useLivePrices`**.  
 - **App:** `npm run dev` — local-only; persistence via **`localStorage`** (`wealth-tracker-data`). **`npm test`** — Vitest (+ **`happy-dom`** for context tests).  
@@ -188,4 +189,4 @@ This file is updated at **milestone completion** to avoid drift between plans an
 </details>  
 
 ---
-*Last updated: 2026-05-03 — **Phase 28** (section URL routing) executed; **v2.0.1** shipped; archives: [`v2.0.1-ROADMAP.md`](milestones/v2.0.1-ROADMAP.md) · [`v2.0.1-REQUIREMENTS.md`](milestones/v2.0.1-REQUIREMENTS.md).*  
+*Last updated: 2026-05-04 — **v2.1** (section URL routing) milestone archived; [`v2.1-ROADMAP.md`](milestones/v2.1-ROADMAP.md) · [`v2.1-REQUIREMENTS.md`](milestones/v2.1-REQUIREMENTS.md).*  

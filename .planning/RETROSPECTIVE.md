@@ -1,5 +1,36 @@
 # Project retrospective — Personal Wealth Tracker
 
+## Milestone: v2.1 — Section routing & home nav
+
+**Shipped:** 2026-05-04  
+**Phases:** 28 | **Plans:** 1  
+
+### What was built
+
+- **Phase 28:** **`react-router-dom`** + **`BrowserRouter`** **`basename`**, **`sectionRoutes`** helpers + tests, **`Routes`**/**`Outlet`** layout, **`NavLink`** sidebar, **`MobileTopBar`** Home, catch-all **`Navigate`** ([`28-01-SUMMARY.md`](phases/28-section-routing-home-header/28-01-SUMMARY.md)).  
+
+### What worked
+
+- Centralizing **`SectionKey`** ↔ path mapping in **`sectionRoutes.ts`** kept **`NavLink`** and **`navigate`** consistent.  
+
+### What was inefficient
+
+- **`gsd-sdk query milestone.complete`** still fails (`version required for phases archive`); **v2.1** close used the **manual** archive path again.  
+
+### Patterns established
+
+- Whitelist-only **`sectionToPath`** / **`pathToSection`** for navigation safety.  
+
+### Key lessons
+
+- **`basename`** must match Vite **`BASE_URL`** for GitHub Pages deep links.  
+
+### Cost observations
+
+- Not recorded.  
+
+---
+
 ## Milestone: v2.0.1 — Live gold spot + commodity pricing UX
 
 **Shipped:** 2026-05-03  

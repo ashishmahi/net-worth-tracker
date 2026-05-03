@@ -4,7 +4,7 @@ milestone: v1.0
 milestone_name: milestone
 status: milestone_complete
 last_updated: "2026-05-04T00:10:00.000Z"
-last_activity: 2026-05-03 — Phase 28 execution complete
+last_activity: 2026-05-04 — v2.1 milestone archived
 progress:
   total_phases: 1
   completed_phases: 1
@@ -21,8 +21,8 @@ progress:
 
 Phase: —
 Plan: —
-Status: Between milestones — Phase **28** (routing) complete; define next via **`/gsd-new-milestone`**
-Last activity: 2026-05-03
+Status: Between milestones — **v2.1** shipped; define next via **`/gsd-new-milestone`**
+Last activity: 2026-05-04
 
 ```
 Progress: [ ] — no active milestone; live REQUIREMENTS.md removed at v2.0.1 close
@@ -30,7 +30,7 @@ Progress: [ ] — no active milestone; live REQUIREMENTS.md removed at v2.0.1 cl
 
 ## Project reference
 
-See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](ROADMAP.md) — **v2.0.1** + Phase **28** (section URLs) executed; next version via **`/gsd-new-milestone`**.
+See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](ROADMAP.md) — **v2.1** shipped (Phase **28**); next version via **`/gsd-new-milestone`**.
 
 **Core value:** Total net worth in INR — liabilities deducted from gross assets, live prices where applicable, minimal repeated data entry.
 
@@ -42,8 +42,8 @@ See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](
 
 ### Roadmap evolution
 
-- Phase **28** complete: section URL routing (refresh stays on section), header **home → dashboard** on mobile — [`.planning/phases/28-section-routing-home-header/`](phases/28-section-routing-home-header/) · [`28-VERIFICATION.md`](phases/28-section-routing-home-header/28-VERIFICATION.md).
-- **v2.0.1** shipped 2026-05-03: live **gold** spot + Settings **gold/silver** pricing UX — archives [`v2.0.1-ROADMAP.md`](milestones/v2.0.1-ROADMAP.md) · [`v2.0.1-REQUIREMENTS.md`](milestones/v2.0.1-REQUIREMENTS.md).
+- **v2.1** shipped 2026-05-04: section URL routing + mobile Home — archives [`v2.1-ROADMAP.md`](milestones/v2.1-ROADMAP.md) · [`v2.1-REQUIREMENTS.md`](milestones/v2.1-REQUIREMENTS.md); phase dir [`.planning/phases/28-section-routing-home-header/`](phases/28-section-routing-home-header/).
+- **v2.0.1** shipped 2026-05-03: live **gold** spot + Settings **gold/silver** pricing UX — [`v2.0.1-ROADMAP.md`](milestones/v2.0.1-ROADMAP.md) · [`v2.0.1-REQUIREMENTS.md`](milestones/v2.0.1-REQUIREMENTS.md).
 
 ### Pending todos
 
@@ -62,7 +62,7 @@ See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](
 
 ## Session continuity
 
-**Last shipped:** **v2.0.1** — Live gold spot (Phases **26–27**) — 2026-05-03 · **Phase 28** — Section URL routing — 2026-05-03
+**Last shipped:** **v2.1** — Section routing & home nav (Phase **28**) — 2026-05-04
 
 **Prior:** **v2.0** — Deploy & Beta (Phases **23–25**) — 2026-05-03
 

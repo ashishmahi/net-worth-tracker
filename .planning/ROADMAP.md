@@ -9,9 +9,9 @@
 - ✅ **v1.4 — Multiple commodities** — Shipped 2026-05-01  
 - ✅ **v2.0 — Session assets & live silver** — Shipped 2026-05-02 — [full snapshot](milestones/v2.0-ROADMAP.md)  
 - ✅ **v2.0.1 — Live gold spot** — Shipped 2026-05-03 — [full snapshot](milestones/v2.0.1-ROADMAP.md)
-- ✅ **Section routing & home nav** — Phase **28** complete 2026-05-03
+- ✅ **v2.1 — Section routing & home nav** — Shipped 2026-05-04 — [full snapshot](milestones/v2.1-ROADMAP.md)
 
-**Phase numbering:** Per milestone — **v2.0** used Phases **22–25**; **v2.0.1** used **Phases 26–27**; Phase **28** executed post–v2.0.1 (pending next milestone packaging).
+**Phase numbering:** **v2.0** — Phases **22–25**; **v2.0.1** — **26–27**; **v2.1** — Phase **28**.
 
 ---
 
@@ -38,6 +38,17 @@
 | 27 | Settings gold & silver pricing UX | [27-01](../phases/27-settings-commodity-pricing-ux/27-01-PLAN.md) |
 
 **Requirements:** [v2.0.1-REQUIREMENTS.md](milestones/v2.0.1-REQUIREMENTS.md)
+
+</details>
+
+<details>
+<summary>✅ v2.1 — Section routing & home nav (Phase 28) — SHIPPED 2026-05-04</summary>
+
+| Phase | Name | Plans |
+|-------|------|-------|
+| 28 | Section routing & dashboard home link | [28-01](../phases/28-section-routing-home-header/28-01-PLAN.md) |
+
+**Requirements:** [v2.1-REQUIREMENTS.md](milestones/v2.1-REQUIREMENTS.md)
 
 </details>
 
@@ -88,18 +99,6 @@
 - Artifacts: [`.planning/milestones/v1.4-phases/12-commodities-data-net-worth/`](milestones/v1.4-phases/12-commodities-data-net-worth/) · [`.planning/milestones/v1.4-phases/13-commodities-product-ux/`](milestones/v1.4-phases/13-commodities-product-ux/) · [v1.4-ROADMAP](milestones/v1.4-ROADMAP.md) · [v1.4-REQUIREMENTS](milestones/v1.4-REQUIREMENTS.md)
 
 </details>
-
-### Phase 28: Section routing & dashboard home link
-
-**Goal:** URL routing for each main section so refresh and deep links restore the same section; header includes a home/dashboard affordance from every section, with strong usability on mobile.
-
-**Requirements:** TBD (with next milestone)
-**Depends on:** Phase 27
-**Plans:** 1/1 plans complete
-
-Plans:
-
-- [x] [28-01](../phases/28-section-routing-home-header/28-01-PLAN.md) — 2026-05-03
 
 ---
 
