@@ -31,7 +31,7 @@ This project uses GSD for phased planning and execution.
 5. Dashboard — net worth summary aggregating all sections (implemented: `src/lib/dashboardCalcs.ts`, `src/pages/DashboardPage.tsx`)
 
 ### Next step
-**v1.7 — localStorage migration** is shipped (Phase **22**). Start the next version with **`/gsd-new-milestone`** when ready. Run the app with `npm run dev`; tests: `npm test`. For status: `/gsd-progress`.
+**v2.0** is in progress: Phase **23** (Docker static server) is complete; next is **Phase 24** (production build & GitHub Pages base path) per [`.planning/ROADMAP.md`](.planning/ROADMAP.md). Run the app with `npm run dev`; tests: `npm test`. Container preview: `docker build -t fin-wealth:local .` then `docker run --rm -p 8080:80 fin-wealth:local`. For status: `/gsd-progress`.
 
 ## Critical Conventions (must follow in all phases)
 
