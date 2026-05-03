@@ -10,9 +10,9 @@
 
 ### Container (Docker)
 
-- [ ] **DOCKER-01**: Repository includes a **Dockerfile** that builds the production SPA (`npm ci`, `npm run build`) and serves static output via a documented runtime (e.g. nginx).
-- [ ] **DOCKER-02**: Container serves the built app such that a normal browser load shows the app (correct MIME, SPA fallback for single-page shell).
-- [ ] **DOCKER-03**: README (or `docs/`) documents **`docker build`** / **`docker run`** (ports, optional env for base path if applicable).
+- [x] **DOCKER-01**: Repository includes a **Dockerfile** that builds the production SPA (`npm ci`, `npm run build`) and serves static output via a documented runtime (e.g. nginx).
+- [x] **DOCKER-02**: Container serves the built app such that a normal browser load shows the app (correct MIME, SPA fallback for single-page shell).
+- [x] **DOCKER-03**: README (or `docs/`) documents **`docker build`** / **`docker run`** (ports, optional env for base path if applicable).
 
 ### Build / GitHub Pages
 
@@ -59,9 +59,9 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DOCKER-01 | 23 | Pending |
-| DOCKER-02 | 23 | Pending |
-| DOCKER-03 | 23 | Pending |
+| DOCKER-01 | 23 | Complete |
+| DOCKER-02 | 23 | Complete |
+| DOCKER-03 | 23 | Complete |
 | BUILD-01 | 24 | Pending |
 | BUILD-02 | 24 | Pending |
 | BUILD-03 | 24 | Pending |

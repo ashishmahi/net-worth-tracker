@@ -81,7 +81,7 @@
 | 20. Settings UI — Encrypted Export & Import | v1.6 | 1/1 | Complete | 2026-05-02 |
 | 21. Passphrase modals + zip export/import | v1.6 | 1/1 | Complete | 2026-05-02 |
 | 22. localStorage Migration | v1.7 | 1/1 | Complete | 2026-05-02 |
-| 23. Docker & containerized static server | v2.0 | 0/1 | Not started | — |
+| 23. Docker & containerized static server | v2.0 | 1/1 | Complete    | 2026-05-03 |
 | 24. Production build & GitHub Pages base path | v2.0 | 0/1 | Not started | — |
 | 25. GitHub Actions CI/CD & beta access | v2.0 | 0/1 | Not started | — |
 
