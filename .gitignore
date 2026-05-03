@@ -23,5 +23,8 @@ dist-ssr
 *.sln
 *.sw?
 
+# sandcastle config
+.sandcastle/
+
 # Personal financial data — do not commit
 data.json

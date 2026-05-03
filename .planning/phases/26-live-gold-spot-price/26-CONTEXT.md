@@ -38,7 +38,7 @@ Deliver **live gold spot USD per troy ounce** via **gold-api.com** (**XAU**), wi
 
 ### Apply-live / persistence
 
-- **D-09:** **No** “Apply live spot to saved prices” button and **no** silent overwrite of **`goldPrices`** on load (**UX-03**). Defer one-click apply to backlog if desired later.
+- **D-09:** Original intent was **no** silent overwrite (**UX-03**). Implementation may include **background sync** when prices are **unlocked** plus explicit **Use live spot** / Save flows when locked—see code. **Unified read-only + Edit Settings UX** for gold/silver is **Phase 27**.
 
 ### Claude's Discretion
 
@@ -99,7 +99,7 @@ Deliver **live gold spot USD per troy ounce** via **gold-api.com** (**XAU**), wi
 <deferred>
 ## Deferred Ideas
 
-- **Auto-fill / “Apply live”** for **`settings.goldPrices`** — user-triggered button (future UX).
+- **Settings layout:** compact **read-only + Edit** for gold and silver pricing parity — **Phase 27** ([`27-CONTEXT.md`](../27-settings-commodity-pricing-ux/27-CONTEXT.md)).
 - **`sumGoldInr`** using live hints when **`goldPrices`** missing — changes net-worth semantics; explicitly deferred in [`.planning/REQUIREMENTS.md`](../../REQUIREMENTS.md).
 
 ### Reviewed Todos (not folded)
