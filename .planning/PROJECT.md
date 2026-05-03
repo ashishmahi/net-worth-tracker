@@ -21,12 +21,24 @@ See **total net worth in INR** at a glance (**debt-adjusted** headline minus sta
 | **v1.6** | **Encrypted Export** — **`cryptoUtils`** (AES-GCM envelope); Settings **zip** export/import via **`@zip.js/zip.js`** (`wealthDataZip`), passphrase **AlertDialogs**, zip-only import | 2026-05-02 |
 | **v1.7** | **localStorage migration** — no Vite data plugin; `AppDataContext` `localStorage` load/save; Settings copy + tests (`happy-dom`) | 2026-05-02 |
 | **v2.0** | **Deploy & Beta** — Docker static image; Vite **`BASE_URL`** for GitHub Pages; **CI** (PR + **`main`**) + **Pages** deploy; README beta URL + client-only data | 2026-05-03 |
+| **v2.0.1** | **Live gold spot** — gold spot fetch + context + Settings **₹/g** hints (silver parity); *in progress* | — |
 
 Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.0-ROADMAP.md` and matching `*-REQUIREMENTS.md` archives. Executed phase artifacts for shipped milestones live under [`.planning/milestones/`](milestones/) (e.g. `v1.5-phases/`). Phase dirs **19–25** remain under [`.planning/phases/`](phases/) until optional **`/gsd-cleanup`**.
 
+## Current Milestone: v2.0.1 Live gold spot
+
+**Goal:** Fetch **gold** spot **USD per troy ounce** using the same **client-side** pattern as **silver** (gold-api.com + `LivePricesContext`), and surface **live-derived ₹/gram hints** for **24K / 22K / 18K** so users can align manual **Settings** prices with the market.
+
+**Target features:**
+
+- **`priceApi`:** `fetchGoldUsdPerOz` (e.g. **XAU** on gold-api.com), **`GOLD_TTL_MS`** aligned with silver/forex cadence, shared **`TROY_OZ_TO_GRAMS`** math.
+- **`LivePricesContext`:** `goldUsdPerOz`, loading, error, and **`refetch`** parity with silver; interval + visibility refresh behavior unchanged in spirit.
+- **Product UX:** **Settings → Gold Prices** (and/or **Gold** page, if needed for consistency) shows **read-only live ₹/g hints** per karat when **spot + USD→INR** are available (mirrors **Commodities** silver hint pattern). Persisted `goldPrices` remain user-controlled; optional **“apply live spot”**-style control is in scope for the phase plan if it keeps a single clear save path.
+- **Tests:** Unit coverage for **API parse**, **INR/gram derivation** (purity factors), and any new calc helpers.
+
 ## Next milestone
 
-*Not defined.* Run **`/gsd-new-milestone`** to capture goals, requirements, and roadmap for **v2.1** (or the next version).
+*After v2.0.1 ships:* run **`/gsd-complete-milestone`**, then **`/gsd-new-milestone`** for the following version.
 
 ## Current state (shipped through v2.0 — 2026-05-03)
 
@@ -114,7 +126,7 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.0-ROADMAP.md` and matc
 - [ ] Navigation overhaul, richer inline editing (future)  
 - [ ] Align GSD Phase 01 planning artifacts with repo (optional)  
 - [ ] Optional: automatic periodic snapshots (cron-like)  
-- [ ] Additional live commodity feeds beyond shipped silver USD channel
+- [ ] Additional live commodity feeds beyond **gold + silver** USD channel
 
 ### Out of scope (unchanged)
 
@@ -174,4 +186,4 @@ This file is updated at **milestone completion** to avoid drift between plans an
 </details>  
 
 ---
-*Last updated: 2026-05-03 — **v2.0** archived; [`v2.0-ROADMAP.md`](milestones/v2.0-ROADMAP.md) · [`v2.0-REQUIREMENTS.md`](milestones/v2.0-REQUIREMENTS.md).*  
+*Last updated: 2026-05-03 — **v2.0.1** milestone opened; v2.0 archive: [`v2.0-ROADMAP.md`](milestones/v2.0-ROADMAP.md) · [`v2.0-REQUIREMENTS.md`](milestones/v2.0-REQUIREMENTS.md).*  

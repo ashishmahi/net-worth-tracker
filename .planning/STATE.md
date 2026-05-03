@@ -1,12 +1,12 @@
 ---
 gsd_state_version: 1.0
-milestone: —
-milestone_name: Next milestone (undefined)
-status: ready_for_new_milestone
-last_updated: "2026-05-03T12:00:00.000Z"
-last_activity: 2026-05-03 — v2.0 milestone archived
+milestone: v2.0.1
+milestone_name: Live gold spot
+status: defining_requirements
+last_updated: "2026-05-03T00:00:00.000Z"
+last_activity: 2026-05-03 — Milestone v2.0.1 started (new-milestone)
 progress:
-  total_phases: 0
+  total_phases: 1
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -19,18 +19,18 @@ progress:
 
 ## Current position
 
-Phase: —
+Phase: Not started (defining requirements)
 Plan: —
-Status: **v2.0** archived — planning next milestone
-Last activity: 2026-05-03
+Status: Defining requirements / roadmap ready
+Last activity: 2026-05-03 — Milestone **v2.0.1** — live gold spot (silver parity)
 
 ```
-Progress: [░░░░░░░░░░░░░░░░░░░░] — define next milestone (`/gsd-new-milestone`)
+Progress: [░░░░░░░░░░░░░░░░░░░░] — Phase 26 not started
 ```
 
 ## Project reference
 
-See [`.planning/PROJECT.md`](PROJECT.md). Latest shipped: **v2.0** [`milestones/v2.0-ROADMAP.md`](milestones/v2.0-ROADMAP.md).
+See [`.planning/PROJECT.md`](PROJECT.md). **Current milestone:** **v2.0.1** — [`.planning/ROADMAP.md`](ROADMAP.md).
 
 **Core value:** Total net worth in INR — liabilities deducted from gross assets, live prices where applicable, minimal repeated data entry.
 
@@ -42,7 +42,7 @@ See [`.planning/PROJECT.md`](PROJECT.md). Latest shipped: **v2.0** [`milestones/
 
 ### Roadmap evolution
 
-- **v2.0** archived 2026-05-03: [`v2.0-ROADMAP.md`](milestones/v2.0-ROADMAP.md) · [`v2.0-REQUIREMENTS.md`](milestones/v2.0-REQUIREMENTS.md). Live roadmap awaits **`/gsd-new-milestone`**.
+- **v2.0.1** started 2026-05-03: live **gold** spot via **gold-api.com** (parity with **silver** / `useLivePrices`), derived **₹/g** hints for **24K / 22K / 18K**; manual `settings.goldPrices` remains the source of saved values unless extended in execution.
 
 ### Pending todos
 
@@ -61,8 +61,8 @@ See [`.planning/PROJECT.md`](PROJECT.md). Latest shipped: **v2.0** [`milestones/
 
 ## Session continuity
 
-**Current milestone:** *none — start with **`/gsd-new-milestone`**.
+**Current milestone:** **v2.0.1** — Live gold spot
 
 **Last shipped:** **v2.0** — Deploy & Beta (Phases 23–25) — 2026-05-03
 
-**Next:** `/gsd-new-milestone` — requirements + roadmap for v2.1+
+**Next:** `/gsd-discuss-phase 26` or `/gsd-plan-phase 26`
