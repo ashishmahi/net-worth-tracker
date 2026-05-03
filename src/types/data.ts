@@ -139,6 +139,12 @@ const SettingsSchema = z
   .object({
     updatedAt: z.string().datetime(),
     goldPrices: GoldPricesSchema.optional(),
+    /** When true, do not overwrite goldPrices from live spot (user chose fixed prices). */
+    goldPricesLocked: z.boolean().optional(),
+    /** Saved silver ₹/g for standard commodity holdings (optional until user saves or auto-sync). */
+    silverInrPerGram: z.number().nonnegative().optional(),
+    /** When true, do not overwrite silverInrPerGram from live XAG spot. */
+    silverPricesLocked: z.boolean().optional(),
     retirement: RetirementAssumptionsSchema.optional(),
   })
   .passthrough() // settings may gain further fields in later phases

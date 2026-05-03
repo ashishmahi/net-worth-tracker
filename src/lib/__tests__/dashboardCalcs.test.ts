@@ -191,4 +191,28 @@ describe('calcCategoryTotals silver wiring', () => {
     })
     expect(totals.otherCommodities).toBeNull()
   })
+
+  it('uses locked silver ₹/g when live would differ', () => {
+    const data = withCommodityItems([
+      {
+        type: 'standard',
+        kind: 'silver',
+        grams: 2,
+        id: crypto.randomUUID(),
+        createdAt: iso,
+        updatedAt: iso,
+      },
+    ])
+    data.settings.silverInrPerGram = 88
+    data.settings.silverPricesLocked = true
+    const usdInr = 100
+    const silverUsdPerOz = (300 * 31.1035) / usdInr
+    const totals = calcCategoryTotals(data, {
+      btcUsd: null,
+      usdInr,
+      aedInr: null,
+      silverUsdPerOz,
+    })
+    expect(totals.otherCommodities).toBe(roundCurrency(2 * 88))
+  })
 })

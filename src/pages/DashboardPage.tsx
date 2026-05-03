@@ -122,10 +122,20 @@ export function DashboardPage({
   const hasManualCommodityItems = data.assets.otherCommodities.items.some(
     i => i.type === 'manual'
   )
+  const onlySilverStandardCommodities =
+    hasSilverItems &&
+    data.assets.otherCommodities.items.every(
+      i => i.type === 'standard' && i.kind === 'silver'
+    )
+  const silverLockedRateReady =
+    onlySilverStandardCommodities &&
+    data.settings.silverPricesLocked === true &&
+    data.settings.silverInrPerGram != null &&
+    Number.isFinite(data.settings.silverInrPerGram)
   const showNetWorthSkeleton =
     (hasBtcHolding && btcLoading) ||
     (hasAed && forexLoading) ||
-    (hasSilverItems && silverLoading)
+    (hasSilverItems && silverLoading && !silverLockedRateReady)
   const aedRateMissing = hasAedAccountsWithMissingRate(data, aedInr)
 
   const excludedNames: string[] = []

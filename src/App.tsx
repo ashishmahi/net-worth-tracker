@@ -4,6 +4,8 @@ import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
 import { AppSidebar, type SectionKey } from '@/components/AppSidebar'
 import { MobileTopBar } from '@/components/MobileTopBar'
 import { useAppData } from '@/context/AppDataContext'
+import { GoldSpotPricesSync } from '@/context/GoldSpotPricesSync'
+import { SilverSpotPricesSync } from '@/context/SilverSpotPricesSync'
 import { DashboardPage } from '@/pages/DashboardPage'
 import { GoldPage } from '@/pages/GoldPage'
 import { CommoditiesPage } from '@/pages/CommoditiesPage'
@@ -35,6 +37,8 @@ export default function App() {
 
   return (
     <SidebarProvider>
+      <GoldSpotPricesSync />
+      <SilverSpotPricesSync />
       <AppSidebar activeSection={activeSection} onSelect={setActiveSection} />
       <SidebarInset>
         <MobileTopBar />

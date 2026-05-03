@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef, useMemo, type ChangeEvent } from 'react'
+import { useState, useEffect, useRef, type ChangeEvent } from 'react'
 import type { ZodError } from 'zod'
-import { useForm, useFormState } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Loader2, Eye, EyeOff } from 'lucide-react'
@@ -24,7 +24,8 @@ import { cn } from '@/lib/utils'
 import { createInitialData, parseAppDataFromImport, useAppData } from '@/context/AppDataContext'
 import { useLivePrices } from '@/context/LivePricesContext'
 import { parseFinancialInput, nowIso } from '@/lib/financials'
-import { formatInrPerGramInput, liveInrPerGramForKarat } from '@/lib/goldLiveHints'
+import { SettingsGoldPricingCard } from '@/components/settings/SettingsGoldPricingCard'
+import { SettingsSilverPricingCard } from '@/components/settings/SettingsSilverPricingCard'
 import {
   createWealthExportZip,
   extractDataJsonFromZip,
@@ -44,13 +45,6 @@ function zodFirstHint(err: ZodError): string {
 
 // ── Form schemas (string inputs — parse to number on submit) ─────────────────
 // NEVER use z.number() for form fields bound to text inputs (see RESEARCH.md Pitfall 1)
-
-const goldPricesSchema = z.object({
-  k24: z.string().min(1, 'This field is required.'),
-  k22: z.string().min(1, 'This field is required.'),
-  k18: z.string().min(1, 'This field is required.'),
-})
-type GoldPricesValues = z.infer<typeof goldPricesSchema>
 
 const retirementSchema = z.object({
   currentAge: z.string().min(1, 'This field is required.'),
@@ -82,27 +76,6 @@ export function SettingsPage() {
     clearSessionRates,
   } = useLivePrices()
 
-  const { k24Hint, k22Hint, k18Hint } = useMemo(() => {
-    if (goldUsdPerOz == null || usdInr == null) {
-      return {
-        k24Hint: null as number | null,
-        k22Hint: null as number | null,
-        k18Hint: null as number | null,
-      }
-    }
-    return {
-      k24Hint: liveInrPerGramForKarat(goldUsdPerOz, usdInr, 24),
-      k22Hint: liveInrPerGramForKarat(goldUsdPerOz, usdInr, 22),
-      k18Hint: liveInrPerGramForKarat(goldUsdPerOz, usdInr, 18),
-    }
-  }, [goldUsdPerOz, usdInr])
-
-  const goldHintLoading =
-    !goldError &&
-    ((goldLoading && goldUsdPerOz == null) || (forexLoading && usdInr == null))
-
-  const hasSavedGoldPrices = Boolean(data.settings.goldPrices)
-
   const [sessionUsdInr, setSessionUsdInr] = useState('')
   const [sessionAedInr, setSessionAedInr] = useState('')
   const [sessionBtcUsd, setSessionBtcUsd] = useState('')
@@ -120,8 +93,6 @@ export function SettingsPage() {
   }
 
   // Per-block save state (D-19 — separate Save buttons, not one global Save)
-  const [goldSaving, setGoldSaving] = useState(false)
-  const [goldSaveError, setGoldSaveError] = useState<string | null>(null)
   const [retirementSaving, setRetirementSaving] = useState(false)
   const [retirementSaveError, setRetirementSaveError] = useState<string | null>(null)
 
@@ -152,64 +123,11 @@ export function SettingsPage() {
   const [importDecryptError, setImportDecryptError] = useState<string | null>(null)
   const [showImportDecryptPassphrase, setShowImportDecryptPassphrase] = useState(false)
 
-  // Block 1: Gold Prices form (D-16)
-  const goldForm = useForm<GoldPricesValues>({
-    resolver: zodResolver(goldPricesSchema),
-    defaultValues: { k24: '', k22: '', k18: '' },
-  })
-
-  const { isDirty: goldFormIsDirty } = useFormState({ control: goldForm.control })
-
   // Block 2: Retirement Assumptions form (D-17)
   const retirementForm = useForm<RetirementValues>({
     resolver: zodResolver(retirementSchema),
     defaultValues: { currentAge: '', targetAge: '', npsReturnPct: '', epfRatePct: '' },
   })
-
-  // Hydrate gold form: saved prices win; otherwise pre-fill from live spot (like live forex values)
-  // until the user edits (isDirty), then do not overwrite their draft when spot refreshes.
-  useEffect(() => {
-    const gp = data.settings.goldPrices
-    if (gp) {
-      goldForm.reset({
-        k24: String(gp.k24),
-        k22: String(gp.k22),
-        k18: String(gp.k18),
-      })
-      return
-    }
-    if (goldError) {
-      if (!goldFormIsDirty) {
-        goldForm.reset({ k24: '', k22: '', k18: '' })
-      }
-      return
-    }
-    if (goldHintLoading) {
-      return
-    }
-    if (k24Hint != null && k22Hint != null && k18Hint != null) {
-      if (!goldFormIsDirty) {
-        goldForm.reset({
-          k24: formatInrPerGramInput(k24Hint),
-          k22: formatInrPerGramInput(k22Hint),
-          k18: formatInrPerGramInput(k18Hint),
-        })
-      }
-      return
-    }
-    if (!goldFormIsDirty) {
-      goldForm.reset({ k24: '', k22: '', k18: '' })
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- goldForm.reset is stable; sync rules above
-  }, [
-    data.settings.goldPrices,
-    k24Hint,
-    k22Hint,
-    k18Hint,
-    goldHintLoading,
-    goldError,
-    goldFormIsDirty,
-  ])
 
   useEffect(() => {
     const ra = data.settings.retirement
@@ -230,31 +148,6 @@ export function SettingsPage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only re-sync when persisted retirement block changes
   }, [data.settings.retirement])
-
-  // Block 1: Save gold prices
-  const onGoldSubmit = async (values: GoldPricesValues) => {
-    setGoldSaveError(null) // clear error on each attempt (D-20)
-    setGoldSaving(true)
-    try {
-      const now = nowIso()
-      await saveData({
-        ...data,
-        settings: {
-          ...data.settings,
-          goldPrices: {
-            k24: parseFinancialInput(values.k24),
-            k22: parseFinancialInput(values.k22),
-            k18: parseFinancialInput(values.k18),
-          },
-          updatedAt: now,
-        },
-      })
-    } catch {
-      setGoldSaveError('Could not save. Check that the app is running and try again.')
-    } finally {
-      setGoldSaving(false)
-    }
-  }
 
   // Block 2: Save retirement assumptions
   const onRetirementSubmit = async (values: RetirementValues) => {
@@ -468,135 +361,8 @@ export function SettingsPage() {
     <div className="space-y-8">
       <h1 className="text-xl font-semibold">Settings</h1>
 
-      {/* Block 1: Gold Prices (D-16) */}
-      <Card>
-        <CardContent className="pt-6 space-y-4">
-          <p className="text-sm font-semibold mb-4">Gold Prices</p>
-          {goldError && (
-            <p role="alert" className="text-sm text-destructive mb-2">
-              {goldError}
-            </p>
-          )}
-          {!hasSavedGoldPrices && !goldError && goldHintLoading && (
-            <p className="text-sm text-muted-foreground mb-2 flex items-center gap-2">
-              <Loader2 className="h-4 w-4 animate-spin shrink-0" aria-hidden />
-              <span>Loading live spot for defaults…</span>
-            </p>
-          )}
-          {!hasSavedGoldPrices && !goldError && !goldHintLoading && k24Hint != null && (
-            <p className="text-sm text-muted-foreground mb-2">
-              Fields below use live spot (XAU USD/oz × USD→INR), same idea as the live forex rows.
-              Save to store them and use for net worth.
-            </p>
-          )}
-          <form onSubmit={goldForm.handleSubmit(onGoldSubmit)} className="space-y-4">
-            <div>
-              <Label htmlFor="k24">24K price per gram (₹)</Label>
-              <Input
-                id="k24"
-                type="text"
-                inputMode="decimal"
-                placeholder="e.g. 7,200"
-                {...goldForm.register('k24')}
-                aria-invalid={!!goldForm.formState.errors.k24}
-                className={goldForm.formState.errors.k24 ? 'border-destructive' : ''}
-              />
-              {goldForm.formState.errors.k24 && (
-                <p role="alert" className="text-sm text-destructive mt-1">
-                  {goldForm.formState.errors.k24.message}
-                </p>
-              )}
-              {hasSavedGoldPrices &&
-                !goldError &&
-                (goldHintLoading ? (
-                  <p className="text-sm text-muted-foreground mt-1 flex items-center gap-2">
-                    <Loader2 className="h-4 w-4 animate-spin shrink-0" aria-hidden />
-                    <span>Loading…</span>
-                  </p>
-                ) : k24Hint != null ? (
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Live: ≈{' '}
-                    {k24Hint.toLocaleString('en-IN', { maximumFractionDigits: 0 })} ₹/g
-                  </p>
-                ) : (
-                  <p className="text-sm text-muted-foreground mt-1">—</p>
-                ))}
-            </div>
-            <div>
-              <Label htmlFor="k22">22K price per gram (₹)</Label>
-              <Input
-                id="k22"
-                type="text"
-                inputMode="decimal"
-                placeholder="e.g. 6,600"
-                {...goldForm.register('k22')}
-                aria-invalid={!!goldForm.formState.errors.k22}
-                className={goldForm.formState.errors.k22 ? 'border-destructive' : ''}
-              />
-              {goldForm.formState.errors.k22 && (
-                <p role="alert" className="text-sm text-destructive mt-1">
-                  {goldForm.formState.errors.k22.message}
-                </p>
-              )}
-              {hasSavedGoldPrices &&
-                !goldError &&
-                (goldHintLoading ? (
-                  <p className="text-sm text-muted-foreground mt-1 flex items-center gap-2">
-                    <Loader2 className="h-4 w-4 animate-spin shrink-0" aria-hidden />
-                    <span>Loading…</span>
-                  </p>
-                ) : k22Hint != null ? (
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Live: ≈{' '}
-                    {k22Hint.toLocaleString('en-IN', { maximumFractionDigits: 0 })} ₹/g
-                  </p>
-                ) : (
-                  <p className="text-sm text-muted-foreground mt-1">—</p>
-                ))}
-            </div>
-            <div>
-              <Label htmlFor="k18">18K price per gram (₹)</Label>
-              <Input
-                id="k18"
-                type="text"
-                inputMode="decimal"
-                placeholder="e.g. 5,000"
-                {...goldForm.register('k18')}
-                aria-invalid={!!goldForm.formState.errors.k18}
-                className={goldForm.formState.errors.k18 ? 'border-destructive' : ''}
-              />
-              {goldForm.formState.errors.k18 && (
-                <p role="alert" className="text-sm text-destructive mt-1">
-                  {goldForm.formState.errors.k18.message}
-                </p>
-              )}
-              {hasSavedGoldPrices &&
-                !goldError &&
-                (goldHintLoading ? (
-                  <p className="text-sm text-muted-foreground mt-1 flex items-center gap-2">
-                    <Loader2 className="h-4 w-4 animate-spin shrink-0" aria-hidden />
-                    <span>Loading…</span>
-                  </p>
-                ) : k18Hint != null ? (
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Live: ≈{' '}
-                    {k18Hint.toLocaleString('en-IN', { maximumFractionDigits: 0 })} ₹/g
-                  </p>
-                ) : (
-                  <p className="text-sm text-muted-foreground mt-1">—</p>
-                ))}
-            </div>
-            {goldSaveError && (
-              <p role="alert" className="text-sm text-destructive mt-2">
-                {goldSaveError}
-              </p>
-            )}
-            <Button type="submit" disabled={goldSaving}>
-              {goldSaving ? 'Saving…' : 'Save'}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+      <SettingsGoldPricingCard />
+      <SettingsSilverPricingCard />
 
       <Separator />
 

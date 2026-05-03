@@ -1,6 +1,6 @@
 import type { AppData } from '@/types/data'
 import { roundCurrency } from '@/lib/financials'
-import { TROY_OZ_TO_GRAMS } from '@/lib/priceApi'
+import { effectiveSilverInrPerGramForNetWorth } from '@/lib/silverLiveHints'
 
 export const DASHBOARD_CATEGORY_ORDER = [
   'gold',
@@ -137,10 +137,10 @@ export function calcCategoryTotals(
     silverUsdPerOz: number | null
   }
 ): CategoryTotals {
-  const silverInrPerGram =
-    live.silverUsdPerOz != null && live.usdInr != null
-      ? roundCurrency((live.silverUsdPerOz / TROY_OZ_TO_GRAMS) * live.usdInr)
-      : null
+  const silverInrPerGram = effectiveSilverInrPerGramForNetWorth(data.settings, {
+    silverUsdPerOz: live.silverUsdPerOz,
+    usdInr: live.usdInr,
+  })
 
   return {
     gold: sumGoldInr(data),
