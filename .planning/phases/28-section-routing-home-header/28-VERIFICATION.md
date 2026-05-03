@@ -28,4 +28,4 @@ completed: 2026-05-03
 
 ## Human verification
 
-- **`28-UAT.md`** — manual refresh and mobile Home scenarios pending user sign-off.
+- **`28-UAT.md`** — complete (2026-05-04): 4/4 passed (deep links + refresh, mobile Home, sidebar active state).
