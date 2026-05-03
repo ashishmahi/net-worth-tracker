@@ -11,7 +11,7 @@ A local-only React + Vite web app for tracking personal net worth across 7 asset
 - **Forms:** React Hook Form 7.x + Zod 3.x
 - **State:** React Context (`AppDataContext`)
 - **Persistence:** Browser `localStorage` via `AppDataContext` (key `wealth-tracker-data`); never `localStorage.clear()` in app code (theme uses a separate key)
-- **Live prices:** Custom `useLivePrices()` hook; CoinGecko (BTC/USD), Frankfurter or open.er-api.com (USD/INR, AED/INR)
+- **Live prices:** Custom `useLivePrices()` hook; CoinGecko (BTC/USD); open.er-api.com (USD/INR, AED/INR); gold-api.com (**XAU**, **XAG** USD/troy oz)
 
 ## GSD Workflow
 

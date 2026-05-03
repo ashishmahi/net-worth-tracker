@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, type ChangeEvent } from 'react'
+import { useState, useEffect, useRef, useMemo, type ChangeEvent } from 'react'
 import type { ZodError } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -24,6 +24,7 @@ import { cn } from '@/lib/utils'
 import { createInitialData, parseAppDataFromImport, useAppData } from '@/context/AppDataContext'
 import { useLivePrices } from '@/context/LivePricesContext'
 import { parseFinancialInput, nowIso } from '@/lib/financials'
+import { liveInrPerGramForKarat } from '@/lib/goldLiveHints'
 import {
   createWealthExportZip,
   extractDataJsonFromZip,
@@ -71,9 +72,34 @@ export function SettingsPage() {
     forexLoading,
     btcError,
     forexError,
+    silverUsdPerOz,
+    silverLoading,
+    silverError,
+    goldUsdPerOz,
+    goldLoading,
+    goldError,
     setSessionRates,
     clearSessionRates,
   } = useLivePrices()
+
+  const { k24Hint, k22Hint, k18Hint } = useMemo(() => {
+    if (goldUsdPerOz == null || usdInr == null) {
+      return {
+        k24Hint: null as number | null,
+        k22Hint: null as number | null,
+        k18Hint: null as number | null,
+      }
+    }
+    return {
+      k24Hint: liveInrPerGramForKarat(goldUsdPerOz, usdInr, 24),
+      k22Hint: liveInrPerGramForKarat(goldUsdPerOz, usdInr, 22),
+      k18Hint: liveInrPerGramForKarat(goldUsdPerOz, usdInr, 18),
+    }
+  }, [goldUsdPerOz, usdInr])
+
+  const goldHintLoading =
+    !goldError &&
+    ((goldLoading && goldUsdPerOz == null) || (forexLoading && usdInr == null))
 
   const [sessionUsdInr, setSessionUsdInr] = useState('')
   const [sessionAedInr, setSessionAedInr] = useState('')
@@ -412,6 +438,11 @@ export function SettingsPage() {
       <Card>
         <CardContent className="pt-6 space-y-4">
           <p className="text-sm font-semibold mb-4">Gold Prices</p>
+          {goldError && (
+            <p role="alert" className="text-sm text-destructive mb-2">
+              {goldError}
+            </p>
+          )}
           <form onSubmit={goldForm.handleSubmit(onGoldSubmit)} className="space-y-4">
             <div>
               <Label htmlFor="k24">24K price per gram (₹)</Label>
@@ -429,6 +460,20 @@ export function SettingsPage() {
                   {goldForm.formState.errors.k24.message}
                 </p>
               )}
+              {!goldError &&
+                (goldHintLoading ? (
+                  <p className="text-sm text-muted-foreground mt-1 flex items-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin shrink-0" aria-hidden />
+                    <span>Loading…</span>
+                  </p>
+                ) : k24Hint != null ? (
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Live: ≈{' '}
+                    {k24Hint.toLocaleString('en-IN', { maximumFractionDigits: 0 })} ₹/g
+                  </p>
+                ) : (
+                  <p className="text-sm text-muted-foreground mt-1">—</p>
+                ))}
             </div>
             <div>
               <Label htmlFor="k22">22K price per gram (₹)</Label>
@@ -446,6 +491,20 @@ export function SettingsPage() {
                   {goldForm.formState.errors.k22.message}
                 </p>
               )}
+              {!goldError &&
+                (goldHintLoading ? (
+                  <p className="text-sm text-muted-foreground mt-1 flex items-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin shrink-0" aria-hidden />
+                    <span>Loading…</span>
+                  </p>
+                ) : k22Hint != null ? (
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Live: ≈{' '}
+                    {k22Hint.toLocaleString('en-IN', { maximumFractionDigits: 0 })} ₹/g
+                  </p>
+                ) : (
+                  <p className="text-sm text-muted-foreground mt-1">—</p>
+                ))}
             </div>
             <div>
               <Label htmlFor="k18">18K price per gram (₹)</Label>
@@ -463,6 +522,20 @@ export function SettingsPage() {
                   {goldForm.formState.errors.k18.message}
                 </p>
               )}
+              {!goldError &&
+                (goldHintLoading ? (
+                  <p className="text-sm text-muted-foreground mt-1 flex items-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin shrink-0" aria-hidden />
+                    <span>Loading…</span>
+                  </p>
+                ) : k18Hint != null ? (
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Live: ≈{' '}
+                    {k18Hint.toLocaleString('en-IN', { maximumFractionDigits: 0 })} ₹/g
+                  </p>
+                ) : (
+                  <p className="text-sm text-muted-foreground mt-1">—</p>
+                ))}
             </div>
             {goldSaveError && (
               <p role="alert" className="text-sm text-destructive mt-2">
@@ -570,7 +643,8 @@ export function SettingsPage() {
         <CardContent className="pt-6 space-y-4">
           <p className="text-sm font-semibold mb-2">Live market rates</p>
           <p className="text-sm text-muted-foreground mb-4">
-            Read-only quotes used for Bitcoin and AED conversions. Refreshed automatically.
+            Read-only quotes for forex, Bitcoin, gold (XAU), and silver (XAG) spot USD per troy
+            ounce. Refreshed automatically.
           </p>
           <dl className="space-y-2 text-sm" aria-live="polite">
             <div className="flex justify-between gap-4">
@@ -618,12 +692,44 @@ export function SettingsPage() {
                 )}
               </dd>
             </div>
+            <div className="flex justify-between gap-4">
+              <dt className="text-muted-foreground">Gold (XAU) — USD per troy oz</dt>
+              <dd className="font-medium tabular-nums flex items-center gap-2">
+                {goldLoading && goldUsdPerOz == null ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin shrink-0" aria-hidden />
+                    <span className="text-muted-foreground">Loading…</span>
+                  </>
+                ) : goldUsdPerOz != null ? (
+                  goldUsdPerOz.toLocaleString('en-IN', { maximumFractionDigits: 2 })
+                ) : (
+                  <span className="text-muted-foreground">—</span>
+                )}
+              </dd>
+            </div>
+            <div className="flex justify-between gap-4">
+              <dt className="text-muted-foreground">Silver (XAG) — USD per troy oz</dt>
+              <dd className="font-medium tabular-nums flex items-center gap-2">
+                {silverLoading && silverUsdPerOz == null ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin shrink-0" aria-hidden />
+                    <span className="text-muted-foreground">Loading…</span>
+                  </>
+                ) : silverUsdPerOz != null ? (
+                  silverUsdPerOz.toLocaleString('en-IN', { maximumFractionDigits: 2 })
+                ) : (
+                  <span className="text-muted-foreground">—</span>
+                )}
+              </dd>
+            </div>
           </dl>
-          {(btcError || forexError) && (
+          {(btcError || forexError || goldError || silverError) && (
             <p role="alert" className="text-sm text-destructive">
               Could not load market rates. You can enter session-only rates below.
               {btcError ? ` BTC: ${btcError}` : ''}
               {forexError ? ` Forex: ${forexError}` : ''}
+              {goldError ? ` Gold: ${goldError}` : ''}
+              {silverError ? ` Silver: ${silverError}` : ''}
             </p>
           )}
 

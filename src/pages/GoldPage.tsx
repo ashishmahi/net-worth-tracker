@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -17,7 +17,9 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { useAppData } from '@/context/AppDataContext'
+import { useLivePrices } from '@/context/LivePricesContext'
 import { createId, nowIso, parseFinancialInput, roundCurrency } from '@/lib/financials'
+import { liveInrPerGramForKarat } from '@/lib/goldLiveHints'
 import { PageHeader } from '@/components/PageHeader'
 import { cn } from '@/lib/utils'
 import type { GoldItem } from '@/types/data'
@@ -34,6 +36,7 @@ type GoldFormValues = z.infer<typeof goldFormSchema>
 
 export function GoldPage() {
   const { data, saveData } = useAppData()
+  const { goldUsdPerOz, usdInr } = useLivePrices()
   const [sheetOpen, setSheetOpen] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [saveError, setSaveError] = useState<string | null>(null)
@@ -129,6 +132,15 @@ export function GoldPage() {
       }, 0)
     : null
 
+  const liveSpotHints = useMemo(() => {
+    if (goldUsdPerOz == null || usdInr == null) return null
+    return {
+      k24: liveInrPerGramForKarat(goldUsdPerOz, usdInr, 24),
+      k22: liveInrPerGramForKarat(goldUsdPerOz, usdInr, 22),
+      k18: liveInrPerGramForKarat(goldUsdPerOz, usdInr, 18),
+    }
+  }, [goldUsdPerOz, usdInr])
+
   const items = data.assets.gold.items
 
   // ── Render ────────────────────────────────────────────────────────────────
@@ -152,6 +164,16 @@ export function GoldPage() {
               {goldTotal === null && (
                 <p className="text-sm text-muted-foreground mt-1">
                   Set gold prices in Settings
+                </p>
+              )}
+              {goldTotal === null && liveSpotHints && (
+                <p className="text-sm text-muted-foreground mt-1">
+                  Live spot hints (₹/g): 24K{' '}
+                  {liveSpotHints.k24.toLocaleString('en-IN', { maximumFractionDigits: 0 })} ·
+                  22K{' '}
+                  {liveSpotHints.k22.toLocaleString('en-IN', { maximumFractionDigits: 0 })} ·
+                  18K{' '}
+                  {liveSpotHints.k18.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
                 </p>
               )}
             </>
