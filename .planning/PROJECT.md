@@ -20,30 +20,25 @@ See **total net worth in INR** at a glance (**debt-adjusted** headline minus sta
 | **v1.5** | **Debt & Liabilities** — root **`liabilities[]`**, **`liabilityCalcs`**, property lender/EMI + hint, **`LiabilitiesPage`** + nav, dashboard net worth + Total Debt + ratio | 2026-05-02 |
 | **v1.6** | **Encrypted Export** — **`cryptoUtils`** (AES-GCM envelope); Settings **zip** export/import via **`@zip.js/zip.js`** (`wealthDataZip`), passphrase **AlertDialogs**, zip-only import | 2026-05-02 |
 | **v1.7** | **localStorage migration** — no Vite data plugin; `AppDataContext` `localStorage` load/save; Settings copy + tests (`happy-dom`) | 2026-05-02 |
+| **v2.0** | **Deploy & Beta** — Docker static image; Vite **`BASE_URL`** for GitHub Pages; **CI** (PR + **`main`**) + **Pages** deploy; README beta URL + client-only data | 2026-05-03 |
 
 Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.7-ROADMAP.md` and matching `*-REQUIREMENTS.md` archives. Executed phase artifacts for shipped milestones live under [`.planning/milestones/`](milestones/) (e.g. `v1.5-phases/`). Phase dirs **19–22** remain under [`.planning/phases/`](phases/) until optional **`/gsd-cleanup`**.
 
 ## Current milestone
 
-### v2.0 — Deploy & Beta (GitHub Pages)
+### v2.0 — Deploy & Beta (GitHub Pages) — **shipped 2026-05-03**
 
-**Goal:** Ship a **dockerized** production build and **automated GitHub Actions** pipeline that **builds, tests, and deploys** the static app to **GitHub Pages** so **beta users** can open a public URL.
+**Delivered:** Docker static image, Vite **`BASE_URL`** for Project Pages, **GitHub Actions** CI on PR + **`main`** with **`BASE_URL=/net-worth-tracker/`** build and conditional **GitHub Pages** deploy, README **beta** URL pattern + **localStorage**-only disclaimer + Pages **GitHub Actions** source note.
 
-**Target features:**
-
-- **Docker** — multi-stage image builds Vite output and serves it (e.g. nginx) with SPA-safe static hosting.
-- **Build config** — Vite **`base`** matches GitHub Project Pages path (`/<repo>/`) in CI while **`npm run dev`** stays root `/`.
-- **CI/CD** — workflow on PR + **`main`**: install, test, build; deploy **`dist`** to Pages on **`main`**.
-- **Beta readiness** — README (or equivalent) documents live URL, beta nature, and **client-only** data (localStorage).
-
-## Current state (shipped through v1.7 — 2026-05-02)
+## Current state (shipped through v2.0 — 2026-05-03)
 
 - **Liabilities & net worth:** root **`liabilities`** list; **`calcNetWorth(gross, sumLiabilitiesInr)`** for headline + new snapshots; **`sumAllDebtInr`** for dashboard **Total Debt** row; property equity unchanged (`agreementInr − outstandingLoanInr`).  
 - **Commodities (v1.4):** `assets.otherCommodities`; **`CommoditiesPage`**; live silver via **`useLivePrices`**.  
 - **App:** `npm run dev` — local-only; persistence via **`localStorage`** (`wealth-tracker-data`). **`npm test`** — Vitest (+ **`happy-dom`** for context tests).  
 - **Encryption & backup (v1.6):** **`cryptoUtils`** (Web Crypto, no npm crypto deps). Settings **Data**: export downloads **`wealth-tracker-YYYY-MM-DD.zip`** with **`data.json`** (optional AES zip encryption via passphrase); import **zip only** — **`wealthDataZip`** + modal passphrase flows; Phase 19 envelope JSON remains in codebase/tests but not on Settings download path after Phase 21.  
 - **Docker preview (v2.0 — Phase 23, 2026-05-03):** production **`dist/`** is buildable as a static image — **`Dockerfile`** + **`docker/default.conf`** (SPA fallback); **`README`** documents **`docker build -t fin-wealth:local .`** and **`docker run --rm -p 8080:80 fin-wealth:local`** (no server-side wealth data).  
-- **GitHub Pages base (v2.0 — Phase 24, 2026-05-03):** **`vite.config.ts`** sets **`base`** from **`BASE_URL`** (default **`/`**); **`BASE_URL=/net-worth-tracker/`** documented for Project Pages; **`README`** production build + **`npm run preview`** instructions.
+- **GitHub Pages base (v2.0 — Phase 24, 2026-05-03):** **`vite.config.ts`** sets **`base`** from **`BASE_URL`** (default **`/`**); **`BASE_URL=/net-worth-tracker/`** documented for Project Pages; **`README`** production build + **`npm run preview`** instructions.  
+- **CI/CD & beta docs (v2.0 — Phase 25, 2026-05-03):** **`.github/workflows/ci-pages.yml`** — **`npm ci`**, **`npm test`**, **`npm run build`** with **`BASE_URL`**; artifact + deploy to Pages on **`push`** to **`main`** only; **`README`** **Beta (GitHub Pages)** section with **`https://…github.io/net-worth-tracker/`**, beta labeling, client-only persistence, and **Settings → Pages → Source: GitHub Actions** setup.
 
 ## Requirements
 
@@ -111,6 +106,10 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.7-ROADMAP.md` and matc
 
 - [x] **BUILD-01**–**BUILD-03** — Vite **`base`** from **`BASE_URL`** (`loadEnv` + **`normalizeBaseUrl`**); production build + **`dist/index.html`** asset paths under **`/net-worth-tracker/`**; **`.env.example`** + README — Phase **24** ([`24-VERIFICATION.md`](phases/24-production-build-github-pages-base-path/24-VERIFICATION.md)).
 
+### Validated (v2.0 — Phase 25)
+
+- [x] **CI-01**–**CI-03**, **DEPLOY-01**–**DEPLOY-02**, **BETA-01** — PR + **`main`** CI; **`npm ci`** / **`npm test`** / **`npm run build`** with **`BASE_URL=/net-worth-tracker/`**; pinned **`actions/*`** majors; deploy on **`main`** **`push`** only; README beta URL + **localStorage**-only data — Phase **25** ([`25-VERIFICATION.md`](phases/25-github-actions-ci-cd-beta-access/25-VERIFICATION.md)).
+
 ### Deferred (backlog / future)
 
 - [ ] Export / reports — PDF or CSV (JSON export exists; richer formats later)  
@@ -121,7 +120,7 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.7-ROADMAP.md` and matc
 
 ### Out of scope (unchanged)
 
-- User auth, cloud sync, hosted deployment (deferred)  
+- User auth, cloud sync (deferred). **v2.0** ships **GitHub Pages** as static hosting only (no app backend).  
 - First-class AED display column (INR remains primary)  
 - Tax reporting (unless a future milestone re-opens)  
 
@@ -175,4 +174,4 @@ This file is updated at **milestone completion** to avoid drift between plans an
 </details>  
 
 ---
-*Last updated: 2026-05-03 — **v2.0** — Phase **24** (Vite **`base`** / GitHub Pages path) validated; next: **Phase 25** (GitHub Actions CI/CD); see [`.planning/REQUIREMENTS.md`](REQUIREMENTS.md).*  
+*Last updated: 2026-05-03 — **v2.0** milestone complete — Phases **23–25** validated (Docker, **`BASE_URL`**, GitHub Actions CI/CD + beta README); see [`.planning/REQUIREMENTS.md`](REQUIREMENTS.md).*  

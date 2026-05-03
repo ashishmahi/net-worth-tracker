@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: — Deploy & Beta (GitHub Pages)
-status: ready_to_execute
-last_updated: "2026-05-03T10:55:14.149Z"
-last_activity: 2026-05-03
+status: milestone_complete
+last_updated: "2026-05-03T10:57:34.334Z"
+last_activity: 2026-05-03 — Phase 25 execution started
 progress:
   total_phases: 3
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 3
-  completed_plans: 2
-  percent: 67
+  completed_plans: 3
+  percent: 100
 ---
 
 ## Project
@@ -19,13 +19,13 @@ progress:
 
 ## Current position
 
-Phase: 25
-Plan: 1/1 planned
-Status: Ready to execute
+Phase: —
+Plan: —
+Status: Milestone **v2.0** complete — Phase 25 shipped 2026-05-03
 Last activity: 2026-05-03
 
 ```
-Progress: [██████████████░░░░░░] 67% (2/3 v2.0 phases complete)
+Progress: [████████████████████] 100% (3/3 v2.0 phases complete)
 ```
 
 ## Project reference
@@ -42,7 +42,7 @@ See [`.planning/PROJECT.md`](PROJECT.md). Prior shipped: **v1.7** [`milestones/v
 
 ### Roadmap evolution
 
-- **v2.0** active: [`.planning/ROADMAP.md`](ROADMAP.md) — Phases **23–25** (Docker → build/base → CI/CD & beta docs).
+- **v2.0** shipped 2026-05-03: [`.planning/ROADMAP.md`](ROADMAP.md) — Phases **23–25** complete (Docker → GitHub Pages base → CI/CD & beta docs).
 
 ### Pending todos
 
@@ -61,10 +61,8 @@ See [`.planning/PROJECT.md`](PROJECT.md). Prior shipped: **v1.7** [`milestones/v
 
 ## Session continuity
 
-**Current milestone:** **v2.0** — Deploy & Beta.
+**Current milestone:** **v2.0** complete (Deploy & Beta).
 
-**Next:** `/gsd-execute-phase 25` — GitHub Actions CI/CD & beta access.
+**Next:** Define **v2.1** (or next milestone) in ROADMAP when ready.
 
-**Completed:** Phase 24 (production build & GitHub Pages base path) — 2026-05-03
-
-**Planned Phase:** 25 (GitHub Actions CI/CD & beta access) — 1 plans — 2026-05-03T10:55:14.138Z
+**Completed:** Phase 25 (GitHub Actions CI/CD & beta access) — 2026-05-03 · Phase 24 — 2026-05-03 · Phase 23 — 2026-05-03

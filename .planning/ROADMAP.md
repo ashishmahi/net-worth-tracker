@@ -10,7 +10,7 @@
 - ✅ **v1.5 — Debt & Liabilities** — Shipped 2026-05-02 — [full snapshot](milestones/v1.5-ROADMAP.md)
 - ✅ **v1.6 — Encrypted Export** — Shipped 2026-05-02 — [full snapshot](milestones/v1.6-ROADMAP.md)
 - ✅ **v1.7 — localStorage Migration** — Shipped 2026-05-02 — [full snapshot](milestones/v1.7-ROADMAP.md)
-- 🚧 **v2.0 — Deploy & Beta (GitHub Pages)** — In progress
+- ✅ **v2.0 — Deploy & Beta (GitHub Pages)** — Shipped 2026-05-03
 
 ---
 
@@ -24,7 +24,7 @@
 - [x] **Phase 24: Production build & GitHub Pages base path** — Configurable Vite **`base`** for `/<repo>/` on Pages; **`npm run build`** verified with same base CI uses; no broken asset paths. — **2026-05-03**  
   **Requirements:** BUILD-01, BUILD-02, BUILD-03
 
-- [ ] **Phase 25: GitHub Actions CI/CD & beta access** — PR + **`main`** workflows (install, test, build); automated deploy to **GitHub Pages**; README beta URL + client-only data disclaimer.  
+- [x] **Phase 25: GitHub Actions CI/CD & beta access** — PR + **`main`** workflows (install, test, build); automated deploy to **GitHub Pages**; README beta URL + client-only data disclaimer. — **2026-05-03**  
   **Requirements:** CI-01, CI-02, CI-03, DEPLOY-01, DEPLOY-02, BETA-01
 
 ---
@@ -83,7 +83,7 @@
 | 22. localStorage Migration | v1.7 | 1/1 | Complete | 2026-05-02 |
 | 23. Docker & containerized static server | v2.0 | 1/1 | Complete    | 2026-05-03 |
 | 24. Production build & GitHub Pages base path | v2.0 | 1/1 | Complete    | 2026-05-03 |
-| 25. GitHub Actions CI/CD & beta access | v2.0 | 0/1 | Not started | — |
+| 25. GitHub Actions CI/CD & beta access | v2.0 | 1/1 | Complete    | 2026-05-03 |
 
 ---
 
