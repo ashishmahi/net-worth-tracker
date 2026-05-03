@@ -12,6 +12,9 @@
  * **AED/INR (INR per 1 AED):** `rates.INR / rates.AED` — divide INR-per-USD by AED-per-USD so both
  * are on the same USD base.
  *
+ * **Gold / silver (USD per troy oz):** [gold-api.com](https://gold-api.com/) — `/price/XAU`, `/price/XAG`;
+ * response `{ price: number, symbol, ... }`.
+ *
  * If a primary endpoint fails (network, parse, HTTP error), these functions throw so the caller
  * can surface errors and optional session-only overrides (D-04).
  */
@@ -29,8 +32,13 @@ export const FOREX_TTL_MS = 60 * 60 * 1000
 
 const GOLD_API_SILVER_URL = 'https://api.gold-api.com/price/XAG'
 
+const GOLD_API_GOLD_URL = 'https://api.gold-api.com/price/XAU'
+
 /** Silver cache hint: same volatility bucket as forex (~1 hour). */
 export const SILVER_TTL_MS = FOREX_TTL_MS
+
+/** Gold cache hint: same as silver (metals + forex bucket). */
+export const GOLD_TTL_MS = SILVER_TTL_MS
 
 /** Troy ounce to grams conversion constant (1 troy oz = 31.1035 g). */
 export const TROY_OZ_TO_GRAMS = 31.1035
@@ -103,6 +111,27 @@ export async function fetchSilverUsdPerOz(): Promise<number> {
   const price = (json as { price: unknown }).price
   if (typeof price !== 'number' || !Number.isFinite(price) || price <= 0) {
     throw new Error('silver price: non-positive or non-numeric value')
+  }
+  return price
+}
+
+/**
+ * Fetch gold spot price in USD per troy ounce from gold-api.com.
+ * Response shape: { price: number, currency: "USD", symbol: "XAU", ... }
+ * No API key required. CORS enabled.
+ */
+export async function fetchGoldUsdPerOz(): Promise<number> {
+  const res = await fetch(GOLD_API_GOLD_URL)
+  if (!res.ok) {
+    throw new Error(`gold-api.com gold failed: HTTP ${res.status}`)
+  }
+  const json: unknown = await res.json()
+  if (!json || typeof json !== 'object' || !('price' in json)) {
+    throw new Error('gold price: unexpected response shape')
+  }
+  const price = (json as { price: unknown }).price
+  if (typeof price !== 'number' || !Number.isFinite(price) || price <= 0) {
+    throw new Error('gold price: non-positive or non-numeric value')
   }
   return price
 }
