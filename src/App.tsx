@@ -1,11 +1,17 @@
-import { useState } from 'react'
-import React from 'react'
+import {
+  Routes,
+  Route,
+  Navigate,
+  Outlet,
+  useNavigate,
+} from 'react-router-dom'
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
-import { AppSidebar, type SectionKey } from '@/components/AppSidebar'
+import { AppSidebar } from '@/components/AppSidebar'
 import { MobileTopBar } from '@/components/MobileTopBar'
 import { useAppData } from '@/context/AppDataContext'
 import { GoldSpotPricesSync } from '@/context/GoldSpotPricesSync'
 import { SilverSpotPricesSync } from '@/context/SilverSpotPricesSync'
+import { sectionToPath } from '@/lib/sectionRoutes'
 import { DashboardPage } from '@/pages/DashboardPage'
 import { GoldPage } from '@/pages/GoldPage'
 import { CommoditiesPage } from '@/pages/CommoditiesPage'
@@ -18,28 +24,23 @@ import { BankSavingsPage } from '@/pages/BankSavingsPage'
 import { RetirementPage } from '@/pages/RetirementPage'
 import { SettingsPage } from '@/pages/SettingsPage'
 
-const SECTION_COMPONENTS: Record<Exclude<SectionKey, 'dashboard'>, React.ComponentType> = {
-  gold: GoldPage,
-  commodities: CommoditiesPage,
-  mutualFunds: MutualFundsPage,
-  stocks: StocksPage,
-  bitcoin: BitcoinPage,
-  property: PropertyPage,
-  liabilities: LiabilitiesPage,
-  bankSavings: BankSavingsPage,
-  retirement: RetirementPage,
-  settings: SettingsPage,
+function DashboardRoute() {
+  const navigate = useNavigate()
+  return (
+    <DashboardPage
+      onNavigate={key => navigate(sectionToPath(key))}
+    />
+  )
 }
 
-export default function App() {
-  const [activeSection, setActiveSection] = useState<SectionKey>('dashboard') // D-05
+function AppLayout() {
   const { loadError } = useAppData()
 
   return (
-    <SidebarProvider>
+    <>
       <GoldSpotPricesSync />
       <SilverSpotPricesSync />
-      <AppSidebar activeSection={activeSection} onSelect={setActiveSection} />
+      <AppSidebar />
       <SidebarInset>
         <MobileTopBar />
         <main className="p-6">
@@ -48,16 +49,32 @@ export default function App() {
               {loadError}
             </div>
           )}
-          {activeSection === 'dashboard' ? (
-            <DashboardPage onNavigate={setActiveSection} />
-          ) : (
-            (() => {
-              const Page = SECTION_COMPONENTS[activeSection]
-              return <Page />
-            })()
-          )}
+          <Outlet />
         </main>
       </SidebarInset>
+    </>
+  )
+}
+
+export default function App() {
+  return (
+    <SidebarProvider>
+      <Routes>
+        <Route element={<AppLayout />}>
+          <Route index element={<DashboardRoute />} />
+          <Route path="gold" element={<GoldPage />} />
+          <Route path="commodities" element={<CommoditiesPage />} />
+          <Route path="mutual-funds" element={<MutualFundsPage />} />
+          <Route path="stocks" element={<StocksPage />} />
+          <Route path="bitcoin" element={<BitcoinPage />} />
+          <Route path="property" element={<PropertyPage />} />
+          <Route path="liabilities" element={<LiabilitiesPage />} />
+          <Route path="bank-savings" element={<BankSavingsPage />} />
+          <Route path="retirement" element={<RetirementPage />} />
+          <Route path="settings" element={<SettingsPage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Route>
+      </Routes>
     </SidebarProvider>
   )
 }

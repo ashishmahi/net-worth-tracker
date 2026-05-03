@@ -1,3 +1,4 @@
+import { NavLink, useLocation } from 'react-router-dom'
 import { Sun, Moon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -11,19 +12,13 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar'
 import { useTheme } from '@/context/ThemeContext'
+import {
+  pathToSection,
+  sectionToPath,
+  type SectionKey,
+} from '@/lib/sectionRoutes'
 
-export type SectionKey =
-  | 'dashboard'
-  | 'gold'
-  | 'commodities'
-  | 'mutualFunds'
-  | 'stocks'
-  | 'bitcoin'
-  | 'property'
-  | 'liabilities'
-  | 'bankSavings'
-  | 'retirement'
-  | 'settings'
+export type { SectionKey } from '@/lib/sectionRoutes'
 
 const NAV_ITEMS: { key: SectionKey; label: string }[] = [
   { key: 'dashboard', label: 'Dashboard' },
@@ -39,14 +34,12 @@ const NAV_ITEMS: { key: SectionKey; label: string }[] = [
   { key: 'settings', label: 'Settings' },
 ]
 
-interface Props {
-  activeSection: SectionKey
-  onSelect: (key: SectionKey) => void
-}
-
-export function AppSidebar({ activeSection, onSelect }: Props) {
+export function AppSidebar() {
   const { isMobile, setOpenMobile } = useSidebar()
   const { theme, setTheme } = useTheme()
+  const location = useLocation()
+  const current = pathToSection(location.pathname)
+
   return (
     <Sidebar collapsible="offcanvas" className="border-r">
       <SidebarHeader className="px-4 py-3">
@@ -58,15 +51,20 @@ export function AppSidebar({ activeSection, onSelect }: Props) {
             {NAV_ITEMS.map(item => (
               <SidebarMenuItem key={item.key}>
                 <SidebarMenuButton
-                  isActive={activeSection === item.key}
-                  aria-current={activeSection === item.key ? 'page' : undefined}
+                  asChild
+                  isActive={current === item.key}
+                  aria-current={current === item.key ? 'page' : undefined}
                   className="min-h-[44px]"
-                  onClick={() => {
-                    onSelect(item.key)
-                    if (isMobile) setOpenMobile(false)
-                  }}
                 >
-                  {item.label}
+                  <NavLink
+                    to={sectionToPath(item.key)}
+                    end={item.key === 'dashboard'}
+                    onClick={() => {
+                      if (isMobile) setOpenMobile(false)
+                    }}
+                  >
+                    {item.label}
+                  </NavLink>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
