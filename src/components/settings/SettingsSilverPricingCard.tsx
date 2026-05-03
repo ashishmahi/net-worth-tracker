@@ -81,7 +81,9 @@ export function SettingsSilverPricingCard() {
     if (!showSilverEditForm) return
     const s = data.settings.silverInrPerGram
     if (s != null && Number.isFinite(s)) {
-      silverForm.reset({ silver: formatInrPerGramInput(s) })
+      if (!silverFormIsDirty) {
+        silverForm.reset({ silver: formatInrPerGramInput(s) })
+      }
       return
     }
     if (silverError) {

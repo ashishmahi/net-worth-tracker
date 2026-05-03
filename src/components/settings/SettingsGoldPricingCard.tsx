@@ -111,11 +111,14 @@ export function SettingsGoldPricingCard() {
     if (!showGoldEditForm) return
     const gp = data.settings.goldPrices
     if (gp) {
-      goldForm.reset({
-        k24: String(gp.k24),
-        k22: String(gp.k22),
-        k18: String(gp.k18),
-      })
+      // Do not clobber draft edits — live sync updates goldPrices often while user types.
+      if (!goldFormIsDirty) {
+        goldForm.reset({
+          k24: String(gp.k24),
+          k22: String(gp.k22),
+          k18: String(gp.k18),
+        })
+      }
       return
     }
     if (goldError) {
