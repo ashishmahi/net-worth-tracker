@@ -29,8 +29,9 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.0.1-ROADMAP.md` and ma
 
 Run **`/gsd-new-milestone`** to define requirements and roadmap for the next version (live **`REQUIREMENTS.md`** was removed at **v2.0.1** close).
 
-## Current state (shipped through v2.0.1 — 2026-05-03)
+## Current state (shipped through v2.0.1 — 2026-05-03; Phase **28** executed 2026-05-03)
 
+- **Section URLs (Phase 28, 2026-05-03):** **`react-router-dom`** with **`BrowserRouter`** **`basename={import.meta.env.BASE_URL}`**; canonical paths in **`src/lib/sectionRoutes.ts`**; sidebar **`NavLink`**; mobile **Home** on non-dashboard routes; unknown paths **`Navigate`** to **`/`**.
 - **Liabilities & net worth:** root **`liabilities`** list; **`calcNetWorth(gross, sumLiabilitiesInr)`** for headline + new snapshots; **`sumAllDebtInr`** for dashboard **Total Debt** row; property equity unchanged (`agreementInr − outstandingLoanInr`).  
 - **Commodities (v1.4):** `assets.otherCommodities`; **`CommoditiesPage`**; live silver via **`useLivePrices`**.  
 - **App:** `npm run dev` — local-only; persistence via **`localStorage`** (`wealth-tracker-data`). **`npm test`** — Vitest (+ **`happy-dom`** for context tests).  
@@ -187,4 +188,4 @@ This file is updated at **milestone completion** to avoid drift between plans an
 </details>  
 
 ---
-*Last updated: 2026-05-03 — **v2.0.1** shipped; archives: [`v2.0.1-ROADMAP.md`](milestones/v2.0.1-ROADMAP.md) · [`v2.0.1-REQUIREMENTS.md`](milestones/v2.0.1-REQUIREMENTS.md).*  
+*Last updated: 2026-05-03 — **Phase 28** (section URL routing) executed; **v2.0.1** shipped; archives: [`v2.0.1-ROADMAP.md`](milestones/v2.0.1-ROADMAP.md) · [`v2.0.1-REQUIREMENTS.md`](milestones/v2.0.1-REQUIREMENTS.md).*  
