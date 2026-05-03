@@ -1,5 +1,29 @@
 # Milestone history — Personal Wealth Tracker
 
+**Pre-ship audit (v2.0):** No `v2.0-MILESTONE-AUDIT.md` on file — optional `/gsd-audit-milestone` before high-stakes releases.  
+**Open-artifact audit at v2.0 close:** all clear (2026-05-03).
+
+## v2.0 Deploy & Beta — GitHub Pages (Shipped: 2026-05-03)
+
+**Scope:** Phases **23–25**.  
+**Phase directories (current location):** [`.planning/phases/23-docker-containerized-static-server/`](phases/23-docker-containerized-static-server/) · [24](phases/24-production-build-github-pages-base-path/) · [25](phases/25-github-actions-ci-cd-beta-access/)
+
+**Phases completed:** 3 phases, 3 plans
+
+**Key accomplishments:**
+
+- **Phase 23:** **`Dockerfile`** (Node → **`nginx:alpine`**), **`docker/default.conf`** SPA fallback, **`.dockerignore`**, README **`docker build` / `docker run`** (**DOCKER-01–03**).
+- **Phase 24:** **`vite.config.ts`** **`base`** from **`BASE_URL`** + **`normalizeBaseUrl`**; **`.env.example`**; README **`BASE_URL=/net-worth-tracker/`** (**BUILD-01–03**).
+- **Phase 25:** **`.github/workflows/ci-pages.yml`** — PR + **`main`** CI; **`deploy`** to GitHub Pages on **`main`** **`push`**; README **Beta (GitHub Pages)** + **`localStorage`**-only data (**CI-01–03**, **DEPLOY-01–02**, **BETA-01**). Follow-up: duplicate **`github-pages`** artifact cleanup step for reliable re-runs.
+
+**Roadmap / requirements:** [`.planning/milestones/v2.0-ROADMAP.md`](milestones/v2.0-ROADMAP.md), [`v2.0-REQUIREMENTS.md`](milestones/v2.0-REQUIREMENTS.md)
+
+**Tooling note:** `gsd-sdk query milestone.complete` returned `version required for phases archive`; v2.0 archives and **`REQUIREMENTS.md`** removal follow the **manual** path (same as v1.6–v1.7). Phase dirs **23–25** left under **`.planning/phases/`** (optional **`/gsd-cleanup`** later).
+
+**Known deferred (unchanged):** Phase 05 UAT, Phase 01 `human_needed` — see `STATE.md` **Deferred items**.
+
+---
+
 **Pre-ship audit (v1.7):** No `v1.7-MILESTONE-AUDIT.md` on file — optional `/gsd-audit-milestone` before high-stakes releases.  
 **Open-artifact audit at v1.7 close:** all clear (2026-05-02).
 

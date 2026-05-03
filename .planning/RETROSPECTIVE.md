@@ -1,5 +1,40 @@
 # Project retrospective — Personal Wealth Tracker
 
+## Milestone: v2.0 — Deploy & Beta (GitHub Pages)
+
+**Shipped:** 2026-05-03  
+**Phases:** 23–25 | **Plans:** 3  
+
+### What was built
+
+- **Phase 23:** Docker image serves Vite **`dist/`** with nginx SPA routing; documented local preview ([`23-01-SUMMARY.md`](phases/23-docker-containerized-static-server/23-01-SUMMARY.md)).  
+- **Phase 24:** Env-driven **`BASE_URL`** for GitHub Project Pages path ([`24-01-SUMMARY.md`](phases/24-production-build-github-pages-base-path/24-01-SUMMARY.md)).  
+- **Phase 25:** GitHub Actions CI + conditional Pages deploy; README beta URL and client-only persistence ([`25-01-SUMMARY.md`](phases/25-github-actions-ci-cd-beta-access/25-01-SUMMARY.md)).  
+
+### What worked
+
+- Narrow **infra-only** phases kept trust model explicit (static hosting, no wealth on server).  
+- **`BASE_URL`** aligned across Vite, Docker, CI, and README.  
+
+### What was inefficient
+
+- **`gsd-sdk query milestone.complete`** still fails (`version required for phases archive`); manual archival again.  
+- **`deploy-pages`** failed on duplicate **`github-pages`** artifacts after workflow re-runs — fixed with a pre-upload cleanup step using **`gh api`**.  
+
+### Patterns established
+
+- **CI `env.BASE_URL`** must match **`vite.config.ts`** normalization for **`dist/`** verification.  
+
+### Key lessons
+
+- Prefer **new pushes** over **Re-run jobs** for Pages deploy until artifact cleanup is trusted; pin **`actions/*`** majors per supply-chain note in plan.  
+
+### Cost observations
+
+- Not recorded.  
+
+---
+
 ## Milestone: v1.7 — localStorage Migration
 
 **Shipped:** 2026-05-02  

@@ -10,55 +10,13 @@
 - ✅ **v1.5 — Debt & Liabilities** — Shipped 2026-05-02 — [full snapshot](milestones/v1.5-ROADMAP.md)
 - ✅ **v1.6 — Encrypted Export** — Shipped 2026-05-02 — [full snapshot](milestones/v1.6-ROADMAP.md)
 - ✅ **v1.7 — localStorage Migration** — Shipped 2026-05-02 — [full snapshot](milestones/v1.7-ROADMAP.md)
-- ✅ **v2.0 — Deploy & Beta (GitHub Pages)** — Shipped 2026-05-03
+- ✅ **v2.0 — Deploy & Beta (GitHub Pages)** — Shipped 2026-05-03 — [full snapshot](milestones/v2.0-ROADMAP.md)
 
 ---
 
 ## Phases
 
-### v2.0 — Deploy & Beta (GitHub Pages)
-
-- [x] **Phase 23: Docker & containerized static server** — Multi-stage **`Dockerfile`**, nginx (or equivalent) serves **`dist/`** with SPA-safe static hosting; documented **`docker build` / `docker run`**. — **2026-05-03**  
-  **Requirements:** DOCKER-01, DOCKER-02, DOCKER-03
-
-- [x] **Phase 24: Production build & GitHub Pages base path** — Configurable Vite **`base`** for `/<repo>/` on Pages; **`npm run build`** verified with same base CI uses; no broken asset paths. — **2026-05-03**  
-  **Requirements:** BUILD-01, BUILD-02, BUILD-03
-
-- [x] **Phase 25: GitHub Actions CI/CD & beta access** — PR + **`main`** workflows (install, test, build); automated deploy to **GitHub Pages**; README beta URL + client-only data disclaimer. — **2026-05-03**  
-  **Requirements:** CI-01, CI-02, CI-03, DEPLOY-01, DEPLOY-02, BETA-01
-
----
-
-## Phase Details
-
-### Phase 23: Docker & containerized static server
-**Goal**: Beta testers can run the same static build locally via Docker as CI produces.  
-**Depends on**: Nothing  
-**Requirements**: DOCKER-01, DOCKER-02, DOCKER-03  
-**Success criteria**:
-  1. `docker build` produces an image that serves the built SPA on a mapped port.
-  2. Opening `/` in a browser shows the app shell (assets load).
-  3. README documents how to build and run the container.
-
-### Phase 24: Production build & GitHub Pages base path
-**Goal**: Production bundles load correctly under **`https://<user>.github.io/<repo>/`**.  
-**Depends on**: Phase 23 (reference image optional — may parallelize after Dockerfile exists)  
-**Requirements**: BUILD-01, BUILD-02, BUILD-03  
-**Success criteria**:
-  1. Local dev still uses base `/` without manual hacks.
-  2. CI/local can set repository base and `npm run build` succeeds.
-  3. Spot-check built `index.html` / asset URLs respect base.
-
-### Phase 25: GitHub Actions CI/CD & beta access
-**Goal**: Every **`main`** update ships to Pages; contributors get CI on PRs; beta users know the URL and limitations.  
-**Depends on**: Phase 24 (deploy must use correct `dist`)  
-**Requirements**: CI-01, CI-02, CI-03, DEPLOY-01, DEPLOY-02, BETA-01  
-**Success criteria**:
-  1. PR workflow runs tests + build.
-  2. Merge to **`main`** updates GitHub Pages within the workflow.
-  3. README states live URL + beta + local-only data.
-
-**UI hint**: no
+*Next milestone not defined — run **`/gsd-new-milestone`**.*
 
 ---
 
@@ -88,6 +46,17 @@
 ---
 
 ## Phases (historical)
+
+<details>
+<summary>✅ v2.0 — Deploy & Beta (Phases 23–25) — SHIPPED 2026-05-03</summary>
+
+- [x] **Phase 23: Docker & containerized static server** (1/1) — 2026-05-03  
+- [x] **Phase 24: Production build & GitHub Pages base path** (1/1) — 2026-05-03  
+- [x] **Phase 25: GitHub Actions CI/CD & beta access** (1/1) — 2026-05-03  
+
+Artifacts: [`.planning/phases/23-docker-containerized-static-server/`](phases/23-docker-containerized-static-server/) · [`.planning/phases/24-production-build-github-pages-base-path/`](phases/24-production-build-github-pages-base-path/) · [`.planning/phases/25-github-actions-ci-cd-beta-access/`](phases/25-github-actions-ci-cd-beta-access/) · [`v2.0-ROADMAP.md`](milestones/v2.0-ROADMAP.md) · [`v2.0-REQUIREMENTS.md`](milestones/v2.0-REQUIREMENTS.md)
+
+</details>
 
 <details>
 <summary>✅ v1.7 — localStorage Migration (Phase 22) — SHIPPED 2026-05-02</summary>
@@ -164,4 +133,4 @@ Artifacts: [`.planning/milestones/v1.5-phases/`](milestones/v1.5-phases/) · [v1
 
 ---
 
-_Milestone archives: `.planning/milestones/` · **Current:** **v2.0** — Phases **23–25**._
+_Milestone archives: `.planning/milestones/` · **Next:** define a new milestone with **`/gsd-new-milestone`**._

@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.0
-milestone_name: — Deploy & Beta (GitHub Pages)
-status: milestone_complete
-last_updated: "2026-05-03T10:57:34.334Z"
-last_activity: 2026-05-03 — Phase 25 execution started
+milestone: —
+milestone_name: Next milestone (undefined)
+status: ready_for_new_milestone
+last_updated: "2026-05-03T12:00:00.000Z"
+last_activity: 2026-05-03 — v2.0 milestone archived
 progress:
-  total_phases: 3
-  completed_phases: 3
-  total_plans: 3
-  completed_plans: 3
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 ## Project
@@ -21,16 +21,16 @@ progress:
 
 Phase: —
 Plan: —
-Status: Milestone **v2.0** complete — Phase 25 shipped 2026-05-03
+Status: **v2.0** archived — planning next milestone
 Last activity: 2026-05-03
 
 ```
-Progress: [████████████████████] 100% (3/3 v2.0 phases complete)
+Progress: [░░░░░░░░░░░░░░░░░░░░] — define next milestone (`/gsd-new-milestone`)
 ```
 
 ## Project reference
 
-See [`.planning/PROJECT.md`](PROJECT.md). Prior shipped: **v1.7** [`milestones/v1.7-ROADMAP.md`](milestones/v1.7-ROADMAP.md).
+See [`.planning/PROJECT.md`](PROJECT.md). Latest shipped: **v2.0** [`milestones/v2.0-ROADMAP.md`](milestones/v2.0-ROADMAP.md).
 
 **Core value:** Total net worth in INR — liabilities deducted from gross assets, live prices where applicable, minimal repeated data entry.
 
@@ -42,7 +42,7 @@ See [`.planning/PROJECT.md`](PROJECT.md). Prior shipped: **v1.7** [`milestones/v
 
 ### Roadmap evolution
 
-- **v2.0** shipped 2026-05-03: [`.planning/ROADMAP.md`](ROADMAP.md) — Phases **23–25** complete (Docker → GitHub Pages base → CI/CD & beta docs).
+- **v2.0** archived 2026-05-03: [`v2.0-ROADMAP.md`](milestones/v2.0-ROADMAP.md) · [`v2.0-REQUIREMENTS.md`](milestones/v2.0-REQUIREMENTS.md). Live roadmap awaits **`/gsd-new-milestone`**.
 
 ### Pending todos
 
@@ -61,8 +61,8 @@ See [`.planning/PROJECT.md`](PROJECT.md). Prior shipped: **v1.7** [`milestones/v
 
 ## Session continuity
 
-**Current milestone:** **v2.0** complete (Deploy & Beta).
+**Current milestone:** *none — start with **`/gsd-new-milestone`**.
 
-**Next:** Define **v2.1** (or next milestone) in ROADMAP when ready.
+**Last shipped:** **v2.0** — Deploy & Beta (Phases 23–25) — 2026-05-03
 
-**Completed:** Phase 25 (GitHub Actions CI/CD & beta access) — 2026-05-03 · Phase 24 — 2026-05-03 · Phase 23 — 2026-05-03
+**Next:** `/gsd-new-milestone` — requirements + roadmap for v2.1+

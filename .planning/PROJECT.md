@@ -22,13 +22,11 @@ See **total net worth in INR** at a glance (**debt-adjusted** headline minus sta
 | **v1.7** | **localStorage migration** — no Vite data plugin; `AppDataContext` `localStorage` load/save; Settings copy + tests (`happy-dom`) | 2026-05-02 |
 | **v2.0** | **Deploy & Beta** — Docker static image; Vite **`BASE_URL`** for GitHub Pages; **CI** (PR + **`main`**) + **Pages** deploy; README beta URL + client-only data | 2026-05-03 |
 
-Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.7-ROADMAP.md` and matching `*-REQUIREMENTS.md` archives. Executed phase artifacts for shipped milestones live under [`.planning/milestones/`](milestones/) (e.g. `v1.5-phases/`). Phase dirs **19–22** remain under [`.planning/phases/`](phases/) until optional **`/gsd-cleanup`**.
+Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.0-ROADMAP.md` and matching `*-REQUIREMENTS.md` archives. Executed phase artifacts for shipped milestones live under [`.planning/milestones/`](milestones/) (e.g. `v1.5-phases/`). Phase dirs **19–25** remain under [`.planning/phases/`](phases/) until optional **`/gsd-cleanup`**.
 
-## Current milestone
+## Next milestone
 
-### v2.0 — Deploy & Beta (GitHub Pages) — **shipped 2026-05-03**
-
-**Delivered:** Docker static image, Vite **`BASE_URL`** for Project Pages, **GitHub Actions** CI on PR + **`main`** with **`BASE_URL=/net-worth-tracker/`** build and conditional **GitHub Pages** deploy, README **beta** URL pattern + **localStorage**-only disclaimer + Pages **GitHub Actions** source note.
+*Not defined.* Run **`/gsd-new-milestone`** to capture goals, requirements, and roadmap for **v2.1** (or the next version).
 
 ## Current state (shipped through v2.0 — 2026-05-03)
 
@@ -156,6 +154,7 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v1.7-ROADMAP.md` and matc
 | v1.5 | Liabilities schema + pure calcs + property enrichment + Liabilities CRUD + dashboard debt UX | ✓ Shipped 2026-05-02 |  
 | v1.6 | Web Crypto `cryptoUtils` + Settings encrypted export/import; then zip + modal UX (`@zip.js/zip.js`) for at-rest export protection | ✓ Shipped 2026-05-02 |  
 | v1.7 | **`localStorage`**-only wealth persistence; remove Vite **`dataPlugin`**; sync boot; Settings copy; **happy-dom** tests | ✓ Shipped 2026-05-02 |  
+| v2.0 | Docker + **`BASE_URL`** + GitHub Actions CI/Pages; static hosting only; README beta URL + client-only data | ✓ Shipped 2026-05-03 |  
 
 ## Evolution
 
@@ -170,8 +169,9 @@ This file is updated at **milestone completion** to avoid drift between plans an
 - *v1.4: deliverables moved to **Validated (v1.4)**; roadmap/requirements under `milestones/v1.4-*`.*  
 - *v1.5: deliverables moved to **Validated (v1.5)**; roadmap/requirements under `milestones/v1.5-*`; phases archived under `milestones/v1.5-phases/`.*  
 - *v1.7: requirements archived at [`v1.7-REQUIREMENTS.md`](milestones/v1.7-REQUIREMENTS.md); live roadmap awaits **`/gsd-new-milestone`**.*  
+- *v2.0: requirements archived at [`v2.0-REQUIREMENTS.md`](milestones/v2.0-REQUIREMENTS.md); live **`REQUIREMENTS.md`** removed at close — start next milestone with **`/gsd-new-milestone`**.*  
 
 </details>  
 
 ---
-*Last updated: 2026-05-03 — **v2.0** milestone complete — Phases **23–25** validated (Docker, **`BASE_URL`**, GitHub Actions CI/CD + beta README); see [`.planning/REQUIREMENTS.md`](REQUIREMENTS.md).*  
+*Last updated: 2026-05-03 — **v2.0** archived; [`v2.0-ROADMAP.md`](milestones/v2.0-ROADMAP.md) · [`v2.0-REQUIREMENTS.md`](milestones/v2.0-REQUIREMENTS.md).*  

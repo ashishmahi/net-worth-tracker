@@ -31,7 +31,7 @@ This project uses GSD for phased planning and execution.
 5. Dashboard — net worth summary aggregating all sections (implemented: `src/lib/dashboardCalcs.ts`, `src/pages/DashboardPage.tsx`)
 
 ### Next step
-**v2.0** shipped 2026-05-03 (Phases **23–25**): Docker, GitHub Pages **`BASE_URL`**, GitHub Actions CI + Pages deploy, README beta URL + client-only data. Run the app with `npm run dev`; tests: `npm test`. Container preview: `docker build -t fin-wealth:local .` then `docker run --rm -p 8080:80 fin-wealth:local`. GitHub Pages–style build: `BASE_URL=/net-worth-tracker/ npm run build` then `npm run preview`. For status: `/gsd-progress`; next milestone when ready: `/gsd-new-milestone`.
+**v2.0** is archived ([`v2.0-ROADMAP.md`](.planning/milestones/v2.0-ROADMAP.md)). There is no live `.planning/REQUIREMENTS.md` until you run **`/gsd-new-milestone`** for **v2.1+**. Run the app with `npm run dev`; tests: `npm test`. Container + Pages preview commands unchanged (`README.md`). Status: `/gsd-progress`.
 
 ## Critical Conventions (must follow in all phases)
 
