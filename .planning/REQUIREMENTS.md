@@ -22,18 +22,18 @@
 
 ### CI (GitHub Actions)
 
-- [ ] **CI-01**: Workflow runs on **`push`** to default branch and on **pull requests** (build + quality gates).
-- [ ] **CI-02**: CI runs **`npm ci`**, **`npm test`**, and **`npm run build`** (fail on error).
-- [ ] **CI-03**: Workflow is readable and maintainable (named jobs, pinned major versions or SHA policy per repo convention).
+- [x] **CI-01**: Workflow runs on **`push`** to default branch and on **pull requests** (build + quality gates).
+- [x] **CI-02**: CI runs **`npm ci`**, **`npm test`**, and **`npm run build`** (fail on error).
+- [x] **CI-03**: Workflow is readable and maintainable (named jobs, pinned major versions or SHA policy per repo convention).
 
 ### Deploy
 
-- [ ] **DEPLOY-01**: Successful merge to the deployment branch (e.g. **`main`**) publishes the latest **`dist/`** to **GitHub Pages** automatically.
-- [ ] **DEPLOY-02**: Published site matches local production build behavior for the same **`base`** (no silent asset path drift).
+- [x] **DEPLOY-01**: Successful merge to the deployment branch (e.g. **`main`**) publishes the latest **`dist/`** to **GitHub Pages** automatically.
+- [x] **DEPLOY-02**: Published site matches local production build behavior for the same **`base`** (no silent asset path drift).
 
 ### Beta / audience
 
-- [ ] **BETA-01**: README (or prominent doc) states the **public URL**, that the build is a **beta**, and that wealth data remains **in-browser only** (localStorage — not synced to the server).
+- [x] **BETA-01**: README (or prominent doc) states the **public URL**, that the build is a **beta**, and that wealth data remains **in-browser only** (localStorage — not synced to the server).
 
 ---
 
@@ -65,12 +65,12 @@
 | BUILD-01 | 24 | Complete |
 | BUILD-02 | 24 | Complete |
 | BUILD-03 | 24 | Complete |
-| CI-01 | 25 | Pending |
-| CI-02 | 25 | Pending |
-| CI-03 | 25 | Pending |
-| DEPLOY-01 | 25 | Pending |
-| DEPLOY-02 | 25 | Pending |
-| BETA-01 | 25 | Pending |
+| CI-01 | 25 | Complete |
+| CI-02 | 25 | Complete |
+| CI-03 | 25 | Complete |
+| DEPLOY-01 | 25 | Complete |
+| DEPLOY-02 | 25 | Complete |
+| BETA-01 | 25 | Complete |
 
 **Coverage:** 12 requirements → 3 phases (23–25).
 
