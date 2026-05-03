@@ -1,18 +1,14 @@
 ---
-status: testing
+status: complete
 phase: 27-settings-commodity-pricing-ux
 source: [27-01-SUMMARY.md, 27-UI-SPEC.md]
 started: 2026-05-03T17:30:00.000Z
-updated: 2026-05-03T18:40:00.000Z
+updated: 2026-05-03T19:20:00.000Z
 ---
 
 ## Current Test
 
-number: 4
-name: Save locks prices
-expected: |
-  After editing Gold or Silver prices and tapping Save, fixed prices persist (goldPricesLocked or silverPricesLocked true) and net worth reflects saved ₹/g. With healthy feed, the card returns to read-only (inputs close) after Save.
-awaiting: user response
+[testing complete]
 
 ## Tests
 
@@ -36,24 +32,24 @@ result: pass
 ### 4. Save locks prices
 expected: |
   After editing Gold or Silver prices and tapping Save, fixed prices persist (goldPricesLocked or silverPricesLocked true) and net worth reflects saved ₹/g.
-result: [pending]
+result: pass
 
 ### 5. Use live spot unlocks
 expected: |
   With locked prices, tap Use live spot on Gold or Silver. After save, the corresponding *PricesLocked is false and stored ₹/g matches live-derived values.
-result: [pending]
+result: pass
 
 ### 6. Dashboard skeleton with locked silver only
 expected: |
   Hold only standard silver in Commodities with silverPricesLocked and silverInrPerGram set. On Dashboard, the net worth headline does not stay on skeleton only because silver is still loading — locked rate is enough.
-result: [pending]
+result: pass
 
 ## Summary
 
 total: 6
-passed: 3
+passed: 6
 issues: 0
-pending: 3
+pending: 0
 skipped: 0
 blocked: 0
 
