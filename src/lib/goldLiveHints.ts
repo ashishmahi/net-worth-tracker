@@ -20,3 +20,14 @@ export function liveInrPerGramForKarat(
 export function formatInrPerGramInput(value: number): string {
   return value.toLocaleString('en-IN', { maximumFractionDigits: 0 })
 }
+
+/** Whether live spot may persist into `settings.goldPrices` (see GoldSpotPricesSync). */
+export function shouldAutoSyncGoldFromSpot(s: {
+  goldPrices?: { k24: number; k22: number; k18: number }
+  goldPricesLocked?: boolean
+}): boolean {
+  if (s.goldPricesLocked === true) return false
+  // Legacy: had saved prices before this flag existed — treat as manual, do not auto-overwrite.
+  if (s.goldPricesLocked === undefined && s.goldPrices !== undefined) return false
+  return true
+}
