@@ -1,0 +1,6 @@
+# Smaller/faster docker build context (see Phase 23 plan)
+node_modules
+dist
+.git
+.planning
+coverage
