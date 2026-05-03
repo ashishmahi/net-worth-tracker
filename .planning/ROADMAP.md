@@ -9,9 +9,9 @@
 - ✅ **v1.4 — Multiple commodities** — Shipped 2026-05-01  
 - ✅ **v2.0 — Session assets & live silver** — Shipped 2026-05-02 — [full snapshot](milestones/v2.0-ROADMAP.md)  
 - ✅ **v2.0.1 — Live gold spot** — Shipped 2026-05-03 — [full snapshot](milestones/v2.0.1-ROADMAP.md)
-- ○ **Next — Section routing & home nav** — Phase **28** (not planned yet)
+- ✅ **Section routing & home nav** — Phase **28** complete 2026-05-03
 
-**Phase numbering:** Per milestone — **v2.0** used Phases **22–25**; **v2.0.1** used **Phases 26–27**; **next** queued phase **28**.
+**Phase numbering:** Per milestone — **v2.0** used Phases **22–25**; **v2.0.1** used **Phases 26–27**; Phase **28** executed post–v2.0.1 (pending next milestone packaging).
 
 ---
 
@@ -99,7 +99,7 @@
 
 Plans:
 
-- [ ] [28-01](../phases/28-section-routing-home-header/28-01-PLAN.md)
+- [x] [28-01](../phases/28-section-routing-home-header/28-01-PLAN.md) — 2026-05-03
 
 ---
 
