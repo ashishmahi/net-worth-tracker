@@ -31,7 +31,7 @@
 
 | Phase | Milestone | Plans complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| **26** | **v2.0.1** | 0/1 | Not started | — |
+| **26** | **v2.0.1** | 1/1 | Implemented — verify/UAT | 2026-05-03 |
 | 1-5 | v1.0 | (see snapshot) | Complete | 2026-04-26 |
 | 6-8 | v1.1 | (see snapshot) | Complete | 2026-04-26 |
 | 9 | v1.2 | 2/2 | Complete | 2026-04-26 |
