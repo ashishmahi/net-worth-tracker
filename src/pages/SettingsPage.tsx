@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo, type ChangeEvent } from 'react'
 import type { ZodError } from 'zod'
-import { useForm } from 'react-hook-form'
+import { useForm, useFormState } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Loader2, Eye, EyeOff } from 'lucide-react'
@@ -24,7 +24,7 @@ import { cn } from '@/lib/utils'
 import { createInitialData, parseAppDataFromImport, useAppData } from '@/context/AppDataContext'
 import { useLivePrices } from '@/context/LivePricesContext'
 import { parseFinancialInput, nowIso } from '@/lib/financials'
-import { liveInrPerGramForKarat } from '@/lib/goldLiveHints'
+import { formatInrPerGramInput, liveInrPerGramForKarat } from '@/lib/goldLiveHints'
 import {
   createWealthExportZip,
   extractDataJsonFromZip,
@@ -101,6 +101,8 @@ export function SettingsPage() {
     !goldError &&
     ((goldLoading && goldUsdPerOz == null) || (forexLoading && usdInr == null))
 
+  const hasSavedGoldPrices = Boolean(data.settings.goldPrices)
+
   const [sessionUsdInr, setSessionUsdInr] = useState('')
   const [sessionAedInr, setSessionAedInr] = useState('')
   const [sessionBtcUsd, setSessionBtcUsd] = useState('')
@@ -156,13 +158,16 @@ export function SettingsPage() {
     defaultValues: { k24: '', k22: '', k18: '' },
   })
 
+  const { isDirty: goldFormIsDirty } = useFormState({ control: goldForm.control })
+
   // Block 2: Retirement Assumptions form (D-17)
   const retirementForm = useForm<RetirementValues>({
     resolver: zodResolver(retirementSchema),
     defaultValues: { currentAge: '', targetAge: '', npsReturnPct: '', epfRatePct: '' },
   })
 
-  // Hydrate from server when settings slices load or update (separate deps avoid wiping the other block on save)
+  // Hydrate gold form: saved prices win; otherwise pre-fill from live spot (like live forex values)
+  // until the user edits (isDirty), then do not overwrite their draft when spot refreshes.
   useEffect(() => {
     const gp = data.settings.goldPrices
     if (gp) {
@@ -171,11 +176,40 @@ export function SettingsPage() {
         k22: String(gp.k22),
         k18: String(gp.k18),
       })
-    } else {
+      return
+    }
+    if (goldError) {
+      if (!goldFormIsDirty) {
+        goldForm.reset({ k24: '', k22: '', k18: '' })
+      }
+      return
+    }
+    if (goldHintLoading) {
+      return
+    }
+    if (k24Hint != null && k22Hint != null && k18Hint != null) {
+      if (!goldFormIsDirty) {
+        goldForm.reset({
+          k24: formatInrPerGramInput(k24Hint),
+          k22: formatInrPerGramInput(k22Hint),
+          k18: formatInrPerGramInput(k18Hint),
+        })
+      }
+      return
+    }
+    if (!goldFormIsDirty) {
       goldForm.reset({ k24: '', k22: '', k18: '' })
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- only re-sync when persisted gold prices change
-  }, [data.settings.goldPrices])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- goldForm.reset is stable; sync rules above
+  }, [
+    data.settings.goldPrices,
+    k24Hint,
+    k22Hint,
+    k18Hint,
+    goldHintLoading,
+    goldError,
+    goldFormIsDirty,
+  ])
 
   useEffect(() => {
     const ra = data.settings.retirement
@@ -443,6 +477,18 @@ export function SettingsPage() {
               {goldError}
             </p>
           )}
+          {!hasSavedGoldPrices && !goldError && goldHintLoading && (
+            <p className="text-sm text-muted-foreground mb-2 flex items-center gap-2">
+              <Loader2 className="h-4 w-4 animate-spin shrink-0" aria-hidden />
+              <span>Loading live spot for defaults…</span>
+            </p>
+          )}
+          {!hasSavedGoldPrices && !goldError && !goldHintLoading && k24Hint != null && (
+            <p className="text-sm text-muted-foreground mb-2">
+              Fields below use live spot (XAU USD/oz × USD→INR), same idea as the live forex rows.
+              Save to store them and use for net worth.
+            </p>
+          )}
           <form onSubmit={goldForm.handleSubmit(onGoldSubmit)} className="space-y-4">
             <div>
               <Label htmlFor="k24">24K price per gram (₹)</Label>
@@ -460,7 +506,8 @@ export function SettingsPage() {
                   {goldForm.formState.errors.k24.message}
                 </p>
               )}
-              {!goldError &&
+              {hasSavedGoldPrices &&
+                !goldError &&
                 (goldHintLoading ? (
                   <p className="text-sm text-muted-foreground mt-1 flex items-center gap-2">
                     <Loader2 className="h-4 w-4 animate-spin shrink-0" aria-hidden />
@@ -491,7 +538,8 @@ export function SettingsPage() {
                   {goldForm.formState.errors.k22.message}
                 </p>
               )}
-              {!goldError &&
+              {hasSavedGoldPrices &&
+                !goldError &&
                 (goldHintLoading ? (
                   <p className="text-sm text-muted-foreground mt-1 flex items-center gap-2">
                     <Loader2 className="h-4 w-4 animate-spin shrink-0" aria-hidden />
@@ -522,7 +570,8 @@ export function SettingsPage() {
                   {goldForm.formState.errors.k18.message}
                 </p>
               )}
-              {!goldError &&
+              {hasSavedGoldPrices &&
+                !goldError &&
                 (goldHintLoading ? (
                   <p className="text-sm text-muted-foreground mt-1 flex items-center gap-2">
                     <Loader2 className="h-4 w-4 animate-spin shrink-0" aria-hidden />

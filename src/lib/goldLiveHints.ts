@@ -15,3 +15,8 @@ export function liveInrPerGramForKarat(
   const pure = liveInrPerGramPure(goldUsdPerOz, usdInr)
   return roundCurrency(pure * (karat / 24))
 }
+
+/** Format ₹/g for Settings text inputs (Indian grouping; matches manual entry style). */
+export function formatInrPerGramInput(value: number): string {
+  return value.toLocaleString('en-IN', { maximumFractionDigits: 0 })
+}

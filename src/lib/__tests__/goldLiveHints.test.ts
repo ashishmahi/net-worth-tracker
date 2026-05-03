@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { liveInrPerGramForKarat, liveInrPerGramPure } from '@/lib/goldLiveHints'
+import {
+  formatInrPerGramInput,
+  liveInrPerGramForKarat,
+  liveInrPerGramPure,
+} from '@/lib/goldLiveHints'
 import { roundCurrency } from '@/lib/financials'
 import { TROY_OZ_TO_GRAMS } from '@/lib/priceApi'
 
@@ -9,6 +13,11 @@ describe('goldLiveHints', () => {
     const usdInr = 83
     const pure = liveInrPerGramPure(goldUsdPerOz, usdInr)
     expect(pure).toBe(roundCurrency((goldUsdPerOz / TROY_OZ_TO_GRAMS) * usdInr))
+  })
+
+  it('formats ₹/g strings for Settings inputs', () => {
+    expect(formatInrPerGramInput(7200)).toMatch(/7/)
+    expect(formatInrPerGramInput(7200)).toBe((7200).toLocaleString('en-IN', { maximumFractionDigits: 0 }))
   })
 
   it('scales 22K and 18K by karat/24', () => {
