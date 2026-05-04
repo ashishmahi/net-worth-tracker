@@ -7,7 +7,6 @@ import { Loader2, Eye, EyeOff } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Separator } from '@/components/ui/separator'
 import { Card, CardContent } from '@/components/ui/card'
 import {
   AlertDialog,
@@ -41,6 +40,51 @@ function zodFirstHint(err: ZodError): string {
   if (!i) return `${err.issues.length} validation issues`
   const p = i.path.length ? i.path.join('.') : 'root'
   return `${p}: ${i.message}${err.issues.length > 1 ? ` (+${err.issues.length - 1} more)` : ''}`
+}
+
+type SettingsTabId = 'pricing' | 'retirement' | 'rates' | 'data' | 'danger'
+
+const SETTINGS_TABS: { id: SettingsTabId; label: string }[] = [
+  { id: 'pricing', label: 'Gold & Silver' },
+  { id: 'retirement', label: 'Retirement' },
+  { id: 'rates', label: 'Live rates' },
+  { id: 'data', label: 'Backup & restore' },
+  { id: 'danger', label: 'Reset' },
+]
+
+function SettingsTabStrip({
+  tab,
+  onTabChange,
+}: {
+  tab: SettingsTabId
+  onTabChange: (t: SettingsTabId) => void
+}) {
+  return (
+    <div
+      className="flex flex-wrap gap-0.5 rounded-xl border border-border bg-muted/50 p-1.5 shadow-sm sm:flex-nowrap sm:overflow-x-auto sm:[scrollbar-width:thin]"
+      role="tablist"
+      aria-label="Settings sections"
+    >
+      {SETTINGS_TABS.map(({ id, label }) => (
+        <button
+          key={id}
+          type="button"
+          role="tab"
+          aria-selected={tab === id}
+          id={`settings-tab-${id}`}
+          className={cn(
+            'min-h-10 shrink-0 whitespace-nowrap rounded-lg px-3.5 py-2 text-sm font-medium transition-all',
+            tab === id
+              ? 'bg-card font-semibold text-foreground shadow-sm'
+              : 'text-muted-foreground hover:bg-background/80 hover:text-foreground'
+          )}
+          onClick={() => onTabChange(id)}
+        >
+          {label}
+        </button>
+      ))}
+    </div>
+  )
 }
 
 // ── Form schemas (string inputs — parse to number on submit) ─────────────────
@@ -122,6 +166,8 @@ export function SettingsPage() {
   const [importDecryptPassphrase, setImportDecryptPassphrase] = useState('')
   const [importDecryptError, setImportDecryptError] = useState<string | null>(null)
   const [showImportDecryptPassphrase, setShowImportDecryptPassphrase] = useState(false)
+
+  const [settingsTab, setSettingsTab] = useState<SettingsTabId>('pricing')
 
   // Block 2: Retirement Assumptions form (D-17)
   const retirementForm = useForm<RetirementValues>({
@@ -358,18 +404,27 @@ export function SettingsPage() {
   }
 
   return (
-    <div className="space-y-8">
-      <h1 className="text-xl font-semibold">Settings</h1>
+    <div className="space-y-6">
+      <SettingsTabStrip tab={settingsTab} onTabChange={setSettingsTab} />
 
-      <SettingsGoldPricingCard />
-      <SettingsSilverPricingCard />
+      {settingsTab === 'pricing' && (
+        <div className="space-y-6">
+          <SettingsGoldPricingCard />
+          <SettingsSilverPricingCard />
+        </div>
+      )}
 
-      <Separator />
-
-      {/* Block 2: Retirement Assumptions (D-17) */}
+      {settingsTab === 'retirement' && (
       <Card>
-        <CardContent className="pt-6 space-y-4">
-          <p className="text-sm font-semibold mb-4">Retirement Assumptions</p>
+        <CardContent className="space-y-4 pt-6">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+              Retirement assumptions
+            </p>
+            <p className="mt-1 max-w-[640px] text-sm leading-relaxed text-muted-foreground">
+              Used to project NPS and EPF balances. All values stay in your browser.
+            </p>
+          </div>
           <form onSubmit={retirementForm.handleSubmit(onRetirementSubmit)} className="space-y-4">
             <div>
               <Label htmlFor="currentAge">Current Age</Label>
@@ -450,17 +505,21 @@ export function SettingsPage() {
           </form>
         </CardContent>
       </Card>
+      )}
 
-      <Separator />
-
-      {/* Live market rates + session-only overrides (Phase 03) */}
+      {settingsTab === 'rates' && (
+      <div className="space-y-6">
       <Card>
-        <CardContent className="pt-6 space-y-4">
-          <p className="text-sm font-semibold mb-2">Live market rates</p>
-          <p className="text-sm text-muted-foreground mb-4">
+        <CardContent className="space-y-4 pt-6">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+              Live market rates
+            </p>
+            <p className="mt-1 text-sm text-muted-foreground">
             Read-only quotes for forex, Bitcoin, gold (XAU), and silver (XAG) spot USD per troy
             ounce. Refreshed automatically.
           </p>
+          </div>
           <dl className="space-y-2 text-sm" aria-live="polite">
             <div className="flex justify-between gap-4">
               <dt className="text-muted-foreground">USD → INR (₹ per $1)</dt>
@@ -547,15 +606,21 @@ export function SettingsPage() {
               {silverError ? ` Silver: ${silverError}` : ''}
             </p>
           )}
+        </CardContent>
+      </Card>
 
-          <Separator className="my-4" />
-
-          <p className="text-sm font-semibold">Session only — when feeds fail</p>
-          <p id="session-rates-explainer" className="text-sm text-muted-foreground">
-            These values stay in memory only. They are not saved to your data file or export, and
-            they clear when you reload the page. When live feeds succeed again, session overrides
-            for that channel are dropped automatically.
-          </p>
+      <Card>
+        <CardContent className="space-y-4 pt-6">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+              Session-only manual rates
+            </p>
+            <p id="session-rates-explainer" className="mt-1 text-sm text-muted-foreground">
+              These values stay in memory only. They are not saved to your data file or export,
+              and they clear when you reload the page. When live feeds succeed again, session
+              overrides for that channel are dropped automatically.
+            </p>
+          </div>
           <div className="space-y-3">
             <div>
               <Label htmlFor="session-usd-inr">USD → INR (manual)</Label>
@@ -604,12 +669,21 @@ export function SettingsPage() {
           </div>
         </CardContent>
       </Card>
+      </div>
+      )}
 
-      <Separator />
-
-      {/* Block 3: Data (export + import) */}
-      <div>
-        <p className="text-sm font-semibold mb-4">Data</p>
+      {settingsTab === 'data' && (
+      <Card>
+        <CardContent className="space-y-4 pt-6">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+              Export & import
+            </p>
+            <p className="mt-1 max-w-[640px] text-sm leading-relaxed text-muted-foreground">
+              Your wealth data lives only in this browser. Export to a zip (optionally encrypted with a
+              passphrase) and import to restore on another device or after clearing storage.
+            </p>
+          </div>
         <input
           ref={importFileInputRef}
           type="file"
@@ -659,6 +733,9 @@ export function SettingsPage() {
             Wealth data was imported from file.
           </p>
         )}
+        </CardContent>
+      </Card>
+      )}
 
         <AlertDialog
           open={exportModalOpen}
@@ -873,18 +950,20 @@ export function SettingsPage() {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
-      </div>
 
-      <Separator />
-
-      {/* Block 4: Danger zone — clear all saved wealth data (DATA-01–03) */}
+      {settingsTab === 'danger' && (
       <Card className="border-destructive/40 bg-destructive/5">
-        <CardContent className="pt-6 space-y-4">
-          <p className="text-sm font-semibold">Danger zone</p>
-          <p className="text-sm text-muted-foreground">
-            This permanently removes all net-worth and asset data stored in this browser (local storage).
-            This is not a normal save and cannot be undone in the app.
-          </p>
+        <CardContent className="space-y-4 pt-6">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-destructive">
+              Start fresh
+            </p>
+            <p className="mt-1 max-w-[640px] text-sm leading-relaxed text-muted-foreground">
+              Clears every asset, liability and snapshot stored in this browser so you can begin
+              recording your wealth from scratch. Your data lives only on this device — once cleared, it
+              can&apos;t be recovered from any server.
+            </p>
+          </div>
           {clearDataError && (
             <p role="alert" className="text-sm text-destructive">
               {clearDataError}
@@ -896,6 +975,24 @@ export function SettingsPage() {
             </p>
           )}
 
+          <div className="grid grid-cols-[auto_1fr] gap-3 rounded-lg border border-border bg-muted/30 p-3.5">
+            <span className="text-lg leading-none" aria-hidden>
+              💾
+            </span>
+            <div>
+              <p className="text-sm font-semibold">Want a backup first?</p>
+              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                Use <strong className="text-foreground">Backup & restore → Export data</strong> to
+                download a zip. You can re-import it any time to restore everything as it was.
+              </p>
+            </div>
+          </div>
+
+          <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3.5 text-xs font-medium leading-relaxed text-destructive">
+            <strong>Heads up:</strong> this can&apos;t be undone from inside the app. You&apos;ll
+            confirm before anything is deleted.
+          </div>
+
           <AlertDialog
             open={clearDialogOpen}
             onOpenChange={open => {
@@ -906,11 +1003,16 @@ export function SettingsPage() {
               }
             }}
           >
+            <div className="flex flex-wrap gap-2">
             <AlertDialogTrigger asChild>
               <Button type="button" variant="destructive" aria-label="Open clear all data confirmation">
-                Clear all data
+                Clear data &amp; start fresh
               </Button>
             </AlertDialogTrigger>
+            <Button type="button" variant="outline" onClick={() => setSettingsTab('data')}>
+              Export backup first
+            </Button>
+            </div>
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>Clear all data?</AlertDialogTitle>
@@ -921,7 +1023,7 @@ export function SettingsPage() {
                       removed.
                     </span>
                     <span className="mt-2 block text-muted-foreground">
-                      Use <strong className="text-foreground">Export Data</strong> in the Data section above
+                      Use <strong className="text-foreground">Backup & restore → Export data</strong>{' '}
                       first if you need a backup copy.
                     </span>
                   </div>
@@ -954,6 +1056,7 @@ export function SettingsPage() {
           </AlertDialog>
         </CardContent>
       </Card>
+      )}
     </div>
   )
 }
