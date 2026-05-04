@@ -110,3 +110,9 @@ npm test        # run unit tests (Vitest)
 ```
 
 No build step or deployment. The app is dev-server-only by design.
+
+---
+
+## Studio UI redesign (optional branch)
+
+A **May 2026** visual/IA pass (Claude Design “Studio” direction) lives on branch **`feature/studio-design-redesign`**. See **[`STUDIO-UI-REDESIGN.md`](STUDIO-UI-REDESIGN.md)** for scope, file list, and merge notes.
