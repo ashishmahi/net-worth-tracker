@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { useCallback, useMemo, useState, type FormEvent } from 'react'
 import { Plus, Trash2 } from 'lucide-react'
 import {
   Sheet,
@@ -32,7 +32,12 @@ import {
   getDraftFieldsToReset,
 } from '@/lib/propertyEntryPath'
 import { createId, nowIso, parseFinancialInput, roundCurrency } from '@/lib/financials'
+import {
+  PROPERTY_VALIDATION_CODES,
+  getPropertyValidationIssues,
+} from '@/lib/propertyValidation'
 import type { PropertyItem, PropertyMilestoneRow } from '@/types/data'
+import { PropertyItemSchema } from '@/types/data'
 
 type MilestoneDraft = { id: string; label: string; amount: string; isPaid: boolean }
 
@@ -72,6 +77,68 @@ export function PropertyPage() {
   const [emiStr, setEmiStr] = useState('')
 
   const items = data.assets.property.items
+
+  const buildPropertyItemFromDraft = useCallback((): PropertyItem => {
+    const now = nowIso()
+    const agreementInr = roundCurrency(parseFinancialInput(agreementStr))
+    const builtMilestones: PropertyMilestoneRow[] = milestones.map(m => ({
+      id: m.id,
+      label: m.label,
+      amountInr: roundCurrency(parseFinancialInput(m.amount)),
+      isPaid: m.isPaid,
+    }))
+
+    let persistMilestones = builtMilestones
+    let persistHasLiability = hasLiability
+    if (entryPath === 'fullyPaid') {
+      persistMilestones = []
+      persistHasLiability = false
+    }
+
+    return {
+      id: editingId ?? createId(),
+      createdAt: editingId && editingCreatedAt ? editingCreatedAt : now,
+      updatedAt: now,
+      label: label.trim(),
+      agreementInr,
+      milestones: persistMilestones,
+      hasLiability: persistHasLiability,
+      ...(persistHasLiability
+        ? {
+            outstandingLoanInr: roundCurrency(parseFinancialInput(loanStr)),
+            ...(lenderStr.trim() ? { lender: lenderStr.trim() } : {}),
+            ...(emiStr.trim() ? { emiInr: roundCurrency(parseFinancialInput(emiStr)) } : {}),
+          }
+        : {}),
+    }
+  }, [
+    agreementStr,
+    editingCreatedAt,
+    editingId,
+    emiStr,
+    entryPath,
+    hasLiability,
+    lenderStr,
+    loanStr,
+    milestones,
+    label,
+  ])
+
+  const { sheetIsValid, outstandingLoanIssue, emiIssue } = useMemo(() => {
+    const draft = buildPropertyItemFromDraft()
+    const validationIssues = getPropertyValidationIssues(draft)
+    return {
+      sheetIsValid: PropertyItemSchema.safeParse(draft).success,
+      outstandingLoanIssue: validationIssues.find(
+        i =>
+          i.code === PROPERTY_VALIDATION_CODES.OUTSTANDING_REQUIRED ||
+          i.code === PROPERTY_VALIDATION_CODES.OUTSTANDING_EXCEEDS_AGREEMENT
+      ),
+      emiIssue: validationIssues.find(
+        i => i.code === PROPERTY_VALIDATION_CODES.EMI_NOT_LESS_THAN_OUTSTANDING
+      ),
+    }
+  }, [buildPropertyItemFromDraft])
 
   const agreementInrSheet = roundCurrency(parseFinancialInput(agreementStr))
   const paidSumSheet = roundCurrency(
@@ -146,41 +213,15 @@ export function PropertyPage() {
       setSaveError('Property name is required.')
       return
     }
+    const candidate = buildPropertyItemFromDraft()
+    if (!PropertyItemSchema.safeParse(candidate).success) {
+      return
+    }
     setSaveError(null)
     setSaving(true)
     try {
       const now = nowIso()
-      const agreementInr = roundCurrency(parseFinancialInput(agreementStr))
-      const builtMilestones: PropertyMilestoneRow[] = milestones.map(m => ({
-        id: m.id,
-        label: m.label,
-        amountInr: roundCurrency(parseFinancialInput(m.amount)),
-        isPaid: m.isPaid,
-      }))
-
-      let persistMilestones = builtMilestones
-      let persistHasLiability = hasLiability
-      if (entryPath === 'fullyPaid') {
-        persistMilestones = []
-        persistHasLiability = false
-      }
-
-      const nextItem: PropertyItem = {
-        id: editingId ?? createId(),
-        createdAt: editingId && editingCreatedAt ? editingCreatedAt : now,
-        updatedAt: now,
-        label: label.trim(),
-        agreementInr,
-        milestones: persistMilestones,
-        hasLiability: persistHasLiability,
-        ...(persistHasLiability
-          ? {
-              outstandingLoanInr: roundCurrency(parseFinancialInput(loanStr)),
-              ...(lenderStr.trim() ? { lender: lenderStr.trim() } : {}),
-              ...(emiStr.trim() ? { emiInr: roundCurrency(parseFinancialInput(emiStr)) } : {}),
-            }
-          : {}),
-      }
+      const nextItem: PropertyItem = { ...candidate, updatedAt: now }
       const list = data.assets.property.items
       const nextItems = editingId
         ? list.map(p => (p.id === editingId ? nextItem : p))
@@ -376,6 +417,11 @@ export function PropertyPage() {
               Enter what you still owe the lender for this home — your dashboard subtracts this from
               property value for net worth (not builder dues above).
             </p>
+            {outstandingLoanIssue && (
+              <p className="text-destructive text-sm mt-2" role="status">
+                {outstandingLoanIssue.message}
+              </p>
+            )}
             <div className="space-y-2 mt-4">
               <Label htmlFor="property-lender">Lender</Label>
               <Input
@@ -400,6 +446,11 @@ export function PropertyPage() {
               <p className="text-sm text-muted-foreground mt-1" id="emi-helper">
                 Your monthly payment to the lender for this loan (not payments to the builder).
               </p>
+              {emiIssue && (
+                <p className="text-destructive text-sm mt-2" role="status">
+                  {emiIssue.message}
+                </p>
+              )}
             </div>
           </div>
         )}
@@ -585,7 +636,7 @@ export function PropertyPage() {
                   Delete
                 </Button>
               )}
-              <Button type="submit" disabled={saving}>
+              <Button type="submit" disabled={saving || !sheetIsValid}>
                 {saving ? 'Saving…' : 'Save'}
               </Button>
             </SheetFooter>
