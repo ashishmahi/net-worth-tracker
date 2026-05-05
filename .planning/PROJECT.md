@@ -26,9 +26,16 @@ See **total net worth in INR** at a glance (**debt-adjusted** headline minus sta
 
 Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.1-ROADMAP.md` and matching `*-REQUIREMENTS.md` archives. Executed phase artifacts for shipped milestones live under [`.planning/milestones/`](milestones/) (e.g. `v1.5-phases/`). Phase dirs **19–28** remain under [`.planning/phases/`](phases/) until optional **`/gsd-cleanup`**.
 
-## Next milestone
+## Current Milestone: v2.2 Import-adjusted bullion pricing
 
-Run **`/gsd-new-milestone`** to define requirements and roadmap for the next version (no live **`REQUIREMENTS.md`** until then — last removal at **v2.0.1** close; **v2.1** archive stands alone).
+**Goal:** Bring live gold/silver ₹/g hints (and paths that consume them) closer to **Indian market-style** expectations by applying configurable **import-style uplift** on top of spot×forex parity—not a customs calculator, but a tunable approximation.
+
+**Target features:**
+- **Persisted uplift** — separate configurable factors for gold vs silver (defaults ~10% / ~8% per [SEED-001](seeds/SEED-001-gold-silver-import-tax-inr.md)), schema + migration  
+- **Derivation** — extend `goldLiveHints` / `silverLiveHints` and sync / effective net-worth wiring so unlocked live pricing uses uplifted ₹/g consistently  
+- **Settings UX** — gold/silver pricing cards: controls or documented defaults plus clear copy that values are **illustrative** and **not tax or legal advice**
+
+**Selected seed:** [SEED-001 — Indian import-style duties in ₹/g](seeds/SEED-001-gold-silver-import-tax-inr.md)
 
 ## Current state (shipped through **v2.1** — 2026-05-04)
 
@@ -189,4 +196,4 @@ This file is updated at **milestone completion** to avoid drift between plans an
 </details>  
 
 ---
-*Last updated: 2026-05-04 — **v2.1** (section URL routing) milestone archived; [`v2.1-ROADMAP.md`](milestones/v2.1-ROADMAP.md) · [`v2.1-REQUIREMENTS.md`](milestones/v2.1-REQUIREMENTS.md).*  
+*Last updated: 2026-05-05 — **`/gsd-new-milestone`**: **v2.2** planning started ([`REQUIREMENTS.md`](REQUIREMENTS.md), [`ROADMAP.md`](ROADMAP.md)); last shipped **v2.1** · [`v2.1-ROADMAP.md`](milestones/v2.1-ROADMAP.md).*  

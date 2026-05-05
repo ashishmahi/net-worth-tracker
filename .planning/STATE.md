@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: milestone
-status: milestone_complete
-last_updated: "2026-05-04T00:10:00.000Z"
-last_activity: 2026-05-04 — v2.1 milestone archived
+milestone: v2.2
+milestone_name: Import-adjusted bullion pricing
+status: planning
+last_updated: "2026-05-05T12:00:00.000Z"
+last_activity: 2026-05-05 — Milestone v2.2 started (SEED-001)
 progress:
-  total_phases: 1
-  completed_phases: 1
-  total_plans: 1
-  completed_plans: 1
-  percent: 100
+  total_phases: 2
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 ## Project
@@ -19,18 +19,18 @@ progress:
 
 ## Current position
 
-Phase: —
+Phase: Not started (defining requirements → roadmap complete)
 Plan: —
-Status: Between milestones — **v2.1** shipped; define next via **`/gsd-new-milestone`**
-Last activity: 2026-05-04
+Status: Planning — requirements and roadmap defined; pick Phase **29** to discuss or plan
+Last activity: 2026-05-05 — Milestone **v2.2** initialized (**Import-adjusted bullion pricing**, SEED-001)
 
 ```
-Progress: [ ] — no active milestone; live REQUIREMENTS.md removed at v2.0.1 close
+Progress: [ ] Milestone v2.2 — Phase 29–30 not started
 ```
 
 ## Project reference
 
-See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](ROADMAP.md) — **v2.1** shipped (Phase **28**); next version via **`/gsd-new-milestone`**.
+See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](ROADMAP.md) — **v2.2** active (Phases **29–30**). **Requirements:** [`.planning/REQUIREMENTS.md`](REQUIREMENTS.md).
 
 **Core value:** Total net worth in INR — liabilities deducted from gross assets, live prices where applicable, minimal repeated data entry.
 
@@ -42,8 +42,8 @@ See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](
 
 ### Roadmap evolution
 
+- **v2.2** planning 2026-05-05: import-style uplift for gold/silver live ₹/g ([SEED-001](seeds/SEED-001-gold-silver-import-tax-inr.md)) — Phases **29–30** in [`ROADMAP.md`](ROADMAP.md).
 - **v2.1** shipped 2026-05-04: section URL routing + mobile Home — archives [`v2.1-ROADMAP.md`](milestones/v2.1-ROADMAP.md) · [`v2.1-REQUIREMENTS.md`](milestones/v2.1-REQUIREMENTS.md); phase dir [`.planning/phases/28-section-routing-home-header/`](phases/28-section-routing-home-header/).
-- **v2.0.1** shipped 2026-05-03: live **gold** spot + Settings **gold/silver** pricing UX — [`v2.0.1-ROADMAP.md`](milestones/v2.0.1-ROADMAP.md) · [`v2.0.1-REQUIREMENTS.md`](milestones/v2.0.1-REQUIREMENTS.md).
 
 ### Pending todos
 
@@ -62,8 +62,8 @@ See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](
 
 ## Session continuity
 
+**Active milestone:** **v2.2** — Import-adjusted bullion pricing — SEED-001 — 2026-05-05
+
 **Last shipped:** **v2.1** — Section routing & home nav (Phase **28**) — 2026-05-04
 
-**Prior:** **v2.0** — Deploy & Beta (Phases **23–25**) — 2026-05-03
-
-**Next:** **`/gsd-new-milestone`** — fresh requirements and roadmap for the next version
+**Next:** **`/gsd-discuss-phase 29`** or **`/gsd-plan-phase 29`** — Phase **29** bullion uplift data & calculations
