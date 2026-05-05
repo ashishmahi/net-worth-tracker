@@ -68,6 +68,36 @@ function countPaidMilestones(item: PropertyItem) {
   return item.milestones.filter(m => m.isPaid).length
 }
 
+/** One-line summary under the property name on the list card (builder vs lender vs fully paid). */
+function propertyListDetailLine(item: PropertyItem): string {
+  const path = inferEntryPathFromPropertyItem(item)
+  const ag = inr0(item.agreementInr)
+
+  if (path === 'fullyPaid') {
+    return `${ag} agreement · fully paid`
+  }
+
+  const builderBal = balanceDueToBuilder(item)
+
+  if (path === 'mortgaged') {
+    const parts: string[] = [`${ag} agreement`]
+    if (item.hasLiability) {
+      const loan = item.outstandingLoanInr ?? 0
+      parts.push(loan > 0 ? `${inr0(loan)} owed to lender` : 'Home loan tracked')
+    }
+    if (item.milestones.length > 0) {
+      parts.push(
+        builderBal > 0 ? `${inr0(builderBal)} due to builder` : 'Nothing due to builder'
+      )
+    }
+    return parts.join(' · ')
+  }
+
+  return `${ag} agreement · ${
+    builderBal > 0 ? `${inr0(builderBal)} due to builder` : 'nothing due to builder'
+  }`
+}
+
 export function PropertyPage() {
   const { data, saveData } = useAppData()
   const [sheetOpen, setSheetOpen] = useState(false)
@@ -334,64 +364,83 @@ export function PropertyPage() {
           Mark each stage as paid when you pay the builder. Your dashboard uses these with your
           agreement to show equity from this property.
         </p>
-        <p className="text-xs text-muted-foreground">
-          Scroll sideways to see all columns.
-        </p>
+        {entryPath === 'mortgaged' && (
+          <p className="text-xs text-muted-foreground">
+            Optional builder payment schedule: many mortgaged homes still pay the developer in
+            stages — add rows below if that applies. Bank loan fields are separate (below).
+          </p>
+        )}
         <div className="w-full min-w-0 overflow-x-auto">
-          <Table className="min-w-[36rem] w-max">
+          <Table className="w-full table-fixed text-sm">
+            <colgroup>
+              <col className="w-[42%]" />
+              <col className="w-[38%]" />
+              <col className="w-[12%]" />
+              <col className="w-[8%]" />
+            </colgroup>
             <TableHeader>
               <TableRow>
-                <TableHead scope="col" className="w-[32%]">
+                <TableHead scope="col" className="px-2 align-middle">
                   Label
                 </TableHead>
-                <TableHead scope="col" className="w-[28%]">
+                <TableHead scope="col" className="px-2 align-middle">
                   Amount (INR)
                 </TableHead>
-                <TableHead scope="col" className="w-24 text-center">
+                <TableHead scope="col" className="px-1 text-center align-middle">
                   Paid
                 </TableHead>
-                <TableHead scope="col" className="w-10" />
+                <TableHead
+                  scope="col"
+                  className="w-10 p-1 text-center align-middle"
+                  aria-label="Remove row"
+                />
               </TableRow>
             </TableHeader>
             <TableBody>
               {milestones.map(m => (
                 <TableRow key={m.id}>
-                  <TableCell>
+                  <TableCell className="px-2 py-2 align-middle">
                     <Input
                       type="text"
+                      className="min-w-0 h-9"
                       aria-label="Milestone label"
                       value={m.label}
                       onChange={e => updateMilestone(m.id, { label: e.target.value })}
                     />
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="px-2 py-2 align-middle">
                     <Input
                       type="text"
                       inputMode="decimal"
+                      className="min-w-0 h-9"
                       aria-label="Milestone amount in INR"
                       value={m.amount}
                       onChange={e => updateMilestone(m.id, { amount: e.target.value })}
                     />
                   </TableCell>
-                  <TableCell className="text-center">
-                    <Checkbox
-                      id={`paid-${m.id}`}
-                      checked={m.isPaid}
-                      onCheckedChange={c => updateMilestone(m.id, { isPaid: c === true })}
-                      aria-label="Paid to builder"
-                    />
+                  <TableCell className="px-1 py-2 align-middle">
+                    <div className="flex justify-center">
+                      <Checkbox
+                        id={`paid-${m.id}`}
+                        checked={m.isPaid}
+                        onCheckedChange={c => updateMilestone(m.id, { isPaid: c === true })}
+                        aria-label="Paid to builder"
+                      />
+                    </div>
                   </TableCell>
-                  <TableCell>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="shrink-0"
-                      onClick={() => removeMilestone(m.id)}
-                      aria-label="Remove milestone row"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                  <TableCell className="p-1 align-middle">
+                    <div className="flex justify-center">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-9 w-9 shrink-0"
+                        onClick={() => removeMilestone(m.id)}
+                        aria-label="Remove milestone row"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -557,9 +606,9 @@ export function PropertyPage() {
               </div>
             ) : (
               items.map((item, index) => {
-                const bal = balanceDueToBuilder(item)
                 const paidC = countPaidMilestones(item)
                 const totalC = item.milestones.length
+                const path = inferEntryPathFromPropertyItem(item)
                 return (
                   <div key={item.id}>
                     <button
@@ -568,14 +617,14 @@ export function PropertyPage() {
                       aria-label={`Edit ${item.label}`}
                       onClick={() => openEdit(item)}
                     >
-                      <div>
+                      <div className="min-w-0 pr-2">
                         <span className="text-sm font-semibold block">{item.label}</span>
-                        <span className="text-sm text-muted-foreground block">
-                          {inr0(item.agreementInr)} agreement — {inr0(bal)} due to builder
+                        <span className="text-sm text-muted-foreground block break-words">
+                          {propertyListDetailLine(item)}
                         </span>
-                        {totalC > 0 && (
+                        {totalC > 0 && path !== 'fullyPaid' && (
                           <span className="text-xs text-muted-foreground block mt-0.5">
-                            {paidC} / {totalC} paid
+                            Builder milestones: {paidC} / {totalC} paid
                           </span>
                         )}
                       </div>
