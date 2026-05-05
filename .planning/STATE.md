@@ -3,14 +3,13 @@ gsd_state_version: 1.0
 milestone: v2.3
 milestone_name: Property entry flow & validation
 status: planning
-last_updated: "2026-05-06T12:00:00.000Z"
-last_activity: 2026-05-06
+last_updated: "2026-05-05T21:05:06.268Z"
+last_activity: 2026-05-06 — Milestone **v2.3** initialized
 progress:
   total_phases: 3
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
-  percent: 0
 ---
 
 ## Project
