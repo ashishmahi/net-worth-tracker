@@ -1,19 +1,41 @@
 import { roundCurrency } from '@/lib/financials'
 import { TROY_OZ_TO_GRAMS } from '@/lib/priceApi'
 
-/** INR per gram for pure (24K) gold from USD/troy oz spot and INR per USD. */
-export function liveInrPerGramPure(goldUsdPerOz: number, usdInr: number): number {
-  return roundCurrency((goldUsdPerOz / TROY_OZ_TO_GRAMS) * usdInr)
+/** Default import-style uplift on parity-derived gold ₹/g (BLN-01). */
+export const DEFAULT_GOLD_IMPORT_UPLIFT_RATE = 0.1
+
+/** Resolved nonnegative uplift rate from settings (falls back to default). */
+export function resolveGoldImportUpliftRate(settings: {
+  goldImportUpliftRate?: number
+}): number {
+  const r = settings.goldImportUpliftRate
+  return r !== undefined ? r : DEFAULT_GOLD_IMPORT_UPLIFT_RATE
 }
 
-/** INR per gram for a karat, derived from spot × purity (24K baseline). */
+/** INR per gram for pure (24K) gold from USD/troy oz spot and INR per USD, with optional import uplift. */
+export function liveInrPerGramPure(
+  goldUsdPerOz: number,
+  usdInr: number,
+  importUpliftRate: number = DEFAULT_GOLD_IMPORT_UPLIFT_RATE,
+): number {
+  const base = (goldUsdPerOz / TROY_OZ_TO_GRAMS) * usdInr
+  const upliftedPure = base * (1 + importUpliftRate)
+  return roundCurrency(upliftedPure)
+}
+
+/** INR per gram for a karat, derived from uplifted spot × purity (24K baseline). */
 export function liveInrPerGramForKarat(
   goldUsdPerOz: number,
   usdInr: number,
   karat: 24 | 22 | 18,
+  importUpliftRate: number = DEFAULT_GOLD_IMPORT_UPLIFT_RATE,
 ): number {
-  const pure = liveInrPerGramPure(goldUsdPerOz, usdInr)
-  return roundCurrency(pure * (karat / 24))
+  const base = (goldUsdPerOz / TROY_OZ_TO_GRAMS) * usdInr
+  const upliftedPure = base * (1 + importUpliftRate)
+  if (karat === 24) {
+    return roundCurrency(upliftedPure)
+  }
+  return roundCurrency(upliftedPure * (karat / 24))
 }
 
 /** Format ₹/g for Settings text inputs (Indian grouping; matches manual entry style). */
