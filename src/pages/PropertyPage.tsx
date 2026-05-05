@@ -1,4 +1,12 @@
-import { useCallback, useMemo, useState, type FormEvent } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type FormEvent,
+  type KeyboardEvent,
+} from 'react'
 import { Plus, Trash2 } from 'lucide-react'
 import {
   Sheet,
@@ -76,7 +84,17 @@ export function PropertyPage() {
   const [lenderStr, setLenderStr] = useState('')
   const [emiStr, setEmiStr] = useState('')
 
+  const pathButtonRefs = useRef<(HTMLButtonElement | null)[]>([])
+
   const items = data.assets.property.items
+
+  useEffect(() => {
+    if (!sheetOpen) return
+    const id = requestAnimationFrame(() => {
+      pathButtonRefs.current[0]?.focus()
+    })
+    return () => cancelAnimationFrame(id)
+  }, [sheetOpen])
 
   const buildPropertyItemFromDraft = useCallback((): PropertyItem => {
     const now = nowIso()
@@ -153,6 +171,35 @@ export function PropertyPage() {
   /** D-07: loan block before milestones when both matter */
   const loanBeforeMilestones =
     entryPath === 'mortgaged' || (entryPath === 'milestones' && hasLiability)
+
+  function handlePathRadiogroupKeyDown(e: KeyboardEvent<HTMLDivElement>) {
+    const target = e.target as HTMLElement | null
+    if (!target || target.getAttribute('role') !== 'radio') return
+
+    const wide =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(min-width: 640px)').matches
+    let delta = 0
+    if (wide) {
+      if (e.key === 'ArrowLeft') delta = -1
+      else if (e.key === 'ArrowRight') delta = 1
+      else return
+    } else {
+      if (e.key === 'ArrowUp') delta = -1
+      else if (e.key === 'ArrowDown') delta = 1
+      else return
+    }
+
+    e.preventDefault()
+    const curIdx = PATH_KEYS.indexOf(entryPath)
+    const len = PATH_KEYS.length
+    const nextIdx = (curIdx + delta + len) % len
+    const nextKey = PATH_KEYS[nextIdx]
+    handleEntryPathChange(nextKey)
+    requestAnimationFrame(() => {
+      pathButtonRefs.current[nextIdx]?.focus()
+    })
+  }
 
   function handleEntryPathChange(next: PropertyEntryPath) {
     setEntryPath(prev => {
@@ -286,6 +333,9 @@ export function PropertyPage() {
         <p className="text-sm text-muted-foreground">
           Mark each stage as paid when you pay the builder. Your dashboard uses these with your
           agreement to show equity from this property.
+        </p>
+        <p className="text-xs text-muted-foreground">
+          Scroll sideways to see all columns.
         </p>
         <div className="w-full min-w-0 overflow-x-auto">
           <Table className="min-w-[36rem] w-max">
@@ -571,11 +621,15 @@ export function PropertyPage() {
                 <div
                   role="radiogroup"
                   aria-labelledby="property-path-label"
-                  className="grid grid-cols-3 gap-1 rounded-lg border bg-muted/40 p-1"
+                  className="grid grid-cols-1 sm:grid-cols-3 gap-1 rounded-lg border bg-muted/40 p-1"
+                  onKeyDown={handlePathRadiogroupKeyDown}
                 >
-                  {PATH_KEYS.map(key => (
+                  {PATH_KEYS.map((key, i) => (
                     <Button
                       key={key}
+                      ref={el => {
+                        pathButtonRefs.current[i] = el
+                      }}
                       type="button"
                       role="radio"
                       aria-checked={entryPath === key}
