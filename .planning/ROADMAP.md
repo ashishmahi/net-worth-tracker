@@ -145,4 +145,4 @@
 
 ---
 
-_Milestone archives: `.planning/milestones/` · **Current:** **v2.2** — Phases **29–30** (import-adjusted bullion pricing)._
+_Milestone archives: `.planning/milestones/` · **Last shipped:** **v2.2** — Phases **29–30** (import-adjusted bullion pricing), 2026-05-06._
