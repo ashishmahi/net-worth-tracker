@@ -673,24 +673,30 @@ export function PropertyPage() {
                   className="grid grid-cols-1 sm:grid-cols-3 gap-1 rounded-lg border bg-muted/40 p-1"
                   onKeyDown={handlePathRadiogroupKeyDown}
                 >
-                  {PATH_KEYS.map((key, i) => (
-                    <Button
-                      key={key}
-                      ref={el => {
-                        pathButtonRefs.current[i] = el
-                      }}
-                      type="button"
-                      role="radio"
-                      aria-checked={entryPath === key}
-                      variant={entryPath === key ? 'secondary' : 'ghost'}
-                      className={cn(
-                        'h-auto min-h-10 whitespace-normal px-2 py-2 text-center text-xs font-medium leading-tight sm:text-sm'
-                      )}
-                      onClick={() => handleEntryPathChange(key)}
-                    >
-                      {PATH_LABELS[key]}
-                    </Button>
-                  ))}
+                  {PATH_KEYS.map((key, i) => {
+                    const selected = entryPath === key
+                    return (
+                      <Button
+                        key={key}
+                        ref={el => {
+                          pathButtonRefs.current[i] = el
+                        }}
+                        type="button"
+                        role="radio"
+                        aria-checked={selected}
+                        variant="ghost"
+                        className={cn(
+                          'h-auto min-h-10 whitespace-normal rounded-md px-2 py-2 text-center text-xs font-medium leading-tight transition-colors sm:text-sm',
+                          selected
+                            ? 'border border-border bg-background font-semibold text-foreground shadow-sm hover:bg-background'
+                            : 'border border-transparent text-muted-foreground hover:bg-muted/70 hover:text-foreground'
+                        )}
+                        onClick={() => handleEntryPathChange(key)}
+                      >
+                        {PATH_LABELS[key]}
+                      </Button>
+                    )
+                  })}
                 </div>
               </div>
               <div>
