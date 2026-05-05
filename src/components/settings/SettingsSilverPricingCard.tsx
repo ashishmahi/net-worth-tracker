@@ -14,6 +14,7 @@ import { formatInrPerGramInput } from '@/lib/goldLiveHints'
 import {
   effectiveSilverInrPerGramForNetWorth,
   liveSilverInrPerGram,
+  resolveSilverImportUpliftRate,
   shouldAutoSyncSilverFromSpot,
 } from '@/lib/silverLiveHints'
 
@@ -46,8 +47,12 @@ export function SettingsSilverPricingCard() {
 
   const silverHint = useMemo(() => {
     if (silverUsdPerOz == null || usdInr == null) return null
-    return liveSilverInrPerGram(silverUsdPerOz, usdInr)
-  }, [silverUsdPerOz, usdInr])
+    return liveSilverInrPerGram(
+      silverUsdPerOz,
+      usdInr,
+      resolveSilverImportUpliftRate(data.settings),
+    )
+  }, [silverUsdPerOz, usdInr, data.settings])
 
   const pricingHealthySilver =
     !silverHintLoading &&

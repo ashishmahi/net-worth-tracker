@@ -19,7 +19,7 @@ import { Separator } from '@/components/ui/separator'
 import { useAppData } from '@/context/AppDataContext'
 import { useLivePrices } from '@/context/LivePricesContext'
 import { createId, nowIso, parseFinancialInput, roundCurrency } from '@/lib/financials'
-import { liveInrPerGramForKarat } from '@/lib/goldLiveHints'
+import { liveInrPerGramForKarat, resolveGoldImportUpliftRate } from '@/lib/goldLiveHints'
 import { PageHeader } from '@/components/PageHeader'
 import { cn } from '@/lib/utils'
 import type { GoldItem } from '@/types/data'
@@ -134,12 +134,13 @@ export function GoldPage() {
 
   const liveSpotHints = useMemo(() => {
     if (goldUsdPerOz == null || usdInr == null) return null
+    const rate = resolveGoldImportUpliftRate(data.settings)
     return {
-      k24: liveInrPerGramForKarat(goldUsdPerOz, usdInr, 24),
-      k22: liveInrPerGramForKarat(goldUsdPerOz, usdInr, 22),
-      k18: liveInrPerGramForKarat(goldUsdPerOz, usdInr, 18),
+      k24: liveInrPerGramForKarat(goldUsdPerOz, usdInr, 24, rate),
+      k22: liveInrPerGramForKarat(goldUsdPerOz, usdInr, 22, rate),
+      k18: liveInrPerGramForKarat(goldUsdPerOz, usdInr, 18, rate),
     }
-  }, [goldUsdPerOz, usdInr])
+  }, [goldUsdPerOz, usdInr, data.settings])
 
   const items = data.assets.gold.items
 
