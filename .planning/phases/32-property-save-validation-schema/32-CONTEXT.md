@@ -30,7 +30,7 @@ Deliver **save-blocking validation** and **schema parity** for Property: milesto
 ### EMI and weak sanity (PRV-03)
 
 - **D-09:** **EMI is optional** when a property-attached loan exists; treat **blank EMI** and **explicit 0** as the same permissive path (“unknown / not tracked”).
-- **D-10:** **Block save** when EMI is **entered** (non-blank, parsed &gt; 0 path — see planner nuance) **and** **EMI ≥ outstanding** (weak sanity failure). *(Planner: define strict numeric interpretation alongside **D-09** so “entered” vs “blank/zero” stays consistent.)*
+- **D-10:** **Block save** when EMI is **entered** (non-blank, parsed > 0 path — see planner nuance) **and** **EMI ≥ outstanding** (weak sanity failure). *(Planner: define strict numeric interpretation alongside **D-09** so “entered” vs “blank/zero” stays consistent.)*
 - **D-11:** **Skip** optional tenure / payoff **hints** in Phase 32 — only the blocking rules above plus inline messaging.
 
 ### Validation layering & tests (PRV-04 / PRV-05)
