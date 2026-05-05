@@ -1,14 +1,10 @@
 import { useMemo, useState, useCallback } from 'react'
-import { AlertCircle, Coins, Loader2 } from 'lucide-react'
-import { PageHeader } from '@/components/PageHeader'
+import { Link } from 'react-router-dom'
+import { AlertCircle, Loader2 } from 'lucide-react'
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import type { SectionKey } from '@/components/AppSidebar'
@@ -31,6 +27,11 @@ import {
 import { roundCurrency } from '@/lib/financials'
 import type { AppData } from '@/types/data'
 import { NetWorthOverTimeCard } from '@/components/NetWorthOverTimeCard'
+import { AllocationRing } from '@/components/AllocationRing'
+import { categoryOklch } from '@/lib/categoryColors'
+import { sectionToPath } from '@/lib/sectionRoutes'
+import { fmtCompactInr, fmtInr0, splitInrAmount } from '@/lib/wealthFormat'
+import { cn } from '@/lib/utils'
 
 const ROW_LABEL: Record<DashboardCategoryKey, string> = {
   gold: 'Gold',
@@ -54,12 +55,42 @@ const NAV_KEY: Record<DashboardCategoryKey, SectionKey> = {
   retirement: 'retirement',
 }
 
-function inrNoDecimals(n: number) {
-  return n.toLocaleString('en-IN', {
-    style: 'currency',
-    currency: 'INR',
-    maximumFractionDigits: 0,
-  })
+function rowSub(
+  key: DashboardCategoryKey,
+  data: AppData
+): string | undefined {
+  switch (key) {
+    case 'gold':
+      return data.assets.gold.items.length
+        ? `${data.assets.gold.items.length} holding${data.assets.gold.items.length > 1 ? 's' : ''}`
+        : undefined
+    case 'otherCommodities':
+      return data.assets.otherCommodities.items.length
+        ? `${data.assets.otherCommodities.items.length} line${data.assets.otherCommodities.items.length > 1 ? 's' : ''}`
+        : undefined
+    case 'mutualFunds':
+      return data.assets.mutualFunds.platforms.length
+        ? `${data.assets.mutualFunds.platforms.length} platform${data.assets.mutualFunds.platforms.length > 1 ? 's' : ''}`
+        : undefined
+    case 'stocks':
+      return data.assets.stocks.platforms.length
+        ? `${data.assets.stocks.platforms.length} broker${data.assets.stocks.platforms.length > 1 ? 's' : ''}`
+        : undefined
+    case 'bitcoin':
+      return data.assets.bitcoin.quantity > 0 ? 'BTC holding' : undefined
+    case 'property':
+      return data.assets.property.items.length
+        ? `${data.assets.property.items.length} propert${data.assets.property.items.length > 1 ? 'ies' : 'y'}`
+        : undefined
+    case 'bankSavings':
+      return data.assets.bankSavings.accounts.length
+        ? `${data.assets.bankSavings.accounts.length} account${data.assets.bankSavings.accounts.length > 1 ? 's' : ''}`
+        : undefined
+    case 'retirement':
+      return 'NPS · EPF'
+    default:
+      return undefined
+  }
 }
 
 function noHoldingsYet(data: AppData): boolean {
@@ -76,6 +107,38 @@ function noHoldingsYet(data: AppData): boolean {
     data.liabilities.length === 0
   )
 }
+
+const QUICK_START: {
+  key: SectionKey
+  label: string
+  desc: string
+  icon: string
+}[] = [
+  {
+    key: 'bankSavings',
+    label: 'Bank Savings',
+    desc: 'Add INR or AED accounts',
+    icon: '🏦',
+  },
+  {
+    key: 'mutualFunds',
+    label: 'Mutual Funds',
+    desc: 'Add a platform and scheme',
+    icon: '📈',
+  },
+  {
+    key: 'gold',
+    label: 'Gold',
+    desc: 'Jewellery, coins or bars',
+    icon: '🪙',
+  },
+  {
+    key: 'stocks',
+    label: 'Stocks',
+    desc: 'Broker positions',
+    icon: '📊',
+  },
+]
 
 export function DashboardPage({
   onNavigate,
@@ -153,6 +216,32 @@ export function DashboardPage({
 
   const empty = noHoldingsYet(data)
 
+  const sortedHistory = useMemo(() => {
+    return [...data.netWorthHistory].sort(
+      (a, b) =>
+        new Date(a.recordedAt).getTime() - new Date(b.recordedAt).getTime()
+    )
+  }, [data.netWorthHistory])
+
+  const lastSnapshot = sortedHistory[sortedHistory.length - 1]
+  const deltaVsSnapshot =
+    lastSnapshot != null ? netWorth - lastSnapshot.totalInr : null
+  const deltaPctVsSnapshot =
+    lastSnapshot != null &&
+    lastSnapshot.totalInr !== 0 &&
+    deltaVsSnapshot != null
+      ? (deltaVsSnapshot / Math.abs(lastSnapshot.totalInr)) * 100
+      : null
+
+  const ringSlices = useMemo(() => {
+    return DASHBOARD_CATEGORY_ORDER.map(key => ({
+      key,
+      label: ROW_LABEL[key],
+      value:
+        totals[key] === null ? 0 : Math.max(0, totals[key] as number),
+    })).filter(s => s.value > 0)
+  }, [totals])
+
   const canRecordSnapshot = useMemo(() => {
     return (
       !empty &&
@@ -207,228 +296,403 @@ export function DashboardPage({
     }
   }, [data, saveData, totals])
 
-  return (
-    <div className="space-y-4" aria-live="polite">
-      <PageHeader title="Dashboard" />
+  const debtRatioPct =
+    grossAssets > 0
+      ? Math.round(debtToAssetRatio(totalDebtAll, grossAssets))
+      : 0
 
-      {empty ? (
-        <div className="space-y-2">
-          <p className="text-sm font-semibold">No holdings yet</p>
-          <p className="text-sm text-muted-foreground">
-            Add assets in each section; your total will show here.
-          </p>
-        </div>
-      ) : (
-        <>
-          <Card>
-            <CardHeader className="space-y-1 p-6">
-              <CardDescription className="text-sm text-muted-foreground">
-                Net worth
-              </CardDescription>
-              {showNetWorthSkeleton ? (
-                <Skeleton className="h-8 w-40" />
-              ) : (
-                <>
-                  <CardTitle className="text-2xl font-semibold">
-                    {inrNoDecimals(netWorth)}
-                  </CardTitle>
-                  {totalDebtAll > 0 ? (
-                    <p className="text-sm text-muted-foreground">
-                      Debt-to-asset ratio:{' '}
-                      {Math.round(
-                        debtToAssetRatio(totalDebtAll, grossAssets)
+  const heroAmount = splitInrAmount(netWorth)
+
+  if (empty) {
+    return (
+      <div
+        className="mx-auto flex w-full max-w-[1180px] flex-col gap-6"
+        aria-live="polite"
+      >
+        <Card className="overflow-hidden border-border shadow-sm">
+          <CardContent className="space-y-6 px-6 py-12 text-center sm:px-10">
+            <div
+              className="mx-auto grid size-16 place-items-center rounded-2xl bg-primary/10 text-3xl shadow-sm"
+              aria-hidden
+            >
+              📒
+            </div>
+            <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+              Start your wealth journal
+            </h2>
+            <p className="mx-auto max-w-[460px] text-sm leading-relaxed text-muted-foreground">
+              Add holdings in any section below. Your net worth, allocation and
+              trend will appear here — everything stays in this browser.
+            </p>
+            <div className="flex flex-wrap justify-center gap-2">
+              <Button
+                type="button"
+                onClick={() => onNavigate('bankSavings')}
+                className="min-h-10 font-semibold"
+              >
+                ＋ Add first holding
+              </Button>
+              <Button type="button" variant="outline" asChild>
+                <Link to={sectionToPath('settings')}>Import a backup</Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="overflow-hidden border-border shadow-sm">
+          <div className="flex items-baseline justify-between border-b border-border px-6 py-4">
+            <h3 className="text-sm font-semibold">Quick start</h3>
+            <span className="text-xs text-muted-foreground">
+              Pick a section to begin
+            </span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2">
+            {QUICK_START.map((s, i) => (
+              <button
+                key={s.key}
+                type="button"
+                onClick={() => onNavigate(s.key)}
+                className={cn(
+                  'flex min-h-[64px] items-center gap-3.5 px-5 py-4 text-left transition-colors hover:bg-muted/50',
+                  i % 2 === 0 && 'sm:border-r sm:border-border',
+                  i < QUICK_START.length - 2 && 'border-b border-border'
+                )}
+              >
+                <span className="text-2xl" aria-hidden>
+                  {s.icon}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <div className="text-[13.5px] font-semibold">{s.label}</div>
+                  <div className="mt-0.5 text-xs text-muted-foreground">
+                    {s.desc}
+                  </div>
+                </div>
+                <span className="text-muted-foreground">›</span>
+              </button>
+            ))}
+          </div>
+        </Card>
+      </div>
+    )
+  }
+
+  return (
+    <div
+      className="mx-auto flex w-full max-w-[1180px] flex-col gap-6"
+      aria-live="polite"
+    >
+      <Card className="overflow-hidden border-border bg-gradient-to-br from-primary/[0.08] via-card to-card shadow-sm">
+        <div className="grid md:grid-cols-[1.4fr_1fr]">
+          <div className="border-border p-7 md:border-r">
+            <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+              Net worth
+            </div>
+            {showNetWorthSkeleton ? (
+              <Skeleton className="mt-2 h-14 w-56 max-w-full" />
+            ) : (
+              <>
+                <div className="mt-1.5 text-[clamp(2.25rem,5vw,3.5rem)] font-semibold leading-[1.05] tracking-tight text-foreground">
+                  <span className="font-normal text-muted-foreground">
+                    {heroAmount.symbol}
+                  </span>
+                  <span className="tabular-nums">{heroAmount.amount}</span>
+                </div>
+                {lastSnapshot != null &&
+                deltaVsSnapshot != null &&
+                deltaPctVsSnapshot != null ? (
+                  <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+                    <span
+                      className={cn(
+                        'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold',
+                        deltaVsSnapshot >= 0
+                          ? 'bg-[hsl(var(--positive)/0.14)] text-[hsl(var(--positive))]'
+                          : 'bg-[hsl(var(--negative)/0.14)] text-[hsl(var(--negative))]'
                       )}
-                      %
-                    </p>
+                    >
+                      {deltaVsSnapshot >= 0 ? '▲' : '▼'}{' '}
+                      {fmtCompactInr(Math.abs(deltaVsSnapshot))} (
+                      {deltaPctVsSnapshot >= 0 ? '+' : ''}
+                      {deltaPctVsSnapshot.toFixed(2)}%)
+                    </span>
+                    <span>vs last snapshot</span>
+                  </div>
+                ) : (
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Record a snapshot to track change over time.
+                  </p>
+                )}
+
+                <div className="mt-6 flex flex-wrap gap-x-6 gap-y-3">
+                  <div>
+                    <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                      Gross assets
+                    </div>
+                    <div className="mt-0.5 text-base font-semibold tabular-nums">
+                      {fmtCompactInr(grossAssets)}
+                    </div>
+                  </div>
+                  {totalDebtAll > 0 ? (
+                    <div>
+                      <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                        Total debt
+                      </div>
+                      <div className="mt-0.5 text-base font-semibold tabular-nums text-destructive">
+                        {fmtCompactInr(totalDebtAll)}
+                      </div>
+                    </div>
                   ) : null}
-                </>
-              )}
-            </CardHeader>
+                  {totalDebtAll > 0 ? (
+                    <div>
+                      <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                        Debt / asset
+                      </div>
+                      <div className="mt-0.5 text-base font-semibold tabular-nums">
+                        {debtRatioPct}%
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+
+                <div className="mt-6 flex flex-wrap gap-2.5">
+                  <Button
+                    type="button"
+                    disabled={!canRecordSnapshot || isRecording}
+                    onClick={() => void handleRecordSnapshot()}
+                    aria-busy={isRecording}
+                    className="min-h-10 min-w-[44px] font-semibold"
+                  >
+                    {isRecording ? (
+                      <Loader2
+                        className="mr-2 h-4 w-4 animate-spin"
+                        aria-hidden
+                      />
+                    ) : null}
+                    ＋ Record snapshot
+                  </Button>
+                  <Button variant="outline" asChild className="min-h-10">
+                    <Link to={sectionToPath('settings')}>Export data</Link>
+                  </Button>
+                </div>
+                {recordBlockedMessage ? (
+                  <p className="mt-3 text-sm text-muted-foreground">
+                    {recordBlockedMessage}
+                  </p>
+                ) : null}
+                {snapshotError ? (
+                  <p className="mt-2 text-sm text-destructive" role="alert">
+                    {snapshotError}
+                  </p>
+                ) : null}
+                {snapshotSaved ? (
+                  <p className="mt-2 text-sm text-muted-foreground" role="status">
+                    Snapshot saved.
+                  </p>
+                ) : null}
+              </>
+            )}
+
             {showExclusionNote && (
-              <CardContent className="px-6 pt-0 pb-6 text-sm text-muted-foreground">
+              <div className="mt-6 rounded-lg border border-border bg-muted/30 p-4 text-sm text-muted-foreground">
                 Total excludes {excludedNames.join(' and ')} because a rate or
                 price is missing.
                 {excludedNames.includes('Commodities') ? (
                   <>
                     {' '}
                     Use{' '}
-                    <span className="font-medium text-foreground">Commodities</span>{' '}
+                    <span className="font-medium text-foreground">
+                      Commodities
+                    </span>{' '}
                     for silver grams and manual ₹ values;{' '}
-                    <span className="font-medium text-foreground">Settings</span>{' '}
-                    for gold prices; wait or refresh for live silver/forex when needed.
+                    <span className="font-medium text-foreground">
+                      Settings
+                    </span>{' '}
+                    for gold prices; wait or refresh for live silver/forex when
+                    needed.
                   </>
                 ) : (
                   <>
                     {' '}
                     Open{' '}
-                    <span className="font-medium text-foreground">Settings</span>{' '}
+                    <span className="font-medium text-foreground">
+                      Settings
+                    </span>{' '}
                     to set gold prices or check live rates, or try again later.
                   </>
                 )}
-              </CardContent>
+              </div>
             )}
-          </Card>
-
-          <div className="flex flex-col gap-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                disabled={!canRecordSnapshot || isRecording}
-                onClick={() => void handleRecordSnapshot()}
-                aria-busy={isRecording}
-              >
-                {isRecording ? (
-                  <Loader2
-                    className="mr-2 h-4 w-4 animate-spin"
-                    aria-hidden
-                  />
-                ) : null}
-                Record snapshot
-              </Button>
-            </div>
-            {recordBlockedMessage ? (
-              <p className="text-sm text-muted-foreground">
-                {recordBlockedMessage}
-              </p>
-            ) : null}
-            {snapshotError ? (
-              <p className="text-sm text-destructive" role="alert">
-                {snapshotError}
-              </p>
-            ) : null}
-            {snapshotSaved ? (
-              <p className="text-sm text-muted-foreground" role="status">
-                Snapshot saved.
-              </p>
-            ) : null}
           </div>
 
-          <NetWorthOverTimeCard
-            history={data.netWorthHistory}
-            recordBlockedMessage={recordBlockedMessage}
-          />
+          <div className="flex flex-col gap-3 border-t border-border bg-muted/20 p-7 md:border-t-0 md:border-l md:bg-transparent">
+            <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+              Allocation
+            </div>
+            <AllocationRing slices={ringSlices} />
+          </div>
+        </div>
+      </Card>
 
-          <Card>
-            <CardContent className="p-0">
-              {DASHBOARD_CATEGORY_ORDER.map((key, index) => {
-                const label = ROW_LABEL[key]
-                const v = totals[key]
-                const pct = percentOfTotal(
-                  v === null ? 0 : v,
-                  grossAssets
-                )
-                const isGoldRow = key === 'gold'
-                const isBtcRow = key === 'bitcoin'
-                const isBankRow = key === 'bankSavings'
-                const isCommoditiesRow = key === 'otherCommodities'
+      <NetWorthOverTimeCard
+        history={data.netWorthHistory}
+        recordBlockedMessage={recordBlockedMessage}
+      />
 
-                const valueSkeleton = isBtcRow
-                  ? btcLoading || (forexLoading && hasBtcHolding)
-                  : isBankRow && forexLoading && hasAed
-                const showEmDash = v === null
-                return (
-                  <div key={key}>
-                    {index > 0 && <Separator />}
-                    <button
-                      type="button"
-                      className="hover:bg-muted/50 flex w-full items-center justify-between gap-2 px-4 py-3 text-left transition-colors"
-                      onClick={() => onNavigate(NAV_KEY[key])}
-                      aria-label={`Open ${label} section`}
-                    >
-                      <div className="min-w-0">
-                        {isGoldRow ? (
-                          <span className="flex items-center gap-2 text-sm font-semibold">
-                            <Coins
-                              className="size-4 shrink-0 text-muted-foreground"
-                              aria-hidden
-                            />
-                            {label}
-                          </span>
-                        ) : (
-                          <span className="text-sm font-semibold block">{label}</span>
-                        )}
-                        {isBankRow && aedRateMissing && (
-                          <span className="text-xs text-muted-foreground block mt-0.5">
-                            AED balances excluded — rate unavailable
-                          </span>
-                        )}
-                        {isGoldRow && totals.gold === null && !empty && (
-                          <span className="text-xs text-muted-foreground block mt-0.5">
-                            Set gold prices in Settings
-                          </span>
-                        )}
-                        {isCommoditiesRow &&
-                          silverError != null &&
-                          hasSilverItems && (
-                            <span className="text-xs text-muted-foreground block mt-0.5">
-                              Silver price unavailable — silver items excluded
-                            </span>
-                          )}
-                        {isCommoditiesRow &&
-                          hasSilverItems &&
-                          hasManualCommodityItems && (
-                            <span className="text-xs text-muted-foreground block mt-0.5">
-                              Includes silver & manual
-                            </span>
-                          )}
-                      </div>
-                      <div className="flex items-center gap-3 shrink-0 text-right">
-                        {valueSkeleton ? (
-                          <Skeleton className="h-5 w-24 inline-block" />
-                        ) : showEmDash ? (
-                          <span
-                            className="text-sm font-normal inline-flex items-center gap-1 tabular-nums"
-                            aria-label={`${label} value unavailable`}
-                          >
-                            <span>—</span>
-                            <AlertCircle
-                              className="h-3.5 w-3.5 text-muted-foreground"
-                              aria-hidden
-                            />
-                          </span>
-                        ) : (
-                          <span className="text-sm font-normal tabular-nums">
-                            {inrNoDecimals(v as number)}
-                          </span>
-                        )}
-                        <span className="text-sm text-muted-foreground w-10 text-right">
-                          {grossAssets <= 0
-                            ? '—'
-                            : v === null
-                              ? '—'
-                              : `${Math.round(pct)}%`}
-                        </span>
-                      </div>
-                    </button>
-                  </div>
-                )
-              })}
-              {totalDebtAll > 0 ? (
-                <>
-                  <Separator />
-                  <button
-                    type="button"
-                    className="hover:bg-muted/50 flex w-full items-center justify-between gap-2 px-4 py-3 text-left transition-colors"
-                    onClick={() => onNavigate('liabilities')}
-                    aria-label="Open Liabilities section"
-                  >
-                    <span className="text-sm font-semibold">Total Debt</span>
-                    <div className="flex items-center gap-3 shrink-0 text-right">
-                      <span className="text-sm font-normal tabular-nums text-destructive">
-                        {inrNoDecimals(totalDebtAll)}
-                      </span>
-                      <span className="text-sm text-muted-foreground w-10 text-right">
-                        —
-                      </span>
+      <Card className="overflow-hidden border-border shadow-sm">
+        <div className="flex items-baseline justify-between border-b border-border px-6 py-4">
+          <h3 className="text-sm font-semibold">Breakdown</h3>
+          <span className="text-xs text-muted-foreground">
+            {DASHBOARD_CATEGORY_ORDER.length} categories · tap to open
+          </span>
+        </div>
+        <CardContent className="p-0">
+          {DASHBOARD_CATEGORY_ORDER.map((key, index) => {
+            const label = ROW_LABEL[key]
+            const v = totals[key]
+            const pct = percentOfTotal(v === null ? 0 : v, grossAssets)
+            const isGoldRow = key === 'gold'
+            const isBtcRow = key === 'bitcoin'
+            const isBankRow = key === 'bankSavings'
+            const isCommoditiesRow = key === 'otherCommodities'
+            const sub = rowSub(key, data)
+
+            const valueSkeleton = isBtcRow
+              ? btcLoading || (forexLoading && hasBtcHolding)
+              : isBankRow && forexLoading && hasAed
+            const showEmDash = v === null
+            const catColor = categoryOklch(key)
+
+            return (
+              <div key={key}>
+                {index > 0 && (
+                  <div className="h-px bg-border" role="presentation" />
+                )}
+                <button
+                  type="button"
+                  className="grid w-full grid-cols-[24px_1fr_auto] items-center gap-2.5 px-4 py-3.5 text-left transition-colors hover:bg-muted/40 md:grid-cols-[28px_minmax(0,1.5fr)_80px_minmax(0,1fr)_110px_70px] md:gap-3.5 md:px-6"
+                  onClick={() => onNavigate(NAV_KEY[key])}
+                  aria-label={`Open ${label} section`}
+                >
+                  <span
+                    className="size-[22px] shrink-0 rounded-md opacity-90"
+                    style={{ background: catColor }}
+                    aria-hidden
+                  />
+                  <div className="min-w-0">
+                    <div className="text-[13.5px] font-semibold leading-tight">
+                      {label}
                     </div>
-                  </button>
-                </>
-              ) : null}
-            </CardContent>
-          </Card>
-        </>
-      )}
+                    {sub ? (
+                      <div className="mt-0.5 text-[11.5px] text-muted-foreground">
+                        {sub}
+                      </div>
+                    ) : null}
+                    {isBankRow && aedRateMissing && (
+                      <div className="mt-0.5 text-xs text-muted-foreground">
+                        AED balances excluded — rate unavailable
+                      </div>
+                    )}
+                    {isGoldRow && totals.gold === null && !empty && (
+                      <div className="mt-0.5 text-xs text-muted-foreground">
+                        Set gold prices in Settings
+                      </div>
+                    )}
+                    {isCommoditiesRow &&
+                      silverError != null &&
+                      hasSilverItems && (
+                        <div className="mt-0.5 text-xs text-muted-foreground">
+                          Silver price unavailable — silver items excluded
+                        </div>
+                      )}
+                    {isCommoditiesRow &&
+                      hasSilverItems &&
+                      hasManualCommodityItems && (
+                        <div className="mt-0.5 text-xs text-muted-foreground">
+                          Includes silver & manual
+                        </div>
+                      )}
+                  </div>
+
+                  <span className="hidden text-right text-xs font-medium text-muted-foreground md:block">
+                    {grossAssets <= 0 || v === null
+                      ? '—'
+                      : `${pct.toFixed(1)}%`}
+                  </span>
+                  <span className="col-span-2 hidden h-1.5 overflow-hidden rounded-full border border-border bg-muted md:col-span-1 md:block">
+                    <span
+                      className="block h-full rounded-full"
+                      style={{
+                        width:
+                          grossAssets <= 0 || v === null
+                            ? '0%'
+                            : `${Math.min(100, pct)}%`,
+                        background: catColor,
+                      }}
+                    />
+                  </span>
+                  <div className="col-span-2 flex items-center justify-end gap-3 text-right md:col-span-1">
+                    {valueSkeleton ? (
+                      <Skeleton className="inline-block h-5 w-24" />
+                    ) : showEmDash ? (
+                      <span className="inline-flex items-center gap-1 text-sm font-normal tabular-nums">
+                        <span>—</span>
+                        <AlertCircle
+                          className="h-3.5 w-3.5 text-muted-foreground"
+                          aria-hidden
+                        />
+                      </span>
+                    ) : (
+                      <span className="text-sm font-semibold tabular-nums">
+                        {fmtInr0(v as number)}
+                      </span>
+                    )}
+                    <span className="w-10 text-right text-sm text-muted-foreground md:hidden">
+                      {grossAssets <= 0
+                        ? '—'
+                        : v === null
+                          ? '—'
+                          : `${Math.round(pct)}%`}
+                    </span>
+                  </div>
+                  <span className="hidden text-right text-[11.5px] text-muted-foreground md:block">
+                    —
+                  </span>
+                </button>
+              </div>
+            )
+          })}
+          {totalDebtAll > 0 ? (
+            <>
+              <div className="h-px bg-border" role="presentation" />
+              <button
+                type="button"
+                className="grid w-full grid-cols-[24px_1fr_auto] items-center gap-2.5 px-4 py-3.5 text-left text-destructive transition-colors hover:bg-muted/40 md:grid-cols-[28px_minmax(0,1.5fr)_80px_minmax(0,1fr)_110px_70px] md:gap-3.5 md:px-6"
+                onClick={() => onNavigate('liabilities')}
+                aria-label="Open Liabilities section"
+              >
+                <span
+                  className="size-[22px] shrink-0 rounded-md bg-destructive/80"
+                  aria-hidden
+                />
+                <div className="min-w-0">
+                  <div className="text-[13.5px] font-semibold">Total Debt</div>
+                  <div className="mt-0.5 text-[11.5px] text-destructive/90">
+                    {data.liabilities.length} liabilit
+                    {data.liabilities.length === 1 ? 'y' : 'ies'}
+                  </div>
+                </div>
+                <span className="hidden md:block" />
+                <span className="col-span-2 hidden md:col-span-1 md:block" />
+                <div className="col-span-2 flex justify-end md:col-span-2">
+                  <span className="text-sm font-semibold tabular-nums text-destructive">
+                    {fmtInr0(totalDebtAll)}
+                  </span>
+                </div>
+                <span className="hidden md:block" />
+              </button>
+            </>
+          ) : null}
+        </CardContent>
+      </Card>
     </div>
   )
 }

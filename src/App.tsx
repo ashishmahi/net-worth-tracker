@@ -8,6 +8,7 @@ import {
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/AppSidebar'
 import { MobileTopBar } from '@/components/MobileTopBar'
+import { AppTopbar } from '@/components/AppTopbar'
 import { useAppData } from '@/context/AppDataContext'
 import { GoldSpotPricesSync } from '@/context/GoldSpotPricesSync'
 import { SilverSpotPricesSync } from '@/context/SilverSpotPricesSync'
@@ -43,7 +44,8 @@ function AppLayout() {
       <AppSidebar />
       <SidebarInset>
         <MobileTopBar />
-        <main className="p-6">
+        <AppTopbar />
+        <main className="w-full min-w-0 px-4 pb-20 pt-6 md:px-8 lg:px-10 xl:px-12">
           {loadError && (
             <div className="mb-6 rounded border bg-muted p-4 text-sm text-foreground">
               {loadError}
