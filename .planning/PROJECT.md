@@ -128,6 +128,10 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.1-ROADMAP.md` and matc
 
 - [x] **UX-04**–**UX-07** — compact read-only + **Edit** commodity pricing for gold and silver; silver lock/sync + effective ₹/g for net worth — Phase **27** ([`27-01-SUMMARY.md`](phases/27-settings-commodity-pricing-ux/27-01-SUMMARY.md)); UAT: [`27-UAT.md`](phases/27-settings-commodity-pricing-ux/27-UAT.md).
 
+### Validated (v2.2 — Phase 29)
+
+- [x] **BLN-01**, **BLN-02**, **BLN-03**, **BLN-05** — persisted gold/silver import uplift rates (defaults 10% / 8%); uplifted **`goldLiveHints`** / **`silverLiveHints`**; sync + hint surfaces; **`calcCategoryTotals`** + **`goldUsdPerOz`** for uplift-aware dashboard gold — Phase **29** ([`29-VERIFICATION.md`](phases/29-bullion-import-uplift-data-calculations/29-VERIFICATION.md)). Settings uplift controls (**BLN-04**) → Phase **30**.
+
 ### Deferred (backlog / future)
 
 - [ ] Export / reports — PDF or CSV (JSON export exists; richer formats later)  
@@ -146,7 +150,7 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.1-ROADMAP.md` and matc
 
 - **Stack:** React 18, Vite 5, TypeScript, shadcn/ui, Tailwind, RHF + Zod  
 - **Persistence:** Browser **`localStorage`** key **`wealth-tracker-data`** (`AppDataContext`); theme uses separate **`theme`** key  
-- **Prices:** `priceApi` + `useLivePrices()` — **BTC**, **USD→INR**, **silver (XAG)**, **gold (XAU)**; **`goldLiveHints`** / **`silverLiveHints`** for Settings hints  
+- **Prices:** `priceApi` + `useLivePrices()` — **BTC**, **USD→INR**, **silver (XAG)**, **gold (XAU)**; **`goldLiveHints`** / **`silverLiveHints`** (import uplift on parity ₹/g); **`calcCategoryTotals`** threads **`goldUsdPerOz`** for effective gold on the dashboard  
 - **Theme:** `localStorage` `theme` (`light` | `dark`); FOUC script in `index.html`  
 - **Layout:** `AppSidebar` offcanvas on mobile; `MobileTopBar`; `PageHeader` on section pages; asset sheets with scroll regions + property milestone horizontal scroll on narrow widths  
 - **Data reset (v1.2):** `createInitialData()` in `AppDataContext`; shadcn `AlertDialog` in Settings danger zone  
@@ -196,4 +200,4 @@ This file is updated at **milestone completion** to avoid drift between plans an
 </details>  
 
 ---
-*Last updated: 2026-05-05 — **`/gsd-new-milestone`**: **v2.2** planning started ([`REQUIREMENTS.md`](REQUIREMENTS.md), [`ROADMAP.md`](ROADMAP.md)); last shipped **v2.1** · [`v2.1-ROADMAP.md`](milestones/v2.1-ROADMAP.md).*  
+*Last updated: 2026-05-06 — Phase **29** complete (import uplift data layer); next **Phase 30** Settings UX; last shipped **v2.1** · [`v2.1-ROADMAP.md`](milestones/v2.1-ROADMAP.md).*  
