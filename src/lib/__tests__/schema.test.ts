@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { DataSchema, OtherCommodityItemSchema, LiabilityItemSchema } from '@/types/data'
+import {
+  DataSchema,
+  OtherCommodityItemSchema,
+  LiabilityItemSchema,
+  PropertyItemSchema,
+} from '@/types/data'
 import { createInitialData } from '@/context/AppDataContext'
 
 function baseFields() {
@@ -165,6 +170,44 @@ describe('DataSchema liabilities', () => {
 
   it('accepts full data with empty liabilities array', () => {
     const r = DataSchema.safeParse(createInitialData())
+    expect(r.success).toBe(true)
+  })
+})
+
+describe('PropertyItemSchema cross-field validation', () => {
+  it('fails when milestones sum above agreement', () => {
+    const r = PropertyItemSchema.safeParse({
+      ...baseFields(),
+      label: 'Tower A',
+      agreementInr: 100_000,
+      milestones: [
+        { id: crypto.randomUUID(), label: 'Stage 1', amountInr: 150_000, isPaid: false },
+      ],
+      hasLiability: false,
+    })
+    expect(r.success).toBe(false)
+  })
+
+  it('fails when hasLiability true and outstandingLoanInr is zero', () => {
+    const r = PropertyItemSchema.safeParse({
+      ...baseFields(),
+      label: 'Tower B',
+      agreementInr: 500_000,
+      milestones: [],
+      hasLiability: true,
+      outstandingLoanInr: 0,
+    })
+    expect(r.success).toBe(false)
+  })
+
+  it('passes fully-paid-like row with empty milestones and no liability', () => {
+    const r = PropertyItemSchema.safeParse({
+      ...baseFields(),
+      label: 'Tower C',
+      agreementInr: 800_000,
+      milestones: [],
+      hasLiability: false,
+    })
     expect(r.success).toBe(true)
   })
 })
