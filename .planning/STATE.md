@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.3
 milestone_name: Property entry flow & validation
-status: ready_to_plan
-last_updated: "2026-05-06T12:15:00.000Z"
-last_activity: 2026-05-06 — Phase **31** executed (`31-01` complete)
+status: planning
+last_updated: "2026-05-05T21:42:57.966Z"
+last_activity: 2026-05-06 — Phase **31** complete — guided Property paths + conditional UI
 progress:
   total_phases: 3
   completed_phases: 1
   total_plans: 1
   completed_plans: 1
-  percent: 33
+  percent: 100
 ---
 
 ## Project
@@ -66,7 +66,7 @@ See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](
 
 **Last completed milestone:** **v2.2** — Import-adjusted bullion pricing — Phases **29–30**
 
-**Resume file:** [`.planning/phases/31-guided-property-entry-ux/31-CONTEXT.md`](phases/31-guided-property-entry-ux/31-CONTEXT.md)
+**Resume file:** --resume-file
 
 **Next:** **`/gsd-plan-phase 32`** (then **`/gsd-execute-phase 32`**)
 
