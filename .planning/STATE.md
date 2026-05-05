@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.2
 milestone_name: — Import-adjusted bullion pricing
 status: ready_to_plan
-last_updated: "2026-05-05T20:06:24.008Z"
-last_activity: 2026-05-05 -- Phase --phase execution started
+last_updated: "2026-05-06T12:00:00.000Z"
+last_activity: 2026-05-06
 progress:
   total_phases: 2
   completed_phases: 1
   total_plans: 1
-  completed_plans: 0
-  percent: 50
+  completed_plans: 1
+  percent: 100
 ---
 
 ## Project
@@ -22,10 +22,10 @@ progress:
 Phase: 30
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-05-05
+Last activity: 2026-05-06
 
 ```
-Progress: [ ] Milestone v2.2 — Phase 29–30 not started
+Progress: [~] Milestone v2.2 — Phase 29 shipped · Phase 30 context gathered → plan next
 ```
 
 ## Project reference
@@ -66,6 +66,8 @@ See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](
 
 **Last shipped:** **v2.1** — Section routing & home nav (Phase **28**) — 2026-05-04
 
-**Next:** **`/gsd-plan-phase 29`** — Phase **29** bullion uplift data & calculations (research → PLAN.md)
+**Next:** **`/gsd-plan-phase 30`** — Phase **30** Settings UX & disclosure for bullion uplift (**BLN-04**).
 
-**Planned Phase:** 29 (Bullion import uplift — data & calculations) — 1 plans — 2026-05-05T20:04:59.920Z
+**Resume:** [`.planning/phases/30-bullion-import-uplift-settings-ux-disclosure/30-CONTEXT.md`](phases/30-bullion-import-uplift-settings-ux-disclosure/30-CONTEXT.md)
+
+**Last planned:** Phase **29** (bullion uplift data & calculations) — [`29-01-PLAN.md`](phases/29-bullion-import-uplift-data-calculations/29-01-PLAN.md)
