@@ -34,23 +34,20 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.2-ROADMAP.md` and matc
 
 **Archived:** [`.planning/milestones/v2.2-ROADMAP.md`](milestones/v2.2-ROADMAP.md) · [`.planning/milestones/v2.2-REQUIREMENTS.md`](milestones/v2.2-REQUIREMENTS.md)
 
-## Current Milestone: v2.3 — Property entry flow & validation
+## Last milestone completed: v2.3 — Property entry flow & validation (2026-05-06)
 
-**Goal:** Improve Property add/edit so common situations (fully paid resale, builder milestone schedules, mortgaged homes) get **clearer guided paths**, and strengthen **save-time validation** so inconsistent milestones, agreement totals, and loan fields cannot silently persist.
-
-**Target features:**
-
-- **Guided entry:** Path or mode selection that maps to paid-off vs paying builder in stages vs bank loan on property, with conditional UI and plain-language copy.
-- **Validation:** Upgrade milestone-vs-agreement checks from warn-only to **blocking save** where required; add loan/EMI sanity rules (exact warn vs block semantics per phase planning).
-- **Quality:** Zod/schema parity with the form; Vitest for validation helpers; preserve responsive milestone table / sheet patterns on small screens.
+**Goal:** Improve Property add/edit so common situations (fully paid resale, builder milestone schedules, mortgaged homes) get **clearer guided paths**, strengthen **save-time validation**, and keep the sheet **usable on narrow widths** with sensible keyboard/focus behavior.
 
 **Selected seed:** [SEED-006 — Easier property entry paths + validation](seeds/SEED-006-property-entry-flow-validation.md)
 
-**Progress (in-repo):** Phases **31–32** shipped — guided Property paths ([`31-VERIFICATION.md`](phases/31-guided-property-entry-ux/31-VERIFICATION.md)); save-blocking validation + Zod parity ([`32-VERIFICATION.md`](phases/32-property-save-validation-schema/32-VERIFICATION.md)). Phase **33** (responsive & a11y) remains.
+**Shipped:** Phases **31–33** — guided paths ([`31-VERIFICATION.md`](phases/31-guided-property-entry-ux/31-VERIFICATION.md)); save-blocking validation + Zod parity ([`32-VERIFICATION.md`](phases/32-property-save-validation-schema/32-VERIFICATION.md)); responsive path controls + milestone scroll hint + radiogroup keyboard ([`33-VERIFICATION.md`](phases/33-property-sheet-responsive-accessibility/33-VERIFICATION.md)).
 
-## Current state (shipped through **v2.2** — 2026-05-06)
+**Next:** **`/gsd-new-milestone`** — define **v2.4** (or archive **v2.3** with **`/gsd-complete-milestone`**).
+
+## Current state (shipped through **v2.3** — 2026-05-06)
 
 - **Import-adjusted bullion (v2.2 — Phases 29–30):** persisted **`goldImportUpliftRate`** / **`silverImportUpliftRate`**; uplifted **`goldLiveHints`** / **`silverLiveHints`** and dashboard gold; Settings **`bullionUpliftDisclosure`** copy on **`SettingsGoldPricingCard`** / **`SettingsSilverPricingCard`**.  
+- **Property entry UX (v2.3 — Phases 31–33):** guided **`PATH_KEYS`** paths + conditional **`PropertyPage`** sections; **`getPropertyValidationIssues`** + **`PropertyItemSchema`** parity; responsive path **`radiogroup`** (stack on xs, arrow keys by breakpoint), milestone table horizontal-scroll hint, sheet-open focus to first path — [`33-VERIFICATION.md`](phases/33-property-sheet-responsive-accessibility/33-VERIFICATION.md).  
 - **Section URLs & routing (v2.1 — Phase 28):** **`react-router-dom`** with **`BrowserRouter`** **`basename={import.meta.env.BASE_URL}`**; canonical paths in **`src/lib/sectionRoutes.ts`**; sidebar **`NavLink`**; mobile **Home** on non-dashboard routes; unknown paths **`Navigate`** to **`/`**. UAT complete ([`28-UAT.md`](phases/28-section-routing-home-header/28-UAT.md)).
 - **Liabilities & net worth:** root **`liabilities`** list; **`calcNetWorth(gross, sumLiabilitiesInr)`** for headline + new snapshots; **`sumAllDebtInr`** for dashboard **Total Debt** row; property equity unchanged (`agreementInr − outstandingLoanInr`).  
 - **Commodities (v1.4):** `assets.otherCommodities`; **`CommoditiesPage`**; live silver via **`useLivePrices`**.  
@@ -152,6 +149,14 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.2-ROADMAP.md` and matc
 
 - [x] **PRP-01**, **PRP-02**, **PRP-03** — guided Property entry paths (`propertyEntryPath`, segmented control, conditional UI, inference without persisted `entryKind`) — Phase **31** ([`31-VERIFICATION.md`](phases/31-guided-property-entry-ux/31-VERIFICATION.md)).
 
+### Validated (v2.3 — Phase 32)
+
+- [x] **PRV-01**–**PRV-05** — save-blocking validation; `getPropertyValidationIssues` + Zod `superRefine`; Vitest for helpers/schema — Phase **32** ([`32-VERIFICATION.md`](phases/32-property-save-validation-schema/32-VERIFICATION.md)).
+
+### Validated (v2.3 — Phase 33)
+
+- [x] **PRA-01** — narrow-viewport path radiogroup stack + milestone horizontal-scroll hint; arrow-key navigation and initial focus on sheet open; no Save-specific ARIA escalation — Phase **33** ([`33-VERIFICATION.md`](phases/33-property-sheet-responsive-accessibility/33-VERIFICATION.md)).
+
 ### Deferred (backlog / future)
 
 - [ ] Export / reports — PDF or CSV (JSON export exists; richer formats later)  
@@ -221,4 +226,4 @@ This file is updated at **milestone completion** to avoid drift between plans an
 </details>  
 
 ---
-*Last updated: 2026-05-06 — **v2.3** Phases **31–32** verified (guided entry + save validation); live [`REQUIREMENTS.md`](REQUIREMENTS.md) + [`ROADMAP.md`](ROADMAP.md).*  
+*Last updated: 2026-05-06 — **v2.3** milestone complete (Phases **31–33**: guided entry, save validation, responsive/a11y Property sheet); live [`REQUIREMENTS.md`](REQUIREMENTS.md) + [`ROADMAP.md`](ROADMAP.md).*  

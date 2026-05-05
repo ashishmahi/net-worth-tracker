@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.3
 milestone_name: Property entry flow & validation
-status: planning
-last_updated: "2026-05-05T22:09:33.919Z"
-last_activity: 2026-05-06 — Phase **32** complete — save validation + schema parity
+status: milestone_complete
+last_updated: "2026-05-06T02:20:00.000Z"
+last_activity: 2026-05-06 — Milestone **v2.3** complete — Phase **33** verified (responsive Property sheet + a11y)
 progress:
   total_phases: 3
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 3
-  completed_plans: 2
-  percent: 67
+  completed_plans: 3
+  percent: 100
 ---
 
 ## Project
@@ -19,13 +19,13 @@ progress:
 
 ## Current position
 
-Phase: **33**
-Plan: **33-01** ready (3 tasks, wave 1)
-Status: Ready to execute — **`/gsd-execute-phase 33`**
-Last activity: 2026-05-06 — Phase **33** planned — responsive Property sheet + a11y
+Phase: **33** — complete  
+Plan: **33-01** — complete  
+Status: **Milestone v2.3 complete**  
+Last activity: 2026-05-06 — Phase **33** executed (`feat(33-01)` + verification)
 
 ```
-Progress: [~] Milestone v2.3 — Phases 31–32 done · Phase 33 remaining
+Progress: [██████████] 100% — v2.3 (Phases 31–33)
 ```
 
 ## Project reference
@@ -68,12 +68,8 @@ See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](
 
 **Resume file:** --resume-file
 
-**Next:** **`/gsd-execute-phase 33`**
+**Next:** **`/gsd-new-milestone`** — start v2.4 (or archive **v2.3** with **`/gsd-complete-milestone`**)
 
 **Research:** GSD research agents not installed in this environment — requirements derive from **SEED-006** + shipped codebase context (_workflow deviation_).
 
-**Completed phases:** **31** — [31-01-SUMMARY](phases/31-guided-property-entry-ux/31-01-SUMMARY.md) · [31-VERIFICATION](phases/31-guided-property-entry-ux/31-VERIFICATION.md) · **32** — [32-01-SUMMARY](phases/32-property-save-validation-schema/32-01-SUMMARY.md) · [32-VERIFICATION](phases/32-property-save-validation-schema/32-VERIFICATION.md)
-
-**Active:** Phase **33** — planned (**33-01**)
-
-**Planned Phase:** 33 (property-sheet-responsive-accessibility) — 1 plan — 2026-05-06
+**Completed phases (v2.3):** **31** — [31-01-SUMMARY](phases/31-guided-property-entry-ux/31-01-SUMMARY.md) · [31-VERIFICATION](phases/31-guided-property-entry-ux/31-VERIFICATION.md) · **32** — [32-01-SUMMARY](phases/32-property-save-validation-schema/32-01-SUMMARY.md) · [32-VERIFICATION](phases/32-property-save-validation-schema/32-VERIFICATION.md) · **33** — [33-01-SUMMARY](phases/33-property-sheet-responsive-accessibility/33-01-SUMMARY.md) · [33-VERIFICATION](phases/33-property-sheet-responsive-accessibility/33-VERIFICATION.md)

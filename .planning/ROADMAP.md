@@ -11,7 +11,7 @@
 - ✅ **v2.0.1 — Live gold spot** — Shipped 2026-05-03 — [full snapshot](milestones/v2.0.1-ROADMAP.md)
 - ✅ **v2.1 — Section routing & home nav** — Shipped 2026-05-04 — [full snapshot](milestones/v2.1-ROADMAP.md)
 - ✅ **v2.2 — Import-adjusted bullion pricing** — Shipped 2026-05-06 — [full snapshot](milestones/v2.2-ROADMAP.md)
-- 🚧 **v2.3 Property entry flow & validation** — Planning — live below · [`REQUIREMENTS.md`](REQUIREMENTS.md)
+- ✅ **v2.3 Property entry flow & validation** — Complete 2026-05-06 (Phases **31–33**) · [`REQUIREMENTS.md`](REQUIREMENTS.md)
 
 **Phase numbering:** **v2.2** shipped Phases **29–30**. **v2.3** continues with Phases **31–33** ([SEED-006](seeds/SEED-006-property-entry-flow-validation.md)).
 

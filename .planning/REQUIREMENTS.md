@@ -28,7 +28,7 @@
 
 ### Responsive & accessibility
 
-- [ ] **PRA-01**: Updated property flow remains **usable on narrow widths** (milestone table horizontal scroll / sheet layout preserved or improved); reasonable **labels and focus order** for new controls.
+- [x] **PRA-01**: Updated property flow remains **usable on narrow widths** (milestone table horizontal scroll / sheet layout preserved or improved); reasonable **labels and focus order** for new controls.
 
 ## Future requirements
 
