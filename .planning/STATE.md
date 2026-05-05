@@ -2,14 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.3
 milestone_name: Property entry flow & validation
-status: planning
-last_updated: "2026-05-05T21:05:06.268Z"
-last_activity: 2026-05-06 — Milestone **v2.3** initialized
+status: ready_to_execute
+last_updated: "2026-05-06T12:00:00.000Z"
+last_activity: 2026-05-06 — **`/gsd-plan-phase 31`** complete
 progress:
   total_phases: 3
   completed_phases: 0
-  total_plans: 0
+  total_plans: 1
   completed_plans: 0
+  percent: 0
 ---
 
 ## Project
@@ -19,9 +20,9 @@ progress:
 ## Current position
 
 Phase: **31** — Guided property entry UX  
-Plan: —  
-Status: Context gathered — ready to plan (**[`31-CONTEXT.md`](phases/31-guided-property-entry-ux/31-CONTEXT.md)**)  
-Last activity: 2026-05-06 — **`/gsd-discuss-phase 31`** complete  
+Plan: **[31-01](phases/31-guided-property-entry-ux/31-01-PLAN.md)**  
+Status: Planned — ready to execute  
+Last activity: 2026-05-06 — **`/gsd-plan-phase 31`** complete  
 
 ```
 Progress: [ ] Milestone v2.3 — Phases 31–33 (property entry + validation + a11y pass)
@@ -67,6 +68,8 @@ See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](
 
 **Resume file:** [`.planning/phases/31-guided-property-entry-ux/31-CONTEXT.md`](phases/31-guided-property-entry-ux/31-CONTEXT.md)
 
-**Next:** **`/gsd-plan-phase 31`**
+**Next:** **`/gsd-execute-phase 31`**
 
 **Research:** GSD research agents not installed in this environment — requirements derive from **SEED-006** + shipped codebase context (_workflow deviation_).
+
+**Planned Phase:** 31 (guided-property-entry-ux) — 1 plans — 2026-05-05T21:08:11.767Z
