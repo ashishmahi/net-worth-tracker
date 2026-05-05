@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.3
 milestone_name: Property entry flow & validation
 status: planning
-last_updated: "2026-05-05T21:42:57.966Z"
-last_activity: 2026-05-06 — Phase **32** discuss-phase complete — CONTEXT.md captured
+last_updated: "2026-05-05T21:45:48.781Z"
+last_activity: 2026-05-06 — Phase **31** complete — guided Property paths + conditional UI
 progress:
   total_phases: 3
   completed_phases: 1
-  total_plans: 1
+  total_plans: 2
   completed_plans: 1
-  percent: 33
+  percent: 50
 ---
 
 ## Project
@@ -73,3 +73,5 @@ See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](
 **Research:** GSD research agents not installed in this environment — requirements derive from **SEED-006** + shipped codebase context (_workflow deviation_).
 
 **Completed Phase:** **31** — [31-01-SUMMARY](phases/31-guided-property-entry-ux/31-01-SUMMARY.md) · [31-VERIFICATION](phases/31-guided-property-entry-ux/31-VERIFICATION.md)
+
+**Planned Phase:** 32 (property-save-validation-schema) — 1 plans — 2026-05-05T21:45:48.762Z
