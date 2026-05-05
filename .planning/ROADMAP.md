@@ -10,10 +10,41 @@
 - ✅ **v2.0 — Session assets & live silver** — Shipped 2026-05-02 — [full snapshot](milestones/v2.0-ROADMAP.md)  
 - ✅ **v2.0.1 — Live gold spot** — Shipped 2026-05-03 — [full snapshot](milestones/v2.0.1-ROADMAP.md)
 - ✅ **v2.1 — Section routing & home nav** — Shipped 2026-05-04 — [full snapshot](milestones/v2.1-ROADMAP.md)
+- 🔄 **v2.2 — Import-adjusted bullion pricing** — Planning → execution — [REQUIREMENTS.md](REQUIREMENTS.md) · Phases **29–30** (below)
 
-**Phase numbering:** **v2.0** — Phases **22–25**; **v2.0.1** — **26–27**; **v2.1** — Phase **28**.
+**Phase numbering:** **v2.1** ended at Phase **28**. **v2.2** continues with Phases **29–30**.
 
 ---
+
+## v2.2 — Import-adjusted bullion pricing (Phases 29–30)
+
+**Goal:** Apply configurable **import-style uplift** (~10% gold / ~8% silver defaults per [SEED-001](seeds/SEED-001-gold-silver-import-tax-inr.md)) when deriving live ₹/g from international spot × USD/INR, so hints and dependent valuations read closer to **Indian market-style** expectations—with explicit **non-advice** copy.
+
+| Phase | Name | Goal (summary) | Requirements |
+|-------|------|----------------|--------------|
+| **29** | Bullion import uplift — data & calculations | Schema + migration for uplift factors; extend `goldLiveHints` / `silverLiveHints`, sync components, and effective net-worth paths; Vitest | BLN-01, BLN-02, BLN-03, BLN-05 |
+| **30** | Bullion import uplift — settings UX & disclosure | Settings gold/silver cards: tuning affordances as needed; prominent approximation / not-tax-advice messaging | BLN-04 |
+
+### Success criteria
+
+**Phase 29**
+
+1. With healthy feeds, unlocked gold/silver pricing shows ₹/g that matches parity × (1 + uplift) for configured defaults (within rounding rules).
+2. Older `localStorage` payloads load without error; new fields default sensibly and round-trip through export/import paths used by the app.
+3. Automated tests fail if uplift math or migration regressions slip in.
+
+**Phase 30**
+
+1. A user can discover **what** the uplift is and **that** it is tunable (when controls exist) from Settings alone.
+2. Copy states clearly that the feature is an approximation—not legal, customs, or tax guidance.
+
+### Plans
+
+- [ ] `29-01-PLAN.md` — (create via `/gsd-plan-phase 29`)
+- [ ] `30-01-PLAN.md` — (create via `/gsd-plan-phase 30`)
+
+---
+
 
 <details>
 <summary>✅ v2.0 — Session assets & live silver (Phases 22–25) — SHIPPED 2026-05-02</summary>
@@ -102,4 +133,4 @@
 
 ---
 
-_Milestone archives: `.planning/milestones/` · **Current:** planning next milestone via **`/gsd-new-milestone`**._
+_Milestone archives: `.planning/milestones/` · **Current:** **v2.2** — Phases **29–30** (import-adjusted bullion pricing)._
