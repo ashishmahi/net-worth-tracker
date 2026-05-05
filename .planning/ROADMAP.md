@@ -66,7 +66,7 @@
 
 - [x] Phase 31 — [31-01](phases/31-guided-property-entry-ux/31-01-PLAN.md) (`/gsd-execute-phase 31`)
 - [x] Phase 32 — [32-01](phases/32-property-save-validation-schema/32-01-PLAN.md) (`/gsd-execute-phase 32`)
-- [ ] Phase 33 — plan TBD (`/gsd-plan-phase 33`)
+- [x] Phase 33 — [33-01](phases/33-property-sheet-responsive-accessibility/33-01-PLAN.md) (`/gsd-execute-phase 33`)
 
 ---
 

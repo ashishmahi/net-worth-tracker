@@ -20,9 +20,9 @@ progress:
 ## Current position
 
 Phase: **33**
-Plan: Not started
-Status: Ready to plan — **`/gsd-plan-phase 33`**
-Last activity: 2026-05-06 — Phase **32** complete — save validation + schema parity
+Plan: **33-01** ready (3 tasks, wave 1)
+Status: Ready to execute — **`/gsd-execute-phase 33`**
+Last activity: 2026-05-06 — Phase **33** planned — responsive Property sheet + a11y
 
 ```
 Progress: [~] Milestone v2.3 — Phases 31–32 done · Phase 33 remaining
@@ -68,12 +68,12 @@ See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](
 
 **Resume file:** --resume-file
 
-**Next:** **`/gsd-discuss-phase 33`** → **`/gsd-plan-phase 33`** → **`/gsd-execute-phase 33`**
+**Next:** **`/gsd-execute-phase 33`**
 
 **Research:** GSD research agents not installed in this environment — requirements derive from **SEED-006** + shipped codebase context (_workflow deviation_).
 
 **Completed phases:** **31** — [31-01-SUMMARY](phases/31-guided-property-entry-ux/31-01-SUMMARY.md) · [31-VERIFICATION](phases/31-guided-property-entry-ux/31-VERIFICATION.md) · **32** — [32-01-SUMMARY](phases/32-property-save-validation-schema/32-01-SUMMARY.md) · [32-VERIFICATION](phases/32-property-save-validation-schema/32-VERIFICATION.md)
 
-**Active:** Phase **33** (property-sheet-responsive-&-accessibility) — not planned yet
+**Active:** Phase **33** — planned (**33-01**)
 
-**Planned Phase:** 33 (property-sheet-responsive-accessibility) — 1 plans — 2026-05-05T22:09:33.892Z
+**Planned Phase:** 33 (property-sheet-responsive-accessibility) — 1 plan — 2026-05-06
