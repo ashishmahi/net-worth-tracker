@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.3
 milestone_name: Property entry flow & validation
-status: planning
-last_updated: "2026-05-05T21:45:48.781Z"
-last_activity: 2026-05-06 — Phase **31** complete — guided Property paths + conditional UI
+status: ready_to_plan
+last_updated: "2026-05-06T01:55:00.000Z"
+last_activity: 2026-05-06 — Phase **32** complete — save validation + schema parity
 progress:
   total_phases: 3
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 2
-  completed_plans: 1
-  percent: 50
+  completed_plans: 2
+  percent: 67
 ---
 
 ## Project
@@ -19,13 +19,13 @@ progress:
 
 ## Current position
 
-Phase: **32** — Property save validation & schema  
-Plan: Not started  
-Status: Ready to plan — **`/gsd-plan-phase 32`**  
-Last activity: 2026-05-06 — Phase **31** complete — guided Property paths + conditional UI  
+Phase: **33**
+Plan: Not started
+Status: Ready to plan — **`/gsd-plan-phase 33`**
+Last activity: 2026-05-06 — Phase **32** complete — save validation + schema parity
 
 ```
-Progress: [~] Milestone v2.3 — Phase 31 done · Phases 32–33 remaining
+Progress: [~] Milestone v2.3 — Phases 31–32 done · Phase 33 remaining
 ```
 
 ## Project reference
@@ -66,12 +66,12 @@ See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](
 
 **Last completed milestone:** **v2.2** — Import-adjusted bullion pricing — Phases **29–30**
 
-**Resume file:** [`.planning/phases/32-property-save-validation-schema/32-CONTEXT.md`](phases/32-property-save-validation-schema/32-CONTEXT.md)
+**Resume file:** Use phase **33** planning when ready ([`33` context](phases/) — create via **`/gsd-discuss-phase 33`**).
 
-**Next:** **`/gsd-plan-phase 32`** (then **`/gsd-execute-phase 32`**)
+**Next:** **`/gsd-discuss-phase 33`** → **`/gsd-plan-phase 33`** → **`/gsd-execute-phase 33`**
 
 **Research:** GSD research agents not installed in this environment — requirements derive from **SEED-006** + shipped codebase context (_workflow deviation_).
 
-**Completed Phase:** **31** — [31-01-SUMMARY](phases/31-guided-property-entry-ux/31-01-SUMMARY.md) · [31-VERIFICATION](phases/31-guided-property-entry-ux/31-VERIFICATION.md)
+**Completed phases:** **31** — [31-01-SUMMARY](phases/31-guided-property-entry-ux/31-01-SUMMARY.md) · [31-VERIFICATION](phases/31-guided-property-entry-ux/31-VERIFICATION.md) · **32** — [32-01-SUMMARY](phases/32-property-save-validation-schema/32-01-SUMMARY.md) · [32-VERIFICATION](phases/32-property-save-validation-schema/32-VERIFICATION.md)
 
-**Planned Phase:** 32 (property-save-validation-schema) — 1 plans — 2026-05-05T21:45:48.762Z
+**Active:** Phase **33** (property-sheet-responsive-&-accessibility) — not planned yet

@@ -16,15 +16,15 @@
 
 ### Save-time validation & schema
 
-- [ ] **PRV-01**: When milestone amounts sum above **agreement value**, **Save is blocked** (not merely warned); surface inline errors consistent with [SEED-006](seeds/SEED-006-property-entry-flow-validation.md).
+- [x] **PRV-01**: When milestone amounts sum above **agreement value**, **Save is blocked** (not merely warned); surface inline errors consistent with [SEED-006](seeds/SEED-006-property-entry-flow-validation.md).
 
-- [ ] **PRV-02**: When **`hasLiability`** is true: **outstanding loan** is required and **> 0**; **outstanding ≤ agreement** holds unless product explicitly allows override with a **warning** path for edge cases (document decision in phase plan).
+- [x] **PRV-02**: When **`hasLiability`** is true: **outstanding loan** is required and **> 0**; **outstanding ≤ agreement** holds unless product explicitly allows override with a **warning** path for edge cases (document decision in phase plan).
 
-- [ ] **PRV-03**: When a loan is present: **EMI** > 0 where applicable; apply at least a **weak sanity check** (e.g. EMI &lt; outstanding) and optional non-blocking tenure hints per plan.
+- [x] **PRV-03**: When a loan is present: **EMI** > 0 where applicable; apply at least a **weak sanity check** (e.g. EMI &lt; outstanding) and optional non-blocking tenure hints per plan.
 
-- [ ] **PRV-04**: **`PropertyItemSchema`** (Zod) and **`PropertyPage`** validation rules stay **aligned** — no save path that bypasses schema checks used for persist.
+- [x] **PRV-04**: **`PropertyItemSchema`** (Zod) and **`PropertyPage`** validation rules stay **aligned** — no save path that bypasses schema checks used for persist.
 
-- [ ] **PRV-05**: **Vitest** covers validation helpers and/or schema refinements introduced for **PRV-01–03**, following existing project test patterns.
+- [x] **PRV-05**: **Vitest** covers validation helpers and/or schema refinements introduced for **PRV-01–03**, following existing project test patterns.
 
 ### Responsive & accessibility
 
@@ -53,11 +53,11 @@ Deferred; not part of v2.3 unless pulled in during plan-phase.
 | PRP-01 | Phase 31 — Guided property entry UX | Complete |
 | PRP-02 | Phase 31 — Guided property entry UX | Complete |
 | PRP-03 | Phase 31 — Guided property entry UX | Complete |
-| PRV-01 | Phase 32 — Property save validation & schema | Planned |
-| PRV-02 | Phase 32 — Property save validation & schema | Planned |
-| PRV-03 | Phase 32 — Property save validation & schema | Planned |
-| PRV-04 | Phase 32 — Property save validation & schema | Planned |
-| PRV-05 | Phase 32 — Property save validation & schema | Planned |
+| PRV-01 | Phase 32 — Property save validation & schema | Complete |
+| PRV-02 | Phase 32 — Property save validation & schema | Complete |
+| PRV-03 | Phase 32 — Property save validation & schema | Complete |
+| PRV-04 | Phase 32 — Property save validation & schema | Complete |
+| PRV-05 | Phase 32 — Property save validation & schema | Complete |
 | PRA-01 | Phase 33 — Property sheet responsive & accessibility | Planned |
 
 **Coverage:** v2.3 requirements **9** total · Mapped **9** · Unmapped **0**

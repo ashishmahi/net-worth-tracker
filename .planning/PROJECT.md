@@ -46,7 +46,7 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.2-ROADMAP.md` and matc
 
 **Selected seed:** [SEED-006 — Easier property entry paths + validation](seeds/SEED-006-property-entry-flow-validation.md)
 
-**Progress (in-repo):** Phase **31** shipped — three-path Property sheet, conditional milestones/loan blocks, tested path helpers ([`31-VERIFICATION.md`](phases/31-guided-property-entry-ux/31-VERIFICATION.md)). Phases **32–33** (validation, a11y) remain.
+**Progress (in-repo):** Phases **31–32** shipped — guided Property paths ([`31-VERIFICATION.md`](phases/31-guided-property-entry-ux/31-VERIFICATION.md)); save-blocking validation + Zod parity ([`32-VERIFICATION.md`](phases/32-property-save-validation-schema/32-VERIFICATION.md)). Phase **33** (responsive & a11y) remains.
 
 ## Current state (shipped through **v2.2** — 2026-05-06)
 
@@ -221,4 +221,4 @@ This file is updated at **milestone completion** to avoid drift between plans an
 </details>  
 
 ---
-*Last updated: 2026-05-06 — **v2.3** Phase **31** verified (guided Property entry); live [`REQUIREMENTS.md`](REQUIREMENTS.md) + [`ROADMAP.md`](ROADMAP.md).*  
+*Last updated: 2026-05-06 — **v2.3** Phases **31–32** verified (guided entry + save validation); live [`REQUIREMENTS.md`](REQUIREMENTS.md) + [`ROADMAP.md`](ROADMAP.md).*  
