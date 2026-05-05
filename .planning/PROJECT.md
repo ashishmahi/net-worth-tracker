@@ -34,11 +34,17 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.2-ROADMAP.md` and matc
 
 **Archived:** [`.planning/milestones/v2.2-ROADMAP.md`](milestones/v2.2-ROADMAP.md) · [`.planning/milestones/v2.2-REQUIREMENTS.md`](milestones/v2.2-REQUIREMENTS.md)
 
-## Next milestone (not started)
+## Current Milestone: v2.3 — Property entry flow & validation
 
-**There is no live `.planning/REQUIREMENTS.md`** until **`/gsd-new-milestone`** defines the next version.
+**Goal:** Improve Property add/edit so common situations (fully paid resale, builder milestone schedules, mortgaged homes) get **clearer guided paths**, and strengthen **save-time validation** so inconsistent milestones, agreement totals, and loan fields cannot silently persist.
 
-**Candidate seeds** (examples — not committed): [SEED-002 — brand logo & favicon](seeds/SEED-002-brand-logo-favicon.md), others under [`.planning/seeds/`](seeds/).
+**Target features:**
+
+- **Guided entry:** Path or mode selection that maps to paid-off vs paying builder in stages vs bank loan on property, with conditional UI and plain-language copy.
+- **Validation:** Upgrade milestone-vs-agreement checks from warn-only to **blocking save** where required; add loan/EMI sanity rules (exact warn vs block semantics per phase planning).
+- **Quality:** Zod/schema parity with the form; Vitest for validation helpers; preserve responsive milestone table / sheet patterns on small screens.
+
+**Selected seed:** [SEED-006 — Easier property entry paths + validation](seeds/SEED-006-property-entry-flow-validation.md)
 
 ## Current state (shipped through **v2.2** — 2026-05-06)
 
@@ -204,8 +210,9 @@ This file is updated at **milestone completion** to avoid drift between plans an
 - *v1.7: requirements archived at [`v1.7-REQUIREMENTS.md`](milestones/v1.7-REQUIREMENTS.md); live roadmap awaits **`/gsd-new-milestone`**.*  
 - *v2.0: requirements archived at [`v2.0-REQUIREMENTS.md`](milestones/v2.0-REQUIREMENTS.md); live **`REQUIREMENTS.md`** removed at close — start next milestone with **`/gsd-new-milestone`**.*  
 - *v2.0.1: requirements archived at [`v2.0.1-REQUIREMENTS.md`](milestones/v2.0.1-REQUIREMENTS.md); live **`REQUIREMENTS.md`** removed at close — **`/gsd-new-milestone`** next.*
+- *v2.2: requirements archived at [`v2.2-REQUIREMENTS.md`](milestones/v2.2-REQUIREMENTS.md); live **`REQUIREMENTS.md`** removed at milestone close — **`/gsd-new-milestone`** next.*
 
 </details>  
 
 ---
-*Last updated: 2026-05-06 — Milestone **v2.2** archived (milestone close); live **REQUIREMENTS.md** removed until **`/gsd-new-milestone`** · [`ROADMAP.md`](ROADMAP.md).*  
+*Last updated: 2026-05-06 — **v2.3** milestone planning started (**SEED-006**); live [`REQUIREMENTS.md`](REQUIREMENTS.md) + [`ROADMAP.md`](ROADMAP.md).*  

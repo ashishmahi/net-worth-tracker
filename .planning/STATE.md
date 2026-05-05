@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.2
-milestone_name: — Import-adjusted bullion pricing
-status: milestone_complete
-last_updated: "2026-05-06T16:30:00.000Z"
+milestone: v2.3
+milestone_name: Property entry flow & validation
+status: planning
+last_updated: "2026-05-06T12:00:00.000Z"
 last_activity: 2026-05-06
 progress:
-  total_phases: 2
-  completed_phases: 2
-  total_plans: 2
-  completed_plans: 2
-  percent: 100
+  total_phases: 3
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 ## Project
@@ -19,18 +19,18 @@ progress:
 
 ## Current position
 
-Phase: —
-Plan: —
-Status: Milestone v2.2 complete (Phases 29–30)
-Last activity: 2026-05-06
+Phase: Not started  
+Plan: —  
+Status: Ready to plan — roadmap defined (**SEED-006**)  
+Last activity: 2026-05-06 — Milestone **v2.3** initialized  
 
 ```
-Progress: [x] Milestone v2.2 — Phase 29 & 30 shipped (import uplift + Settings disclosure)
+Progress: [ ] Milestone v2.3 — Phases 31–33 (property entry + validation + a11y pass)
 ```
 
 ## Project reference
 
-See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](ROADMAP.md) — **v2.2** archived. **Requirements:** *none live* — next milestone starts with **`/gsd-new-milestone`** (see [`milestones/v2.2-REQUIREMENTS.md`](milestones/v2.2-REQUIREMENTS.md) for v2.2 snapshot).
+See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](ROADMAP.md) — **v2.3** active (Phases **31–33**). **Requirements:** [`.planning/REQUIREMENTS.md`](REQUIREMENTS.md).
 
 **Core value:** Total net worth in INR — liabilities deducted from gross assets, live prices where applicable, minimal repeated data entry.
 
@@ -42,8 +42,8 @@ See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](
 
 ### Roadmap evolution
 
-- **v2.2** planning 2026-05-05: import-style uplift for gold/silver live ₹/g ([SEED-001](seeds/SEED-001-gold-silver-import-tax-inr.md)) — Phases **29–30** in [`ROADMAP.md`](ROADMAP.md).
-- **v2.1** shipped 2026-05-04: section URL routing + mobile Home — archives [`v2.1-ROADMAP.md`](milestones/v2.1-ROADMAP.md) · [`v2.1-REQUIREMENTS.md`](milestones/v2.1-REQUIREMENTS.md); phase dir [`.planning/phases/28-section-routing-home-header/`](phases/28-section-routing-home-header/).
+- **v2.3** planning 2026-05-06: property guided entry + save validation ([SEED-006](seeds/SEED-006-property-entry-flow-validation.md)) — Phases **31–33** in [`ROADMAP.md`](ROADMAP.md).
+- **v2.2** shipped 2026-05-06: bullion import uplift Phases **29–30** — archives [`v2.2-ROADMAP.md`](milestones/v2.2-ROADMAP.md) · [`v2.2-REQUIREMENTS.md`](milestones/v2.2-REQUIREMENTS.md).
 
 ### Pending todos
 
@@ -62,10 +62,10 @@ See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](
 
 ## Session continuity
 
-**Completed milestone:** **v2.2** — Import-adjusted bullion pricing — SEED-001 — Phases **29–30** shipped 2026-05-06
+**Current milestone:** **v2.3** — Property entry flow & validation — **SEED-006** — roadmap **3** phases (**31–33**)
 
-**Last shipped:** **v2.2** — Bullion uplift data + Settings disclosure (**BLN-01–05**, **BLN-04**)
+**Last completed milestone:** **v2.2** — Import-adjusted bullion pricing — Phases **29–30**
 
-**Next:** **`/gsd-new-milestone`** (or archive milestone / plan **v2.3**) when ready for the next version.
+**Next:** **`/gsd-discuss-phase 31`** or **`/gsd-plan-phase 31`**
 
-**Last execution:** Phase **30** — [`30-01-SUMMARY.md`](phases/30-bullion-import-uplift-settings-ux-disclosure/30-01-SUMMARY.md) · [`30-VERIFICATION.md`](phases/30-bullion-import-uplift-settings-ux-disclosure/30-VERIFICATION.md)
+**Research:** GSD research agents not installed in this environment — requirements derive from **SEED-006** + shipped codebase context (_workflow deviation_).
