@@ -11,8 +11,62 @@
 - ✅ **v2.0.1 — Live gold spot** — Shipped 2026-05-03 — [full snapshot](milestones/v2.0.1-ROADMAP.md)
 - ✅ **v2.1 — Section routing & home nav** — Shipped 2026-05-04 — [full snapshot](milestones/v2.1-ROADMAP.md)
 - ✅ **v2.2 — Import-adjusted bullion pricing** — Shipped 2026-05-06 — [full snapshot](milestones/v2.2-ROADMAP.md)
+- 🚧 **v2.3 — Property entry flow & validation** — Planning — live below · [`REQUIREMENTS.md`](REQUIREMENTS.md)
 
-**Phase numbering:** **v2.1** ended at Phase **28**. **v2.2** shipped Phases **29–30** (2026-05-06). Next: **`/gsd-new-milestone`** for **v2.3** (phase IDs continue after **30**).
+**Phase numbering:** **v2.2** shipped Phases **29–30**. **v2.3** continues with Phases **31–33** ([SEED-006](seeds/SEED-006-property-entry-flow-validation.md)).
+
+---
+
+## v2.3 — Property entry flow & validation (Phases 31–33)
+
+**Goal:** Guided paths for common property ownership situations and **save-blocking validation** so inconsistent milestones and loan fields do not reach `localStorage`.
+
+### Phase 31: Guided property entry UX
+
+**Goal:** Path or mode selection (paid off / builder milestones / mortgaged); conditional sections and copy on **Property** add/edit.
+
+**Requirements:** PRP-01, PRP-02, PRP-03
+
+### Phase 32: Property save validation & schema
+
+**Goal:** Enforce financial consistency at save time; align **Zod** with UI; **Vitest** for helpers/schema.
+
+**Requirements:** PRV-01, PRV-02, PRV-03, PRV-04, PRV-05
+
+### Phase 33: Property sheet responsive & accessibility
+
+**Goal:** Narrow-viewport usability and sensible a11y for new controls alongside existing milestone table patterns.
+
+**Requirements:** PRA-01
+
+| Phase | Name | Goal (summary) | Requirements |
+|-------|------|----------------|--------------|
+| **31** | Guided property entry UX | Paths + conditional UI + copy | PRP-01, PRP-02, PRP-03 |
+| **32** | Property save validation & schema | Block bad saves; Zod parity; tests | PRV-01–PRV-05 |
+| **33** | Property sheet responsive & accessibility | Mobile + a11y pass | PRA-01 |
+
+### Success criteria
+
+**Phase 31**
+
+1. User can complete add/edit along **fully paid**, **builder milestones**, or **mortgaged** paths without irrelevant fields cluttering the flow.
+2. Helper copy connects each path to how equity and milestones affect net worth.
+
+**Phase 32**
+
+1. Save is rejected when milestone totals exceed agreement per **PRV-01** (with clear errors).
+2. Loan rules (**PRV-02**, **PRV-03**) behave per documented warn-vs-block decisions.
+3. Tests fail if validation helpers or schema regress.
+
+**Phase 33**
+
+1. Primary actions and milestone grid remain reachable on small screens; no blocking horizontal overflow for core fields.
+
+### Plans
+
+- [ ] Phase 31 — plan TBD (`/gsd-plan-phase 31`)
+- [ ] Phase 32 — plan TBD (`/gsd-plan-phase 32`)
+- [ ] Phase 33 — plan TBD (`/gsd-plan-phase 33`)
 
 ---
 
@@ -120,4 +174,4 @@
 
 ---
 
-_Milestone archives: `.planning/milestones/` · **Last shipped:** **v2.2** (2026-05-06). **Live requirements:** none until **`/gsd-new-milestone`**._
+_Milestone archives: `.planning/milestones/` · **Last shipped:** **v2.2** (2026-05-06). **In progress:** **v2.3** — [`REQUIREMENTS.md`](REQUIREMENTS.md)._
