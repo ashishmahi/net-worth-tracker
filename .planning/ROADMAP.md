@@ -17,7 +17,7 @@
 
 ---
 
-## v2.3 — Property entry flow & validation (Phases 31–33)
+## v2.3: Property entry flow & validation (Phases 31–33)
 
 **Goal:** Guided paths for common property ownership situations and **save-blocking validation** so inconsistent milestones and loan fields do not reach `localStorage`.
 
