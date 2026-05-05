@@ -26,19 +26,17 @@ See **total net worth in INR** at a glance (**debt-adjusted** headline minus sta
 
 Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.1-ROADMAP.md` and matching `*-REQUIREMENTS.md` archives. Executed phase artifacts for shipped milestones live under [`.planning/milestones/`](milestones/) (e.g. `v1.5-phases/`). Phase dirs **19–28** remain under [`.planning/phases/`](phases/) until optional **`/gsd-cleanup`**.
 
-## Current Milestone: v2.2 Import-adjusted bullion pricing
+## Last completed milestone: v2.2 Import-adjusted bullion pricing (2026-05-06)
 
-**Goal:** Bring live gold/silver ₹/g hints (and paths that consume them) closer to **Indian market-style** expectations by applying configurable **import-style uplift** on top of spot×forex parity—not a customs calculator, but a tunable approximation.
-
-**Target features:**
-- **Persisted uplift** — separate configurable factors for gold vs silver (defaults ~10% / ~8% per [SEED-001](seeds/SEED-001-gold-silver-import-tax-inr.md)), schema + migration  
-- **Derivation** — extend `goldLiveHints` / `silverLiveHints` and sync / effective net-worth wiring so unlocked live pricing uses uplifted ₹/g consistently  
-- **Settings UX** — gold/silver pricing cards: controls or documented defaults plus clear copy that values are **illustrative** and **not tax or legal advice**
+**Shipped:** Persisted import-style uplift (Phases **29–30**); live ₹/g and net worth use uplifted parity; Settings gold/silver cards show **read-only** ballpark disclosure and **not legal or tax advice** copy (**BLN-04**). **v2.2** is **disclosure-only** for uplift controls in-app (no tuning UI).
 
 **Selected seed:** [SEED-001 — Indian import-style duties in ₹/g](seeds/SEED-001-gold-silver-import-tax-inr.md)
 
-## Current state (shipped through **v2.1** — 2026-05-04)
+**Next:** Start **v2.3** (or next product slice) with **`/gsd-new-milestone`** when ready.
 
+## Current state (shipped through **v2.2** — 2026-05-06)
+
+- **Import-adjusted bullion (v2.2 — Phases 29–30):** persisted **`goldImportUpliftRate`** / **`silverImportUpliftRate`**; uplifted **`goldLiveHints`** / **`silverLiveHints`** and dashboard gold; Settings **`bullionUpliftDisclosure`** copy on **`SettingsGoldPricingCard`** / **`SettingsSilverPricingCard`**.  
 - **Section URLs & routing (v2.1 — Phase 28):** **`react-router-dom`** with **`BrowserRouter`** **`basename={import.meta.env.BASE_URL}`**; canonical paths in **`src/lib/sectionRoutes.ts`**; sidebar **`NavLink`**; mobile **Home** on non-dashboard routes; unknown paths **`Navigate`** to **`/`**. UAT complete ([`28-UAT.md`](phases/28-section-routing-home-header/28-UAT.md)).
 - **Liabilities & net worth:** root **`liabilities`** list; **`calcNetWorth(gross, sumLiabilitiesInr)`** for headline + new snapshots; **`sumAllDebtInr`** for dashboard **Total Debt** row; property equity unchanged (`agreementInr − outstandingLoanInr`).  
 - **Commodities (v1.4):** `assets.otherCommodities`; **`CommoditiesPage`**; live silver via **`useLivePrices`**.  
@@ -130,7 +128,11 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.1-ROADMAP.md` and matc
 
 ### Validated (v2.2 — Phase 29)
 
-- [x] **BLN-01**, **BLN-02**, **BLN-03**, **BLN-05** — persisted gold/silver import uplift rates (defaults 10% / 8%); uplifted **`goldLiveHints`** / **`silverLiveHints`**; sync + hint surfaces; **`calcCategoryTotals`** + **`goldUsdPerOz`** for uplift-aware dashboard gold — Phase **29** ([`29-VERIFICATION.md`](phases/29-bullion-import-uplift-data-calculations/29-VERIFICATION.md)). Settings uplift controls (**BLN-04**) → Phase **30**.
+- [x] **BLN-01**, **BLN-02**, **BLN-03**, **BLN-05** — persisted gold/silver import uplift rates (defaults 10% / 8%); uplifted **`goldLiveHints`** / **`silverLiveHints`**; sync + hint surfaces; **`calcCategoryTotals`** + **`goldUsdPerOz`** for uplift-aware dashboard gold — Phase **29** ([`29-VERIFICATION.md`](phases/29-bullion-import-uplift-data-calculations/29-VERIFICATION.md)).
+
+### Validated (v2.2 — Phase 30)
+
+- [x] **BLN-04** — Settings gold/silver pricing cards: read-only ballpark uplift copy, parity context, approximate / not legal or tax advice disclosure; **v2.2 disclosure-only** (no uplift tuning UI) — Phase **30** ([`30-VERIFICATION.md`](phases/30-bullion-import-uplift-settings-ux-disclosure/30-VERIFICATION.md)).
 
 ### Deferred (backlog / future)
 
@@ -200,4 +202,4 @@ This file is updated at **milestone completion** to avoid drift between plans an
 </details>  
 
 ---
-*Last updated: 2026-05-06 — Phase **29** complete (import uplift data layer); next **Phase 30** Settings UX; last shipped **v2.1** · [`v2.1-ROADMAP.md`](milestones/v2.1-ROADMAP.md).*  
+*Last updated: 2026-05-06 — Milestone **v2.2** complete (Phases **29–30**); next **`/gsd-new-milestone`** · [`ROADMAP.md`](ROADMAP.md).*  

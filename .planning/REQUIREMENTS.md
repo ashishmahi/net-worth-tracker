@@ -19,7 +19,7 @@ Requirements for **v2.2 — Import-adjusted bullion pricing**. Each maps to one 
 
 ### Product UX & disclosure
 
-- [ ] **BLN-04**: **Settings** gold/silver pricing surfaces explain import-style uplift with **read-only** ballpark copy (~10% / ~8%), a short parity context line, and visible copy that figures are **approximate** and **not legal, customs, or tax advice**. **v2.2 product decision:** disclosure-only — in-app tuning of uplift rates is deferred (optional future requirement); no uplift tuning UI in this release (Phase 30).
+- [x] **BLN-04**: **Settings** gold/silver pricing surfaces explain import-style uplift with **read-only** ballpark copy (~10% / ~8%), a short parity context line, and visible copy that figures are **approximate** and **not legal, customs, or tax advice**. **v2.2 product decision:** disclosure-only — in-app tuning of uplift rates is deferred (optional future requirement); no uplift tuning UI in this release (Phase 30).
 
 ### Verification
 
@@ -53,7 +53,7 @@ Deferred; not part of v2.2 roadmap.
 | BLN-02 | Phase 29 — Bullion import uplift: data & calculations | Complete |
 | BLN-03 | Phase 29 — Bullion import uplift: data & calculations | Complete |
 | BLN-05 | Phase 29 — Bullion import uplift: data & calculations | Complete |
-| BLN-04 | Phase 30 — Bullion import uplift: settings UX & disclosure | Pending |
+| BLN-04 | Phase 30 — Bullion import uplift: settings UX & disclosure | Complete |
 
 **Coverage:**
 

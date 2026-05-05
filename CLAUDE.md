@@ -31,7 +31,7 @@ This project uses GSD for phased planning and execution.
 5. Dashboard — net worth summary aggregating all sections (implemented: `src/lib/dashboardCalcs.ts`, `src/pages/DashboardPage.tsx`)
 
 ### Next step
-**v2.1** is archived ([`v2.1-ROADMAP.md`](.planning/milestones/v2.1-ROADMAP.md)) — section URL routing (`react-router-dom`, `src/lib/sectionRoutes.ts`). There is no live `.planning/REQUIREMENTS.md` until **`/gsd-new-milestone`** defines the next version. Run the app with `npm run dev`; tests: `npm test`. Container + Pages preview commands unchanged (`README.md`). Status: `/gsd-progress`.
+**v2.2** (import-adjusted bullion + Settings disclosure) is complete — see [`.planning/ROADMAP.md`](.planning/ROADMAP.md) and [`.planning/REQUIREMENTS.md`](.planning/REQUIREMENTS.md). Use **`/gsd-new-milestone`** to start the next version when ready. Run the app with `npm run dev`; tests: `npm test`. Status: `/gsd-progress`.
 
 ## Critical Conventions (must follow in all phases)
 

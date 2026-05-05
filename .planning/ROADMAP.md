@@ -10,7 +10,7 @@
 - ✅ **v2.0 — Session assets & live silver** — Shipped 2026-05-02 — [full snapshot](milestones/v2.0-ROADMAP.md)  
 - ✅ **v2.0.1 — Live gold spot** — Shipped 2026-05-03 — [full snapshot](milestones/v2.0.1-ROADMAP.md)
 - ✅ **v2.1 — Section routing & home nav** — Shipped 2026-05-04 — [full snapshot](milestones/v2.1-ROADMAP.md)
-- 🔄 **v2.2 — Import-adjusted bullion pricing** — Planning → execution — [REQUIREMENTS.md](REQUIREMENTS.md) · Phases **29–30** (below)
+- ✅ **v2.2 — Import-adjusted bullion pricing** — Shipped 2026-05-06 — [REQUIREMENTS.md](REQUIREMENTS.md) · Phases **29–30** (below)
 
 **Phase numbering:** **v2.1** ended at Phase **28**. **v2.2** continues with Phases **29–30**.
 

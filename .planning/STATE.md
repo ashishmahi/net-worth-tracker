@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.2
 milestone_name: — Import-adjusted bullion pricing
-status: ready_to_execute
-last_updated: "2026-05-06T16:00:00.000Z"
+status: milestone_complete
+last_updated: "2026-05-06T16:30:00.000Z"
 last_activity: 2026-05-06
 progress:
   total_phases: 2
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 2
-  completed_plans: 1
-  percent: 50
+  completed_plans: 2
+  percent: 100
 ---
 
 ## Project
@@ -19,18 +19,18 @@ progress:
 
 ## Current position
 
-Phase: 30
-Plan: [`30-01-PLAN.md`](phases/30-bullion-import-uplift-settings-ux-disclosure/30-01-PLAN.md)
-Status: Ready to execute
+Phase: —
+Plan: —
+Status: Milestone v2.2 complete (Phases 29–30)
 Last activity: 2026-05-06
 
 ```
-Progress: [~] Milestone v2.2 — Phase 29 shipped · Phase 30 context gathered → plan next
+Progress: [x] Milestone v2.2 — Phase 29 & 30 shipped (import uplift + Settings disclosure)
 ```
 
 ## Project reference
 
-See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](ROADMAP.md) — **v2.2** active (Phases **29–30**). **Requirements:** [`.planning/REQUIREMENTS.md`](REQUIREMENTS.md).
+See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](ROADMAP.md) — **v2.2** complete. **Requirements:** [`.planning/REQUIREMENTS.md`](REQUIREMENTS.md).
 
 **Core value:** Total net worth in INR — liabilities deducted from gross assets, live prices where applicable, minimal repeated data entry.
 
@@ -62,14 +62,10 @@ See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](
 
 ## Session continuity
 
-**Active milestone:** **v2.2** — Import-adjusted bullion pricing — SEED-001 — 2026-05-05
+**Completed milestone:** **v2.2** — Import-adjusted bullion pricing — SEED-001 — Phases **29–30** shipped 2026-05-06
 
-**Last shipped:** **v2.1** — Section routing & home nav (Phase **28**) — 2026-05-04
+**Last shipped:** **v2.2** — Bullion uplift data + Settings disclosure (**BLN-01–05**, **BLN-04**)
 
-**Next:** **`/gsd-execute-phase 30`** — implement Settings bullion uplift disclosure (**BLN-04**).
+**Next:** **`/gsd-new-milestone`** (or archive milestone / plan **v2.3**) when ready for the next version.
 
-**Resume:** [`.planning/phases/30-bullion-import-uplift-settings-ux-disclosure/30-01-PLAN.md`](phases/30-bullion-import-uplift-settings-ux-disclosure/30-01-PLAN.md)
-
-**Last planned:** Phase **29** (bullion uplift data & calculations) — [`29-01-PLAN.md`](phases/29-bullion-import-uplift-data-calculations/29-01-PLAN.md)
-
-**Planned Phase:** 30 (bullion-import-uplift-settings-ux-disclosure) — 1 plans — 2026-05-05T20:24:06.653Z
+**Last execution:** Phase **30** — [`30-01-SUMMARY.md`](phases/30-bullion-import-uplift-settings-ux-disclosure/30-01-SUMMARY.md) · [`30-VERIFICATION.md`](phases/30-bullion-import-uplift-settings-ux-disclosure/30-VERIFICATION.md)
