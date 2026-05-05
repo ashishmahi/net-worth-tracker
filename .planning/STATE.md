@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.3
 milestone_name: Property entry flow & validation
-status: ready_to_plan
-last_updated: "2026-05-06T01:55:00.000Z"
+status: planning
+last_updated: "2026-05-05T22:06:13.015Z"
 last_activity: 2026-05-06 — Phase **32** complete — save validation + schema parity
 progress:
   total_phases: 3
   completed_phases: 2
   total_plans: 2
   completed_plans: 2
-  percent: 67
+  percent: 100
 ---
 
 ## Project
@@ -66,7 +66,7 @@ See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](
 
 **Last completed milestone:** **v2.2** — Import-adjusted bullion pricing — Phases **29–30**
 
-**Resume file:** Use phase **33** planning when ready ([`33` context](phases/) — create via **`/gsd-discuss-phase 33`**).
+**Resume file:** --resume-file
 
 **Next:** **`/gsd-discuss-phase 33`** → **`/gsd-plan-phase 33`** → **`/gsd-execute-phase 33`**
 
