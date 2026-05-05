@@ -158,6 +158,7 @@ export function DashboardPage({
     silverUsdPerOz,
     silverLoading,
     silverError,
+    goldUsdPerOz,
   } = useLivePrices()
 
   const totals = useMemo(
@@ -167,8 +168,9 @@ export function DashboardPage({
         usdInr,
         aedInr,
         silverUsdPerOz,
+        goldUsdPerOz,
       }),
-    [data, btcUsd, usdInr, aedInr, silverUsdPerOz]
+    [data, btcUsd, usdInr, aedInr, silverUsdPerOz, goldUsdPerOz],
   )
   const grossAssets = useMemo(() => sumForNetWorth(totals), [totals])
   const netWorth = useMemo(

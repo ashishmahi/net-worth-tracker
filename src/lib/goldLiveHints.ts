@@ -43,6 +43,37 @@ export function formatInrPerGramInput(value: number): string {
   return value.toLocaleString('en-IN', { maximumFractionDigits: 0 })
 }
 
+/**
+ * ₹/g for a karat on the net-worth path: uplifted live spot when auto-sync applies and
+ * feeds are present; otherwise saved manual prices from settings.
+ */
+export function effectiveGoldInrPerGramForKarat(
+  settings: {
+    goldPrices?: { k24: number; k22: number; k18: number }
+    goldPricesLocked?: boolean
+    goldImportUpliftRate?: number
+  },
+  karat: 24 | 22 | 18,
+  live: { goldUsdPerOz: number | null; usdInr: number | null },
+): number | null {
+  if (
+    shouldAutoSyncGoldFromSpot(settings) &&
+    live.goldUsdPerOz != null &&
+    live.usdInr != null
+  ) {
+    return liveInrPerGramForKarat(
+      live.goldUsdPerOz,
+      live.usdInr,
+      karat,
+      resolveGoldImportUpliftRate(settings),
+    )
+  }
+  const gp = settings.goldPrices
+  if (!gp) return null
+  const key = ({ 24: 'k24', 22: 'k22', 18: 'k18' } as const)[karat]
+  return gp[key]
+}
+
 /** Whether live spot may persist into `settings.goldPrices` (see GoldSpotPricesSync). */
 export function shouldAutoSyncGoldFromSpot(s: {
   goldPrices?: { k24: number; k22: number; k18: number }

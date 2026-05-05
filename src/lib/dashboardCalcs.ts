@@ -1,5 +1,6 @@
 import type { AppData } from '@/types/data'
 import { roundCurrency } from '@/lib/financials'
+import { effectiveGoldInrPerGramForKarat } from '@/lib/goldLiveHints'
 import { effectiveSilverInrPerGramForNetWorth } from '@/lib/silverLiveHints'
 
 export const DASHBOARD_CATEGORY_ORDER = [
@@ -26,19 +27,18 @@ export type CategoryTotals = {
   retirement: number
 }
 
-const KARAT_TO_KEY = { 24: 'k24', 22: 'k22', 18: 'k18' } as const
-
-function sumGoldInr(data: AppData): number | null {
+function sumGoldInr(
+  data: AppData,
+  live: { goldUsdPerOz: number | null; usdInr: number | null },
+): number | null {
   const items = data.assets.gold.items
   if (items.length === 0) return 0
-  if (data.settings.goldPrices === undefined) return null
 
   let sum = 0
   for (const item of items) {
-    const k = KARAT_TO_KEY[item.karat]
-    const price = data.settings.goldPrices![k]
-    const line = roundCurrency(item.grams * price)
-    sum = roundCurrency(sum + line)
+    const price = effectiveGoldInrPerGramForKarat(data.settings, item.karat, live)
+    if (price == null) return null
+    sum = roundCurrency(sum + roundCurrency(item.grams * price))
   }
   return sum
 }
@@ -135,7 +135,8 @@ export function calcCategoryTotals(
     usdInr: number | null
     aedInr: number | null
     silverUsdPerOz: number | null
-  }
+    goldUsdPerOz: number | null
+  },
 ): CategoryTotals {
   const silverInrPerGram = effectiveSilverInrPerGramForNetWorth(data.settings, {
     silverUsdPerOz: live.silverUsdPerOz,
@@ -143,7 +144,10 @@ export function calcCategoryTotals(
   })
 
   return {
-    gold: sumGoldInr(data),
+    gold: sumGoldInr(data, {
+      goldUsdPerOz: live.goldUsdPerOz,
+      usdInr: live.usdInr,
+    }),
     otherCommodities: sumCommoditiesInr(data, silverInrPerGram),
     mutualFunds: sumMutualFunds(data),
     stocks: sumStocks(data),
