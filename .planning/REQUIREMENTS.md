@@ -9,13 +9,13 @@ Requirements for **v2.2 — Import-adjusted bullion pricing**. Each maps to one 
 
 ### Bullion import uplift (parity → landed-style INR)
 
-- [ ] **BLN-01**: Live-derived **gold** ₹/g (pure and per-karat) applies a configurable **import-style uplift** after spot×forex parity math, using a default consistent with SEED-001 (~10%) unless the user overrides.
+- [x] **BLN-01**: Live-derived **gold** ₹/g (pure and per-karat) applies a configurable **import-style uplift** after spot×forex parity math, using a default consistent with SEED-001 (~10%) unless the user overrides.
 
-- [ ] **BLN-02**: Live-derived **silver** ₹/g applies a configurable uplift after spot×forex parity math, with a default consistent with SEED-001 (~8%) unless the user overrides.
+- [x] **BLN-02**: Live-derived **silver** ₹/g applies a configurable uplift after spot×forex parity math, with a default consistent with SEED-001 (~8%) unless the user overrides.
 
 ### Data model & persistence
 
-- [ ] **BLN-03**: **Settings** persist optional gold and silver uplift inputs (percentages or equivalent) with **safe defaults**, **migration** from older saves that omit these fields, and serialization compatible with existing import/export flows.
+- [x] **BLN-03**: **Settings** persist optional gold and silver uplift inputs (percentages or equivalent) with **safe defaults**, **migration** from older saves that omit these fields, and serialization compatible with existing import/export flows.
 
 ### Product UX & disclosure
 
@@ -23,7 +23,7 @@ Requirements for **v2.2 — Import-adjusted bullion pricing**. Each maps to one 
 
 ### Verification
 
-- [ ] **BLN-05**: **Vitest** (and existing project test patterns) cover uplift math, defaults/migration, and critical paths where uplifted ₹/g feeds hints, sync, or net-worth calculations.
+- [x] **BLN-05**: **Vitest** (and existing project test patterns) cover uplift math, defaults/migration, and critical paths where uplifted ₹/g feeds hints, sync, or net-worth calculations.
 
 ## Future requirements
 
@@ -49,10 +49,10 @@ Deferred; not part of v2.2 roadmap.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| BLN-01 | Phase 29 — Bullion import uplift: data & calculations | Pending |
-| BLN-02 | Phase 29 — Bullion import uplift: data & calculations | Pending |
-| BLN-03 | Phase 29 — Bullion import uplift: data & calculations | Pending |
-| BLN-05 | Phase 29 — Bullion import uplift: data & calculations | Pending |
+| BLN-01 | Phase 29 — Bullion import uplift: data & calculations | Complete |
+| BLN-02 | Phase 29 — Bullion import uplift: data & calculations | Complete |
+| BLN-03 | Phase 29 — Bullion import uplift: data & calculations | Complete |
+| BLN-05 | Phase 29 — Bullion import uplift: data & calculations | Complete |
 | BLN-04 | Phase 30 — Bullion import uplift: settings UX & disclosure | Pending |
 
 **Coverage:**

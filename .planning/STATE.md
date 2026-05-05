@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.2
 milestone_name: — Import-adjusted bullion pricing
-status: planning
-last_updated: "2026-05-05T20:04:59.932Z"
-last_activity: 2026-05-05 — Phase **29** discuss-phase complete — **29-CONTEXT.md**
+status: ready_to_plan
+last_updated: "2026-05-05T20:06:24.008Z"
+last_activity: 2026-05-05 -- Phase --phase execution started
 progress:
   total_phases: 2
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 1
   completed_plans: 0
-  percent: 0
+  percent: 50
 ---
 
 ## Project
@@ -19,10 +19,10 @@ progress:
 
 ## Current position
 
-Phase: **29** — CONTEXT gathered — bullion uplift data & calculations
-Plan: —
-Status: Planning — [`29-CONTEXT.md`](phases/29-bullion-import-uplift-data-calculations/29-CONTEXT.md) ready; next **`/gsd-plan-phase 29`**
-Last activity: 2026-05-05 — Phase **29** discuss-phase complete — **29-CONTEXT.md**
+Phase: 30
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-05-05
 
 ```
 Progress: [ ] Milestone v2.2 — Phase 29–30 not started
