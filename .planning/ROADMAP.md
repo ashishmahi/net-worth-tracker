@@ -10,50 +10,25 @@
 - ✅ **v2.0 — Session assets & live silver** — Shipped 2026-05-02 — [full snapshot](milestones/v2.0-ROADMAP.md)  
 - ✅ **v2.0.1 — Live gold spot** — Shipped 2026-05-03 — [full snapshot](milestones/v2.0.1-ROADMAP.md)
 - ✅ **v2.1 — Section routing & home nav** — Shipped 2026-05-04 — [full snapshot](milestones/v2.1-ROADMAP.md)
-- ✅ **v2.2 — Import-adjusted bullion pricing** — Shipped 2026-05-06 — [REQUIREMENTS.md](REQUIREMENTS.md) · Phases **29–30** (below)
+- ✅ **v2.2 — Import-adjusted bullion pricing** — Shipped 2026-05-06 — [full snapshot](milestones/v2.2-ROADMAP.md)
 
-**Phase numbering:** **v2.1** ended at Phase **28**. **v2.2** continues with Phases **29–30**.
+**Phase numbering:** **v2.1** ended at Phase **28**. **v2.2** shipped Phases **29–30** (2026-05-06). Next: **`/gsd-new-milestone`** for **v2.3** (phase IDs continue after **30**).
 
 ---
 
-## v2.2 — Import-adjusted bullion pricing (Phases 29–30)
+<details>
+<summary>✅ v2.2 — Import-adjusted bullion pricing (Phases 29–30) — SHIPPED 2026-05-06</summary>
 
-**Goal:** Apply configurable **import-style uplift** (~10% gold / ~8% silver defaults per [SEED-001](seeds/SEED-001-gold-silver-import-tax-inr.md)) when deriving live ₹/g from international spot × USD/INR, so hints and dependent valuations read closer to **Indian market-style** expectations—with explicit **non-advice** copy.
+| Phase | Name | Plans |
+|-------|------|-------|
+| **29** | Bullion import uplift — data & calculations | [29-01](phases/29-bullion-import-uplift-data-calculations/29-01-PLAN.md) |
+| **30** | Bullion import uplift — settings UX & disclosure | [30-01](phases/30-bullion-import-uplift-settings-ux-disclosure/30-01-PLAN.md) |
 
-### Phase 29: Bullion import uplift — data & calculations
+**Roadmap / requirements:** [`milestones/v2.2-ROADMAP.md`](milestones/v2.2-ROADMAP.md) · [`milestones/v2.2-REQUIREMENTS.md`](milestones/v2.2-REQUIREMENTS.md)
 
-**Goal:** Schema + migration for uplift factors; extend `goldLiveHints` / `silverLiveHints`, sync components, and effective net-worth paths; Vitest.
+**Phase directories (current location):** [`.planning/phases/29-bullion-import-uplift-data-calculations/`](phases/29-bullion-import-uplift-data-calculations/) · [`.planning/phases/30-bullion-import-uplift-settings-ux-disclosure/`](phases/30-bullion-import-uplift-settings-ux-disclosure/) — optional **`/gsd-cleanup`** later.
 
-**Requirements:** BLN-01, BLN-02, BLN-03, BLN-05
-
-### Phase 30: Bullion import uplift — settings UX & disclosure
-
-**Goal:** Settings gold/silver cards: tuning affordances as needed; prominent approximation / not-tax-advice messaging.
-
-**Requirements:** BLN-04
-
-| Phase | Name | Goal (summary) | Requirements |
-|-------|------|----------------|--------------|
-| **29** | Bullion import uplift — data & calculations | Schema + migration for uplift factors; extend `goldLiveHints` / `silverLiveHints`, sync components, and effective net-worth paths; Vitest | BLN-01, BLN-02, BLN-03, BLN-05 |
-| **30** | Bullion import uplift — settings UX & disclosure | Settings gold/silver cards: tuning affordances as needed; prominent approximation / not-tax-advice messaging | BLN-04 |
-
-### Success criteria
-
-**Phase 29**
-
-1. With healthy feeds, unlocked gold/silver pricing shows ₹/g that matches parity × (1 + uplift) for configured defaults (within rounding rules).
-2. Older `localStorage` payloads load without error; new fields default sensibly and round-trip through export/import paths used by the app.
-3. Automated tests fail if uplift math or migration regressions slip in.
-
-**Phase 30**
-
-1. A user can discover **what** the uplift is and **that** it is tunable (when controls exist) from Settings alone.
-2. Copy states clearly that the feature is an approximation—not legal, customs, or tax guidance.
-
-### Plans
-
-- [x] [`29-01-PLAN.md`](phases/29-bullion-import-uplift-data-calculations/29-01-PLAN.md) — bullion uplift schema, math, sync, dashboard
-- [x] [`30-01-PLAN.md`](phases/30-bullion-import-uplift-settings-ux-disclosure/30-01-PLAN.md) — Settings disclosure + ballpark uplift copy (**BLN-04**)
+</details>
 
 ---
 
@@ -145,4 +120,4 @@
 
 ---
 
-_Milestone archives: `.planning/milestones/` · **Last shipped:** **v2.2** — Phases **29–30** (import-adjusted bullion pricing), 2026-05-06._
+_Milestone archives: `.planning/milestones/` · **Last shipped:** **v2.2** (2026-05-06). **Live requirements:** none until **`/gsd-new-milestone`**._

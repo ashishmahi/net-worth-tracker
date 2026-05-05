@@ -1,5 +1,28 @@
 # Milestone history — Personal Wealth Tracker
 
+**Pre-ship audit (v2.2):** No `v2.2-MILESTONE-AUDIT.md` on file — optional `/gsd-audit-milestone` before high-stakes releases.  
+**Open-artifact audit:** `gsd-sdk query audit-open` unavailable in this SDK — skipped (same as prior closes); deferred items unchanged in `STATE.md`.
+
+## v2.2 Import-adjusted bullion pricing (Shipped: 2026-05-06)
+
+**Scope:** Phases **29–30**.  
+**Phase directories (current location):** [`.planning/phases/29-bullion-import-uplift-data-calculations/`](phases/29-bullion-import-uplift-data-calculations/) · [`.planning/phases/30-bullion-import-uplift-settings-ux-disclosure/`](phases/30-bullion-import-uplift-settings-ux-disclosure/)
+
+**Phases completed:** 2 phases, 2 plans
+
+**Key accomplishments:**
+
+- **Phase 29:** Persisted **`goldImportUpliftRate`** / **`silverImportUpliftRate`** with defaults ~10% / ~8%; uplifted **`goldLiveHints`** / **`silverLiveHints`**; **`GoldSpotPricesSync`** / **`SilverSpotPricesSync`**; **`calcCategoryTotals`** + **`goldUsdPerOz`** for dashboard gold; Vitest coverage (**BLN-01–03**, **BLN-05**) — [`29-01-SUMMARY.md`](phases/29-bullion-import-uplift-data-calculations/29-01-SUMMARY.md).
+- **Phase 30:** **`bullionUpliftDisclosure`** copy module; Settings gold/silver cards show read-only ballpark / parity / non-advice footnotes (**BLN-04**) — [`30-01-SUMMARY.md`](phases/30-bullion-import-uplift-settings-ux-disclosure/30-01-SUMMARY.md).
+
+**Roadmap / requirements:** [`.planning/milestones/v2.2-ROADMAP.md`](milestones/v2.2-ROADMAP.md), [`v2.2-REQUIREMENTS.md`](milestones/v2.2-REQUIREMENTS.md)
+
+**Tooling note:** `gsd-sdk query milestone.complete` returned `version required for phases archive`; **v2.2** close used the **manual** archive path (same as **v2.1** / **v2.0.1**). Phase dirs **29–30** left under **`.planning/phases/`** (optional **`/gsd-cleanup`** later).
+
+**Known deferred (unchanged):** Phase 05 UAT, Phase 01 `human_needed` — see `STATE.md` **Deferred items**.
+
+---
+
 **Pre-ship audit (v2.1):** No `v2.1-MILESTONE-AUDIT.md` on file — optional `/gsd-audit-milestone` before high-stakes releases.  
 **Open-artifact audit at v2.1 close:** all clear (2026-05-04).
 

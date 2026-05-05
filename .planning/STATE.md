@@ -30,7 +30,7 @@ Progress: [x] Milestone v2.2 — Phase 29 & 30 shipped (import uplift + Settings
 
 ## Project reference
 
-See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](ROADMAP.md) — **v2.2** complete. **Requirements:** [`.planning/REQUIREMENTS.md`](REQUIREMENTS.md).
+See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](ROADMAP.md) — **v2.2** archived. **Requirements:** *none live* — next milestone starts with **`/gsd-new-milestone`** (see [`milestones/v2.2-REQUIREMENTS.md`](milestones/v2.2-REQUIREMENTS.md) for v2.2 snapshot).
 
 **Core value:** Total net worth in INR — liabilities deducted from gross assets, live prices where applicable, minimal repeated data entry.
 

@@ -24,7 +24,7 @@ See **total net worth in INR** at a glance (**debt-adjusted** headline minus sta
 | **v2.0.1** | **Live gold spot + commodity pricing UX** — **`fetchGoldUsdPerOz`** + **`LivePricesContext`** + **`GoldSpotPricesSync`**; Settings **₹/g** hints; **`SettingsGoldPricingCard` / `SettingsSilverPricingCard`**, **`SilverSpotPricesSync`**, effective silver in **`dashboardCalcs`** | 2026-05-03 |
 | **v2.1** | **Section routing & home nav** — **`react-router-dom`**, **`sectionRoutes`** + Vitest, **`Routes`**/**`Outlet`**, sidebar **`NavLink`**, mobile **Home**, **`Navigate`** catch-all; **`basename`** from **`import.meta.env.BASE_URL`** | 2026-05-04 |
 
-Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.1-ROADMAP.md` and matching `*-REQUIREMENTS.md` archives. Executed phase artifacts for shipped milestones live under [`.planning/milestones/`](milestones/) (e.g. `v1.5-phases/`). Phase dirs **19–28** remain under [`.planning/phases/`](phases/) until optional **`/gsd-cleanup`**.
+Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.2-ROADMAP.md` and matching `*-REQUIREMENTS.md` archives. Executed phase artifacts for shipped milestones live under [`.planning/milestones/`](milestones/) (e.g. `v1.5-phases/`). Phase dirs **19–30** remain under [`.planning/phases/`](phases/) until optional **`/gsd-cleanup`**.
 
 ## Last completed milestone: v2.2 Import-adjusted bullion pricing (2026-05-06)
 
@@ -32,7 +32,13 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.1-ROADMAP.md` and matc
 
 **Selected seed:** [SEED-001 — Indian import-style duties in ₹/g](seeds/SEED-001-gold-silver-import-tax-inr.md)
 
-**Next:** Start **v2.3** (or next product slice) with **`/gsd-new-milestone`** when ready.
+**Archived:** [`.planning/milestones/v2.2-ROADMAP.md`](milestones/v2.2-ROADMAP.md) · [`.planning/milestones/v2.2-REQUIREMENTS.md`](milestones/v2.2-REQUIREMENTS.md)
+
+## Next milestone (not started)
+
+**There is no live `.planning/REQUIREMENTS.md`** until **`/gsd-new-milestone`** defines the next version.
+
+**Candidate seeds** (examples — not committed): [SEED-002 — brand logo & favicon](seeds/SEED-002-brand-logo-favicon.md), others under [`.planning/seeds/`](seeds/).
 
 ## Current state (shipped through **v2.2** — 2026-05-06)
 
@@ -202,4 +208,4 @@ This file is updated at **milestone completion** to avoid drift between plans an
 </details>  
 
 ---
-*Last updated: 2026-05-06 — Milestone **v2.2** complete (Phases **29–30**); next **`/gsd-new-milestone`** · [`ROADMAP.md`](ROADMAP.md).*  
+*Last updated: 2026-05-06 — Milestone **v2.2** archived (milestone close); live **REQUIREMENTS.md** removed until **`/gsd-new-milestone`** · [`ROADMAP.md`](ROADMAP.md).*  
