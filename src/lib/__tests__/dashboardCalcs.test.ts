@@ -169,7 +169,8 @@ describe('calcCategoryTotals silver wiring', () => {
       aedInr: null,
       silverUsdPerOz,
     })
-    expect(totals.otherCommodities).toBe(500)
+    // 2 g × ₹250/g parity × (1 + default silver uplift 0.08)
+    expect(totals.otherCommodities).toBe(540)
   })
 
   it('leaves otherCommodities null when silver USD missing', () => {
