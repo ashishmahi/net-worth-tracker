@@ -19,7 +19,7 @@ Requirements for **v2.2 — Import-adjusted bullion pricing**. Each maps to one 
 
 ### Product UX & disclosure
 
-- [ ] **BLN-04**: **Settings** gold/silver pricing surfaces explain what the uplift represents, expose tuning when required by implementation, and include visible copy that figures are **approximate** and **not legal or tax advice**.
+- [ ] **BLN-04**: **Settings** gold/silver pricing surfaces explain import-style uplift with **read-only** ballpark copy (~10% / ~8%), a short parity context line, and visible copy that figures are **approximate** and **not legal, customs, or tax advice**. **v2.2 product decision:** disclosure-only — in-app tuning of uplift rates is deferred (optional future requirement); no uplift tuning UI in this release (Phase 30).
 
 ### Verification
 
@@ -63,4 +63,4 @@ Deferred; not part of v2.2 roadmap.
 
 ---
 *Requirements defined: 2026-05-05*  
-*Last updated: 2026-05-05 — roadmap creation (`/gsd-new-milestone` SEED-001)*
+*Last updated: 2026-05-06 — BLN-04 v2.2 disclosure-only clarification (Phase 30)*

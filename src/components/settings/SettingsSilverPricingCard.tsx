@@ -17,6 +17,11 @@ import {
   resolveSilverImportUpliftRate,
   shouldAutoSyncSilverFromSpot,
 } from '@/lib/silverLiveHints'
+import {
+  BULLION_UPLIFT_BALLPARK_SILVER,
+  BULLION_UPLIFT_DISCLAIMER_FOOTNOTE,
+  BULLION_UPLIFT_PARITY_LINE,
+} from '@/lib/bullionUpliftDisclosure'
 
 const silverPriceSchema = z.object({
   silver: z.string().min(1, 'This field is required.'),
@@ -309,6 +314,11 @@ export function SettingsSilverPricingCard() {
             </div>
           </form>
         ) : null}
+        <div className="space-y-2 pt-2">
+          <p className="text-sm text-muted-foreground">{BULLION_UPLIFT_BALLPARK_SILVER}</p>
+          <p className="text-sm text-muted-foreground">{BULLION_UPLIFT_PARITY_LINE}</p>
+          <p className="text-sm text-muted-foreground">{BULLION_UPLIFT_DISCLAIMER_FOOTNOTE}</p>
+        </div>
       </CardContent>
     </Card>
   )
