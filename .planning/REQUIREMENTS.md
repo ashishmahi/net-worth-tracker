@@ -8,11 +8,11 @@
 
 ### Guided property entry (UX)
 
-- [ ] **PRP-01**: User can choose or confirm an **entry path** aligned with three mental models: **fully paid**, **paying builder in stages** (milestones), **bank loan on property** (liability fields).
+- [x] **PRP-01**: User can choose or confirm an **entry path** aligned with three mental models: **fully paid**, **paying builder in stages** (milestones), **bank loan on property** (liability fields).
 
-- [ ] **PRP-02**: **Property** add/edit **surfaces only relevant sections** for the selected path (or inferred defaults), with short helper copy so users do not have to guess that empty milestones + no loan means “fully paid.”
+- [x] **PRP-02**: **Property** add/edit **surfaces only relevant sections** for the selected path (or inferred defaults), with short helper copy so users do not have to guess that empty milestones + no loan means “fully paid.”
 
-- [ ] **PRP-03**: If inference from existing fields is insufficient for reliable UX, persist an explicit **`entryKind`** (or equivalent) on `PropertyItem` with migration/default for older saves — **only if** plan-phase decides it is necessary; otherwise document inferred mapping.
+- [x] **PRP-03**: If inference from existing fields is insufficient for reliable UX, persist an explicit **`entryKind`** (or equivalent) on `PropertyItem` with migration/default for older saves — **only if** plan-phase decides it is necessary; otherwise document inferred mapping.
 
 ### Save-time validation & schema
 
@@ -50,9 +50,9 @@ Deferred; not part of v2.3 unless pulled in during plan-phase.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PRP-01 | Phase 31 — Guided property entry UX | Planned |
-| PRP-02 | Phase 31 — Guided property entry UX | Planned |
-| PRP-03 | Phase 31 — Guided property entry UX | Planned |
+| PRP-01 | Phase 31 — Guided property entry UX | Complete |
+| PRP-02 | Phase 31 — Guided property entry UX | Complete |
+| PRP-03 | Phase 31 — Guided property entry UX | Complete |
 | PRV-01 | Phase 32 — Property save validation & schema | Planned |
 | PRV-02 | Phase 32 — Property save validation & schema | Planned |
 | PRV-03 | Phase 32 — Property save validation & schema | Planned |

@@ -46,6 +46,8 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.2-ROADMAP.md` and matc
 
 **Selected seed:** [SEED-006 — Easier property entry paths + validation](seeds/SEED-006-property-entry-flow-validation.md)
 
+**Progress (in-repo):** Phase **31** shipped — three-path Property sheet, conditional milestones/loan blocks, tested path helpers ([`31-VERIFICATION.md`](phases/31-guided-property-entry-ux/31-VERIFICATION.md)). Phases **32–33** (validation, a11y) remain.
+
 ## Current state (shipped through **v2.2** — 2026-05-06)
 
 - **Import-adjusted bullion (v2.2 — Phases 29–30):** persisted **`goldImportUpliftRate`** / **`silverImportUpliftRate`**; uplifted **`goldLiveHints`** / **`silverLiveHints`** and dashboard gold; Settings **`bullionUpliftDisclosure`** copy on **`SettingsGoldPricingCard`** / **`SettingsSilverPricingCard`**.  
@@ -146,6 +148,10 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.2-ROADMAP.md` and matc
 
 - [x] **BLN-04** — Settings gold/silver pricing cards: read-only ballpark uplift copy, parity context, approximate / not legal or tax advice disclosure; **v2.2 disclosure-only** (no uplift tuning UI) — Phase **30** ([`30-VERIFICATION.md`](phases/30-bullion-import-uplift-settings-ux-disclosure/30-VERIFICATION.md)).
 
+### Validated (v2.3 — Phase 31)
+
+- [x] **PRP-01**, **PRP-02**, **PRP-03** — guided Property entry paths (`propertyEntryPath`, segmented control, conditional UI, inference without persisted `entryKind`) — Phase **31** ([`31-VERIFICATION.md`](phases/31-guided-property-entry-ux/31-VERIFICATION.md)).
+
 ### Deferred (backlog / future)
 
 - [ ] Export / reports — PDF or CSV (JSON export exists; richer formats later)  
@@ -215,4 +221,4 @@ This file is updated at **milestone completion** to avoid drift between plans an
 </details>  
 
 ---
-*Last updated: 2026-05-06 — **v2.3** milestone planning started (**SEED-006**); live [`REQUIREMENTS.md`](REQUIREMENTS.md) + [`ROADMAP.md`](ROADMAP.md).*  
+*Last updated: 2026-05-06 — **v2.3** Phase **31** verified (guided Property entry); live [`REQUIREMENTS.md`](REQUIREMENTS.md) + [`ROADMAP.md`](ROADMAP.md).*  
