@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.3
 milestone_name: Property entry flow & validation
 status: planning
-last_updated: "2026-05-05T22:06:13.015Z"
+last_updated: "2026-05-05T22:09:33.919Z"
 last_activity: 2026-05-06 — Phase **32** complete — save validation + schema parity
 progress:
   total_phases: 3
   completed_phases: 2
-  total_plans: 2
+  total_plans: 3
   completed_plans: 2
-  percent: 100
+  percent: 67
 ---
 
 ## Project
@@ -75,3 +75,5 @@ See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](
 **Completed phases:** **31** — [31-01-SUMMARY](phases/31-guided-property-entry-ux/31-01-SUMMARY.md) · [31-VERIFICATION](phases/31-guided-property-entry-ux/31-VERIFICATION.md) · **32** — [32-01-SUMMARY](phases/32-property-save-validation-schema/32-01-SUMMARY.md) · [32-VERIFICATION](phases/32-property-save-validation-schema/32-VERIFICATION.md)
 
 **Active:** Phase **33** (property-sheet-responsive-&-accessibility) — not planned yet
+
+**Planned Phase:** 33 (property-sheet-responsive-accessibility) — 1 plans — 2026-05-05T22:09:33.892Z
