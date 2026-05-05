@@ -138,6 +138,10 @@ const RetirementAssumptionsSchema = z.object({
 const SettingsSchema = z
   .object({
     updatedAt: z.string().datetime(),
+    /** Optional nonnegative fraction applied on top of parity-derived ₹/g for gold (default applied on load). */
+    goldImportUpliftRate: z.number().nonnegative().optional(),
+    /** Optional nonnegative fraction for silver live ₹/g uplift (default applied on load). */
+    silverImportUpliftRate: z.number().nonnegative().optional(),
     goldPrices: GoldPricesSchema.optional(),
     /** When true, do not overwrite goldPrices from live spot (user chose fixed prices). */
     goldPricesLocked: z.boolean().optional(),

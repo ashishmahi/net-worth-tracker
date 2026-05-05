@@ -77,6 +77,15 @@ describe('parseAppDataFromImport', () => {
     }
   })
 
+  it('applies default import uplift rates when keys absent on settings', () => {
+    const result = parseAppDataFromImport(minimalOldAppDataShape())
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data.settings.goldImportUpliftRate).toBe(0.1)
+      expect(result.data.settings.silverImportUpliftRate).toBe(0.08)
+    }
+  })
+
   it('parses data with valid standard and manual items', () => {
     const id1 = crypto.randomUUID()
     const id2 = crypto.randomUUID()

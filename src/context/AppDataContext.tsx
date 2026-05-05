@@ -77,8 +77,28 @@ export function ensureLiabilities(raw: unknown): unknown {
   return raw
 }
 
+/** Import uplift defaults (BLN-03): applied before parse when keys absent on `settings`. */
+export function ensureImportUpliftRates(raw: unknown): unknown {
+  if (raw === null || typeof raw !== 'object') return raw
+  const o = raw as Record<string, unknown>
+  const settings = o.settings
+  if (!settings || typeof settings !== 'object') return raw
+  const s = settings as Record<string, unknown>
+  const next: Record<string, unknown> = { ...s }
+  if (next.goldImportUpliftRate === undefined) {
+    next.goldImportUpliftRate = 0.1
+  }
+  if (next.silverImportUpliftRate === undefined) {
+    next.silverImportUpliftRate = 0.08
+  }
+  return {
+    ...o,
+    settings: next,
+  }
+}
+
 /** Same migrate + `DataSchema` path as initial stored wealth load — for import and boot.
- *  Chain: migrateLegacyBankAccounts → ensureNetWorthHistory → ensureOtherCommodities → ensureLiabilities → safeParse
+ *  Chain: migrateLegacyBankAccounts → ensureNetWorthHistory → ensureOtherCommodities → ensureLiabilities → ensureImportUpliftRates → safeParse
  */
 export function parseAppDataFromImport(
   raw: unknown,
@@ -87,7 +107,8 @@ export function parseAppDataFromImport(
   const withHistory = ensureNetWorthHistory(migrated)
   const withCommodities = ensureOtherCommodities(withHistory)
   const withLiabilities = ensureLiabilities(withCommodities)
-  const result = DataSchema.safeParse(withLiabilities)
+  const withImportUplift = ensureImportUpliftRates(withLiabilities)
+  const result = DataSchema.safeParse(withImportUplift)
   if (result.success) {
     return { success: true, data: result.data }
   }
@@ -103,7 +124,11 @@ export function createInitialData(): AppData {
   const now = nowIso()
   return {
     version: 1,
-    settings: { updatedAt: now },
+    settings: {
+      updatedAt: now,
+      goldImportUpliftRate: 0.1,
+      silverImportUpliftRate: 0.08,
+    },
     assets: {
       gold: { updatedAt: now, items: [] },
       otherCommodities: { updatedAt: now, items: [] },
