@@ -10,7 +10,7 @@ progress:
   completed_phases: 1
   total_plans: 1
   completed_plans: 1
-  percent: 100
+  percent: 33
 ---
 
 ## Project
@@ -66,7 +66,7 @@ See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](
 
 **Last completed milestone:** **v2.2** — Import-adjusted bullion pricing — Phases **29–30**
 
-**Resume file:** --resume-file
+**Resume file:** [`.planning/phases/32-property-save-validation-schema/32-CONTEXT.md`](phases/32-property-save-validation-schema/32-CONTEXT.md)
 
 **Next:** **`/gsd-plan-phase 32`** (then **`/gsd-execute-phase 32`**)
 
