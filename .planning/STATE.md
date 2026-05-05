@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v2.2
 milestone_name: Import-adjusted bullion pricing
 status: planning
-last_updated: "2026-05-05T12:00:00.000Z"
-last_activity: 2026-05-05 — Milestone v2.2 started (SEED-001)
+last_updated: "2026-05-05T20:00:51.968Z"
+last_activity: 2026-05-05 — Phase **29** discuss-phase complete — [`29-CONTEXT.md`](phases/29-bullion-import-uplift-data-calculations/29-CONTEXT.md)
 progress:
   total_phases: 2
   completed_phases: 0
@@ -19,10 +19,10 @@ progress:
 
 ## Current position
 
-Phase: Not started (defining requirements → roadmap complete)
+Phase: **29** — CONTEXT gathered — bullion uplift data & calculations
 Plan: —
-Status: Planning — requirements and roadmap defined; pick Phase **29** to discuss or plan
-Last activity: 2026-05-05 — Milestone **v2.2** initialized (**Import-adjusted bullion pricing**, SEED-001)
+Status: Planning — [`29-CONTEXT.md`](phases/29-bullion-import-uplift-data-calculations/29-CONTEXT.md) ready; next **`/gsd-plan-phase 29`**
+Last activity: 2026-05-05 — Phase **29** discuss-phase complete — **29-CONTEXT.md**
 
 ```
 Progress: [ ] Milestone v2.2 — Phase 29–30 not started
@@ -66,4 +66,4 @@ See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](
 
 **Last shipped:** **v2.1** — Section routing & home nav (Phase **28**) — 2026-05-04
 
-**Next:** **`/gsd-discuss-phase 29`** or **`/gsd-plan-phase 29`** — Phase **29** bullion uplift data & calculations
+**Next:** **`/gsd-plan-phase 29`** — Phase **29** bullion uplift data & calculations (research → PLAN.md)
