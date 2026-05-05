@@ -18,10 +18,10 @@ progress:
 
 ## Current position
 
-Phase: Not started  
+Phase: **31** — Guided property entry UX  
 Plan: —  
-Status: Ready to plan — roadmap defined (**SEED-006**)  
-Last activity: 2026-05-06 — Milestone **v2.3** initialized  
+Status: Context gathered — ready to plan (**[`31-CONTEXT.md`](phases/31-guided-property-entry-ux/31-CONTEXT.md)**)  
+Last activity: 2026-05-06 — **`/gsd-discuss-phase 31`** complete  
 
 ```
 Progress: [ ] Milestone v2.3 — Phases 31–33 (property entry + validation + a11y pass)
@@ -65,6 +65,8 @@ See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](
 
 **Last completed milestone:** **v2.2** — Import-adjusted bullion pricing — Phases **29–30**
 
-**Next:** **`/gsd-discuss-phase 31`** or **`/gsd-plan-phase 31`**
+**Resume file:** [`.planning/phases/31-guided-property-entry-ux/31-CONTEXT.md`](phases/31-guided-property-entry-ux/31-CONTEXT.md)
+
+**Next:** **`/gsd-plan-phase 31`**
 
 **Research:** GSD research agents not installed in this environment — requirements derive from **SEED-006** + shipped codebase context (_workflow deviation_).
