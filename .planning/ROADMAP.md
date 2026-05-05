@@ -52,7 +52,7 @@
 
 ### Plans
 
-- [ ] `29-01-PLAN.md` — (create via `/gsd-plan-phase 29`)
+- [x] [`29-01-PLAN.md`](phases/29-bullion-import-uplift-data-calculations/29-01-PLAN.md) — bullion uplift schema, math, sync, dashboard
 - [ ] `30-01-PLAN.md` — (create via `/gsd-plan-phase 30`)
 
 ---
