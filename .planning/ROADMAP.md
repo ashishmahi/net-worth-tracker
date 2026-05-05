@@ -20,6 +20,18 @@
 
 **Goal:** Apply configurable **import-style uplift** (~10% gold / ~8% silver defaults per [SEED-001](seeds/SEED-001-gold-silver-import-tax-inr.md)) when deriving live ₹/g from international spot × USD/INR, so hints and dependent valuations read closer to **Indian market-style** expectations—with explicit **non-advice** copy.
 
+### Phase 29: Bullion import uplift — data & calculations
+
+**Goal:** Schema + migration for uplift factors; extend `goldLiveHints` / `silverLiveHints`, sync components, and effective net-worth paths; Vitest.
+
+**Requirements:** BLN-01, BLN-02, BLN-03, BLN-05
+
+### Phase 30: Bullion import uplift — settings UX & disclosure
+
+**Goal:** Settings gold/silver cards: tuning affordances as needed; prominent approximation / not-tax-advice messaging.
+
+**Requirements:** BLN-04
+
 | Phase | Name | Goal (summary) | Requirements |
 |-------|------|----------------|--------------|
 | **29** | Bullion import uplift — data & calculations | Schema + migration for uplift factors; extend `goldLiveHints` / `silverLiveHints`, sync components, and effective net-worth paths; Vitest | BLN-01, BLN-02, BLN-03, BLN-05 |
