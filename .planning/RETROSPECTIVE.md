@@ -1,5 +1,39 @@
 # Project retrospective — Personal Wealth Tracker
 
+## Milestone: v2.3 — Property entry flow & validation
+
+**Shipped:** 2026-05-06  
+**Phases:** 31–33 | **Plans:** 3  
+
+### What was built
+
+- **Phase 31:** **`PATH_KEYS`** segmented paths + conditional **`PropertyPage`** UI; inference when editing legacy rows (**PRP-01–03**) — [`31-01-SUMMARY.md`](phases/31-guided-property-entry-ux/31-01-SUMMARY.md).  
+- **Phase 32:** **`getPropertyValidationIssues`** + **`PropertyItemSchema`** superRefine; Vitest for validation/schema (**PRV-01–05**) — [`32-01-SUMMARY.md`](phases/32-property-save-validation-schema/32-01-SUMMARY.md).  
+- **Phase 33:** **`grid-cols-1 sm:grid-cols-3`** path stack; milestone scroll hint; **`radiogroup`** arrows + focus on open (**PRA-01**) — [`33-01-SUMMARY.md`](phases/33-property-sheet-responsive-accessibility/33-01-SUMMARY.md).  
+
+### What worked
+
+- Single-file **`PropertyPage.tsx`** iteration kept UX + validation + a11y coherent across three tight phases.  
+- Phase **32** tests guard regression on save rules without slowing **33** layout work.  
+
+### What was inefficient
+
+- **`gsd-sdk query milestone.complete`** still fails (`version required for phases archive`); **v2.3** close used the **manual** archive path again.  
+
+### Patterns established
+
+- Breakpoint-aligned arrow keys (**640px**) matching Tailwind **`sm`** for radiogroup orientation.  
+
+### Key lessons
+
+- UAT checklist (**33-UAT.md**) tied responsive + keyboard cases to one sheet — faster verification than ad-hoc clicks.  
+
+### Cost observations
+
+- Not recorded.  
+
+---
+
 ## Milestone: v2.2 — Import-adjusted bullion pricing
 
 **Shipped:** 2026-05-06  

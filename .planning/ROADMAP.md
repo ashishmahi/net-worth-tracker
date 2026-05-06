@@ -11,13 +11,14 @@
 - ✅ **v2.0.1 — Live gold spot** — Shipped 2026-05-03 — [full snapshot](milestones/v2.0.1-ROADMAP.md)
 - ✅ **v2.1 — Section routing & home nav** — Shipped 2026-05-04 — [full snapshot](milestones/v2.1-ROADMAP.md)
 - ✅ **v2.2 — Import-adjusted bullion pricing** — Shipped 2026-05-06 — [full snapshot](milestones/v2.2-ROADMAP.md)
-- ✅ **v2.3 Property entry flow & validation** — Complete 2026-05-06 (Phases **31–33**) · [`REQUIREMENTS.md`](REQUIREMENTS.md)
+- ✅ **v2.3 — Property entry flow & validation** — Shipped 2026-05-06 (Phases **31–33**) — [full snapshot](milestones/v2.3-ROADMAP.md) · [requirements](milestones/v2.3-REQUIREMENTS.md)
 
-**Phase numbering:** **v2.2** shipped Phases **29–30**. **v2.3** continues with Phases **31–33** ([SEED-006](seeds/SEED-006-property-entry-flow-validation.md)).
+**Phase numbering:** **v2.2** ended at Phase **30**; **v2.3** shipped Phases **31–33** ([SEED-006](seeds/SEED-006-property-entry-flow-validation.md)). Next milestone continues after **`/gsd-new-milestone`**.
 
 ---
 
-## v2.3: Property entry flow & validation (Phases 31–33)
+<details>
+<summary>✅ v2.3 — Property entry flow & validation (Phases 31–33) — SHIPPED 2026-05-06</summary>
 
 **Goal:** Guided paths for common property ownership situations and **save-blocking validation** so inconsistent milestones and loan fields do not reach `localStorage`.
 
@@ -67,6 +68,12 @@
 - [x] Phase 31 — [31-01](phases/31-guided-property-entry-ux/31-01-PLAN.md) (`/gsd-execute-phase 31`)
 - [x] Phase 32 — [32-01](phases/32-property-save-validation-schema/32-01-PLAN.md) (`/gsd-execute-phase 32`)
 - [x] Phase 33 — [33-01](phases/33-property-sheet-responsive-accessibility/33-01-PLAN.md) (`/gsd-execute-phase 33`)
+
+**Roadmap / requirements:** [`milestones/v2.3-ROADMAP.md`](milestones/v2.3-ROADMAP.md) · [`milestones/v2.3-REQUIREMENTS.md`](milestones/v2.3-REQUIREMENTS.md)
+
+**Phase directories (current location):** [`.planning/phases/31-guided-property-entry-ux/`](phases/31-guided-property-entry-ux/) · [`.planning/phases/32-property-save-validation-schema/`](phases/32-property-save-validation-schema/) · [`.planning/phases/33-property-sheet-responsive-accessibility/`](phases/33-property-sheet-responsive-accessibility/) — optional **`/gsd-cleanup`** later.
+
+</details>
 
 ---
 
@@ -174,4 +181,4 @@
 
 ---
 
-_Milestone archives: `.planning/milestones/` · **Last shipped:** **v2.2** (2026-05-06). **In progress:** **v2.3** — [`REQUIREMENTS.md`](REQUIREMENTS.md)._
+_Milestone archives: `.planning/milestones/` · **Last shipped:** **v2.3** (2026-05-06). Live roadmap awaits **`/gsd-new-milestone`** (no active milestone requirements file)._

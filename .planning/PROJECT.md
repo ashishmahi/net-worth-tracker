@@ -23,18 +23,12 @@ See **total net worth in INR** at a glance (**debt-adjusted** headline minus sta
 | **v2.0** | **Deploy & Beta** — Docker static image; Vite **`BASE_URL`** for GitHub Pages; **CI** (PR + **`main`**) + **Pages** deploy; README beta URL + client-only data | 2026-05-03 |
 | **v2.0.1** | **Live gold spot + commodity pricing UX** — **`fetchGoldUsdPerOz`** + **`LivePricesContext`** + **`GoldSpotPricesSync`**; Settings **₹/g** hints; **`SettingsGoldPricingCard` / `SettingsSilverPricingCard`**, **`SilverSpotPricesSync`**, effective silver in **`dashboardCalcs`** | 2026-05-03 |
 | **v2.1** | **Section routing & home nav** — **`react-router-dom`**, **`sectionRoutes`** + Vitest, **`Routes`**/**`Outlet`**, sidebar **`NavLink`**, mobile **Home**, **`Navigate`** catch-all; **`basename`** from **`import.meta.env.BASE_URL`** | 2026-05-04 |
+| **v2.2** | **Import-adjusted bullion pricing** — persisted uplift on live ₹/g; Settings gold/silver disclosure (**BLN-04**) | 2026-05-06 |
+| **v2.3** | **Property entry flow & validation** — guided Property paths; save-blocking validation + Zod parity; responsive sheet + **`radiogroup`** a11y (**PRA-01**) | 2026-05-06 |
 
-Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.2-ROADMAP.md` and matching `*-REQUIREMENTS.md` archives. Executed phase artifacts for shipped milestones live under [`.planning/milestones/`](milestones/) (e.g. `v1.5-phases/`). Phase dirs **19–30** remain under [`.planning/phases/`](phases/) until optional **`/gsd-cleanup`**.
+Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.3-ROADMAP.md` and matching `*-REQUIREMENTS.md` archives. Executed phase artifacts for shipped milestones live under [`.planning/milestones/`](milestones/) (e.g. `v1.5-phases/`). Phase dirs **19–33** remain under [`.planning/phases/`](phases/) until optional **`/gsd-cleanup`**.
 
-## Last completed milestone: v2.2 Import-adjusted bullion pricing (2026-05-06)
-
-**Shipped:** Persisted import-style uplift (Phases **29–30**); live ₹/g and net worth use uplifted parity; Settings gold/silver cards show **read-only** ballpark disclosure and **not legal or tax advice** copy (**BLN-04**). **v2.2** is **disclosure-only** for uplift controls in-app (no tuning UI).
-
-**Selected seed:** [SEED-001 — Indian import-style duties in ₹/g](seeds/SEED-001-gold-silver-import-tax-inr.md)
-
-**Archived:** [`.planning/milestones/v2.2-ROADMAP.md`](milestones/v2.2-ROADMAP.md) · [`.planning/milestones/v2.2-REQUIREMENTS.md`](milestones/v2.2-REQUIREMENTS.md)
-
-## Last milestone completed: v2.3 — Property entry flow & validation (2026-05-06)
+## Last completed milestone: v2.3 — Property entry flow & validation (2026-05-06)
 
 **Goal:** Improve Property add/edit so common situations (fully paid resale, builder milestone schedules, mortgaged homes) get **clearer guided paths**, strengthen **save-time validation**, and keep the sheet **usable on narrow widths** with sensible keyboard/focus behavior.
 
@@ -42,7 +36,9 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.2-ROADMAP.md` and matc
 
 **Shipped:** Phases **31–33** — guided paths ([`31-VERIFICATION.md`](phases/31-guided-property-entry-ux/31-VERIFICATION.md)); save-blocking validation + Zod parity ([`32-VERIFICATION.md`](phases/32-property-save-validation-schema/32-VERIFICATION.md)); responsive path controls + milestone scroll hint + radiogroup keyboard ([`33-VERIFICATION.md`](phases/33-property-sheet-responsive-accessibility/33-VERIFICATION.md)).
 
-**Next:** **`/gsd-new-milestone`** — define **v2.4** (or archive **v2.3** with **`/gsd-complete-milestone`**).
+**Archived:** [`.planning/milestones/v2.3-ROADMAP.md`](milestones/v2.3-ROADMAP.md) · [`.planning/milestones/v2.3-REQUIREMENTS.md`](milestones/v2.3-REQUIREMENTS.md)
+
+**Next:** **`/gsd-new-milestone`** — define **v2.4** requirements and roadmap (live `.planning/REQUIREMENTS.md` removed at **v2.3** milestone close).
 
 ## Current state (shipped through **v2.3** — 2026-05-06)
 
@@ -222,8 +218,9 @@ This file is updated at **milestone completion** to avoid drift between plans an
 - *v2.0: requirements archived at [`v2.0-REQUIREMENTS.md`](milestones/v2.0-REQUIREMENTS.md); live **`REQUIREMENTS.md`** removed at close — start next milestone with **`/gsd-new-milestone`**.*  
 - *v2.0.1: requirements archived at [`v2.0.1-REQUIREMENTS.md`](milestones/v2.0.1-REQUIREMENTS.md); live **`REQUIREMENTS.md`** removed at close — **`/gsd-new-milestone`** next.*
 - *v2.2: requirements archived at [`v2.2-REQUIREMENTS.md`](milestones/v2.2-REQUIREMENTS.md); live **`REQUIREMENTS.md`** removed at milestone close — **`/gsd-new-milestone`** next.*
+- *v2.3: requirements archived at [`v2.3-REQUIREMENTS.md`](milestones/v2.3-REQUIREMENTS.md); live **`REQUIREMENTS.md`** removed at milestone close — **`/gsd-new-milestone`** next.*
 
 </details>  
 
 ---
-*Last updated: 2026-05-06 — **v2.3** milestone complete (Phases **31–33**: guided entry, save validation, responsive/a11y Property sheet); live [`REQUIREMENTS.md`](REQUIREMENTS.md) + [`ROADMAP.md`](ROADMAP.md).*  
+*Last updated: 2026-05-06 — **v2.3** archived (`/gsd-complete-milestone`); requirements at [`milestones/v2.3-REQUIREMENTS.md`](milestones/v2.3-REQUIREMENTS.md); live [`ROADMAP.md`](ROADMAP.md) awaits **`/gsd-new-milestone`**.*

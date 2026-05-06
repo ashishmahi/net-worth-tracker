@@ -1,19 +1,15 @@
 ---
-status: testing
+status: complete
 phase: 33-property-sheet-responsive-accessibility
 source:
   - 33-01-SUMMARY.md
 started: "2026-05-06T02:35:00.000Z"
-updated: "2026-05-06T20:38:15Z"
+updated: "2026-05-06T20:40:10Z"
 ---
 
 ## Current Test
 
-number: 6
-name: List row copy matches property type
-expected: |
-  Save a fully paid property and a mortgaged property (with loan). On the Property list, fully paid does not label the full agreement as “due to builder”; mortgaged emphasizes lender/outstanding loan and only mentions builder dues if you added milestone rows.
-awaiting: user response
+[testing complete]
 
 ## Tests
 
@@ -39,14 +35,14 @@ result: pass
 
 ### 6. List row copy matches property type
 expected: Save a fully paid property and a mortgaged property (with loan). On the Property list, fully paid does not label the full agreement as “due to builder”; mortgaged emphasizes lender/outstanding loan and only mentions builder dues if you added milestone rows.
-result: [pending]
+result: pass
 
 ## Summary
 
 total: 6
-passed: 5
+passed: 6
 issues: 0
-pending: 1
+pending: 0
 skipped: 0
 blocked: 0
 

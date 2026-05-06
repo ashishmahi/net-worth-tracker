@@ -1,5 +1,29 @@
 # Milestone history — Personal Wealth Tracker
 
+**Pre-ship audit (v2.3):** No `v2.3-MILESTONE-AUDIT.md` on file — optional `/gsd-audit-milestone` before high-stakes releases.  
+**Open-artifact audit:** `gsd-sdk query audit-open` unavailable in this SDK — skipped (same as prior closes); deferred items unchanged in `STATE.md`.
+
+## v2.3 Property entry flow & validation (Shipped: 2026-05-06)
+
+**Scope:** Phases **31–33**.  
+**Phase directories (current location):** [`.planning/phases/31-guided-property-entry-ux/`](phases/31-guided-property-entry-ux/) · [`.planning/phases/32-property-save-validation-schema/`](phases/32-property-save-validation-schema/) · [`.planning/phases/33-property-sheet-responsive-accessibility/`](phases/33-property-sheet-responsive-accessibility/)
+
+**Phases completed:** 3 phases, 3 plans
+
+**Key accomplishments:**
+
+- **Phase 31:** Guided **`PATH_KEYS`** entry paths, conditional **`PropertyPage`** sections, inference from saved property shape (**PRP-01–03**) — [`31-01-SUMMARY.md`](phases/31-guided-property-entry-ux/31-01-SUMMARY.md).
+- **Phase 32:** **`getPropertyValidationIssues`** + **`PropertyItemSchema`** save-blocking rules; Vitest for helpers/schema (**PRV-01–05**) — [`32-01-SUMMARY.md`](phases/32-property-save-validation-schema/32-01-SUMMARY.md).
+- **Phase 33:** Responsive path **`grid-cols-1 sm:grid-cols-3`**, milestone horizontal-scroll hint, **`radiogroup`** arrow navigation + initial focus (**PRA-01**) — [`33-01-SUMMARY.md`](phases/33-property-sheet-responsive-accessibility/33-01-SUMMARY.md). UAT: [`33-UAT.md`](phases/33-property-sheet-responsive-accessibility/33-UAT.md) — 6/6 passed.
+
+**Roadmap / requirements:** [`.planning/milestones/v2.3-ROADMAP.md`](milestones/v2.3-ROADMAP.md), [`v2.3-REQUIREMENTS.md`](milestones/v2.3-REQUIREMENTS.md)
+
+**Tooling note:** `gsd-sdk query milestone.complete` returned `version required for phases archive`; **v2.3** close used the **manual** archive path (same as **v2.2**). Phase dirs **31–33** left under **`.planning/phases/`** (optional **`/gsd-cleanup`** later).
+
+**Known deferred (unchanged):** Phase 05 UAT, Phase 01 `human_needed` — see `STATE.md` **Deferred items**.
+
+---
+
 **Pre-ship audit (v2.2):** No `v2.2-MILESTONE-AUDIT.md` on file — optional `/gsd-audit-milestone` before high-stakes releases.  
 **Open-artifact audit:** `gsd-sdk query audit-open` unavailable in this SDK — skipped (same as prior closes); deferred items unchanged in `STATE.md`.
 
