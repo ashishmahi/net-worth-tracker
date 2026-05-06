@@ -13,9 +13,15 @@ import { parseFinancialInput, nowIso } from '@/lib/financials'
 import {
   formatInrPerGramInput,
   liveInrPerGramForKarat,
+  resolveGoldImportUpliftRate,
   shouldAutoSyncGoldFromSpot,
 } from '@/lib/goldLiveHints'
 import type { AppData } from '@/types/data'
+import {
+  BULLION_UPLIFT_BALLPARK_GOLD,
+  BULLION_UPLIFT_DISCLAIMER_FOOTNOTE,
+  BULLION_UPLIFT_PARITY_LINE,
+} from '@/lib/bullionUpliftDisclosure'
 
 const goldPricesSchema = z.object({
   k24: z.string().min(1, 'This field is required.'),
@@ -72,12 +78,13 @@ export function SettingsGoldPricingCard() {
         k18Hint: null as number | null,
       }
     }
+    const rate = resolveGoldImportUpliftRate(data.settings)
     return {
-      k24Hint: liveInrPerGramForKarat(goldUsdPerOz, usdInr, 24),
-      k22Hint: liveInrPerGramForKarat(goldUsdPerOz, usdInr, 22),
-      k18Hint: liveInrPerGramForKarat(goldUsdPerOz, usdInr, 18),
+      k24Hint: liveInrPerGramForKarat(goldUsdPerOz, usdInr, 24, rate),
+      k22Hint: liveInrPerGramForKarat(goldUsdPerOz, usdInr, 22, rate),
+      k18Hint: liveInrPerGramForKarat(goldUsdPerOz, usdInr, 18, rate),
     }
-  }, [goldUsdPerOz, usdInr])
+  }, [goldUsdPerOz, usdInr, data.settings])
 
   const goldHintLoading =
     !goldError &&
@@ -415,6 +422,11 @@ export function SettingsGoldPricingCard() {
             </div>
           </form>
         ) : null}
+        <div className="space-y-2 pt-2">
+          <p className="text-sm text-muted-foreground">{BULLION_UPLIFT_BALLPARK_GOLD}</p>
+          <p className="text-sm text-muted-foreground">{BULLION_UPLIFT_PARITY_LINE}</p>
+          <p className="text-sm text-muted-foreground">{BULLION_UPLIFT_DISCLAIMER_FOOTNOTE}</p>
+        </div>
       </CardContent>
     </Card>
   )

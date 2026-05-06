@@ -4,6 +4,7 @@ import {
   sumCommoditiesInr,
   sumForNetWorth,
 } from '@/lib/dashboardCalcs'
+import { liveInrPerGramForKarat } from '@/lib/goldLiveHints'
 import { roundCurrency } from '@/lib/financials'
 import { createInitialData } from '@/context/AppDataContext'
 import type { AppData } from '@/types/data'
@@ -168,8 +169,10 @@ describe('calcCategoryTotals silver wiring', () => {
       usdInr,
       aedInr: null,
       silverUsdPerOz,
+      goldUsdPerOz: null,
     })
-    expect(totals.otherCommodities).toBe(500)
+    // 2 g × ₹250/g parity × (1 + default silver uplift 0.08)
+    expect(totals.otherCommodities).toBe(540)
   })
 
   it('leaves otherCommodities null when silver USD missing', () => {
@@ -188,6 +191,7 @@ describe('calcCategoryTotals silver wiring', () => {
       usdInr: 100,
       aedInr: null,
       silverUsdPerOz: null,
+      goldUsdPerOz: null,
     })
     expect(totals.otherCommodities).toBeNull()
   })
@@ -212,7 +216,57 @@ describe('calcCategoryTotals silver wiring', () => {
       usdInr,
       aedInr: null,
       silverUsdPerOz,
+      goldUsdPerOz: null,
     })
     expect(totals.otherCommodities).toBe(roundCurrency(2 * 88))
+  })
+})
+
+describe('calcCategoryTotals gold wiring', () => {
+  it('uses uplifted live gold when auto-sync and spot present', () => {
+    const data = createInitialData()
+    data.assets.gold.items = [
+      {
+        id: crypto.randomUUID(),
+        karat: 22,
+        grams: 10,
+        createdAt: iso,
+        updatedAt: iso,
+      },
+    ]
+    const goldUsdPerOz = 3103.5
+    const usdInr = 83
+    const perG = liveInrPerGramForKarat(goldUsdPerOz, usdInr, 22)
+    const totals = calcCategoryTotals(data, {
+      btcUsd: null,
+      usdInr,
+      aedInr: null,
+      silverUsdPerOz: null,
+      goldUsdPerOz,
+    })
+    expect(totals.gold).toBe(roundCurrency(10 * perG))
+  })
+
+  it('uses locked saved gold prices when user fixed rates', () => {
+    const data = createInitialData()
+    data.assets.gold.items = [
+      {
+        id: crypto.randomUUID(),
+        karat: 22,
+        grams: 10,
+        createdAt: iso,
+        updatedAt: iso,
+      },
+    ]
+    data.settings.goldPrices = { k24: 7000, k22: 6400, k18: 5300 }
+    data.settings.goldPricesLocked = true
+    const totals = calcCategoryTotals(data, {
+      btcUsd: null,
+      usdInr: 100,
+      aedInr: null,
+      silverUsdPerOz: null,
+      goldUsdPerOz: 99999,
+    })
+    expect(totals.gold).toBe(roundCurrency(10 * 6400))
   })
 })

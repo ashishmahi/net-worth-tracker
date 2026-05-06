@@ -1,15 +1,15 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: milestone
+milestone: v2.3
+milestone_name: Property entry flow & validation
 status: milestone_complete
-last_updated: "2026-05-04T00:10:00.000Z"
-last_activity: 2026-05-04 — v2.1 milestone archived
+last_updated: "2026-05-06T02:20:00.000Z"
+last_activity: 2026-05-06 — Milestone **v2.3** complete — Phase **33** verified (responsive Property sheet + a11y)
 progress:
-  total_phases: 1
-  completed_phases: 1
-  total_plans: 1
-  completed_plans: 1
+  total_phases: 3
+  completed_phases: 3
+  total_plans: 3
+  completed_plans: 3
   percent: 100
 ---
 
@@ -19,18 +19,18 @@ progress:
 
 ## Current position
 
-Phase: —
-Plan: —
-Status: Between milestones — **v2.1** shipped; define next via **`/gsd-new-milestone`**
-Last activity: 2026-05-04
+Phase: **33** — complete  
+Plan: **33-01** — complete  
+Status: **Milestone v2.3 complete**  
+Last activity: 2026-05-06 — Phase **33** executed (`feat(33-01)` + verification)
 
 ```
-Progress: [ ] — no active milestone; live REQUIREMENTS.md removed at v2.0.1 close
+Progress: [██████████] 100% — v2.3 (Phases 31–33)
 ```
 
 ## Project reference
 
-See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](ROADMAP.md) — **v2.1** shipped (Phase **28**); next version via **`/gsd-new-milestone`**.
+See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](ROADMAP.md) — **v2.3** active (Phases **31–33**). **Requirements:** [`.planning/REQUIREMENTS.md`](REQUIREMENTS.md).
 
 **Core value:** Total net worth in INR — liabilities deducted from gross assets, live prices where applicable, minimal repeated data entry.
 
@@ -42,8 +42,8 @@ See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](
 
 ### Roadmap evolution
 
-- **v2.1** shipped 2026-05-04: section URL routing + mobile Home — archives [`v2.1-ROADMAP.md`](milestones/v2.1-ROADMAP.md) · [`v2.1-REQUIREMENTS.md`](milestones/v2.1-REQUIREMENTS.md); phase dir [`.planning/phases/28-section-routing-home-header/`](phases/28-section-routing-home-header/).
-- **v2.0.1** shipped 2026-05-03: live **gold** spot + Settings **gold/silver** pricing UX — [`v2.0.1-ROADMAP.md`](milestones/v2.0.1-ROADMAP.md) · [`v2.0.1-REQUIREMENTS.md`](milestones/v2.0.1-REQUIREMENTS.md).
+- **v2.3** planning 2026-05-06: property guided entry + save validation ([SEED-006](seeds/SEED-006-property-entry-flow-validation.md)) — Phases **31–33** in [`ROADMAP.md`](ROADMAP.md).
+- **v2.2** shipped 2026-05-06: bullion import uplift Phases **29–30** — archives [`v2.2-ROADMAP.md`](milestones/v2.2-ROADMAP.md) · [`v2.2-REQUIREMENTS.md`](milestones/v2.2-REQUIREMENTS.md).
 
 ### Pending todos
 
@@ -62,8 +62,14 @@ See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](
 
 ## Session continuity
 
-**Last shipped:** **v2.1** — Section routing & home nav (Phase **28**) — 2026-05-04
+**Current milestone:** **v2.3** — Property entry flow & validation — **SEED-006** — roadmap **3** phases (**31–33**)
 
-**Prior:** **v2.0** — Deploy & Beta (Phases **23–25**) — 2026-05-03
+**Last completed milestone:** **v2.2** — Import-adjusted bullion pricing — Phases **29–30**
 
-**Next:** **`/gsd-new-milestone`** — fresh requirements and roadmap for the next version
+**Resume file:** --resume-file
+
+**Next:** **`/gsd-new-milestone`** — start v2.4 (or archive **v2.3** with **`/gsd-complete-milestone`**)
+
+**Research:** GSD research agents not installed in this environment — requirements derive from **SEED-006** + shipped codebase context (_workflow deviation_).
+
+**Completed phases (v2.3):** **31** — [31-01-SUMMARY](phases/31-guided-property-entry-ux/31-01-SUMMARY.md) · [31-VERIFICATION](phases/31-guided-property-entry-ux/31-VERIFICATION.md) · **32** — [32-01-SUMMARY](phases/32-property-save-validation-schema/32-01-SUMMARY.md) · [32-VERIFICATION](phases/32-property-save-validation-schema/32-VERIFICATION.md) · **33** — [33-01-SUMMARY](phases/33-property-sheet-responsive-accessibility/33-01-SUMMARY.md) · [33-VERIFICATION](phases/33-property-sheet-responsive-accessibility/33-VERIFICATION.md)

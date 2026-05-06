@@ -1,5 +1,38 @@
 # Project retrospective — Personal Wealth Tracker
 
+## Milestone: v2.2 — Import-adjusted bullion pricing
+
+**Shipped:** 2026-05-06  
+**Phases:** 29–30 | **Plans:** 2  
+
+### What was built
+
+- **Phase 29:** Schema + migration for uplift factors; uplifted live ₹/g for gold and silver; sync, **`calcCategoryTotals`** / dashboard wiring; Vitest ([`29-01-SUMMARY.md`](phases/29-bullion-import-uplift-data-calculations/29-01-SUMMARY.md)).  
+- **Phase 30:** Centralized **`bullionUpliftDisclosure`** strings; Settings gold/silver cards — read-only ballpark (~10% / ~8%), parity line, non-advice footnote ([`30-01-SUMMARY.md`](phases/30-bullion-import-uplift-settings-ux-disclosure/30-01-SUMMARY.md)).  
+
+### What worked
+
+- Keeping **BLN-04** copy in **`src/lib/bullionUpliftDisclosure.ts`** avoided gold/silver string drift.  
+- Reusing Phase **27** card patterns minimized layout risk.  
+
+### What was inefficient
+
+- **`gsd-sdk query milestone.complete`** still fails (`version required for phases archive`); **v2.2** close used the **manual** archive path again.  
+
+### Patterns established
+
+- **Disclosure-only** product decision for **v2.2** (no uplift sliders) documented in **REQUIREMENTS** and UI.  
+
+### Key lessons
+
+- Roadmap “tuning affordances” success text can diverge from shipped **disclosure-only** intent — align requirements early when product locks UI scope.  
+
+### Cost observations
+
+- Not recorded.  
+
+---
+
 ## Milestone: v2.1 — Section routing & home nav
 
 **Shipped:** 2026-05-04  

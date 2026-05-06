@@ -24,14 +24,30 @@ See **total net worth in INR** at a glance (**debt-adjusted** headline minus sta
 | **v2.0.1** | **Live gold spot + commodity pricing UX** — **`fetchGoldUsdPerOz`** + **`LivePricesContext`** + **`GoldSpotPricesSync`**; Settings **₹/g** hints; **`SettingsGoldPricingCard` / `SettingsSilverPricingCard`**, **`SilverSpotPricesSync`**, effective silver in **`dashboardCalcs`** | 2026-05-03 |
 | **v2.1** | **Section routing & home nav** — **`react-router-dom`**, **`sectionRoutes`** + Vitest, **`Routes`**/**`Outlet`**, sidebar **`NavLink`**, mobile **Home**, **`Navigate`** catch-all; **`basename`** from **`import.meta.env.BASE_URL`** | 2026-05-04 |
 
-Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.1-ROADMAP.md` and matching `*-REQUIREMENTS.md` archives. Executed phase artifacts for shipped milestones live under [`.planning/milestones/`](milestones/) (e.g. `v1.5-phases/`). Phase dirs **19–28** remain under [`.planning/phases/`](phases/) until optional **`/gsd-cleanup`**.
+Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.2-ROADMAP.md` and matching `*-REQUIREMENTS.md` archives. Executed phase artifacts for shipped milestones live under [`.planning/milestones/`](milestones/) (e.g. `v1.5-phases/`). Phase dirs **19–30** remain under [`.planning/phases/`](phases/) until optional **`/gsd-cleanup`**.
 
-## Next milestone
+## Last completed milestone: v2.2 Import-adjusted bullion pricing (2026-05-06)
 
-Run **`/gsd-new-milestone`** to define requirements and roadmap for the next version (no live **`REQUIREMENTS.md`** until then — last removal at **v2.0.1** close; **v2.1** archive stands alone).
+**Shipped:** Persisted import-style uplift (Phases **29–30**); live ₹/g and net worth use uplifted parity; Settings gold/silver cards show **read-only** ballpark disclosure and **not legal or tax advice** copy (**BLN-04**). **v2.2** is **disclosure-only** for uplift controls in-app (no tuning UI).
 
-## Current state (shipped through **v2.1** — 2026-05-04)
+**Selected seed:** [SEED-001 — Indian import-style duties in ₹/g](seeds/SEED-001-gold-silver-import-tax-inr.md)
 
+**Archived:** [`.planning/milestones/v2.2-ROADMAP.md`](milestones/v2.2-ROADMAP.md) · [`.planning/milestones/v2.2-REQUIREMENTS.md`](milestones/v2.2-REQUIREMENTS.md)
+
+## Last milestone completed: v2.3 — Property entry flow & validation (2026-05-06)
+
+**Goal:** Improve Property add/edit so common situations (fully paid resale, builder milestone schedules, mortgaged homes) get **clearer guided paths**, strengthen **save-time validation**, and keep the sheet **usable on narrow widths** with sensible keyboard/focus behavior.
+
+**Selected seed:** [SEED-006 — Easier property entry paths + validation](seeds/SEED-006-property-entry-flow-validation.md)
+
+**Shipped:** Phases **31–33** — guided paths ([`31-VERIFICATION.md`](phases/31-guided-property-entry-ux/31-VERIFICATION.md)); save-blocking validation + Zod parity ([`32-VERIFICATION.md`](phases/32-property-save-validation-schema/32-VERIFICATION.md)); responsive path controls + milestone scroll hint + radiogroup keyboard ([`33-VERIFICATION.md`](phases/33-property-sheet-responsive-accessibility/33-VERIFICATION.md)).
+
+**Next:** **`/gsd-new-milestone`** — define **v2.4** (or archive **v2.3** with **`/gsd-complete-milestone`**).
+
+## Current state (shipped through **v2.3** — 2026-05-06)
+
+- **Import-adjusted bullion (v2.2 — Phases 29–30):** persisted **`goldImportUpliftRate`** / **`silverImportUpliftRate`**; uplifted **`goldLiveHints`** / **`silverLiveHints`** and dashboard gold; Settings **`bullionUpliftDisclosure`** copy on **`SettingsGoldPricingCard`** / **`SettingsSilverPricingCard`**.  
+- **Property entry UX (v2.3 — Phases 31–33):** guided **`PATH_KEYS`** paths + conditional **`PropertyPage`** sections; **`getPropertyValidationIssues`** + **`PropertyItemSchema`** parity; responsive path **`radiogroup`** (stack on xs, arrow keys by breakpoint), milestone table horizontal-scroll hint, sheet-open focus to first path — [`33-VERIFICATION.md`](phases/33-property-sheet-responsive-accessibility/33-VERIFICATION.md).  
 - **Section URLs & routing (v2.1 — Phase 28):** **`react-router-dom`** with **`BrowserRouter`** **`basename={import.meta.env.BASE_URL}`**; canonical paths in **`src/lib/sectionRoutes.ts`**; sidebar **`NavLink`**; mobile **Home** on non-dashboard routes; unknown paths **`Navigate`** to **`/`**. UAT complete ([`28-UAT.md`](phases/28-section-routing-home-header/28-UAT.md)).
 - **Liabilities & net worth:** root **`liabilities`** list; **`calcNetWorth(gross, sumLiabilitiesInr)`** for headline + new snapshots; **`sumAllDebtInr`** for dashboard **Total Debt** row; property equity unchanged (`agreementInr − outstandingLoanInr`).  
 - **Commodities (v1.4):** `assets.otherCommodities`; **`CommoditiesPage`**; live silver via **`useLivePrices`**.  
@@ -121,6 +137,26 @@ Run **`/gsd-new-milestone`** to define requirements and roadmap for the next ver
 
 - [x] **UX-04**–**UX-07** — compact read-only + **Edit** commodity pricing for gold and silver; silver lock/sync + effective ₹/g for net worth — Phase **27** ([`27-01-SUMMARY.md`](phases/27-settings-commodity-pricing-ux/27-01-SUMMARY.md)); UAT: [`27-UAT.md`](phases/27-settings-commodity-pricing-ux/27-UAT.md).
 
+### Validated (v2.2 — Phase 29)
+
+- [x] **BLN-01**, **BLN-02**, **BLN-03**, **BLN-05** — persisted gold/silver import uplift rates (defaults 10% / 8%); uplifted **`goldLiveHints`** / **`silverLiveHints`**; sync + hint surfaces; **`calcCategoryTotals`** + **`goldUsdPerOz`** for uplift-aware dashboard gold — Phase **29** ([`29-VERIFICATION.md`](phases/29-bullion-import-uplift-data-calculations/29-VERIFICATION.md)).
+
+### Validated (v2.2 — Phase 30)
+
+- [x] **BLN-04** — Settings gold/silver pricing cards: read-only ballpark uplift copy, parity context, approximate / not legal or tax advice disclosure; **v2.2 disclosure-only** (no uplift tuning UI) — Phase **30** ([`30-VERIFICATION.md`](phases/30-bullion-import-uplift-settings-ux-disclosure/30-VERIFICATION.md)).
+
+### Validated (v2.3 — Phase 31)
+
+- [x] **PRP-01**, **PRP-02**, **PRP-03** — guided Property entry paths (`propertyEntryPath`, segmented control, conditional UI, inference without persisted `entryKind`) — Phase **31** ([`31-VERIFICATION.md`](phases/31-guided-property-entry-ux/31-VERIFICATION.md)).
+
+### Validated (v2.3 — Phase 32)
+
+- [x] **PRV-01**–**PRV-05** — save-blocking validation; `getPropertyValidationIssues` + Zod `superRefine`; Vitest for helpers/schema — Phase **32** ([`32-VERIFICATION.md`](phases/32-property-save-validation-schema/32-VERIFICATION.md)).
+
+### Validated (v2.3 — Phase 33)
+
+- [x] **PRA-01** — narrow-viewport path radiogroup stack + milestone horizontal-scroll hint; arrow-key navigation and initial focus on sheet open; no Save-specific ARIA escalation — Phase **33** ([`33-VERIFICATION.md`](phases/33-property-sheet-responsive-accessibility/33-VERIFICATION.md)).
+
 ### Deferred (backlog / future)
 
 - [ ] Export / reports — PDF or CSV (JSON export exists; richer formats later)  
@@ -139,7 +175,7 @@ Run **`/gsd-new-milestone`** to define requirements and roadmap for the next ver
 
 - **Stack:** React 18, Vite 5, TypeScript, shadcn/ui, Tailwind, RHF + Zod  
 - **Persistence:** Browser **`localStorage`** key **`wealth-tracker-data`** (`AppDataContext`); theme uses separate **`theme`** key  
-- **Prices:** `priceApi` + `useLivePrices()` — **BTC**, **USD→INR**, **silver (XAG)**, **gold (XAU)**; **`goldLiveHints`** / **`silverLiveHints`** for Settings hints  
+- **Prices:** `priceApi` + `useLivePrices()` — **BTC**, **USD→INR**, **silver (XAG)**, **gold (XAU)**; **`goldLiveHints`** / **`silverLiveHints`** (import uplift on parity ₹/g); **`calcCategoryTotals`** threads **`goldUsdPerOz`** for effective gold on the dashboard  
 - **Theme:** `localStorage` `theme` (`light` | `dark`); FOUC script in `index.html`  
 - **Layout:** `AppSidebar` offcanvas on mobile; `MobileTopBar`; `PageHeader` on section pages; asset sheets with scroll regions + property milestone horizontal scroll on narrow widths  
 - **Data reset (v1.2):** `createInitialData()` in `AppDataContext`; shadcn `AlertDialog` in Settings danger zone  
@@ -185,8 +221,9 @@ This file is updated at **milestone completion** to avoid drift between plans an
 - *v1.7: requirements archived at [`v1.7-REQUIREMENTS.md`](milestones/v1.7-REQUIREMENTS.md); live roadmap awaits **`/gsd-new-milestone`**.*  
 - *v2.0: requirements archived at [`v2.0-REQUIREMENTS.md`](milestones/v2.0-REQUIREMENTS.md); live **`REQUIREMENTS.md`** removed at close — start next milestone with **`/gsd-new-milestone`**.*  
 - *v2.0.1: requirements archived at [`v2.0.1-REQUIREMENTS.md`](milestones/v2.0.1-REQUIREMENTS.md); live **`REQUIREMENTS.md`** removed at close — **`/gsd-new-milestone`** next.*
+- *v2.2: requirements archived at [`v2.2-REQUIREMENTS.md`](milestones/v2.2-REQUIREMENTS.md); live **`REQUIREMENTS.md`** removed at milestone close — **`/gsd-new-milestone`** next.*
 
 </details>  
 
 ---
-*Last updated: 2026-05-04 — **v2.1** (section URL routing) milestone archived; [`v2.1-ROADMAP.md`](milestones/v2.1-ROADMAP.md) · [`v2.1-REQUIREMENTS.md`](milestones/v2.1-REQUIREMENTS.md).*  
+*Last updated: 2026-05-06 — **v2.3** milestone complete (Phases **31–33**: guided entry, save validation, responsive/a11y Property sheet); live [`REQUIREMENTS.md`](REQUIREMENTS.md) + [`ROADMAP.md`](ROADMAP.md).*  

@@ -1,7 +1,11 @@
 import { useEffect, useMemo } from 'react'
 import { useAppData } from '@/context/AppDataContext'
 import { useLivePrices } from '@/context/LivePricesContext'
-import { liveSilverInrPerGram, shouldAutoSyncSilverFromSpot } from '@/lib/silverLiveHints'
+import {
+  liveSilverInrPerGram,
+  resolveSilverImportUpliftRate,
+  shouldAutoSyncSilverFromSpot,
+} from '@/lib/silverLiveHints'
 import { nowIso } from '@/lib/financials'
 
 /**
@@ -24,8 +28,12 @@ export function SilverSpotPricesSync() {
 
   const hint = useMemo(() => {
     if (silverUsdPerOz == null || usdInr == null) return null
-    return liveSilverInrPerGram(silverUsdPerOz, usdInr)
-  }, [silverUsdPerOz, usdInr])
+    return liveSilverInrPerGram(
+      silverUsdPerOz,
+      usdInr,
+      resolveSilverImportUpliftRate(data.settings),
+    )
+  }, [silverUsdPerOz, usdInr, data.settings])
 
   useEffect(() => {
     if (silverError || silverHintLoading || hint == null) return

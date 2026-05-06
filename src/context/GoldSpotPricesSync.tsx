@@ -1,7 +1,11 @@
 import { useEffect, useMemo } from 'react'
 import { useAppData } from '@/context/AppDataContext'
 import { useLivePrices } from '@/context/LivePricesContext'
-import { liveInrPerGramForKarat, shouldAutoSyncGoldFromSpot } from '@/lib/goldLiveHints'
+import {
+  liveInrPerGramForKarat,
+  resolveGoldImportUpliftRate,
+  shouldAutoSyncGoldFromSpot,
+} from '@/lib/goldLiveHints'
 import { nowIso } from '@/lib/financials'
 
 /**
@@ -24,12 +28,13 @@ export function GoldSpotPricesSync() {
 
   const hints = useMemo(() => {
     if (goldUsdPerOz == null || usdInr == null) return null
+    const rate = resolveGoldImportUpliftRate(data.settings)
     return {
-      k24: liveInrPerGramForKarat(goldUsdPerOz, usdInr, 24),
-      k22: liveInrPerGramForKarat(goldUsdPerOz, usdInr, 22),
-      k18: liveInrPerGramForKarat(goldUsdPerOz, usdInr, 18),
+      k24: liveInrPerGramForKarat(goldUsdPerOz, usdInr, 24, rate),
+      k22: liveInrPerGramForKarat(goldUsdPerOz, usdInr, 22, rate),
+      k18: liveInrPerGramForKarat(goldUsdPerOz, usdInr, 18, rate),
     }
-  }, [goldUsdPerOz, usdInr])
+  }, [goldUsdPerOz, usdInr, data.settings])
 
   useEffect(() => {
     if (goldError || goldHintLoading || !hints) return

@@ -1,4 +1,8 @@
 import { z } from 'zod'
+import {
+  getPropertyValidationIssues,
+  PROPERTY_VALIDATION_CODES,
+} from '@/lib/propertyValidation'
 
 // ── Shared base ──────────────────────────────────────────────────────────────
 
@@ -78,7 +82,7 @@ export const PropertyMilestoneRowSchema = z.object({
   isPaid: z.boolean(),
 })
 
-export const PropertyItemSchema = BaseItemSchema.extend({
+const PropertyItemBaseSchema = BaseItemSchema.extend({
   label: z.string().min(1),
   agreementInr: z.number().nonnegative(),
   milestones: z.array(PropertyMilestoneRowSchema),
@@ -86,6 +90,22 @@ export const PropertyItemSchema = BaseItemSchema.extend({
   outstandingLoanInr: z.number().nonnegative().optional(),
   lender: z.string().optional(),
   emiInr: z.number().nonnegative().optional(),
+})
+
+export const PropertyItemSchema = PropertyItemBaseSchema.superRefine((val, ctx) => {
+  for (const issue of getPropertyValidationIssues(val)) {
+    const path =
+      issue.code === PROPERTY_VALIDATION_CODES.MILESTONE_TOTAL_EXCEEDS_AGREEMENT
+        ? (['milestones'] as const)
+        : issue.code === PROPERTY_VALIDATION_CODES.EMI_NOT_LESS_THAN_OUTSTANDING
+          ? (['emiInr'] as const)
+          : (['outstandingLoanInr'] as const)
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: issue.message,
+      path: [...path],
+    })
+  }
 })
 
 export const PropertySchema = z.object({
@@ -138,6 +158,10 @@ const RetirementAssumptionsSchema = z.object({
 const SettingsSchema = z
   .object({
     updatedAt: z.string().datetime(),
+    /** Optional nonnegative fraction applied on top of parity-derived ₹/g for gold (default applied on load). */
+    goldImportUpliftRate: z.number().nonnegative().optional(),
+    /** Optional nonnegative fraction for silver live ₹/g uplift (default applied on load). */
+    silverImportUpliftRate: z.number().nonnegative().optional(),
     goldPrices: GoldPricesSchema.optional(),
     /** When true, do not overwrite goldPrices from live spot (user chose fixed prices). */
     goldPricesLocked: z.boolean().optional(),

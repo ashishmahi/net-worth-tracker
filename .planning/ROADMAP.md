@@ -10,10 +10,82 @@
 - ✅ **v2.0 — Session assets & live silver** — Shipped 2026-05-02 — [full snapshot](milestones/v2.0-ROADMAP.md)  
 - ✅ **v2.0.1 — Live gold spot** — Shipped 2026-05-03 — [full snapshot](milestones/v2.0.1-ROADMAP.md)
 - ✅ **v2.1 — Section routing & home nav** — Shipped 2026-05-04 — [full snapshot](milestones/v2.1-ROADMAP.md)
+- ✅ **v2.2 — Import-adjusted bullion pricing** — Shipped 2026-05-06 — [full snapshot](milestones/v2.2-ROADMAP.md)
+- ✅ **v2.3 Property entry flow & validation** — Complete 2026-05-06 (Phases **31–33**) · [`REQUIREMENTS.md`](REQUIREMENTS.md)
 
-**Phase numbering:** **v2.0** — Phases **22–25**; **v2.0.1** — **26–27**; **v2.1** — Phase **28**.
+**Phase numbering:** **v2.2** shipped Phases **29–30**. **v2.3** continues with Phases **31–33** ([SEED-006](seeds/SEED-006-property-entry-flow-validation.md)).
 
 ---
+
+## v2.3: Property entry flow & validation (Phases 31–33)
+
+**Goal:** Guided paths for common property ownership situations and **save-blocking validation** so inconsistent milestones and loan fields do not reach `localStorage`.
+
+### Phase 31: Guided property entry UX
+
+**Goal:** Path or mode selection (paid off / builder milestones / mortgaged); conditional sections and copy on **Property** add/edit.
+
+**Requirements:** PRP-01, PRP-02, PRP-03
+
+### Phase 32: Property save validation & schema
+
+**Goal:** Enforce financial consistency at save time; align **Zod** with UI; **Vitest** for helpers/schema.
+
+**Requirements:** PRV-01, PRV-02, PRV-03, PRV-04, PRV-05
+
+### Phase 33: Property sheet responsive & accessibility
+
+**Goal:** Narrow-viewport usability and sensible a11y for new controls alongside existing milestone table patterns.
+
+**Requirements:** PRA-01
+
+| Phase | Name | Goal (summary) | Requirements |
+|-------|------|----------------|--------------|
+| **31** | Guided property entry UX | Paths + conditional UI + copy | PRP-01, PRP-02, PRP-03 |
+| **32** | Property save validation & schema | Block bad saves; Zod parity; tests | PRV-01–PRV-05 |
+| **33** | Property sheet responsive & accessibility | Mobile + a11y pass | PRA-01 |
+
+### Success criteria
+
+**Phase 31**
+
+1. User can complete add/edit along **fully paid**, **builder milestones**, or **mortgaged** paths without irrelevant fields cluttering the flow.
+2. Helper copy connects each path to how equity and milestones affect net worth.
+
+**Phase 32**
+
+1. Save is rejected when milestone totals exceed agreement per **PRV-01** (with clear errors).
+2. Loan rules (**PRV-02**, **PRV-03**) behave per documented warn-vs-block decisions.
+3. Tests fail if validation helpers or schema regress.
+
+**Phase 33**
+
+1. Primary actions and milestone grid remain reachable on small screens; no blocking horizontal overflow for core fields.
+
+### Plans
+
+- [x] Phase 31 — [31-01](phases/31-guided-property-entry-ux/31-01-PLAN.md) (`/gsd-execute-phase 31`)
+- [x] Phase 32 — [32-01](phases/32-property-save-validation-schema/32-01-PLAN.md) (`/gsd-execute-phase 32`)
+- [x] Phase 33 — [33-01](phases/33-property-sheet-responsive-accessibility/33-01-PLAN.md) (`/gsd-execute-phase 33`)
+
+---
+
+<details>
+<summary>✅ v2.2 — Import-adjusted bullion pricing (Phases 29–30) — SHIPPED 2026-05-06</summary>
+
+| Phase | Name | Plans |
+|-------|------|-------|
+| **29** | Bullion import uplift — data & calculations | [29-01](phases/29-bullion-import-uplift-data-calculations/29-01-PLAN.md) |
+| **30** | Bullion import uplift — settings UX & disclosure | [30-01](phases/30-bullion-import-uplift-settings-ux-disclosure/30-01-PLAN.md) |
+
+**Roadmap / requirements:** [`milestones/v2.2-ROADMAP.md`](milestones/v2.2-ROADMAP.md) · [`milestones/v2.2-REQUIREMENTS.md`](milestones/v2.2-REQUIREMENTS.md)
+
+**Phase directories (current location):** [`.planning/phases/29-bullion-import-uplift-data-calculations/`](phases/29-bullion-import-uplift-data-calculations/) · [`.planning/phases/30-bullion-import-uplift-settings-ux-disclosure/`](phases/30-bullion-import-uplift-settings-ux-disclosure/) — optional **`/gsd-cleanup`** later.
+
+</details>
+
+---
+
 
 <details>
 <summary>✅ v2.0 — Session assets & live silver (Phases 22–25) — SHIPPED 2026-05-02</summary>
@@ -102,4 +174,4 @@
 
 ---
 
-_Milestone archives: `.planning/milestones/` · **Current:** planning next milestone via **`/gsd-new-milestone`**._
+_Milestone archives: `.planning/milestones/` · **Last shipped:** **v2.2** (2026-05-06). **In progress:** **v2.3** — [`REQUIREMENTS.md`](REQUIREMENTS.md)._
