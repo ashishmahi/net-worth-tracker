@@ -1,10 +1,6 @@
 import { NavLink, useLocation } from 'react-router-dom'
 import { Sun, Moon } from 'lucide-react'
-import { ReportingCurrencySelect } from '@/components/ReportingCurrencySelect'
 import { Button } from '@/components/ui/button'
-import { useAppData } from '@/context/AppDataContext'
-import { nowIso } from '@/lib/financials'
-import type { CurrencyCode } from '@/types/currency'
 import {
   Sidebar,
   SidebarContent,
@@ -95,22 +91,9 @@ function NavRows({
 
 export function AppSidebar() {
   const { isMobile, setOpenMobile } = useSidebar()
-  const { data, saveData } = useAppData()
   const { theme, setTheme } = useTheme()
   const location = useLocation()
   const current = pathToSection(location.pathname) ?? 'dashboard'
-
-  const reportingCurrency = data.settings.reportingCurrency ?? 'INR'
-  const handleReportingChange = (code: CurrencyCode) => {
-    void saveData({
-      ...data,
-      settings: {
-        ...data.settings,
-        reportingCurrency: code,
-        updatedAt: nowIso(),
-      },
-    })
-  }
 
   const closeMobile = () => {
     if (isMobile) setOpenMobile(false)
@@ -118,7 +101,7 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible="offcanvas" className="border-r border-sidebar-border">
-      <SidebarHeader className="gap-0 border-b border-sidebar-border px-[22px] pb-[14px] pt-[22px]">
+      <SidebarHeader className="gap-0 border-b border-sidebar-border px-[22px] pb-[18px] pt-[22px]">
         <div className="flex items-center gap-2.5">
           <div
             className="grid size-7 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-primary to-[hsl(var(--studio-saffron))] text-sm font-semibold text-primary-foreground shadow-sm"
@@ -126,18 +109,14 @@ export function AppSidebar() {
           >
             W
           </div>
-          <div className="min-w-0 flex-1">
+          <div className="min-w-0">
             <div className="truncate text-[15px] font-semibold leading-tight tracking-tight text-sidebar-foreground">
               Wealth Tracker
             </div>
             <div className="mt-0.5 text-[11px] text-muted-foreground">
-              Local only · totals follow currency below
+              Net worth · local only
             </div>
           </div>
-          <ReportingCurrencySelect
-            value={reportingCurrency}
-            onChange={handleReportingChange}
-          />
         </div>
       </SidebarHeader>
       <SidebarContent className="px-2.5 pt-2.5">

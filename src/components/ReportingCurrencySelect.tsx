@@ -5,7 +5,6 @@ import {
   type CurrencyCode,
 } from '@/types/currency'
 
-/** Short codes — fits a narrow sidebar control; picker lists the same labels. */
 const LABEL: Record<CurrencyCode, string> = {
   INR: 'INR',
   USD: 'USD',
@@ -22,7 +21,7 @@ export type ReportingCurrencySelectProps = {
   disabled?: boolean
 }
 
-/** Native `<select>` styled for the app sidebar: fixed narrow width, short ISO codes. */
+/** Compact pill `<select>` — ISO codes, matches topbar “Live prices” chip scale. */
 export function ReportingCurrencySelect({
   value,
   onChange,
@@ -32,15 +31,15 @@ export function ReportingCurrencySelect({
   return (
     <div
       className={cn(
-        'relative inline-block w-[4.25rem] shrink-0 [&:focus-within]:z-[1]',
+        'relative inline-block w-[3.75rem] shrink-0 [&:focus-within]:z-[1]',
         className
       )}
     >
       <select
         aria-label="Reporting currency"
         className={cn(
-          'h-9 w-full cursor-pointer appearance-none rounded-md border border-sidebar-border bg-sidebar py-1 pl-2 pr-7 text-xs font-semibold tabular-nums text-sidebar-foreground shadow-none outline-none transition-colors',
-          'hover:bg-sidebar-accent/50 focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-offset-2 focus-visible:ring-offset-sidebar',
+          'h-8 w-full cursor-pointer appearance-none rounded-full border border-border bg-card py-0 pl-2.5 pr-7 text-[11px] font-semibold tabular-nums text-foreground shadow-sm outline-none transition-colors',
+          'hover:bg-muted/60 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
           disabled && 'pointer-events-none opacity-50'
         )}
         disabled={disabled}
@@ -54,7 +53,7 @@ export function ReportingCurrencySelect({
         ))}
       </select>
       <ChevronDown
-        className="pointer-events-none absolute right-1 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground"
+        className="pointer-events-none absolute right-1.5 top-1/2 size-3 -translate-y-1/2 text-muted-foreground"
         aria-hidden
       />
     </div>

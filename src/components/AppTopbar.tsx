@@ -1,9 +1,13 @@
 import { useMemo } from 'react'
 import { useLocation } from 'react-router-dom'
+import { ReportingCurrencySelect } from '@/components/ReportingCurrencySelect'
+import { useAppData } from '@/context/AppDataContext'
 import { useLivePrices } from '@/context/LivePricesContext'
+import { nowIso } from '@/lib/financials'
 import { pathToSection } from '@/lib/sectionRoutes'
 import { fmtCompactInr } from '@/lib/wealthFormat'
 import { useSidebar } from '@/components/ui/sidebar'
+import type { CurrencyCode } from '@/types/currency'
 
 const SECTION_TITLE: Record<string, string> = {
   dashboard: 'Dashboard',
@@ -26,8 +30,23 @@ function sectionLabel(pathname: string): string {
 
 export function AppTopbar() {
   const { isMobile } = useSidebar()
+  const { data, saveData } = useAppData()
   const location = useLocation()
   const { btcUsd, usdInr, btcLoading, forexLoading } = useLivePrices()
+
+  const section = pathToSection(location.pathname) ?? 'dashboard'
+  const isDashboard = section === 'dashboard'
+  const reportingCurrency = data.settings.reportingCurrency ?? 'INR'
+  const handleReportingChange = (code: CurrencyCode) => {
+    void saveData({
+      ...data,
+      settings: {
+        ...data.settings,
+        reportingCurrency: code,
+        updatedAt: nowIso(),
+      },
+    })
+  }
 
   const title = sectionLabel(location.pathname)
   const asOf = useMemo(
@@ -47,10 +66,18 @@ export function AppTopbar() {
 
   return (
     <header className="sticky top-0 z-[5] flex items-center justify-between gap-4 border-b border-border bg-background/80 px-8 py-[18px] backdrop-blur-md supports-[backdrop-filter]:bg-background/70">
-      <div className="min-w-0 text-[13px] text-muted-foreground">
-        <strong className="font-semibold text-foreground">{title}</strong>
-        <span className="mx-2 text-muted-foreground">·</span>
-        <span>as of {asOf}</span>
+      <div className="flex min-w-0 flex-1 items-center gap-3">
+        {isDashboard ? (
+          <ReportingCurrencySelect
+            value={reportingCurrency}
+            onChange={handleReportingChange}
+          />
+        ) : null}
+        <div className="min-w-0 text-[13px] text-muted-foreground">
+          <strong className="font-semibold text-foreground">{title}</strong>
+          <span className="mx-2 text-muted-foreground">·</span>
+          <span>as of {asOf}</span>
+        </div>
       </div>
       <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
         <span

@@ -1,16 +1,33 @@
 import { Menu, Sun, Moon, House } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
+import { ReportingCurrencySelect } from '@/components/ReportingCurrencySelect'
 import { Button } from '@/components/ui/button'
 import { useSidebar } from '@/components/ui/sidebar'
+import { useAppData } from '@/context/AppDataContext'
 import { useTheme } from '@/context/ThemeContext'
+import { nowIso } from '@/lib/financials'
 import { pathToSection, sectionToPath } from '@/lib/sectionRoutes'
+import type { CurrencyCode } from '@/types/currency'
 
 export function MobileTopBar() {
   const { isMobile, toggleSidebar } = useSidebar()
+  const { data, saveData } = useAppData()
   const { theme, setTheme } = useTheme()
   const location = useLocation()
   const section = pathToSection(location.pathname)
   const showHome = section !== 'dashboard'
+  const isDashboard = section === 'dashboard'
+  const reportingCurrency = data.settings.reportingCurrency ?? 'INR'
+  const handleReportingChange = (code: CurrencyCode) => {
+    void saveData({
+      ...data,
+      settings: {
+        ...data.settings,
+        reportingCurrency: code,
+        updatedAt: nowIso(),
+      },
+    })
+  }
 
   if (!isMobile) return null
 
@@ -38,21 +55,29 @@ export function MobileTopBar() {
           </Button>
         ) : null}
       </div>
-      <Button
-        type="button"
-        variant="ghost"
-        className="min-h-[44px] min-w-[44px] shrink-0"
-        onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-        aria-label={
-          theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'
-        }
-      >
-        {theme === 'light' ? (
-          <Moon className="size-5 shrink-0" aria-hidden />
-        ) : (
-          <Sun className="size-5 shrink-0" aria-hidden />
-        )}
-      </Button>
+      <div className="flex shrink-0 items-center gap-1.5">
+        {isDashboard ? (
+          <ReportingCurrencySelect
+            value={reportingCurrency}
+            onChange={handleReportingChange}
+          />
+        ) : null}
+        <Button
+          type="button"
+          variant="ghost"
+          className="min-h-[44px] min-w-[44px] shrink-0"
+          onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+          aria-label={
+            theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'
+          }
+        >
+          {theme === 'light' ? (
+            <Moon className="size-5 shrink-0" aria-hidden />
+          ) : (
+            <Sun className="size-5 shrink-0" aria-hidden />
+          )}
+        </Button>
+      </div>
     </div>
   )
 }
