@@ -31,6 +31,9 @@ export type SessionRatePartial = Partial<{
   btcUsd: number
   usdInr: number
   aedInr: number
+  eurInr: number
+  gbpInr: number
+  sgdInr: number
 }>
 
 export type LivePricesContextValue = {
@@ -40,6 +43,12 @@ export type LivePricesContextValue = {
   usdInr: number | null
   /** Effective AED→INR (INR per 1 AED). */
   aedInr: number | null
+  /** Effective EUR→INR (INR per 1 EUR). */
+  eurInr: number | null
+  /** Effective GBP→INR (INR per 1 GBP). */
+  gbpInr: number | null
+  /** Effective SGD→INR (INR per 1 SGD). */
+  sgdInr: number | null
   silverUsdPerOz: number | null
   silverLoading: boolean
   silverError: string | null
@@ -63,12 +72,18 @@ export function LivePricesProvider({ children }: { children: React.ReactNode }) 
   const [liveBtc, setLiveBtc] = useState<number | null>(null)
   const [liveUsdInr, setLiveUsdInr] = useState<number | null>(null)
   const [liveAedInr, setLiveAedInr] = useState<number | null>(null)
+  const [liveEurInr, setLiveEurInr] = useState<number | null>(null)
+  const [liveGbpInr, setLiveGbpInr] = useState<number | null>(null)
+  const [liveSgdInr, setLiveSgdInr] = useState<number | null>(null)
 
   const lastBtcAt = useRef<number>(0)
   const lastForexAt = useRef<number>(0)
   const liveBtcRef = useRef<number | null>(null)
   const liveUsdInrRef = useRef<number | null>(null)
   const liveAedInrRef = useRef<number | null>(null)
+  const liveEurInrRef = useRef<number | null>(null)
+  const liveGbpInrRef = useRef<number | null>(null)
+  const liveSgdInrRef = useRef<number | null>(null)
 
   const [session, setSession] = useState<SessionOverrides>({})
 
@@ -121,16 +136,25 @@ export function LivePricesProvider({ children }: { children: React.ReactNode }) 
     setForexLoading(true)
     setForexError(null)
     try {
-      const { usdInr, aedInr } = await fetchForex()
+      const { usdInr, aedInr, eurInr, gbpInr, sgdInr } = await fetchForex()
       liveUsdInrRef.current = usdInr
       liveAedInrRef.current = aedInr
+      liveEurInrRef.current = eurInr
+      liveGbpInrRef.current = gbpInr
+      liveSgdInrRef.current = sgdInr
       setLiveUsdInr(usdInr)
       setLiveAedInr(aedInr)
+      setLiveEurInr(eurInr)
+      setLiveGbpInr(gbpInr)
+      setLiveSgdInr(sgdInr)
       lastForexAt.current = Date.now()
       setSession(s => {
         const next = { ...s }
         delete next.usdInr
         delete next.aedInr
+        delete next.eurInr
+        delete next.gbpInr
+        delete next.sgdInr
         return next
       })
     } catch (e) {
@@ -229,6 +253,9 @@ export function LivePricesProvider({ children }: { children: React.ReactNode }) 
       btcUsd: session.btcUsd ?? liveBtc,
       usdInr: session.usdInr ?? liveUsdInr,
       aedInr: session.aedInr ?? liveAedInr,
+      eurInr: session.eurInr ?? liveEurInr,
+      gbpInr: session.gbpInr ?? liveGbpInr,
+      sgdInr: session.sgdInr ?? liveSgdInr,
       silverUsdPerOz: liveSilver,
       silverLoading,
       silverError,
@@ -248,6 +275,9 @@ export function LivePricesProvider({ children }: { children: React.ReactNode }) 
       liveBtc,
       liveUsdInr,
       liveAedInr,
+      liveEurInr,
+      liveGbpInr,
+      liveSgdInr,
       liveSilver,
       silverLoading,
       silverError,
