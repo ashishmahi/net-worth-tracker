@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.4
 milestone_name: — Multi-Currency Reporting
-status: ready_to_plan
-last_updated: "2026-05-07T21:04:55.303Z"
-last_activity: 2026-05-08 — Phase 34 discuss-phase completed
+status: planning
+last_updated: "2026-05-07T21:26:47.563Z"
+last_activity: 2026-05-07
 progress:
   total_phases: 8
   completed_phases: 4
   total_plans: 4
-  completed_plans: 3
-  percent: 50
+  completed_plans: 4
+  percent: 100
 ---
 
 ## Project
@@ -69,7 +69,7 @@ See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](
 
 **Next:** **`/gsd-plan-phase 34`** (research agents optional in this repo)
 
-**Resume file:** [`phases/34-fx-infrastructure-data-model/34-CONTEXT.md`](phases/34-fx-infrastructure-data-model/34-CONTEXT.md)
+**Resume file:** --resume-file
 
 **Research:** GSD research agents not installed in this environment — roadmap generated inline (_workflow deviation_).
 
