@@ -6,7 +6,7 @@ status: planning
 last_updated: "2026-05-08T00:00:00.000Z"
 last_activity: 2026-05-08 — Milestone v2.4 started (`/gsd-new-milestone`)
 progress:
-  total_phases: 0
+  total_phases: 5
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -25,7 +25,7 @@ Status: Defining requirements
 Last activity: 2026-05-08 — Milestone v2.4 started
 
 ```
-Progress: [░░░░░░░░░░] 0% — Phase 34 next
+Progress: [░░░░░░░░░░] 0% — 0/5 phases — Phase 34 next
 ```
 
 ## Project reference
