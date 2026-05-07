@@ -31,53 +31,50 @@ export function MobileTopBar() {
   if (!isMobile) return null
 
   return (
-    <div className="z-40 flex min-h-[44px] w-full items-center gap-2 border-b border-border bg-background px-4">
-      <div className="flex shrink-0">
+    <div className="z-40 flex min-h-[44px] w-full items-center gap-2 border-b border-border bg-background px-3">
+      <Button
+        type="button"
+        variant="ghost"
+        onClick={toggleSidebar}
+        aria-label="Toggle main navigation"
+        className="size-11 shrink-0 p-0"
+      >
+        <Menu className="size-5 shrink-0" aria-hidden />
+      </Button>
+      {showHome ? (
         <Button
-          type="button"
+          asChild
           variant="ghost"
-          onClick={toggleSidebar}
-          aria-label="Toggle main navigation"
-          className="min-h-[44px] min-w-[44px]"
+          className="size-11 shrink-0 p-0"
         >
-          <Menu className="size-5 shrink-0" aria-hidden />
+          <Link to={sectionToPath('dashboard')} aria-label="Go to dashboard">
+            <House className="size-5 shrink-0" aria-hidden />
+          </Link>
         </Button>
-      </div>
-      <div className="flex min-h-[44px] min-w-0 flex-1 items-center justify-center gap-2 px-1">
-        {showHome ? (
-          <Button
-            asChild
-            variant="ghost"
-            className="min-h-[44px] min-w-[44px] shrink-0"
-          >
-            <Link to={sectionToPath('dashboard')} aria-label="Go to dashboard">
-              <House className="size-5 shrink-0" aria-hidden />
-            </Link>
-          </Button>
-        ) : null}
+      ) : null}
+      <div className="min-w-0 flex-1">
         <ReportingCurrencySelect
+          compact
           value={reportingCurrency}
           onChange={handleReportingChange}
-          className="min-h-[44px] max-w-[10rem] shrink text-sm"
+          className="w-full"
         />
       </div>
-      <div className="flex shrink-0">
-        <Button
-          type="button"
-          variant="ghost"
-          className="min-h-[44px] min-w-[44px]"
-          onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-          aria-label={
-            theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'
-          }
-        >
-          {theme === 'light' ? (
-            <Moon className="size-5 shrink-0" aria-hidden />
-          ) : (
-            <Sun className="size-5 shrink-0" aria-hidden />
-          )}
-        </Button>
-      </div>
+      <Button
+        type="button"
+        variant="ghost"
+        className="size-11 shrink-0 p-0"
+        onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+        aria-label={
+          theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'
+        }
+      >
+        {theme === 'light' ? (
+          <Moon className="size-5 shrink-0" aria-hidden />
+        ) : (
+          <Sun className="size-5 shrink-0" aria-hidden />
+        )}
+      </Button>
     </div>
   )
 }
