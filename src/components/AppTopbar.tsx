@@ -34,8 +34,6 @@ export function AppTopbar() {
   const location = useLocation()
   const { btcUsd, usdInr, btcLoading, forexLoading } = useLivePrices()
 
-  const section = pathToSection(location.pathname) ?? 'dashboard'
-  const isDashboard = section === 'dashboard'
   const reportingCurrency = data.settings.reportingCurrency ?? 'INR'
   const handleReportingChange = (code: CurrencyCode) => {
     void saveData({
@@ -66,18 +64,10 @@ export function AppTopbar() {
 
   return (
     <header className="sticky top-0 z-[5] flex items-center justify-between gap-4 border-b border-border bg-background/80 px-8 py-[18px] backdrop-blur-md supports-[backdrop-filter]:bg-background/70">
-      <div className="flex min-w-0 flex-1 items-center gap-3">
-        {isDashboard ? (
-          <ReportingCurrencySelect
-            value={reportingCurrency}
-            onChange={handleReportingChange}
-          />
-        ) : null}
-        <div className="min-w-0 text-[13px] text-muted-foreground">
-          <strong className="font-semibold text-foreground">{title}</strong>
-          <span className="mx-2 text-muted-foreground">·</span>
-          <span>as of {asOf}</span>
-        </div>
+      <div className="min-w-0 text-[13px] text-muted-foreground">
+        <strong className="font-semibold text-foreground">{title}</strong>
+        <span className="mx-2 text-muted-foreground">·</span>
+        <span>as of {asOf}</span>
       </div>
       <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
         <span
@@ -90,6 +80,11 @@ export function AppTopbar() {
           />
           Live prices
         </span>
+        <ReportingCurrencySelect
+          variant="toolbar"
+          value={reportingCurrency}
+          onChange={handleReportingChange}
+        />
         <span className="inline-flex items-center rounded-full border border-border bg-card px-2.5 py-1.5 font-mono text-[11.5px] tabular-nums text-muted-foreground">
           {forexLoading || usdInr == null
             ? 'USD/INR …'

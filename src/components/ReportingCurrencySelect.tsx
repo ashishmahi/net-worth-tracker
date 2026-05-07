@@ -5,7 +5,16 @@ import {
   type CurrencyCode,
 } from '@/types/currency'
 
-const LABEL: Record<CurrencyCode, string> = {
+const OPTION_LABEL: Record<CurrencyCode, string> = {
+  INR: '₹ INR',
+  USD: '$ USD',
+  AED: 'AED',
+  EUR: '€ EUR',
+  GBP: '£ GBP',
+  SGD: 'S$ SGD',
+}
+
+const COMPACT_LABEL: Record<CurrencyCode, string> = {
   INR: 'INR',
   USD: 'USD',
   AED: 'AED',
@@ -19,15 +28,41 @@ export type ReportingCurrencySelectProps = {
   onChange: (code: CurrencyCode) => void
   className?: string
   disabled?: boolean
+  /**
+   * `toolbar` — desktop top bar: symbol+code labels, sits with Live prices / FX chips.
+   * `chip` — mobile: short ISO codes, pill shape, next to theme on Dashboard.
+   */
+  variant?: 'toolbar' | 'chip'
 }
 
-/** Compact pill `<select>` — ISO codes, matches topbar “Live prices” chip scale. */
 export function ReportingCurrencySelect({
   value,
   onChange,
   className,
   disabled,
+  variant = 'toolbar',
 }: ReportingCurrencySelectProps) {
+  if (variant === 'toolbar') {
+    return (
+      <select
+        aria-label="Reporting currency"
+        className={cn(
+          'h-[29px] min-h-[28px] max-w-[9.5rem] shrink-0 rounded-md border border-border bg-card py-1 text-[11.5px] text-foreground shadow-sm outline-none ring-offset-background focus-visible:ring-2 focus-visible:ring-ring',
+          className
+        )}
+        disabled={disabled}
+        value={value}
+        onChange={e => onChange(e.target.value as CurrencyCode)}
+      >
+        {CURRENCY_CODES.map(code => (
+          <option key={code} value={code}>
+            {OPTION_LABEL[code]}
+          </option>
+        ))}
+      </select>
+    )
+  }
+
   return (
     <div
       className={cn(
@@ -48,7 +83,7 @@ export function ReportingCurrencySelect({
       >
         {CURRENCY_CODES.map(code => (
           <option key={code} value={code}>
-            {LABEL[code]}
+            {COMPACT_LABEL[code]}
           </option>
         ))}
       </select>
