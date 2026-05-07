@@ -12,9 +12,9 @@
 
 ### FX Infrastructure
 
-- [ ] **FX-01**: User can view converted totals using live EUR/INR, GBP/INR, and SGD/INR rates fetched from the FX feed (USD/INR and AED/INR already exist)
-- [ ] **FX-02**: System converts per-record amounts via `displayValue = originalValue × rate_to_reporting_currency`
-- [ ] **FX-03**: When a required FX rate is unavailable, the app shows the original currency value only with a "Rate unavailable" hint (no crash, no silent zero)
+- [x] **FX-01**: User can view converted totals using live EUR/INR, GBP/INR, and SGD/INR rates fetched from the FX feed (USD/INR and AED/INR already exist)
+- [x] **FX-02**: System converts per-record amounts via `displayValue = originalValue × rate_to_reporting_currency`
+- [x] **FX-03**: When a required FX rate is unavailable, the app shows the original currency value only with a "Rate unavailable" hint (no crash, no silent zero)
 
 ### Reporting Currency Selector
 
@@ -24,9 +24,9 @@
 
 ### Data Model
 
-- [ ] **DM-01**: Every asset and liability record supports an optional `currency` field (defaults to reporting currency if absent)
-- [ ] **DM-02**: The settings schema gains a `reportingCurrency` field (default `"INR"`)
-- [ ] **DM-03**: Schema version is bumped; migration applies default `currency` values to existing records on load without data loss
+- [x] **DM-01**: Every asset and liability record supports an optional `currency` field (defaults to reporting currency if absent)
+- [x] **DM-02**: The settings schema gains a `reportingCurrency` field (default `"INR"`)
+- [x] **DM-03**: Schema version is bumped; migration applies default `currency` values to existing records on load without data loss
 
 ### Asset Pages
 
