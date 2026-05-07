@@ -1,13 +1,9 @@
 import { useMemo } from 'react'
 import { useLocation } from 'react-router-dom'
-import { ReportingCurrencySelect } from '@/components/ReportingCurrencySelect'
-import { useAppData } from '@/context/AppDataContext'
 import { useLivePrices } from '@/context/LivePricesContext'
-import { nowIso } from '@/lib/financials'
 import { pathToSection } from '@/lib/sectionRoutes'
 import { fmtCompactInr } from '@/lib/wealthFormat'
 import { useSidebar } from '@/components/ui/sidebar'
-import type { CurrencyCode } from '@/types/currency'
 
 const SECTION_TITLE: Record<string, string> = {
   dashboard: 'Dashboard',
@@ -30,21 +26,8 @@ function sectionLabel(pathname: string): string {
 
 export function AppTopbar() {
   const { isMobile } = useSidebar()
-  const { data, saveData } = useAppData()
   const location = useLocation()
   const { btcUsd, usdInr, btcLoading, forexLoading } = useLivePrices()
-
-  const reportingCurrency = data.settings.reportingCurrency ?? 'INR'
-  const handleReportingChange = (code: CurrencyCode) => {
-    void saveData({
-      ...data,
-      settings: {
-        ...data.settings,
-        reportingCurrency: code,
-        updatedAt: nowIso(),
-      },
-    })
-  }
 
   const title = sectionLabel(location.pathname)
   const asOf = useMemo(
@@ -80,11 +63,6 @@ export function AppTopbar() {
           />
           Live prices
         </span>
-        <ReportingCurrencySelect
-          value={reportingCurrency}
-          onChange={handleReportingChange}
-          className="h-[29px] min-h-[28px] max-w-[9.5rem] shrink-0 py-1 text-[11.5px]"
-        />
         <span className="inline-flex items-center rounded-full border border-border bg-card px-2.5 py-1.5 font-mono text-[11.5px] tabular-nums text-muted-foreground">
           {forexLoading || usdInr == null
             ? 'USD/INR …'
