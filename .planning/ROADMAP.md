@@ -92,7 +92,7 @@
 
 ### Plans
 
-- [ ] Phase 34 — (`/gsd-plan-phase 34`)
+- [x] Phase 34 — [34-01](phases/34-fx-infrastructure-data-model/34-01-PLAN.md) (`/gsd-execute-phase 34`)
 - [ ] Phase 35 — (`/gsd-plan-phase 35`)
 - [ ] Phase 36 — (`/gsd-plan-phase 36`)
 - [ ] Phase 37 — (`/gsd-plan-phase 37`)
