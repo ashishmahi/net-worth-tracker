@@ -19,10 +19,10 @@ progress:
 
 ## Current Position
 
-Phase: Not started (defining requirements)  
+Phase: 34 — context gathered (`34-CONTEXT.md`)  
 Plan: —  
-Status: Defining requirements  
-Last activity: 2026-05-08 — Milestone v2.4 started
+Status: Ready to plan Phase 34  
+Last activity: 2026-05-08 — Phase 34 discuss-phase completed
 
 ```
 Progress: [░░░░░░░░░░] 0% — 0/5 phases — Phase 34 next
@@ -67,7 +67,9 @@ See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](
 
 **Last completed milestone:** **v2.3** — Property entry flow & validation — Phases **31–33** — **SEED-006**
 
-**Next:** **`/gsd-discuss-phase 34`** or **`/gsd-plan-phase 34`** to begin Phase 34
+**Next:** **`/gsd-plan-phase 34`** (research agents optional in this repo)
+
+**Resume file:** [`phases/34-fx-infrastructure-data-model/34-CONTEXT.md`](phases/34-fx-infrastructure-data-model/34-CONTEXT.md)
 
 **Research:** GSD research agents not installed in this environment — roadmap generated inline (_workflow deviation_).
 
