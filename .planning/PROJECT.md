@@ -28,6 +28,23 @@ See **total net worth in INR** at a glance (**debt-adjusted** headline minus sta
 
 Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.3-ROADMAP.md` and matching `*-REQUIREMENTS.md` archives. Executed phase artifacts for shipped milestones live under [`.planning/milestones/`](milestones/) (e.g. `v1.5-phases/`). Phase dirs **19–33** remain under [`.planning/phases/`](phases/) until optional **`/gsd-cleanup`**.
 
+## Current Milestone: v2.4 — Multi-Currency Reporting
+
+**Goal:** Allow users to hold assets in any currency (INR, USD, AED, EUR, GBP, SGD) and view all totals in a single user-selected reporting currency, converted at live FX rates.
+
+**Target features:**
+- Reporting currency selector in topbar (persisted to settings, default INR)
+- Per-record currency field on every asset and liability type
+- Dual-currency display pattern — reporting value primary, original secondary (muted)
+- Expanded FX coverage — EUR, GBP, SGD pairs added to `LivePricesContext` / `priceApi`
+- Data model migration — `currency?` on all records; `reportingCurrency` on settings
+- Conversion logic utility — `displayValue = originalValue × rate_to_reporting_currency`
+- Settings live rates card extended with all supported FX pairs
+- Export/import currency fields preserved in zip export
+- Snapshots record reporting currency + rates active at time of capture
+
+**Seed:** [SEED-005 — multi-currency-reporting](seeds/SEED-005-multi-currency-reporting.md) | **Full spec:** `docs/multi-currency.md`
+
 ## Last completed milestone: v2.3 — Property entry flow & validation (2026-05-06)
 
 **Goal:** Improve Property add/edit so common situations (fully paid resale, builder milestone schedules, mortgaged homes) get **clearer guided paths**, strengthen **save-time validation**, and keep the sheet **usable on narrow widths** with sensible keyboard/focus behavior.
@@ -223,4 +240,4 @@ This file is updated at **milestone completion** to avoid drift between plans an
 </details>  
 
 ---
-*Last updated: 2026-05-06 — **v2.3** archived (`/gsd-complete-milestone`); requirements at [`milestones/v2.3-REQUIREMENTS.md`](milestones/v2.3-REQUIREMENTS.md); live [`ROADMAP.md`](ROADMAP.md) awaits **`/gsd-new-milestone`**.*
+*Last updated: 2026-05-08 — **v2.4** started (`/gsd-new-milestone`); requirements at [`.planning/REQUIREMENTS.md`](REQUIREMENTS.md); roadmap at [`.planning/ROADMAP.md`](ROADMAP.md).*
