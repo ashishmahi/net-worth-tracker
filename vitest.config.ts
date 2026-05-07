@@ -9,5 +9,9 @@ export default defineConfig({
   },
   test: {
     globals: false,
+    coverage: {
+      provider: 'v8',
+      include: ['src/lib/currencyConversion.ts'],
+    },
   },
 })
