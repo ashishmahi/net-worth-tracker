@@ -155,7 +155,7 @@ describe('AppDataProvider + localStorage', () => {
     })
     expect(api).toBeDefined()
     expect(api!.loadError).toBeNull()
-    expect(api!.data.version).toBe(1)
+    expect(api!.data.version).toBe(2)
     expect(api!.data.assets.gold.items).toEqual([])
     cleanup()
   })

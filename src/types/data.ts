@@ -3,6 +3,7 @@ import {
   getPropertyValidationIssues,
   PROPERTY_VALIDATION_CODES,
 } from '@/lib/propertyValidation'
+import { CurrencySchema } from '@/types/currency'
 
 // ── Shared base ──────────────────────────────────────────────────────────────
 
@@ -18,6 +19,7 @@ export const BaseItemSchema = z.object({
 const GoldItemSchema = BaseItemSchema.extend({
   karat: z.union([z.literal(24), z.literal(22), z.literal(18)]),
   grams: z.number().nonnegative(),
+  currency: CurrencySchema.optional(),
 })
 
 const GoldSchema = z.object({
@@ -29,12 +31,14 @@ const StandardCommodityItemSchema = BaseItemSchema.extend({
   type: z.literal('standard'),
   kind: z.literal('silver'),
   grams: z.number().nonnegative(),
+  currency: CurrencySchema.optional(),
 })
 
 const ManualCommodityItemSchema = BaseItemSchema.extend({
   type: z.literal('manual'),
   label: z.string().min(1),
   valueInr: z.number().nonnegative(),
+  currency: CurrencySchema.optional(),
 })
 
 export const OtherCommodityItemSchema = z.discriminatedUnion('type', [
@@ -52,6 +56,7 @@ const MfPlatformSchema = BaseItemSchema.extend({
   name: z.string(),
   currentValue: z.number().nonnegative(),
   monthlySip: z.number().nonnegative(),
+  currency: CurrencySchema.optional(),
 })
 
 const MutualFundsSchema = z.object({
@@ -63,6 +68,7 @@ const MutualFundsSchema = z.object({
 const StockPlatformSchema = BaseItemSchema.extend({
   name: z.string(),
   currentValue: z.number().nonnegative(),
+  currency: CurrencySchema.optional(),
 })
 
 const StocksSchema = z.object({
@@ -73,6 +79,7 @@ const StocksSchema = z.object({
 const BitcoinSchema = z.object({
   updatedAt: z.string().datetime(),
   quantity: z.number().nonnegative(),
+  currency: CurrencySchema.optional(),
 })
 
 export const PropertyMilestoneRowSchema = z.object({
@@ -90,6 +97,7 @@ const PropertyItemBaseSchema = BaseItemSchema.extend({
   outstandingLoanInr: z.number().nonnegative().optional(),
   lender: z.string().optional(),
   emiInr: z.number().nonnegative().optional(),
+  currency: CurrencySchema.optional(),
 })
 
 export const PropertyItemSchema = PropertyItemBaseSchema.superRefine((val, ctx) => {
@@ -119,12 +127,13 @@ export const LiabilityItemSchema = BaseItemSchema.extend({
   loanType: z.enum(['home', 'car', 'personal', 'other']),
   lender: z.string().optional(),
   emiInr: z.number().nonnegative().optional(),
+  currency: CurrencySchema.optional(),
 })
 
 // D-23: Bank accounts — native balance in INR or AED (Phase 3). Legacy `balanceInr` is migrated on load.
 const BankAccountSchema = BaseItemSchema.extend({
   label: z.string(),
-  currency: z.enum(['INR', 'AED']),
+  currency: CurrencySchema,
   balance: z.number().nonnegative(),
 })
 
@@ -138,6 +147,7 @@ const RetirementSchema = z.object({
   updatedAt: z.string().datetime(),
   nps: z.number().nonnegative(),
   epf: z.number().nonnegative(),
+  currency: CurrencySchema.optional(),
 })
 
 // D-24: SettingsSchema gains goldPrices and retirement blocks (both optional so existing
@@ -158,6 +168,7 @@ const RetirementAssumptionsSchema = z.object({
 const SettingsSchema = z
   .object({
     updatedAt: z.string().datetime(),
+    reportingCurrency: CurrencySchema.optional(),
     /** Optional nonnegative fraction applied on top of parity-derived ₹/g for gold (default applied on load). */
     goldImportUpliftRate: z.number().nonnegative().optional(),
     /** Optional nonnegative fraction for silver live ₹/g uplift (default applied on load). */
@@ -182,7 +193,7 @@ export const NetWorthPointSchema = z.object({
 // ── Root schema ───────────────────────────────────────────────────────────────
 
 export const DataSchema = z.object({
-  version: z.literal(1),
+  version: z.literal(2),
   settings: SettingsSchema,
   assets: z.object({
     gold: GoldSchema,

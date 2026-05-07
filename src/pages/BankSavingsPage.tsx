@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -19,19 +19,27 @@ import { Separator } from '@/components/ui/separator'
 import { useAppData } from '@/context/AppDataContext'
 import { useLivePrices } from '@/context/LivePricesContext'
 import { createId, nowIso, parseFinancialInput, roundCurrency } from '@/lib/financials'
+import { toReportingCurrency } from '@/lib/currencyConversion'
 import { cn } from '@/lib/utils'
+import { CURRENCY_CODES, CurrencySchema } from '@/types/currency'
 import type { BankAccount } from '@/types/data'
 
 const bankFormSchema = z.object({
   label: z.string().min(1, 'This field is required.'),
-  currency: z.enum(['INR', 'AED']),
+  currency: CurrencySchema,
   balance: z.string().min(1, 'This field is required.'),
 })
 type BankFormValues = z.infer<typeof bankFormSchema>
 
 export function BankSavingsPage() {
   const { data, saveData } = useAppData()
-  const { aedInr, forexLoading, forexError } = useLivePrices()
+  const { usdInr, aedInr, eurInr, gbpInr, sgdInr, forexLoading, forexError } = useLivePrices()
+
+  const reportingCurrency = data.settings.reportingCurrency ?? 'INR'
+  const rateSnapshot = useMemo(
+    () => ({ usdInr, aedInr, eurInr, gbpInr, sgdInr }),
+    [usdInr, aedInr, eurInr, gbpInr, sgdInr],
+  )
   const [sheetOpen, setSheetOpen] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [saveError, setSaveError] = useState<string | null>(null)
@@ -135,17 +143,16 @@ export function BankSavingsPage() {
 
   const accounts = data.assets.bankSavings.accounts
 
-  const hasAed = accounts.some(a => a.currency === 'AED')
-  const aedNeedsRate = hasAed && aedInr == null
+  const conversionBlocked = accounts.some(a => {
+    const c = toReportingCurrency(a.balance, a.currency, reportingCurrency, rateSnapshot)
+    return !c.ok
+  })
+  const needsFxRate = conversionBlocked
 
   const sectionTotal = accounts.reduce((sum, a) => {
-    if (a.currency === 'INR') {
-      return roundCurrency(sum + roundCurrency(a.balance))
-    }
-    if (aedInr == null) {
-      return sum
-    }
-    return roundCurrency(sum + roundCurrency(a.balance * aedInr))
+    const c = toReportingCurrency(a.balance, a.currency, reportingCurrency, rateSnapshot)
+    if (!c.ok) return sum
+    return roundCurrency(sum + roundCurrency(c.amount))
   }, 0)
 
   return (
@@ -158,17 +165,17 @@ export function BankSavingsPage() {
               <output aria-live="polite" className="text-2xl font-semibold block mt-1">
                 {sectionTotal.toLocaleString('en-IN', {
                   style: 'currency',
-                  currency: 'INR',
+                  currency: reportingCurrency,
                   maximumFractionDigits: 0,
                 })}
               </output>
-              {aedNeedsRate && (
+              {needsFxRate && (
                 <p role="alert" className="text-sm text-destructive mt-2">
-                  AED accounts need a live or session AED→INR rate to include in the total.
+                  Some balances need live FX rates to include in the total ({reportingCurrency}).
                   {forexError ? ` (${forexError})` : ''}
                 </p>
               )}
-              {forexLoading && hasAed && (
+              {forexLoading && accounts.length > 0 && (
                 <p className="text-sm text-muted-foreground mt-1">Loading conversion rates…</p>
               )}
             </>
@@ -191,15 +198,18 @@ export function BankSavingsPage() {
               <div className="py-12 text-center">
                 <p className="text-sm font-semibold text-foreground">No accounts added</p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Add an account to track your INR or AED savings.
+                  Add an account to track savings in {CURRENCY_CODES.join(', ')}.
                 </p>
               </div>
             ) : (
               accounts.map((item, index) => {
-                const inrEquiv =
-                  item.currency === 'AED' && aedInr != null
-                    ? roundCurrency(item.balance * aedInr)
-                    : null
+                const reportingEquiv = toReportingCurrency(
+                  item.balance,
+                  item.currency,
+                  reportingCurrency,
+                  rateSnapshot,
+                )
+                const showEquiv = reportingEquiv.ok && item.currency !== reportingCurrency
                 return (
                   <div key={item.id}>
                     <button
@@ -213,24 +223,18 @@ export function BankSavingsPage() {
                       </div>
                       <div className="text-right">
                         <span className="text-sm text-muted-foreground font-normal block">
-                          {item.currency === 'INR'
-                            ? item.balance.toLocaleString('en-IN', {
-                                style: 'currency',
-                                currency: 'INR',
-                                maximumFractionDigits: 0,
-                              })
-                            : item.balance.toLocaleString('en-IN', {
-                                style: 'currency',
-                                currency: 'AED',
-                                maximumFractionDigits: 0,
-                              })}
+                          {item.balance.toLocaleString('en-IN', {
+                            style: 'currency',
+                            currency: item.currency,
+                            maximumFractionDigits: 0,
+                          })}
                         </span>
-                        {inrEquiv != null && (
+                        {showEquiv && reportingEquiv.ok && (
                           <span className="text-xs text-muted-foreground block">
                             ≈{' '}
-                            {inrEquiv.toLocaleString('en-IN', {
+                            {roundCurrency(reportingEquiv.amount).toLocaleString('en-IN', {
                               style: 'currency',
-                              currency: 'INR',
+                              currency: reportingCurrency,
                               maximumFractionDigits: 0,
                             })}
                           </span>
@@ -281,16 +285,18 @@ export function BankSavingsPage() {
               </div>
               <fieldset className="space-y-2">
                 <legend className="text-sm font-medium">Currency</legend>
-                <div className="flex gap-6">
-                  <label className="flex items-center gap-2 text-sm cursor-pointer">
-                    <input type="radio" value="INR" {...register('currency')} />
-                    INR
-                  </label>
-                  <label className="flex items-center gap-2 text-sm cursor-pointer">
-                    <input type="radio" value="AED" {...register('currency')} />
-                    AED
-                  </label>
-                </div>
+                <select
+                  id="bank-currency"
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  {...register('currency')}
+                  aria-invalid={!!errors.currency}
+                >
+                  {CURRENCY_CODES.map(code => (
+                    <option key={code} value={code}>
+                      {code}
+                    </option>
+                  ))}
+                </select>
                 {errors.currency && (
                   <p role="alert" className="text-sm text-destructive">
                     {errors.currency.message}
@@ -298,14 +304,12 @@ export function BankSavingsPage() {
                 )}
               </fieldset>
               <div>
-                <Label htmlFor="balance">
-                  {currencyWatch === 'AED' ? 'Balance (AED)' : 'Balance (₹)'}
-                </Label>
+                <Label htmlFor="balance">Balance ({currencyWatch})</Label>
                 <Input
                   id="balance"
                   type="text"
                   inputMode="decimal"
-                  placeholder={currencyWatch === 'AED' ? 'e.g. 25,000' : 'e.g. 2,50,000'}
+                  placeholder="e.g. 25,000"
                   {...register('balance')}
                   aria-invalid={!!errors.balance}
                   className={errors.balance ? 'border-destructive' : ''}

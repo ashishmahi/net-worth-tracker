@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { ensureOtherCommodities, ensureLiabilities } from '@/context/AppDataContext'
+import {
+  ensureOtherCommodities,
+  ensureLiabilities,
+  parseAppDataFromImport,
+} from '@/context/AppDataContext'
 
 const iso = new Date().toISOString()
 
@@ -67,5 +71,39 @@ describe('ensureLiabilities', () => {
   it('returns non-object input unchanged', () => {
     expect(ensureLiabilities(null)).toBe(null)
     expect(ensureLiabilities('x')).toBe('x')
+  })
+})
+
+describe('migrate v1 to v2', () => {
+  it('parses minimal v1 fixture to v2 with reportingCurrency and stamped currency fields', () => {
+    const id = crypto.randomUUID()
+    const raw = {
+      ...minimalOldRoot(),
+      assets: {
+        ...(minimalOldRoot().assets as object),
+        gold: {
+          updatedAt: iso,
+          items: [
+            {
+              id,
+              createdAt: iso,
+              updatedAt: iso,
+              karat: 24 as const,
+              grams: 10,
+            },
+          ],
+        },
+      },
+    }
+    const result = parseAppDataFromImport(raw)
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data.version).toBe(2)
+      expect(result.data.settings.reportingCurrency).toBe('INR')
+      const goldItem = result.data.assets.gold.items[0]
+      expect(goldItem?.currency).toBe('INR')
+      expect(result.data.assets.bitcoin.currency).toBe('INR')
+      expect(result.data.assets.retirement.currency).toBe('INR')
+    }
   })
 })

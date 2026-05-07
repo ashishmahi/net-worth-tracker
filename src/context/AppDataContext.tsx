@@ -77,6 +77,100 @@ export function ensureLiabilities(raw: unknown): unknown {
   return raw
 }
 
+/** v1 → v2: bump schema version, stamp `reportingCurrency` and per-record `currency: INR` where missing (bank rows keep existing `currency`). */
+export function migrateV1ToV2(raw: unknown): unknown {
+  if (raw === null || typeof raw !== 'object') return raw
+  const root = raw as Record<string, unknown>
+  if (root.version !== 1) return raw
+
+  const next: Record<string, unknown> = JSON.parse(JSON.stringify(raw)) as Record<string, unknown>
+  next.version = 2
+
+  const settings = next.settings
+  if (settings && typeof settings === 'object') {
+    const s = settings as Record<string, unknown>
+    if (s.reportingCurrency === undefined) {
+      s.reportingCurrency = 'INR'
+    }
+  }
+
+  const stamp = (row: Record<string, unknown>): Record<string, unknown> => {
+    if ('currency' in row && row.currency !== undefined) return row
+    return { ...row, currency: 'INR' }
+  }
+
+  const assets = next.assets
+  if (assets && typeof assets === 'object') {
+    const a = assets as Record<string, unknown>
+
+    const gold = a.gold as { items?: unknown[] } | undefined
+    if (gold && Array.isArray(gold.items)) {
+      gold.items = gold.items.map(entry =>
+        entry && typeof entry === 'object' ? stamp(entry as Record<string, unknown>) : entry,
+      )
+    }
+
+    const oc = a.otherCommodities as { items?: unknown[] } | undefined
+    if (oc && Array.isArray(oc.items)) {
+      oc.items = oc.items.map(entry =>
+        entry && typeof entry === 'object' ? stamp(entry as Record<string, unknown>) : entry,
+      )
+    }
+
+    const mf = a.mutualFunds as { platforms?: unknown[] } | undefined
+    if (mf && Array.isArray(mf.platforms)) {
+      mf.platforms = mf.platforms.map(entry =>
+        entry && typeof entry === 'object' ? stamp(entry as Record<string, unknown>) : entry,
+      )
+    }
+
+    const st = a.stocks as { platforms?: unknown[] } | undefined
+    if (st && Array.isArray(st.platforms)) {
+      st.platforms = st.platforms.map(entry =>
+        entry && typeof entry === 'object' ? stamp(entry as Record<string, unknown>) : entry,
+      )
+    }
+
+    const btc = a.bitcoin
+    if (btc && typeof btc === 'object') {
+      const b = btc as Record<string, unknown>
+      if (b.currency === undefined) {
+        b.currency = 'INR'
+      }
+    }
+
+    const prop = a.property as { items?: unknown[] } | undefined
+    if (prop && Array.isArray(prop.items)) {
+      prop.items = prop.items.map(entry =>
+        entry && typeof entry === 'object' ? stamp(entry as Record<string, unknown>) : entry,
+      )
+    }
+
+    const bank = a.bankSavings as { accounts?: unknown[] } | undefined
+    if (bank && Array.isArray(bank.accounts)) {
+      bank.accounts = bank.accounts.map(entry =>
+        entry && typeof entry === 'object' ? stamp(entry as Record<string, unknown>) : entry,
+      )
+    }
+
+    const ret = a.retirement
+    if (ret && typeof ret === 'object') {
+      const r = ret as Record<string, unknown>
+      if (r.currency === undefined) {
+        r.currency = 'INR'
+      }
+    }
+  }
+
+  if (Array.isArray(next.liabilities)) {
+    next.liabilities = next.liabilities.map(entry =>
+      entry && typeof entry === 'object' ? stamp(entry as Record<string, unknown>) : entry,
+    )
+  }
+
+  return next
+}
+
 /** Import uplift defaults (BLN-03): applied before parse when keys absent on `settings`. */
 export function ensureImportUpliftRates(raw: unknown): unknown {
   if (raw === null || typeof raw !== 'object') return raw
@@ -98,7 +192,7 @@ export function ensureImportUpliftRates(raw: unknown): unknown {
 }
 
 /** Same migrate + `DataSchema` path as initial stored wealth load — for import and boot.
- *  Chain: migrateLegacyBankAccounts → ensureNetWorthHistory → ensureOtherCommodities → ensureLiabilities → ensureImportUpliftRates → safeParse
+ *  Chain: migrateLegacyBankAccounts → ensureNetWorthHistory → ensureOtherCommodities → ensureLiabilities → ensureImportUpliftRates → migrateV1ToV2 → safeParse
  */
 export function parseAppDataFromImport(
   raw: unknown,
@@ -108,7 +202,8 @@ export function parseAppDataFromImport(
   const withCommodities = ensureOtherCommodities(withHistory)
   const withLiabilities = ensureLiabilities(withCommodities)
   const withImportUplift = ensureImportUpliftRates(withLiabilities)
-  const result = DataSchema.safeParse(withImportUplift)
+  const v2Ready = migrateV1ToV2(withImportUplift)
+  const result = DataSchema.safeParse(v2Ready)
   if (result.success) {
     return { success: true, data: result.data }
   }
@@ -123,9 +218,10 @@ const WEALTH_STORAGE_KEY = 'wealth-tracker-data'
 export function createInitialData(): AppData {
   const now = nowIso()
   return {
-    version: 1,
+    version: 2,
     settings: {
       updatedAt: now,
+      reportingCurrency: 'INR',
       goldImportUpliftRate: 0.1,
       silverImportUpliftRate: 0.08,
     },
