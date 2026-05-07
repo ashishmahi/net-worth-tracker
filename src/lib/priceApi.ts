@@ -66,8 +66,16 @@ export async function fetchBtcUsd(): Promise<number> {
 }
 
 export type ForexRates = {
+  /** INR per 1 USD (open.er uses USD-latest; INR equals USD-per-INR quote bucket). */
   usdInr: number
+  /** INR per 1 AED. */
   aedInr: number
+  /** INR per 1 EUR; null when EUR rate missing or invalid in API response. */
+  eurInr: number | null
+  /** INR per 1 GBP; null when GBP rate missing or invalid. */
+  gbpInr: number | null
+  /** INR per 1 SGD; null when SGD rate missing or invalid. */
+  sgdInr: number | null
 }
 
 export async function fetchForex(): Promise<ForexRates> {
@@ -91,7 +99,21 @@ export async function fetchForex(): Promise<ForexRates> {
   if (!Number.isFinite(aedInr) || aedInr <= 0) {
     throw new Error('Forex: invalid AED/INR derivation')
   }
-  return { usdInr: INR, aedInr }
+
+  const leg = (code: 'EUR' | 'GBP' | 'SGD'): number | null => {
+    const v = rates[code]
+    if (typeof v !== 'number' || !Number.isFinite(v) || v <= 0) return null
+    const q = INR / v
+    return Number.isFinite(q) && q > 0 ? q : null
+  }
+
+  return {
+    usdInr: INR,
+    aedInr,
+    eurInr: leg('EUR'),
+    gbpInr: leg('GBP'),
+    sgdInr: leg('SGD'),
+  }
 }
 
 /**
