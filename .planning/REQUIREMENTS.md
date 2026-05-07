@@ -18,9 +18,9 @@
 
 ### Reporting Currency Selector
 
-- [ ] **RC-01**: User can select their reporting currency (INR, USD, AED, EUR, GBP, SGD) from a dropdown in the topbar
-- [ ] **RC-02**: Switching reporting currency recalculates all net worth aggregates, category totals, and breakdown rows in real time
-- [ ] **RC-03**: User's reporting currency preference is persisted in settings (not session-only; survives page reload)
+- [x] **RC-01**: User can select their reporting currency (INR, USD, AED, EUR, GBP, SGD) from a dropdown in the topbar
+- [x] **RC-02**: Switching reporting currency recalculates all net worth aggregates, category totals, and breakdown rows in real time
+- [x] **RC-03**: User's reporting currency preference is persisted in settings (not session-only; survives page reload)
 
 ### Data Model
 

@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.4
 milestone_name: — Multi-Currency Reporting
-status: planning
-last_updated: "2026-05-07T21:31:45.751Z"
-last_activity: 2026-05-07
+status: ready_to_plan
+last_updated: "2026-05-07T21:33:21.436Z"
+last_activity: 2026-05-08
 progress:
-  total_phases: 8
-  completed_phases: 4
-  total_plans: 5
-  completed_plans: 4
-  percent: 80
+  total_phases: 5
+  completed_phases: 2
+  total_plans: 2
+  completed_plans: 2
+  percent: 40
 ---
 
 ## Project
@@ -19,13 +19,13 @@ progress:
 
 ## Current Position
 
-Phase: 35
+Phase: 36
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-05-07
+Last activity: 2026-05-08
 
 ```
-Progress: [░░░░░░░░░░] 0% — 0/5 phases — Phase 34 next
+Progress: [████░░░░░░] 40% — 2/5 v2.4 phases — Phase 36 next
 ```
 
 ## Project reference
@@ -67,7 +67,7 @@ See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](
 
 **Last completed milestone:** **v2.3** — Property entry flow & validation — Phases **31–33** — **SEED-006**
 
-**Next:** **`/gsd-plan-phase 34`** (research agents optional in this repo)
+**Next:** **`/gsd-plan-phase 36`** (or `/gsd-discuss-phase 36`)
 
 **Resume file:** --resume-file
 
@@ -75,4 +75,4 @@ See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](
 
 **Completed phases (v2.3):** **31** — [31-01-SUMMARY](phases/31-guided-property-entry-ux/31-01-SUMMARY.md) · [31-VERIFICATION](phases/31-guided-property-entry-ux/31-VERIFICATION.md) · **32** — [32-01-SUMMARY](phases/32-property-save-validation-schema/32-01-SUMMARY.md) · [32-VERIFICATION](phases/32-property-save-validation-schema/32-VERIFICATION.md) · **33** — [33-01-SUMMARY](phases/33-property-sheet-responsive-accessibility/33-01-SUMMARY.md) · [33-VERIFICATION](phases/33-property-sheet-responsive-accessibility/33-VERIFICATION.md)
 
-**Planned Phase:** 35 (Reporting Currency Selector) — 1 plans — 2026-05-07T21:31:45.743Z
+**Completed (v2.4):** **34** — [34-01-SUMMARY](phases/34-fx-infrastructure-data-model/34-01-SUMMARY.md) · **35** — [35-01-SUMMARY](phases/35-reporting-currency-selector/35-01-SUMMARY.md) · [35-VERIFICATION](phases/35-reporting-currency-selector/35-VERIFICATION.md)
