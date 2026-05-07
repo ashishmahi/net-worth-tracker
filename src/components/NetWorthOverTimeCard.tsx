@@ -45,9 +45,12 @@ type Row = {
 export function NetWorthOverTimeCard({
   history,
   recordBlockedMessage,
+  historyCaption,
 }: {
   history: NetWorthPoint[]
   recordBlockedMessage: string | null
+  /** Shown below the chart when reporting currency ≠ INR (snapshots are INR). */
+  historyCaption?: string
 }) {
   const sorted = useMemo(
     () =>
@@ -193,6 +196,9 @@ export function NetWorthOverTimeCard({
             />
           </LineChart>
         </ChartContainer>
+        {historyCaption ? (
+          <p className="mt-2 text-xs text-muted-foreground">{historyCaption}</p>
+        ) : null}
       </CardContent>
     </Card>
   )

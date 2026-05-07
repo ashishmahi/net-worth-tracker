@@ -24,13 +24,24 @@ import {
   sumAllDebtInr,
   sumLiabilitiesInr,
 } from '@/lib/liabilityCalcs'
+import {
+  toReportingCurrency,
+  type ForexRateSnapshot,
+} from '@/lib/currencyConversion'
 import { roundCurrency } from '@/lib/financials'
 import type { AppData } from '@/types/data'
+import type { CurrencyCode } from '@/types/currency'
 import { NetWorthOverTimeCard } from '@/components/NetWorthOverTimeCard'
 import { AllocationRing } from '@/components/AllocationRing'
 import { categoryOklch } from '@/lib/categoryColors'
 import { sectionToPath } from '@/lib/sectionRoutes'
-import { fmtCompactInr, fmtInr0, splitInrAmount } from '@/lib/wealthFormat'
+import {
+  fmtCompactForReporting,
+  fmtCompactInr,
+  fmtInr0,
+  splitInrAmount,
+  splitReportingHero,
+} from '@/lib/wealthFormat'
 import { cn } from '@/lib/utils'
 
 const ROW_LABEL: Record<DashboardCategoryKey, string> = {
@@ -53,6 +64,38 @@ const NAV_KEY: Record<DashboardCategoryKey, SectionKey> = {
   property: 'property',
   bankSavings: 'bankSavings',
   retirement: 'retirement',
+}
+
+function formatReportingDash(
+  amountInr: number,
+  reportingCurrency: CurrencyCode,
+  snapshot: ForexRateSnapshot,
+): { primary: string; degraded: boolean } {
+  if (reportingCurrency === 'INR') {
+    return { primary: fmtCompactInr(amountInr), degraded: false }
+  }
+  const c = toReportingCurrency(amountInr, 'INR', reportingCurrency, snapshot)
+  if (!c.ok) return { primary: fmtCompactInr(amountInr), degraded: true }
+  return {
+    primary: fmtCompactForReporting(c.amount, reportingCurrency),
+    degraded: false,
+  }
+}
+
+function formatRowReporting(
+  amountInr: number,
+  reportingCurrency: CurrencyCode,
+  snapshot: ForexRateSnapshot,
+): { primary: string; degraded: boolean } {
+  if (reportingCurrency === 'INR') {
+    return { primary: fmtInr0(amountInr), degraded: false }
+  }
+  const c = toReportingCurrency(amountInr, 'INR', reportingCurrency, snapshot)
+  if (!c.ok) return { primary: fmtInr0(amountInr), degraded: true }
+  return {
+    primary: fmtCompactForReporting(c.amount, reportingCurrency),
+    degraded: false,
+  }
 }
 
 function rowSub(
@@ -153,6 +196,9 @@ export function DashboardPage({
     btcUsd,
     usdInr,
     aedInr,
+    eurInr,
+    gbpInr,
+    sgdInr,
     btcLoading,
     forexLoading,
     silverUsdPerOz,
@@ -160,6 +206,20 @@ export function DashboardPage({
     silverError,
     goldUsdPerOz,
   } = useLivePrices()
+
+  const reportingCurrency: CurrencyCode =
+    data.settings.reportingCurrency ?? 'INR'
+
+  const forexSnapshot: ForexRateSnapshot = useMemo(
+    () => ({
+      usdInr,
+      aedInr,
+      eurInr,
+      gbpInr,
+      sgdInr,
+    }),
+    [usdInr, aedInr, eurInr, gbpInr, sgdInr],
+  )
 
   const totals = useMemo(
     () =>
@@ -236,13 +296,26 @@ export function DashboardPage({
       : null
 
   const ringSlices = useMemo(() => {
-    return DASHBOARD_CATEGORY_ORDER.map(key => ({
-      key,
-      label: ROW_LABEL[key],
-      value:
-        totals[key] === null ? 0 : Math.max(0, totals[key] as number),
-    })).filter(s => s.value > 0)
-  }, [totals])
+    const blockFx =
+      reportingCurrency !== 'INR' &&
+      !toReportingCurrency(1, 'INR', reportingCurrency, forexSnapshot).ok
+    if (blockFx) return []
+
+    return DASHBOARD_CATEGORY_ORDER.map(key => {
+      const raw = totals[key]
+      if (raw === null) {
+        return { key, label: ROW_LABEL[key], value: 0 }
+      }
+      let value: number
+      if (reportingCurrency === 'INR') {
+        value = Math.max(0, raw)
+      } else {
+        const c = toReportingCurrency(raw, 'INR', reportingCurrency, forexSnapshot)
+        value = c.ok ? Math.max(0, c.amount) : 0
+      }
+      return { key, label: ROW_LABEL[key], value }
+    }).filter(s => s.value > 0)
+  }, [totals, reportingCurrency, forexSnapshot])
 
   const canRecordSnapshot = useMemo(() => {
     return (
@@ -303,7 +376,54 @@ export function DashboardPage({
       ? Math.round(debtToAssetRatio(totalDebtAll, grossAssets))
       : 0
 
-  const heroAmount = splitInrAmount(netWorth)
+  const netWorthDisplay = useMemo(() => {
+    if (reportingCurrency === 'INR') {
+      const h = splitInrAmount(netWorth)
+      return {
+        kind: 'normal' as const,
+        symbol: h.symbol,
+        amount: h.amount,
+      }
+    }
+    const conv = toReportingCurrency(
+      netWorth,
+      'INR',
+      reportingCurrency,
+      forexSnapshot,
+    )
+    if (!conv.ok) return { kind: 'unavailable' as const }
+    const h = splitReportingHero(conv.amount, reportingCurrency)
+    return {
+      kind: 'normal' as const,
+      symbol: h.symbol,
+      amount: h.amount,
+    }
+  }, [netWorth, reportingCurrency, forexSnapshot])
+
+  const grossDash = useMemo(
+    () => formatReportingDash(grossAssets, reportingCurrency, forexSnapshot),
+    [grossAssets, reportingCurrency, forexSnapshot],
+  )
+
+  const debtDash = useMemo(
+    () => formatReportingDash(totalDebtAll, reportingCurrency, forexSnapshot),
+    [totalDebtAll, reportingCurrency, forexSnapshot],
+  )
+
+  const deltaAbsDash =
+    deltaVsSnapshot != null
+      ? formatReportingDash(
+          Math.abs(deltaVsSnapshot),
+          reportingCurrency,
+          forexSnapshot,
+        )
+      : null
+
+  const debtRowFmt = useMemo(
+    () =>
+      formatRowReporting(totalDebtAll, reportingCurrency, forexSnapshot),
+    [totalDebtAll, reportingCurrency, forexSnapshot],
+  )
 
   if (empty) {
     return (
@@ -393,12 +513,24 @@ export function DashboardPage({
               <Skeleton className="mt-2 h-14 w-56 max-w-full" />
             ) : (
               <>
-                <div className="mt-1.5 text-[clamp(2.25rem,5vw,3.5rem)] font-semibold leading-[1.05] tracking-tight text-foreground">
-                  <span className="font-normal text-muted-foreground">
-                    {heroAmount.symbol}
-                  </span>
-                  <span className="tabular-nums">{heroAmount.amount}</span>
-                </div>
+                {netWorthDisplay.kind === 'unavailable' ? (
+                  <div className="mt-1.5 space-y-1">
+                    <div className="text-[clamp(1.85rem,4.5vw,3rem)] font-semibold leading-[1.05] tracking-tight text-foreground">
+                      Rate unavailable
+                    </div>
+                    <div className="text-sm text-muted-foreground tabular-nums">
+                      {fmtCompactInr(netWorth)}{' '}
+                      <span className="text-xs">(INR)</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mt-1.5 text-[clamp(2.25rem,5vw,3.5rem)] font-semibold leading-[1.05] tracking-tight text-foreground">
+                    <span className="font-normal text-muted-foreground">
+                      {netWorthDisplay.symbol}
+                    </span>
+                    <span className="tabular-nums">{netWorthDisplay.amount}</span>
+                  </div>
+                )}
                 {lastSnapshot != null &&
                 deltaVsSnapshot != null &&
                 deltaPctVsSnapshot != null ? (
@@ -412,9 +544,18 @@ export function DashboardPage({
                       )}
                     >
                       {deltaVsSnapshot >= 0 ? '▲' : '▼'}{' '}
-                      {fmtCompactInr(Math.abs(deltaVsSnapshot))} (
-                      {deltaPctVsSnapshot >= 0 ? '+' : ''}
-                      {deltaPctVsSnapshot.toFixed(2)}%)
+                      {deltaAbsDash?.degraded ? (
+                        <>
+                          Rate unavailable —{' '}
+                          {fmtCompactInr(Math.abs(deltaVsSnapshot))}
+                        </>
+                      ) : (
+                        <>
+                          {deltaAbsDash?.primary} (
+                          {deltaPctVsSnapshot >= 0 ? '+' : ''}
+                          {deltaPctVsSnapshot.toFixed(2)}%)
+                        </>
+                      )}
                     </span>
                     <span>vs last snapshot</span>
                   </div>
@@ -430,7 +571,16 @@ export function DashboardPage({
                       Gross assets
                     </div>
                     <div className="mt-0.5 text-base font-semibold tabular-nums">
-                      {fmtCompactInr(grossAssets)}
+                      {grossDash.degraded ? (
+                        <span className="inline-flex flex-col gap-0.5">
+                          <span className="text-xs font-normal text-muted-foreground">
+                            Rate unavailable
+                          </span>
+                          <span>{grossDash.primary}</span>
+                        </span>
+                      ) : (
+                        grossDash.primary
+                      )}
                     </div>
                   </div>
                   {totalDebtAll > 0 ? (
@@ -439,7 +589,16 @@ export function DashboardPage({
                         Total debt
                       </div>
                       <div className="mt-0.5 text-base font-semibold tabular-nums text-destructive">
-                        {fmtCompactInr(totalDebtAll)}
+                        {debtDash.degraded ? (
+                          <span className="inline-flex flex-col gap-0.5">
+                            <span className="text-xs font-normal text-destructive/90">
+                              Rate unavailable
+                            </span>
+                            <span>{debtDash.primary}</span>
+                          </span>
+                        ) : (
+                          debtDash.primary
+                        )}
                       </div>
                     </div>
                   ) : null}
@@ -537,6 +696,9 @@ export function DashboardPage({
       <NetWorthOverTimeCard
         history={data.netWorthHistory}
         recordBlockedMessage={recordBlockedMessage}
+        historyCaption={
+          reportingCurrency !== 'INR' ? 'History shown in INR' : undefined
+        }
       />
 
       <Card className="overflow-hidden border-border shadow-sm">
@@ -550,6 +712,10 @@ export function DashboardPage({
           {DASHBOARD_CATEGORY_ORDER.map((key, index) => {
             const label = ROW_LABEL[key]
             const v = totals[key]
+            const rowFmt =
+              v !== null
+                ? formatRowReporting(v, reportingCurrency, forexSnapshot)
+                : null
             const pct = percentOfTotal(v === null ? 0 : v, grossAssets)
             const isGoldRow = key === 'gold'
             const isBtcRow = key === 'bitcoin'
@@ -642,9 +808,18 @@ export function DashboardPage({
                           aria-hidden
                         />
                       </span>
+                    ) : rowFmt?.degraded ? (
+                      <span className="inline-flex flex-col items-end gap-0.5 text-right">
+                        <span className="text-[11px] font-normal text-muted-foreground">
+                          Rate unavailable
+                        </span>
+                        <span className="text-sm font-semibold tabular-nums">
+                          {fmtInr0(v as number)}
+                        </span>
+                      </span>
                     ) : (
                       <span className="text-sm font-semibold tabular-nums">
-                        {fmtInr0(v as number)}
+                        {rowFmt?.primary}
                       </span>
                     )}
                     <span className="w-10 text-right text-sm text-muted-foreground md:hidden">
@@ -685,9 +860,20 @@ export function DashboardPage({
                 <span className="hidden md:block" />
                 <span className="col-span-2 hidden md:col-span-1 md:block" />
                 <div className="col-span-2 flex justify-end md:col-span-2">
-                  <span className="text-sm font-semibold tabular-nums text-destructive">
-                    {fmtInr0(totalDebtAll)}
-                  </span>
+                  {debtRowFmt.degraded ? (
+                    <span className="inline-flex flex-col items-end gap-0.5 text-right">
+                      <span className="text-[11px] font-normal text-destructive/90">
+                        Rate unavailable
+                      </span>
+                      <span className="text-sm font-semibold tabular-nums text-destructive">
+                        {fmtInr0(totalDebtAll)}
+                      </span>
+                    </span>
+                  ) : (
+                    <span className="text-sm font-semibold tabular-nums text-destructive">
+                      {debtRowFmt.primary}
+                    </span>
+                  )}
                 </div>
                 <span className="hidden md:block" />
               </button>
