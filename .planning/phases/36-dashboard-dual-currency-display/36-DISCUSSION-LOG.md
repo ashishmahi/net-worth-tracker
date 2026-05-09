@@ -4,45 +4,59 @@
 > Decisions are captured in CONTEXT.md — this log preserves the alternatives considered.
 
 **Date:** 2026-05-09
-**Phase:** 36-Dashboard dual-currency display
-**Areas discussed:** Scope, Mixed currencies, Original format, Rate unavailable (interactive answers skipped; defaults documented in CONTEXT.md)
+**Phase:** 36-dashboard-dual-currency-display
+**Areas discussed:** Context restart, design prototype extraction, scope (surface), mixed currencies, format, rate unavailable
 
 ---
 
-## Scope (hero vs breakdown)
+## Prior context corrupted / restart
 
 | Option | Description | Selected |
 |--------|-------------|----------|
-| Breakdown + Total Debt only | Dual pattern only on Breakdown card rows + Total Debt | ✓ (via CONTEXT D-01) |
-| Include hero mini-stats | Gross/Total debt under Net worth | |
-| Include Net worth headline | Full hero dual line | |
-| Minimal scope | Planner defaults | |
+| Keep file | Continue from existing CONTEXT.md | |
+| Delete and restart | Remove phase context artifacts and re-gather | ✓ |
 
-**User's choice:** Gray areas were selected for discussion; **questionnaire was skipped**. **D-01** in `36-CONTEXT.md` locks **Breakdown card + Total Debt** only.
-
-**Notes:** Aligned with roadmap phrase *breakdown rows* and existing UI section title **Breakdown**.
+**User's choice:** Delete unintended edits and restart Phase 36 discussion.
+**Notes:** Kid had typed into planning artifacts.
 
 ---
 
-## Mixed currencies within a category
+## Design reference
 
-| Option | Description | Selected |
-|--------|-------------|----------|
-| Single foreign code → one summed original line | One muted secondary with summed amounts in that currency | ✓ (D-02) |
-| Multiple foreign codes → no secondary | Avoid misleading single “original” | ✓ (D-02) |
-| Always show something | e.g. “Multiple currencies” | Deferred |
+**User's choice:** Place Claude Code design bundle at `.planning/phases/36-dashboard-dual-currency-display/design/net-worth-tracker-redesign-v2/`; use **only** Phase-relevant slices (Breakdown `.val`/`.val-local`, hero single-line, Total Debt row single-line). Full redesign (themes, other routes) **out of scope** for CONTEXT.
 
-**User's choice:** **D-02** as written in CONTEXT.
+**Notes:** Actual folder name **`net-worth-tracker-redesign-v2`** (not `net-worth-redesign-v2`).
 
 ---
 
-## Original-line format
+## Surface (Breakdown vs hero)
 
 | Option | Description | Selected |
 |--------|-------------|----------|
-| ISO code + amount | Per `docs/multi-currency.md` §3 example | ✓ (D-03) |
-| Symbol-first | | |
-| Match fmt helpers | Reuse/extend `wealthFormat` | ✓ (D-03) |
+| Breakdown category rows only + hero single-line | Matches prototype & roadmap breakdown wording | ✓ |
+| Include hero dual-line | | |
+| Planner discretion | | |
+
+**User's choice:** Locked via prototype review + user confirmation to write CONTEXT.
+**Notes:** Total Debt **inside** Breakdown remains **single-line** in prototype; implemented as **D-01**.
+
+---
+
+## Mixed foreign currencies in one category
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| One non-reporting code → one aggregated secondary; 2+ → omit | Honest aggregation; prototype has only one illustrative local pair per row | ✓ |
+| Multiple muted lines | | |
+| “Multiple currencies” label | Deferred | |
+
+---
+
+## Format
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| Vertical stack + primary/secondary typography per `.val`/`.val-local`; wealthFormat/spec for strings | Aligns prototype CSS with shipped stack | ✓ |
 
 ---
 
@@ -50,16 +64,14 @@
 
 | Option | Description | Selected |
 |--------|-------------|----------|
-| Hint + prefer originals when interpretable | FX-03 alignment | ✓ (D-04) |
-| Keep INR-only fallback | Legacy / mixed cases | ✓ (D-04) |
+| Hint + prefer single foreign original else INR degraded path; no invented rates | FX-03 + Phase 34 | ✓ |
 
 ---
 
 ## Claude's Discretion
 
-- Optional **presentational component** extract vs inline — left to planner (CONTEXT).
+- Extract **`DualCurrencyCell`** vs inline JSX — left to planner/implementer (**D-01–D-04** semantics centralized).
 
 ## Deferred Ideas
 
-- Hero card dual-currency typography.
-- Explicit **“Multiple currencies”** label on mixed rows.
+- Hero dual-currency parity; explicit “multiple currencies” label; optional mobile omission of secondary to match **`PhoneDashboard`** prototype.

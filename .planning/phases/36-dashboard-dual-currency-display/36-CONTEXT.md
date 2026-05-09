@@ -6,9 +6,7 @@
 <domain>
 ## Phase Boundary
 
-Implement **DSP-01** and **DSP-03** on the **Dashboard**: category **breakdown rows** show **reporting currency as the primary figure (bold)**; when holdings use **another** currency, show **original amount(s)** in **smaller muted text**; when **all** underlying amounts are already in **reporting currency**, **hide** the secondary line entirely. Cover **“rate unavailable”** presentation per roadmap success criteria (aligned with **FX-03**). Per-record **forms** and **asset detail** dual display are **Phase 37**; Settings rates / snapshots / export are **Phase 38**.
-
-Interactive gray-area prompts were **skipped** in-session; decisions below follow **`docs/multi-currency.md`**, **`.planning/ROADMAP.md`**, prior phase context, and the current **`DashboardPage`** layout unless you edit this file.
+Implement **DSP-01** and **DSP-03** on the **Dashboard**: **Breakdown** category rows show **reporting currency as the primary figure (bold / dominant)**; when contributing holdings use **another** currency, show **original amount(s)** in **smaller muted text below**; when **all** underlying amounts are already in **reporting currency**, **hide** the secondary line entirely. Cover **“rate unavailable”** per roadmap success criteria (aligned with **FX-03**). **Hero** net worth and **Gross assets / Total debt / Debt·asset** mini-stats stay **single-line reporting** totals for this phase. **Total Debt** row inside the Breakdown card stays **single-line** (reporting), matching the **phase design prototype**. Per-record **forms** and **asset detail** dual display are **Phase 37**; Settings rates / snapshots / export are **Phase 38**. Chart and allocation ring are **not** in scope for dual-line typography.
 
 </domain>
 
@@ -17,29 +15,32 @@ Interactive gray-area prompts were **skipped** in-session; decisions below follo
 
 ### Where dual-currency applies (scope)
 
-- **D-01:** Apply the **dual-currency layout** to rows in the **“Breakdown”** card only: **Gold → Retirement** category buttons **and** the **Total Debt** row when present. **Do not** add muted “original” lines to **Net worth** headline, **Gross assets**, or **Total debt** mini-stats in the **gradient hero** card — those stay **single-line reporting** totals for this phase (matches roadmap wording *breakdown rows* and keeps heroScan simple). Chart / allocation ring remain out of scope for dual-line typography.
+- **D-01:** Apply the **dual-currency stack** only to **Breakdown** card **category** rows (Gold → Retirement). **Do not** add muted “original” lines to the **gradient hero**: **Net worth** headline, **Gross assets**, **Total debt**, or **Debt / asset** — **single-line reporting** only. **Do not** add a secondary line on the **Total Debt** row in Breakdown (prototype shows **one** reporting-currency figure there). Matches **`.planning/ROADMAP.md`** emphasis on breakdown rows and the **layout prototype** (`design/net-worth-tracker-redesign-v2/`).
 
 ### Mixed non-reporting currencies within one category
 
-- **D-02:** For each **category row**, derive the set of **distinct stored `currency` codes** among contributing records (treating **absent** `currency` as **`settings.reportingCurrency`** per DM-01).
-  - **All records in reporting currency:** **no** secondary line (**DSP-03**).
-  - **Exactly one** distinct **non-reporting** currency appears in that category: secondary line shows the **aggregated original** — **sum of stored amounts in that currency**, formatted for display (**one** muted line).
-  - **Two or more** distinct non-reporting currencies: show **reporting primary only**; **omit** the secondary line (avoid a misleading single “original” — spec shows one illustrative secondary). Do **not** add a “Multiple currencies” label unless you later extend REQUIREMENTS.
+- **D-02:** Per category row, derive **distinct stored `currency` codes** among contributing records (**absent** `currency` → **`settings.reportingCurrency`** per **DM-01**).
+  - **All reporting:** **no** secondary line (**DSP-03**).
+  - **Exactly one** distinct **non-reporting** code: secondary shows **aggregated original** — **sum of stored amounts in that currency**, **one** muted line.
+  - **Two or more** distinct non-reporting codes: **reporting primary only**; **omit** secondary (prototype does not model multi-foreign breakdown; avoids one misleading “original”).
+  - **Do not** add a **“Multiple currencies”** label unless promoted from deferred later.
 
-### Original-line format
+### Original-line format (prototype + spec)
 
-- **D-03:** **Primary:** keep current **semibold tabular** reporting figure. **Secondary:** **smaller muted** text, **below** the primary (**vertical stack**, per `docs/multi-currency.md` §7). Use **ISO currency code + formatted amount** for the original line (e.g. **`AED 225,000`** style per spec §3); reuse or extend **`src/lib/wealthFormat.ts`** helpers for consistent grouping/compact rules. **Rounding:** follow **Phase 34** rule — full precision from conversion helpers; **roundCurrency** at aggregation/display boundaries **`dashboardCalcs`** already uses.
+- **D-03:** **Layout:** **Vertical stack** in the amount column — **primary** larger semibold/tabular (**~14px** visual weight per prototype `.row .val`), **secondary** below (**~11px**, muted, **~1px** gap, tabular nums — `.row .val-local` in prototype). Use existing **Tailwind/shadcn** tokens to match this hierarchy; do not depend on shipping the static HTML bundle.
+- **Copy:** Primary follows current **`formatRowReporting` / `fmtCompactForReporting`** style for **reporting** currency. Secondary: **currency label + formatted amount** — prefer **`wealthFormat`** (or extension) for grouping/compact rules; **symbols vs ISO** may match **spec §3** and **Phase 35** topbar (`₹ INR`, `$ USD`, literal **AED** / **SGD** style) rather than forcing one global rule if the formatter already encodes per-code display.
+- **Rounding:** **Phase 34** — full precision from **`toReportingCurrency`**; **`roundCurrency`** at aggregation/display boundaries (**`dashboardCalcs`** conventions).
 
-### “Rate unavailable” vs degraded reporting conversion
+### “Rate unavailable” vs degraded conversion
 
-- **D-04:** When **`toReportingCurrency`** (or equivalent) **cannot** produce the **reporting** primary for a row:
-  - Show a **“Rate unavailable”** hint (same **copy family** as existing dashboard degraded rows — **small muted** label).
-  - **Primary figure:** prefer showing **original currency value** when the row’s contributing holdings resolve to a **single interpretable original** (e.g. one foreign code + rate path broken); **otherwise** fall back to the **existing INR-internal total display** pattern already used for degraded rows (`fmtInr0`-style) so legacy data **never** hard-crashes.
-  - **Do not** invent cross-rates (Phase 34 **D-05**).
+- **D-04:** When **`toReportingCurrency`** cannot produce the **reporting** primary for a row:
+  - Show a **“Rate unavailable”** hint (**small muted**, same family as existing dashboard degraded rows).
+  - **Primary:** prefer **original currency value** when the row resolves to **one interpretable foreign total**; **else** fall back to the **existing INR-internal / `fmtInr0`-style** degraded display path so legacy data **never** hard-crashes.
+  - **Do not** invent cross-rates (**Phase 34 D-05**).
 
 ### Claude's Discretion
 
-- **Extracting** a small **`DualCurrencyCell`** (or similar) **vs** inline JSX — **planner/implementer** may choose; keep **one** breakdown of semantics per D-01–D-04.
+- **`DualCurrencyCell`** (small component) **vs** inline JSX in **`DashboardPage`** — implementer chooses; keep **one** place that encodes **D-01–D-04** semantics.
 
 </decisions>
 
@@ -58,17 +59,23 @@ Interactive gray-area prompts were **skipped** in-session; decisions below follo
 
 - `docs/multi-currency.md` — §3 Display pattern (dual vertical stack), §4 conversion, §8 edge cases
 
+### Layout prototype (Phase 36)
+
+- `.planning/phases/36-dashboard-dual-currency-display/design/net-worth-tracker-redesign-v2/Wealth Tracker.html` — open in browser with local bundle (see `app.jsx` / `styles.css` sibling files)
+- `.planning/phases/36-dashboard-dual-currency-display/design/net-worth-tracker-redesign-v2/app.jsx` — Breakdown rows: `.val` + conditional `.val-local` (~361–366); hero single-line (~284–310); Total Debt row single-line (~373–379)
+- `.planning/phases/36-dashboard-dual-currency-display/design/net-worth-tracker-redesign-v2/styles.css` — `.row .val`, `.row .val-local` typography
+
 ### Prior phase context
 
 - `.planning/phases/34-fx-infrastructure-data-model/34-CONTEXT.md` — `toReportingCurrency`, INR hub, unavailable-rate union, strict currency codes
-- `.planning/phases/35-reporting-currency-selector/35-CONTEXT.md` — reporting selector scope, dashboard-first recalculation, native `<select>`
+- `.planning/phases/35-reporting-currency-selector/35-CONTEXT.md` — reporting selector, dashboard-first recalculation, native `<select>`
 
-### Implementation anchors
+### Implementation anchors (shipped app)
 
-- `src/pages/DashboardPage.tsx` — Breakdown row grid, `formatRowReporting`, degraded row paths, Total Debt row
-- `src/lib/dashboardCalcs.ts` — `calcCategoryTotals`, category keys, INR rollup (extend or parallel helpers for per-currency aggregation as needed)
+- `src/pages/DashboardPage.tsx` — Breakdown row grid, `formatRowReporting`, degraded paths, Total Debt row
+- `src/lib/dashboardCalcs.ts` — category totals; extend or parallel helpers for **per-currency** aggregation where needed
 - `src/lib/currencyConversion.ts` — `toReportingCurrency`, `ForexRateSnapshot`
-- `src/lib/wealthFormat.ts` — compact / hero formatting
+- `src/lib/wealthFormat.ts` — compact / tabular formatting
 - `src/types/currency.ts` — six-code union
 
 </canonical_refs>
@@ -78,34 +85,36 @@ Interactive gray-area prompts were **skipped** in-session; decisions below follo
 
 ### Reusable Assets
 
-- **`DashboardPage`** — Category `button` rows already use **`formatRowReporting`** and a **degraded** branch (**Rate unavailable** + **`fmtInr0`**); extend the **non-degraded** branch with stacked primary/secondary.
-- **`calcCategoryTotals`** / **`sumForNetWorth`** — INR-internal aggregates today; Phase 36 may need **parallel rollup** by **`currency`** for secondary lines (or derived from item loops consistent with existing sum functions).
-- **`toReportingCurrency`** + **`LivePricesContext`** — Already wired into **`DashboardPage`** via **`forexSnapshot`**.
+- **`DashboardPage`** — Category rows use **`formatRowReporting`** and **degraded** branches (**Rate unavailable** + **`fmtInr0`**); extend **non-degraded** path with stacked primary/secondary aligned to **D-03**.
+- **`calcCategoryTotals`** / **`sumForNetWorth`** — INR-oriented aggregates today; Phase 36 may need **rollup by `currency`** for secondary lines (or equivalent item-level loops consistent with existing sums).
+- **`toReportingCurrency`** + **`LivePricesContext`** — Wired via **`forexSnapshot`** on the dashboard.
 
 ### Established Patterns
 
-- **Muted / destructive** text hierarchy matches **Total Debt** and **AED** warning lines.
-- **Skeleton** / **excluded** category behavior (**—**, **`AlertCircle`**) should remain; dual-currency applies when a **numeric** total is shown.
+- **Muted / destructive** hierarchy aligns with existing **Total Debt** and AED warning patterns.
+- **Skeleton** / excluded category behavior (**—**, **`AlertCircle`**) unchanged; dual-currency applies where a **numeric** total shows.
 
 ### Integration Points
 
-- **`AppDataContext`** data + **`settings.reportingCurrency`** — already drive reporting display.
-- **`useLivePrices`** — rates for conversion; session overrides (Phase 34) respected via snapshot.
+- **`AppDataContext`** + **`settings.reportingCurrency`** drive reporting display.
+- **`useLivePrices`** — rates for conversion; session overrides (**Phase 34**) respected via snapshot.
 
 </code_context>
 
 <specifics>
 ## Specific Ideas
 
-- User selected all four gray-area topics (**scope**, **mixed**, **format**, **unavailable**) but **skipped** detailed **AskQuestion** flows — confirm or adjust **D-01–D-04** in this file before **`/gsd-plan-phase 36`** if anything should change.
+- Context **re-created** after accidental edit; user confirmed **`design/net-worth-tracker-redesign-v2`** as the visual reference **for breakdown dual-line layout and surface scope** (not full app parity).
+- **`PhoneDashboard`** in the prototype omits `.val-local` — shipped app should **preserve secondary line on narrow breakpoints** unless a follow-up UX phase tightens layout.
 
 </specifics>
 
 <deferred>
 ## Deferred Ideas
 
-- **Dual-currency on Net worth / Gross / Debt hero block** — optional polish if you want visual parity with breakdown later; not required for DSP-01/03 as scoped here.
-- **`Multiple currencies`** explicit muted label for mixed foreign rows — omitted per D-02; can promote from deferred if UX requests it.
+- **Dual-currency on hero** (Net worth / Gross / Debt mini-stats) — optional polish; not required for **DSP-01/03** as scoped here.
+- **Explicit “Multiple currencies”** muted label — omitted per **D-02**; promote if UX requests it.
+- **Match prototype mobile** breakdown (hide secondary on phone) — deferred unless user requests parity with **`PhoneDashboard`**.
 
 </deferred>
 
