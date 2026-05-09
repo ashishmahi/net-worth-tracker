@@ -29,3 +29,6 @@ coverage
 
 # Personal financial data — do not commit
 data.json
+
+# Phase design mockups / throwaway explorations (not app source)
+.planning/phases/**/design/
