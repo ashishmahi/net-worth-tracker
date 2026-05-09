@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.4
 milestone_name: — Multi-Currency Reporting
 status: planning
-last_updated: "2026-05-09T09:50:06.382Z"
+last_updated: "2026-05-09T09:54:17.631Z"
 last_activity: 2026-05-08
 progress:
   total_phases: 8
   completed_phases: 5
-  total_plans: 5
+  total_plans: 6
   completed_plans: 5
-  percent: 100
+  percent: 83
 ---
 
 ## Project
@@ -76,3 +76,5 @@ See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](
 **Completed phases (v2.3):** **31** — [31-01-SUMMARY](phases/31-guided-property-entry-ux/31-01-SUMMARY.md) · [31-VERIFICATION](phases/31-guided-property-entry-ux/31-VERIFICATION.md) · **32** — [32-01-SUMMARY](phases/32-property-save-validation-schema/32-01-SUMMARY.md) · [32-VERIFICATION](phases/32-property-save-validation-schema/32-VERIFICATION.md) · **33** — [33-01-SUMMARY](phases/33-property-sheet-responsive-accessibility/33-01-SUMMARY.md) · [33-VERIFICATION](phases/33-property-sheet-responsive-accessibility/33-VERIFICATION.md)
 
 **Completed (v2.4):** **34** — [34-01-SUMMARY](phases/34-fx-infrastructure-data-model/34-01-SUMMARY.md) · **35** — [35-01-SUMMARY](phases/35-reporting-currency-selector/35-01-SUMMARY.md) · [35-VERIFICATION](phases/35-reporting-currency-selector/35-VERIFICATION.md)
+
+**Planned Phase:** 36 (Dashboard Dual-Currency Display) — 1 plans — 2026-05-09T09:54:17.621Z
