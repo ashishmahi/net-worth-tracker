@@ -3,6 +3,7 @@ import {
   calcCategoryTotals,
   sumCommoditiesInr,
   sumForNetWorth,
+  type CategoryTotalsCalcContext,
 } from '@/lib/dashboardCalcs'
 import { liveInrPerGramForKarat } from '@/lib/goldLiveHints'
 import { roundCurrency } from '@/lib/financials'
@@ -10,6 +11,17 @@ import { createInitialData } from '@/context/AppDataContext'
 import type { AppData } from '@/types/data'
 
 const iso = new Date().toISOString()
+
+const inrCtx: CategoryTotalsCalcContext = {
+  rates: {
+    usdInr: null,
+    aedInr: null,
+    eurInr: null,
+    gbpInr: null,
+    sgdInr: null,
+  },
+  reportingLens: 'INR',
+}
 
 function withCommodityItems(
   items: AppData['assets']['otherCommodities']['items']
@@ -164,13 +176,17 @@ describe('calcCategoryTotals silver wiring', () => {
     ])
     const usdInr = 100
     const silverUsdPerOz = (250 * 31.1035) / usdInr
-    const totals = calcCategoryTotals(data, {
-      btcUsd: null,
-      usdInr,
-      aedInr: null,
-      silverUsdPerOz,
-      goldUsdPerOz: null,
-    })
+    const totals = calcCategoryTotals(
+      data,
+      {
+        btcUsd: null,
+        usdInr,
+        aedInr: null,
+        silverUsdPerOz,
+        goldUsdPerOz: null,
+      },
+      { ...inrCtx, rates: { ...inrCtx.rates, usdInr } },
+    )
     // 2 g × ₹250/g parity × (1 + default silver uplift 0.08)
     expect(totals.otherCommodities).toBe(540)
   })
@@ -186,13 +202,17 @@ describe('calcCategoryTotals silver wiring', () => {
         updatedAt: iso,
       },
     ])
-    const totals = calcCategoryTotals(data, {
-      btcUsd: null,
-      usdInr: 100,
-      aedInr: null,
-      silverUsdPerOz: null,
-      goldUsdPerOz: null,
-    })
+    const totals = calcCategoryTotals(
+      data,
+      {
+        btcUsd: null,
+        usdInr: 100,
+        aedInr: null,
+        silverUsdPerOz: null,
+        goldUsdPerOz: null,
+      },
+      { ...inrCtx, rates: { ...inrCtx.rates, usdInr: 100 } },
+    )
     expect(totals.otherCommodities).toBeNull()
   })
 
@@ -211,13 +231,17 @@ describe('calcCategoryTotals silver wiring', () => {
     data.settings.silverPricesLocked = true
     const usdInr = 100
     const silverUsdPerOz = (300 * 31.1035) / usdInr
-    const totals = calcCategoryTotals(data, {
-      btcUsd: null,
-      usdInr,
-      aedInr: null,
-      silverUsdPerOz,
-      goldUsdPerOz: null,
-    })
+    const totals = calcCategoryTotals(
+      data,
+      {
+        btcUsd: null,
+        usdInr,
+        aedInr: null,
+        silverUsdPerOz,
+        goldUsdPerOz: null,
+      },
+      { ...inrCtx, rates: { ...inrCtx.rates, usdInr } },
+    )
     expect(totals.otherCommodities).toBe(roundCurrency(2 * 88))
   })
 })
@@ -237,13 +261,17 @@ describe('calcCategoryTotals gold wiring', () => {
     const goldUsdPerOz = 3103.5
     const usdInr = 83
     const perG = liveInrPerGramForKarat(goldUsdPerOz, usdInr, 22)
-    const totals = calcCategoryTotals(data, {
-      btcUsd: null,
-      usdInr,
-      aedInr: null,
-      silverUsdPerOz: null,
-      goldUsdPerOz,
-    })
+    const totals = calcCategoryTotals(
+      data,
+      {
+        btcUsd: null,
+        usdInr,
+        aedInr: null,
+        silverUsdPerOz: null,
+        goldUsdPerOz,
+      },
+      { ...inrCtx, rates: { ...inrCtx.rates, usdInr } },
+    )
     expect(totals.gold).toBe(roundCurrency(10 * perG))
   })
 
@@ -260,13 +288,17 @@ describe('calcCategoryTotals gold wiring', () => {
     ]
     data.settings.goldPrices = { k24: 7000, k22: 6400, k18: 5300 }
     data.settings.goldPricesLocked = true
-    const totals = calcCategoryTotals(data, {
-      btcUsd: null,
-      usdInr: 100,
-      aedInr: null,
-      silverUsdPerOz: null,
-      goldUsdPerOz: 99999,
-    })
+    const totals = calcCategoryTotals(
+      data,
+      {
+        btcUsd: null,
+        usdInr: 100,
+        aedInr: null,
+        silverUsdPerOz: null,
+        goldUsdPerOz: 99999,
+      },
+      { ...inrCtx, rates: { ...inrCtx.rates, usdInr: 100 } },
+    )
     expect(totals.gold).toBe(roundCurrency(10 * 6400))
   })
 })

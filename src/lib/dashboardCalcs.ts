@@ -1,7 +1,12 @@
 import type { AppData } from '@/types/data'
+import type { CurrencyCode } from '@/types/currency'
 import { roundCurrency } from '@/lib/financials'
 import { effectiveGoldInrPerGramForKarat } from '@/lib/goldLiveHints'
 import { effectiveSilverInrPerGramForNetWorth } from '@/lib/silverLiveHints'
+import {
+  toReportingCurrency,
+  type ForexRateSnapshot,
+} from '@/lib/currencyConversion'
 
 export const DASHBOARD_CATEGORY_ORDER = [
   'gold',
@@ -25,6 +30,12 @@ export type CategoryTotals = {
   property: number
   bankSavings: number
   retirement: number
+}
+
+/** Rates + default currency for per-record fields that omit `currency` (DM-01). */
+export type CategoryTotalsCalcContext = {
+  rates: ForexRateSnapshot
+  reportingLens: CurrencyCode
 }
 
 function sumGoldInr(
@@ -70,18 +81,33 @@ export function sumCommoditiesInr(
   return sum
 }
 
-function sumMutualFunds(data: AppData): number {
-  return data.assets.mutualFunds.platforms.reduce(
-    (sum, p) => roundCurrency(sum + roundCurrency(p.currentValue)),
-    0
-  )
+function sumMutualFunds(data: AppData, ctx: CategoryTotalsCalcContext): number {
+  // Convert each platform to INR hub; skipped rows mirror “no AED rate” exclusions.
+  return data.assets.mutualFunds.platforms.reduce((sum, p) => {
+    const from = p.currency ?? ctx.reportingLens
+    const conv = toReportingCurrency(
+      p.currentValue,
+      from,
+      'INR',
+      ctx.rates,
+    )
+    if (!conv.ok) return sum
+    return roundCurrency(sum + roundCurrency(conv.amount))
+  }, 0)
 }
 
-function sumStocks(data: AppData): number {
-  return data.assets.stocks.platforms.reduce(
-    (sum, p) => roundCurrency(sum + roundCurrency(p.currentValue)),
-    0
-  )
+function sumStocks(data: AppData, ctx: CategoryTotalsCalcContext): number {
+  return data.assets.stocks.platforms.reduce((sum, p) => {
+    const from = p.currency ?? ctx.reportingLens
+    const conv = toReportingCurrency(
+      p.currentValue,
+      from,
+      'INR',
+      ctx.rates,
+    )
+    if (!conv.ok) return sum
+    return roundCurrency(sum + roundCurrency(conv.amount))
+  }, 0)
 }
 
 function sumBitcoinInr(
@@ -94,39 +120,59 @@ function sumBitcoinInr(
   return roundCurrency(q * live.btcUsd * live.usdInr)
 }
 
-function sumPropertyInr(data: AppData): number {
+function sumPropertyInr(data: AppData, ctx: CategoryTotalsCalcContext): number {
   return data.assets.property.items.reduce((sum, item) => {
     const equity = item.hasLiability
       ? roundCurrency(item.agreementInr - (item.outstandingLoanInr ?? 0))
       : item.agreementInr
-    return roundCurrency(sum + roundCurrency(equity))
+    const c = item.currency ?? ctx.reportingLens
+    if (c === 'INR') {
+      return roundCurrency(sum + roundCurrency(equity))
+    }
+    const conv = toReportingCurrency(equity, c, 'INR', ctx.rates)
+    if (!conv.ok) return sum
+    return roundCurrency(sum + roundCurrency(conv.amount))
   }, 0)
 }
 
-function sumBankSavingsInr(
-  data: AppData,
-  aedInr: number | null
-): number {
+function sumBankSavingsInr(data: AppData, ctx: CategoryTotalsCalcContext): number {
   return data.assets.bankSavings.accounts.reduce((sum, a) => {
-    if (a.currency === 'INR') {
-      return roundCurrency(sum + roundCurrency(a.balance))
-    }
-    if (aedInr == null) {
-      return sum
-    }
-    return roundCurrency(sum + roundCurrency(a.balance * aedInr))
+    const conv = toReportingCurrency(
+      a.balance,
+      a.currency,
+      'INR',
+      ctx.rates,
+    )
+    if (!conv.ok && a.balance > 0) return sum
+    if (!conv.ok) return sum
+    return roundCurrency(sum + roundCurrency(conv.amount))
   }, 0)
 }
 
-function sumRetirement(data: AppData): number {
+function sumRetirement(data: AppData, ctx: CategoryTotalsCalcContext): number {
   const { nps, epf } = data.assets.retirement
-  return roundCurrency(roundCurrency(nps) + roundCurrency(epf))
+  const stored = data.assets.retirement.currency
+  const eff = stored ?? ctx.reportingLens
+
+  if (eff === 'INR') {
+    return roundCurrency(roundCurrency(nps) + roundCurrency(epf))
+  }
+
+  let sum = 0
+  for (const raw of [nps, epf]) {
+    if (raw === 0) continue
+    const conv = toReportingCurrency(raw, eff, 'INR', ctx.rates)
+    if (!conv.ok) continue
+    sum = roundCurrency(sum + roundCurrency(conv.amount))
+  }
+  return sum
 }
 
 /**
  * Per-category INR totals. `gold` / `bitcoin` are `null` when rates required for the
- * computation are missing; `bankSavings` still sums INR accounts and AED only when
- * `aedInr` is available.
+ * computation are missing. MF / stocks / bank / property / retirement convert each
+ * row through `toReportingCurrency(..., 'INR', ctx.rates)` using stored currency or
+ * `ctx.reportingLens` when absent.
  */
 export function calcCategoryTotals(
   data: AppData,
@@ -137,6 +183,7 @@ export function calcCategoryTotals(
     silverUsdPerOz: number | null
     goldUsdPerOz: number | null
   },
+  ctx: CategoryTotalsCalcContext,
 ): CategoryTotals {
   const silverInrPerGram = effectiveSilverInrPerGramForNetWorth(data.settings, {
     silverUsdPerOz: live.silverUsdPerOz,
@@ -149,12 +196,12 @@ export function calcCategoryTotals(
       usdInr: live.usdInr,
     }),
     otherCommodities: sumCommoditiesInr(data, silverInrPerGram),
-    mutualFunds: sumMutualFunds(data),
-    stocks: sumStocks(data),
+    mutualFunds: sumMutualFunds(data, ctx),
+    stocks: sumStocks(data, ctx),
     bitcoin: sumBitcoinInr(data, live),
-    property: sumPropertyInr(data),
-    bankSavings: sumBankSavingsInr(data, live.aedInr),
-    retirement: sumRetirement(data),
+    property: sumPropertyInr(data, ctx),
+    bankSavings: sumBankSavingsInr(data, ctx),
+    retirement: sumRetirement(data, ctx),
   }
 }
 
@@ -176,8 +223,114 @@ export function percentOfTotal(categoryValue: number, grandTotal: number): numbe
 
 export function hasAedAccountsWithMissingRate(
   data: AppData,
-  aedInr: number | null
+  aedInr: number | null,
 ): boolean {
   if (aedInr != null) return false
   return data.assets.bankSavings.accounts.some(a => a.currency === 'AED')
+}
+
+type Contribution = { eff: CurrencyCode; raw: number }
+
+/** D-02: single non-reporting code among successful contributors → aggregated raw sum. */
+function foreignOriginalMeta(
+  reportingLens: CurrencyCode,
+  contribs: Contribution[],
+): null | { currency: CurrencyCode; amount: number } {
+  const foreign = contribs.filter(c => c.eff !== reportingLens)
+  const codes = new Set(foreign.map(c => c.eff))
+  if (codes.size === 0) return null
+  if (codes.size > 1) return null
+  const code = [...codes][0]!
+  const amount = foreign
+    .filter(c => c.eff === code)
+    .reduce((s, c) => roundCurrency(s + roundCurrency(c.raw)), 0)
+  return { currency: code, amount }
+}
+
+/** Original-currency subline metadata for breakdown rows (36-CONTEXT D-02). */
+export function computeBreakdownOriginalLine(
+  key: DashboardCategoryKey,
+  data: AppData,
+  ctx: CategoryTotalsCalcContext,
+  totalsEntry: CategoryTotals[typeof key],
+): null | { currency: CurrencyCode; amount: number } {
+  if (totalsEntry === null) return null
+
+  const contribs: Contribution[] = []
+
+  switch (key) {
+    case 'mutualFunds':
+      for (const p of data.assets.mutualFunds.platforms) {
+        const eff = p.currency ?? ctx.reportingLens
+        const conv = toReportingCurrency(
+          p.currentValue,
+          eff,
+          'INR',
+          ctx.rates,
+        )
+        if (!conv.ok) continue
+        contribs.push({ eff, raw: p.currentValue })
+      }
+      break
+    case 'stocks':
+      for (const p of data.assets.stocks.platforms) {
+        const eff = p.currency ?? ctx.reportingLens
+        const conv = toReportingCurrency(
+          p.currentValue,
+          eff,
+          'INR',
+          ctx.rates,
+        )
+        if (!conv.ok) continue
+        contribs.push({ eff, raw: p.currentValue })
+      }
+      break
+    case 'bankSavings':
+      for (const a of data.assets.bankSavings.accounts) {
+        const conv = toReportingCurrency(
+          a.balance,
+          a.currency,
+          'INR',
+          ctx.rates,
+        )
+        if (!conv.ok) continue
+        contribs.push({ eff: a.currency, raw: a.balance })
+      }
+      break
+    case 'property':
+      for (const item of data.assets.property.items) {
+        const equity = item.hasLiability
+          ? roundCurrency(item.agreementInr - (item.outstandingLoanInr ?? 0))
+          : item.agreementInr
+        const eff = item.currency ?? ctx.reportingLens
+        if (eff === 'INR') {
+          contribs.push({ eff, raw: equity })
+          continue
+        }
+        const conv = toReportingCurrency(equity, eff, 'INR', ctx.rates)
+        if (!conv.ok) continue
+        contribs.push({ eff, raw: equity })
+      }
+      break
+    case 'retirement': {
+      const stored = data.assets.retirement.currency
+      const eff = stored ?? ctx.reportingLens
+      const { nps, epf } = data.assets.retirement
+      for (const raw of [nps, epf]) {
+        if (raw === 0) continue
+        if (eff === 'INR') {
+          contribs.push({ eff: 'INR', raw })
+          continue
+        }
+        const conv = toReportingCurrency(raw, eff, 'INR', ctx.rates)
+        if (!conv.ok) continue
+        contribs.push({ eff, raw })
+      }
+      break
+    }
+    default:
+      return null
+  }
+
+  return foreignOriginalMeta(ctx.reportingLens, contribs)
 }
