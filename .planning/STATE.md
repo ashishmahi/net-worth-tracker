@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.4
 milestone_name: — Multi-Currency Reporting
-status: ready_to_plan
-last_updated: "2026-05-09T09:01:34.194Z"
-last_activity: 2026-05-09
+status: planning
+last_updated: "2026-05-09T09:50:06.382Z"
+last_activity: 2026-05-08
 progress:
-  total_phases: 5
-  completed_phases: 2
-  total_plans: 2
-  completed_plans: 2
-  percent: 40
+  total_phases: 8
+  completed_phases: 5
+  total_plans: 5
+  completed_plans: 5
+  percent: 100
 ---
 
 ## Project
@@ -69,7 +69,7 @@ See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](
 
 **Next:** **`/gsd-plan-phase 36`** (or `/gsd-discuss-phase 36`)
 
-**Resume file:** [`.planning/phases/36-dashboard-dual-currency-display/36-CONTEXT.md`](phases/36-dashboard-dual-currency-display/36-CONTEXT.md)
+**Resume file:** --resume-file
 
 **Research:** GSD research agents not installed in this environment — roadmap generated inline (_workflow deviation_).
 
