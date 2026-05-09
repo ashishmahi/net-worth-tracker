@@ -13,6 +13,7 @@ import { useLivePrices } from '@/context/LivePricesContext'
 import {
   DASHBOARD_CATEGORY_ORDER,
   calcCategoryTotals,
+  computeBreakdownOriginalLine as breakdownOriginalMeta,
   hasAedAccountsWithMissingRate,
   percentOfTotal,
   sumForNetWorth,
@@ -221,16 +222,36 @@ export function DashboardPage({
     [usdInr, aedInr, eurInr, gbpInr, sgdInr],
   )
 
+  const categoryCalcCtx = useMemo(
+    () => ({
+      rates: forexSnapshot,
+      reportingLens: reportingCurrency,
+    }),
+    [forexSnapshot, reportingCurrency],
+  )
+
   const totals = useMemo(
     () =>
-      calcCategoryTotals(data, {
-        btcUsd,
-        usdInr,
-        aedInr,
-        silverUsdPerOz,
-        goldUsdPerOz,
-      }),
-    [data, btcUsd, usdInr, aedInr, silverUsdPerOz, goldUsdPerOz],
+      calcCategoryTotals(
+        data,
+        {
+          btcUsd,
+          usdInr,
+          aedInr,
+          silverUsdPerOz,
+          goldUsdPerOz,
+        },
+        categoryCalcCtx,
+      ),
+    [
+      data,
+      btcUsd,
+      usdInr,
+      aedInr,
+      silverUsdPerOz,
+      goldUsdPerOz,
+      categoryCalcCtx,
+    ],
   )
   const grossAssets = useMemo(() => sumForNetWorth(totals), [totals])
   const netWorth = useMemo(
@@ -716,6 +737,10 @@ export function DashboardPage({
               v !== null
                 ? formatRowReporting(v, reportingCurrency, forexSnapshot)
                 : null
+            const original =
+              v !== null
+                ? breakdownOriginalMeta(key, data, categoryCalcCtx, v)
+                : null
             const pct = percentOfTotal(v === null ? 0 : v, grossAssets)
             const isGoldRow = key === 'gold'
             const isBtcRow = key === 'bitcoin'
@@ -813,8 +838,26 @@ export function DashboardPage({
                         <span className="text-[11px] font-normal text-muted-foreground">
                           Rate unavailable
                         </span>
+                        {/* 36-CONTEXT D-04: single interpretable foreign tally under blocked reporting lens */}
                         <span className="text-sm font-semibold tabular-nums">
-                          {fmtInr0(v as number)}
+                          {original != null
+                            ? fmtCompactForReporting(
+                                original.amount,
+                                original.currency,
+                              )
+                            : fmtInr0(v as number)}
+                        </span>
+                      </span>
+                    ) : original != null ? (
+                      <span className="inline-flex flex-col items-end gap-px text-right">
+                        <span className="text-sm font-semibold tabular-nums">
+                          {rowFmt?.primary}
+                        </span>
+                        <span className="text-[11px] text-muted-foreground tabular-nums">
+                          {fmtCompactForReporting(
+                            original.amount,
+                            original.currency,
+                          )}
                         </span>
                       </span>
                     ) : (
