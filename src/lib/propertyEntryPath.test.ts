@@ -11,7 +11,7 @@ const base = {
   createdAt: '2026-01-01T00:00:00.000Z',
   updatedAt: '2026-01-01T00:00:00.000Z',
   label: 'Test',
-  agreementInr: 1_000_000,
+  agreementAmount: 1_000_000,
 }
 
 describe('PATH_LABELS', () => {
@@ -30,7 +30,7 @@ describe('inferEntryPathFromPropertyItem', () => {
         {
           id: '00000000-0000-4000-8000-000000000002',
           label: 'Stage',
-          amountInr: 100,
+          amount: 100,
           isPaid: false,
         },
       ],
@@ -46,7 +46,7 @@ describe('inferEntryPathFromPropertyItem', () => {
         {
           id: '00000000-0000-4000-8000-000000000003',
           label: 'Stage',
-          amountInr: 100,
+          amount: 100,
           isPaid: false,
         },
       ],

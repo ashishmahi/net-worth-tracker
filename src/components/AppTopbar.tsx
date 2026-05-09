@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useLocation } from 'react-router-dom'
 import { ReportingCurrencySelect } from '@/components/ReportingCurrencySelect'
+import { CurrencyFieldHint } from '@/components/CurrencyFieldHint'
 import { useAppData } from '@/context/AppDataContext'
 import { useLivePrices } from '@/context/LivePricesContext'
 import { nowIso } from '@/lib/financials'
@@ -80,11 +81,14 @@ export function AppTopbar() {
           />
           Live prices
         </span>
-        <ReportingCurrencySelect
-          variant="toolbar"
-          value={reportingCurrency}
-          onChange={handleReportingChange}
-        />
+        <span className="inline-flex items-center gap-1">
+          <ReportingCurrencySelect
+            variant="toolbar"
+            value={reportingCurrency}
+            onChange={handleReportingChange}
+          />
+          <CurrencyFieldHint variant="reporting" aria-label="About reporting currency" />
+        </span>
         <span className="inline-flex items-center rounded-full border border-border bg-card px-2.5 py-1.5 font-mono text-[11.5px] tabular-nums text-muted-foreground">
           {forexLoading || usdInr == null
             ? 'USD/INR …'

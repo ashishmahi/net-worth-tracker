@@ -37,7 +37,7 @@ const StandardCommodityItemSchema = BaseItemSchema.extend({
 const ManualCommodityItemSchema = BaseItemSchema.extend({
   type: z.literal('manual'),
   label: z.string().min(1),
-  valueInr: z.number().nonnegative(),
+  value: z.number().nonnegative(),
   currency: CurrencySchema.optional(),
 })
 
@@ -85,29 +85,30 @@ const BitcoinSchema = z.object({
 export const PropertyMilestoneRowSchema = z.object({
   id: z.string().uuid(),
   label: z.string(),
-  amountInr: z.number().nonnegative(),
+  amount: z.number().nonnegative(),
   isPaid: z.boolean(),
 })
 
 const PropertyItemBaseSchema = BaseItemSchema.extend({
   label: z.string().min(1),
-  agreementInr: z.number().nonnegative(),
+  agreementAmount: z.number().nonnegative(),
   milestones: z.array(PropertyMilestoneRowSchema),
   hasLiability: z.boolean(),
-  outstandingLoanInr: z.number().nonnegative().optional(),
+  outstandingLoan: z.number().nonnegative().optional(),
   lender: z.string().optional(),
-  emiInr: z.number().nonnegative().optional(),
+  emi: z.number().nonnegative().optional(),
   currency: CurrencySchema.optional(),
 })
 
 export const PropertyItemSchema = PropertyItemBaseSchema.superRefine((val, ctx) => {
   for (const issue of getPropertyValidationIssues(val)) {
     const path =
-      issue.code === PROPERTY_VALIDATION_CODES.MILESTONE_TOTAL_EXCEEDS_AGREEMENT
+      issue.code === PROPERTY_VALIDATION_CODES.MILESTONE_TOTAL_EXCEEDS_AGREEMENT ||
+      issue.code === PROPERTY_VALIDATION_CODES.MILESTONE_AMOUNT_NONPOSITIVE
         ? (['milestones'] as const)
         : issue.code === PROPERTY_VALIDATION_CODES.EMI_NOT_LESS_THAN_OUTSTANDING
-          ? (['emiInr'] as const)
-          : (['outstandingLoanInr'] as const)
+          ? (['emi'] as const)
+          : (['outstandingLoan'] as const)
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       message: issue.message,
@@ -123,10 +124,10 @@ export const PropertySchema = z.object({
 
 export const LiabilityItemSchema = BaseItemSchema.extend({
   label: z.string().min(1),
-  outstandingInr: z.number().nonnegative(),
+  outstanding: z.number().nonnegative(),
   loanType: z.enum(['home', 'car', 'personal', 'other']),
   lender: z.string().optional(),
-  emiInr: z.number().nonnegative().optional(),
+  emi: z.number().nonnegative().optional(),
   currency: CurrencySchema.optional(),
 })
 

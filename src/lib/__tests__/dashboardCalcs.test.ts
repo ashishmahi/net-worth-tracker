@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   calcCategoryTotals,
+  propertyEquityForNetWorth,
   sumCommoditiesInr,
   sumForNetWorth,
   type CategoryTotalsCalcContext,
@@ -8,7 +9,7 @@ import {
 import { liveInrPerGramForKarat } from '@/lib/goldLiveHints'
 import { roundCurrency } from '@/lib/financials'
 import { createInitialData } from '@/context/AppDataContext'
-import type { AppData } from '@/types/data'
+import type { AppData, PropertyItem } from '@/types/data'
 
 const iso = new Date().toISOString()
 
@@ -33,7 +34,7 @@ function withCommodityItems(
 
 describe('sumCommoditiesInr', () => {
   it('returns 0 for empty items', () => {
-    expect(sumCommoditiesInr(createInitialData(), null)).toBe(0)
+    expect(sumCommoditiesInr(createInitialData(), null, inrCtx.rates)).toBe(0)
   })
 
   it('sums manual items when silverInrPerGram is null', () => {
@@ -41,7 +42,8 @@ describe('sumCommoditiesInr', () => {
       {
         type: 'manual',
         label: 'A',
-        valueInr: 100,
+        value: 100,
+        currency: 'INR',
         id: crypto.randomUUID(),
         createdAt: iso,
         updatedAt: iso,
@@ -49,13 +51,14 @@ describe('sumCommoditiesInr', () => {
       {
         type: 'manual',
         label: 'B',
-        valueInr: 50.5,
+        value: 50.5,
+        currency: 'INR',
         id: crypto.randomUUID(),
         createdAt: iso,
         updatedAt: iso,
       },
     ])
-    expect(sumCommoditiesInr(data, null)).toBe(roundCurrency(100 + 50.5))
+    expect(sumCommoditiesInr(data, null, inrCtx.rates)).toBe(roundCurrency(100 + 50.5))
   })
 
   it('returns null when only standard silver and silverInrPerGram is null', () => {
@@ -69,7 +72,7 @@ describe('sumCommoditiesInr', () => {
         updatedAt: iso,
       },
     ])
-    expect(sumCommoditiesInr(data, null)).toBeNull()
+    expect(sumCommoditiesInr(data, null, inrCtx.rates)).toBeNull()
   })
 
   it('sums manual only when mixed manual + standard and silver null', () => {
@@ -85,13 +88,14 @@ describe('sumCommoditiesInr', () => {
       {
         type: 'manual',
         label: 'M',
-        valueInr: 200,
+        value: 200,
+        currency: 'INR',
         id: crypto.randomUUID(),
         createdAt: iso,
         updatedAt: iso,
       },
     ])
-    expect(sumCommoditiesInr(data, null)).toBe(200)
+    expect(sumCommoditiesInr(data, null, inrCtx.rates)).toBe(200)
   })
 
   it('returns rounded grams * silverInrPerGram for standard items when price set', () => {
@@ -105,7 +109,7 @@ describe('sumCommoditiesInr', () => {
         updatedAt: iso,
       },
     ])
-    expect(sumCommoditiesInr(data, 250.5)).toBe(roundCurrency(2 * 250.5))
+    expect(sumCommoditiesInr(data, 250.5, inrCtx.rates)).toBe(roundCurrency(2 * 250.5))
   })
 
   it('sums manual and silver when both present with valid silver price', () => {
@@ -113,7 +117,8 @@ describe('sumCommoditiesInr', () => {
       {
         type: 'manual',
         label: 'M',
-        valueInr: 100,
+        value: 100,
+        currency: 'INR',
         id: crypto.randomUUID(),
         createdAt: iso,
         updatedAt: iso,
@@ -128,7 +133,114 @@ describe('sumCommoditiesInr', () => {
       },
     ])
     const silverPart = roundCurrency(1 * 300)
-    expect(sumCommoditiesInr(data, 300)).toBe(roundCurrency(100 + silverPart))
+    expect(sumCommoditiesInr(data, 300, inrCtx.rates)).toBe(roundCurrency(100 + silverPart))
+  })
+})
+
+describe('propertyEquityForNetWorth', () => {
+  function baseProperty(partial: Partial<PropertyItem> & Pick<PropertyItem, 'agreementAmount'>): PropertyItem {
+    const id = crypto.randomUUID()
+    return {
+      id,
+      createdAt: iso,
+      updatedAt: iso,
+      label: partial.label ?? 'Test',
+      milestones: partial.milestones ?? [],
+      hasLiability: partial.hasLiability ?? false,
+      currency: partial.currency ?? 'INR',
+      ...partial,
+    }
+  }
+
+  it('uses agreement when no mortgage and no milestones (simple owned)', () => {
+    const item = baseProperty({
+      agreementAmount: 1_00_00_000,
+      hasLiability: false,
+      milestones: [],
+    })
+    expect(propertyEquityForNetWorth(item)).toBe(1_00_00_000)
+  })
+
+  it('sums only paid milestones when no mortgage', () => {
+    const item = baseProperty({
+      agreementAmount: 1_00_00_000,
+      hasLiability: false,
+      milestones: [
+        {
+          id: crypto.randomUUID(),
+          label: 'S1',
+          amount: 50_00_000,
+          isPaid: true,
+        },
+        {
+          id: crypto.randomUUID(),
+          label: 'S2',
+          amount: 50_00_000,
+          isPaid: false,
+        },
+      ],
+    })
+    expect(propertyEquityForNetWorth(item)).toBe(50_00_000)
+  })
+
+  it('uses agreement minus loan when mortgaged (milestones ignored for equity)', () => {
+    const item = baseProperty({
+      agreementAmount: 1_00_00_000,
+      hasLiability: true,
+      outstandingLoan: 50_00_000,
+      milestones: [
+        {
+          id: crypto.randomUUID(),
+          label: 'S1',
+          amount: 25_00_000,
+          isPaid: true,
+        },
+      ],
+    })
+    expect(propertyEquityForNetWorth(item)).toBe(50_00_000)
+  })
+})
+
+describe('calcCategoryTotals property equity', () => {
+  it('counts paid milestones not full agreement when no mortgage', () => {
+    const data = createInitialData()
+    data.assets.property.items = [
+      {
+        id: crypto.randomUUID(),
+        createdAt: iso,
+        updatedAt: iso,
+        label: 'Under construction',
+        agreementAmount: 1_00_00_000,
+        milestones: [
+          {
+            id: crypto.randomUUID(),
+            label: 'Due',
+            amount: 50_00_000,
+            isPaid: true,
+          },
+          {
+            id: crypto.randomUUID(),
+            label: 'Later',
+            amount: 50_00_000,
+            isPaid: false,
+          },
+        ],
+        hasLiability: false,
+        currency: 'INR',
+      },
+    ]
+    const totals = calcCategoryTotals(
+      data,
+      {
+        btcUsd: null,
+        usdInr: 83,
+        aedInr: null,
+        silverUsdPerOz: null,
+        goldUsdPerOz: null,
+      },
+      inrCtx,
+    )
+    expect(totals.property).toBe(50_00_000)
   })
 })
 

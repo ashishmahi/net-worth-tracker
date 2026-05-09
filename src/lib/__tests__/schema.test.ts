@@ -30,7 +30,7 @@ describe('OtherCommodityItemSchema', () => {
     const r = OtherCommodityItemSchema.safeParse({
       type: 'manual',
       label: 'Crude Oil',
-      valueInr: 150_000,
+      value: 150_000,
       ...baseFields(),
     })
     expect(r.success).toBe(true)
@@ -58,7 +58,7 @@ describe('OtherCommodityItemSchema', () => {
     const r = OtherCommodityItemSchema.safeParse({
       type: 'manual',
       label: '',
-      valueInr: 100,
+      value: 100,
       ...baseFields(),
     })
     expect(r.success).toBe(false)
@@ -78,7 +78,7 @@ describe('DataSchema otherCommodities', () => {
       {
         type: 'manual',
         label: 'Stuff',
-        valueInr: 10_000,
+        value: 10_000,
         ...baseFields(),
       },
     ]
@@ -91,7 +91,7 @@ describe('LiabilityItemSchema', () => {
   it('accepts valid item with required fields only', () => {
     const r = LiabilityItemSchema.safeParse({
       label: 'Home Loan',
-      outstandingInr: 2_500_000,
+      outstanding: 2_500_000,
       loanType: 'home',
       ...baseFields(),
     })
@@ -101,29 +101,29 @@ describe('LiabilityItemSchema', () => {
   it('accepts valid item with all optional fields', () => {
     const r = LiabilityItemSchema.safeParse({
       label: 'Car Loan',
-      outstandingInr: 450_000,
+      outstanding: 450_000,
       loanType: 'car',
       lender: 'HDFC Bank',
-      emiInr: 8_500,
+      emi: 8_500,
       ...baseFields(),
     })
     expect(r.success).toBe(true)
   })
 
-  it('accepts zero outstandingInr (fully paid)', () => {
+  it('accepts zero outstanding (fully paid)', () => {
     const r = LiabilityItemSchema.safeParse({
       label: 'Personal Loan',
-      outstandingInr: 0,
+      outstanding: 0,
       loanType: 'personal',
       ...baseFields(),
     })
     expect(r.success).toBe(true)
   })
 
-  it('rejects negative outstandingInr', () => {
+  it('rejects negative outstanding', () => {
     const r = LiabilityItemSchema.safeParse({
       label: 'Loan',
-      outstandingInr: -1000,
+      outstanding: -1000,
       loanType: 'other',
       ...baseFields(),
     })
@@ -133,7 +133,7 @@ describe('LiabilityItemSchema', () => {
   it('rejects empty label', () => {
     const r = LiabilityItemSchema.safeParse({
       label: '',
-      outstandingInr: 100_000,
+      outstanding: 100_000,
       loanType: 'home',
       ...baseFields(),
     })
@@ -143,7 +143,7 @@ describe('LiabilityItemSchema', () => {
   it('rejects unknown loanType', () => {
     const r = LiabilityItemSchema.safeParse({
       label: 'Loan',
-      outstandingInr: 50_000,
+      outstanding: 50_000,
       loanType: 'mortgage',
       ...baseFields(),
     })
@@ -157,10 +157,10 @@ describe('DataSchema liabilities', () => {
     data.liabilities = [
       {
         label: 'Home Loan',
-        outstandingInr: 2_500_000,
+        outstanding: 2_500_000,
         loanType: 'home',
         lender: 'SBI',
-        emiInr: 22_000,
+        emi: 22_000,
         ...baseFields(),
       },
     ]
@@ -179,23 +179,23 @@ describe('PropertyItemSchema cross-field validation', () => {
     const r = PropertyItemSchema.safeParse({
       ...baseFields(),
       label: 'Tower A',
-      agreementInr: 100_000,
+      agreementAmount: 100_000,
       milestones: [
-        { id: crypto.randomUUID(), label: 'Stage 1', amountInr: 150_000, isPaid: false },
+        { id: crypto.randomUUID(), label: 'Stage 1', amount: 150_000, isPaid: false },
       ],
       hasLiability: false,
     })
     expect(r.success).toBe(false)
   })
 
-  it('fails when hasLiability true and outstandingLoanInr is zero', () => {
+  it('fails when hasLiability true and outstanding loan is zero', () => {
     const r = PropertyItemSchema.safeParse({
       ...baseFields(),
       label: 'Tower B',
-      agreementInr: 500_000,
+      agreementAmount: 500_000,
       milestones: [],
       hasLiability: true,
-      outstandingLoanInr: 0,
+      outstandingLoan: 0,
     })
     expect(r.success).toBe(false)
   })
@@ -204,7 +204,7 @@ describe('PropertyItemSchema cross-field validation', () => {
     const r = PropertyItemSchema.safeParse({
       ...baseFields(),
       label: 'Tower C',
-      agreementInr: 800_000,
+      agreementAmount: 800_000,
       milestones: [],
       hasLiability: false,
     })

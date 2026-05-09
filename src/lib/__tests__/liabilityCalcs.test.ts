@@ -1,8 +1,11 @@
 import { describe, expect, it } from 'vitest'
+import type { ForexRateSnapshot } from '@/lib/currencyConversion'
 import {
   sumLiabilitiesInr,
   sumStandaloneLiabilitiesEmiInr,
   sumAllDebtInr,
+  sumPropertyOutstandingDebtInr,
+  grossAssetsForDebtToAssetRatio,
   calcNetWorth,
   debtToAssetRatio,
 } from '@/lib/liabilityCalcs'
@@ -11,6 +14,14 @@ import { createInitialData } from '@/context/AppDataContext'
 import type { AppData } from '@/types/data'
 
 const iso = new Date().toISOString()
+
+const R: ForexRateSnapshot = {
+  usdInr: 83,
+  aedInr: 22.5,
+  eurInr: 90,
+  gbpInr: 105,
+  sgdInr: 62,
+}
 
 function withLiabilities(items: AppData['liabilities']): AppData {
   const d = createInitialData()
@@ -34,13 +45,14 @@ function withBoth(
   return d
 }
 
-function liability(outstandingInr: number): AppData['liabilities'][number] {
+function liability(outstanding: number): AppData['liabilities'][number] {
   return {
     id: crypto.randomUUID(),
     label: 'Test Loan',
-    outstandingInr,
+    outstanding,
     lender: 'Test Bank',
     loanType: 'personal',
+    currency: 'INR',
     createdAt: iso,
     updatedAt: iso,
   }
@@ -53,27 +65,28 @@ function propertyRow(
   return {
     id: crypto.randomUUID(),
     label: 'Test Property',
-    agreementInr: 5_000_000,
+    agreementAmount: 5_000_000,
     milestones: [],
     createdAt: iso,
     updatedAt: iso,
+    currency: 'INR',
     ...overrides,
   }
 }
 
 describe('sumStandaloneLiabilitiesEmiInr', () => {
-  it('returns 0 when all items omit emiInr', () => {
+  it('returns 0 when all items omit emi', () => {
     const data = withLiabilities([liability(10_000), liability(20_000)])
-    expect(sumStandaloneLiabilitiesEmiInr(data)).toBe(0)
+    expect(sumStandaloneLiabilitiesEmiInr(data, R)).toBe(0)
   })
 
-  it('sums emiInr for two items with rounding', () => {
+  it('sums emi for two items with rounding', () => {
     const a = liability(1)
-    a.emiInr = 32_000
+    a.emi = 32_000
     const b = liability(2)
-    b.emiInr = 15_000.33
+    b.emi = 15_000.33
     const data = withLiabilities([a, b])
-    expect(sumStandaloneLiabilitiesEmiInr(data)).toBe(
+    expect(sumStandaloneLiabilitiesEmiInr(data, R)).toBe(
       roundCurrency(32_000 + roundCurrency(15_000.33))
     )
   })
@@ -81,73 +94,92 @@ describe('sumStandaloneLiabilitiesEmiInr', () => {
 
 describe('sumLiabilitiesInr', () => {
   it('returns 0 for empty liabilities array', () => {
-    expect(sumLiabilitiesInr(withLiabilities([]))).toBe(0)
+    expect(sumLiabilitiesInr(withLiabilities([]), R)).toBe(0)
   })
 
-  it('sums single liability outstandingInr', () => {
-    expect(sumLiabilitiesInr(withLiabilities([liability(50_000)]))).toBe(50_000)
+  it('sums single liability outstanding', () => {
+    expect(sumLiabilitiesInr(withLiabilities([liability(50_000)]), R)).toBe(50_000)
   })
 
   it('sums multiple liabilities with rounding', () => {
     const data = withLiabilities([liability(100_000), liability(250_000.55)])
-    expect(sumLiabilitiesInr(data)).toBe(roundCurrency(100_000 + 250_000.55))
+    expect(sumLiabilitiesInr(data, R)).toBe(roundCurrency(100_000 + 250_000.55))
   })
 
   it('handles floating-point edge 0.1 + 0.2', () => {
     const data = withLiabilities([liability(0.1), liability(0.2)])
-    expect(sumLiabilitiesInr(data)).toBe(0.3)
+    expect(sumLiabilitiesInr(data, R)).toBe(0.3)
   })
 })
 
 describe('sumAllDebtInr', () => {
   it('returns 0 when no property liabilities and no standalone liabilities', () => {
-    expect(sumAllDebtInr(createInitialData())).toBe(0)
+    expect(sumAllDebtInr(createInitialData(), R)).toBe(0)
   })
 
   it('includes property debt when hasLiability is true', () => {
     const data = withPropertyItems([
-      propertyRow({ hasLiability: true, outstandingLoanInr: 500_000 }),
+      propertyRow({ hasLiability: true, outstandingLoan: 500_000 }),
     ])
-    expect(sumAllDebtInr(data)).toBe(500_000)
+    expect(sumAllDebtInr(data, R)).toBe(500_000)
   })
 
-  it('excludes property when hasLiability is false even if outstandingLoanInr is set', () => {
+  it('excludes property when hasLiability is false even if outstandingLoan is set', () => {
     const data = withPropertyItems([
       propertyRow({
         hasLiability: false,
-        outstandingLoanInr: 999_999,
+        outstandingLoan: 999_999,
       }),
     ])
-    expect(sumAllDebtInr(data)).toBe(0)
+    expect(sumAllDebtInr(data, R)).toBe(0)
   })
 
-  it('treats undefined outstandingLoanInr as 0 when hasLiability is true', () => {
+  it('treats undefined outstandingLoan as 0 when hasLiability is true', () => {
     const data = withPropertyItems([propertyRow({ hasLiability: true })])
-    expect(sumAllDebtInr(data)).toBe(0)
+    expect(sumAllDebtInr(data, R)).toBe(0)
   })
 
   it('sums property debt and standalone liabilities', () => {
     const data = withBoth(
       [liability(100_000)],
-      [propertyRow({ hasLiability: true, outstandingLoanInr: 500_000 })]
+      [propertyRow({ hasLiability: true, outstandingLoan: 500_000 })]
     )
-    expect(sumAllDebtInr(data)).toBe(600_000)
+    expect(sumAllDebtInr(data, R)).toBe(600_000)
   })
 
   it('sums only properties with hasLiability true across multiple properties', () => {
     const data = withPropertyItems([
       propertyRow({
         hasLiability: true,
-        outstandingLoanInr: 100_000,
+        outstandingLoan: 100_000,
         label: 'With loan',
       }),
       propertyRow({
         hasLiability: false,
-        outstandingLoanInr: 9_000_000,
+        outstandingLoan: 9_000_000,
         label: 'No loan flag',
       }),
     ])
-    expect(sumAllDebtInr(data)).toBe(100_000)
+    expect(sumAllDebtInr(data, R)).toBe(100_000)
+  })
+})
+
+describe('sumPropertyOutstandingDebtInr', () => {
+  it('matches property slice of sumAllDebtInr', () => {
+    const data = withBoth([liability(100_000)], [
+      propertyRow({ hasLiability: true, outstandingLoan: 500_000 }),
+    ])
+    expect(sumPropertyOutstandingDebtInr(data, R)).toBe(500_000)
+    expect(sumAllDebtInr(data, R)).toBe(600_000)
+  })
+})
+
+describe('grossAssetsForDebtToAssetRatio', () => {
+  it('adds property debt back to gross assets for ratio denominator', () => {
+    const data = withPropertyItems([
+      propertyRow({ hasLiability: true, outstandingLoan: 500_000 }),
+    ])
+    expect(grossAssetsForDebtToAssetRatio(4_500_000, data, R)).toBe(5_000_000)
   })
 })
 

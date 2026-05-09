@@ -5,6 +5,7 @@ import {
   Outlet,
   useNavigate,
 } from 'react-router-dom'
+import { TooltipProvider } from '@/components/ui/tooltip'
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/AppSidebar'
 import { MobileTopBar } from '@/components/MobileTopBar'
@@ -60,23 +61,25 @@ function AppLayout() {
 
 export default function App() {
   return (
-    <SidebarProvider>
-      <Routes>
-        <Route element={<AppLayout />}>
-          <Route index element={<DashboardRoute />} />
-          <Route path="gold" element={<GoldPage />} />
-          <Route path="commodities" element={<CommoditiesPage />} />
-          <Route path="mutual-funds" element={<MutualFundsPage />} />
-          <Route path="stocks" element={<StocksPage />} />
-          <Route path="bitcoin" element={<BitcoinPage />} />
-          <Route path="property" element={<PropertyPage />} />
-          <Route path="liabilities" element={<LiabilitiesPage />} />
-          <Route path="bank-savings" element={<BankSavingsPage />} />
-          <Route path="retirement" element={<RetirementPage />} />
-          <Route path="settings" element={<SettingsPage />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Route>
-      </Routes>
-    </SidebarProvider>
+    <TooltipProvider delayDuration={200}>
+      <SidebarProvider>
+        <Routes>
+          <Route element={<AppLayout />}>
+            <Route index element={<DashboardRoute />} />
+            <Route path="gold" element={<GoldPage />} />
+            <Route path="commodities" element={<CommoditiesPage />} />
+            <Route path="mutual-funds" element={<MutualFundsPage />} />
+            <Route path="stocks" element={<StocksPage />} />
+            <Route path="bitcoin" element={<BitcoinPage />} />
+            <Route path="property" element={<PropertyPage />} />
+            <Route path="liabilities" element={<LiabilitiesPage />} />
+            <Route path="bank-savings" element={<BankSavingsPage />} />
+            <Route path="retirement" element={<RetirementPage />} />
+            <Route path="settings" element={<SettingsPage />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Route>
+        </Routes>
+      </SidebarProvider>
+    </TooltipProvider>
   )
 }

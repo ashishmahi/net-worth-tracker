@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -17,38 +17,53 @@ import { PageHeader } from '@/components/PageHeader'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { useAppData } from '@/context/AppDataContext'
+import { useLivePrices } from '@/context/LivePricesContext'
+import { DualCurrencyAmount } from '@/components/DualCurrencyAmount'
+import { CurrencyFieldHint } from '@/components/CurrencyFieldHint'
 import { cn } from '@/lib/utils'
 import { createId, nowIso, parseFinancialInput, roundCurrency } from '@/lib/financials'
+import { toReportingCurrency } from '@/lib/currencyConversion'
+import { CURRENCY_CODES, CurrencySchema } from '@/types/currency'
 import type { MfPlatform } from '@/types/data'
-
-// ── Form schema ───────────────────────────────────────────────────────────────
 
 const mfFormSchema = z.object({
   name: z.string().min(1, 'This field is required.'),
+  currency: CurrencySchema,
   currentValue: z.string().min(1, 'This field is required.'),
-  monthlySip: z.string(), // optional — empty string maps to 0 via parseFinancialInput
+  monthlySip: z.string(),
 })
 type MfFormValues = z.infer<typeof mfFormSchema>
 
-// ── Component ─────────────────────────────────────────────────────────────────
-
 export function MutualFundsPage() {
   const { data, saveData } = useAppData()
+  const { usdInr, aedInr, eurInr, gbpInr, sgdInr } = useLivePrices()
+  const reportingCurrency = data.settings.reportingCurrency ?? 'INR'
+  const rateSnapshot = useMemo(
+    () => ({ usdInr, aedInr, eurInr, gbpInr, sgdInr }),
+    [usdInr, aedInr, eurInr, gbpInr, sgdInr],
+  )
+
   const [sheetOpen, setSheetOpen] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [saveError, setSaveError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
 
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<MfFormValues>({
-    resolver: zodResolver(mfFormSchema),
-  })
+  const { register, handleSubmit, reset, watch, formState: { errors } } =
+    useForm<MfFormValues>({
+      resolver: zodResolver(mfFormSchema),
+    })
 
-  // ── Sheet open handlers ───────────────────────────────────────────────────
+  const currencyWatch = watch('currency')
 
   function openAdd() {
     setEditingId(null)
     setSaveError(null)
-    reset({ name: '', currentValue: '', monthlySip: '' })
+    reset({
+      name: '',
+      currency: reportingCurrency,
+      currentValue: '',
+      monthlySip: '',
+    })
     setSheetOpen(true)
   }
 
@@ -57,13 +72,12 @@ export function MutualFundsPage() {
     setSaveError(null)
     reset({
       name: item.name,
+      currency: item.currency ?? reportingCurrency,
       currentValue: String(item.currentValue),
       monthlySip: item.monthlySip > 0 ? String(item.monthlySip) : '',
     })
     setSheetOpen(true)
   }
-
-  // ── Save handler ──────────────────────────────────────────────────────────
 
   const onSubmit = async (values: MfFormValues) => {
     setSaveError(null)
@@ -71,13 +85,20 @@ export function MutualFundsPage() {
     try {
       const now = nowIso()
       const currentValue = parseFinancialInput(values.currentValue)
-      const monthlySip = parseFinancialInput(values.monthlySip) // returns 0 for empty string
+      const monthlySip = parseFinancialInput(values.monthlySip)
       const platforms = data.assets.mutualFunds.platforms
       const updatedPlatforms = editingId
         ? platforms.map(p =>
             p.id === editingId
-              ? { ...p, name: values.name, currentValue, monthlySip, updatedAt: now }
-              : p
+              ? {
+                  ...p,
+                  name: values.name,
+                  currency: values.currency,
+                  currentValue,
+                  monthlySip,
+                  updatedAt: now,
+                }
+              : p,
           )
         : [
             ...platforms,
@@ -86,6 +107,7 @@ export function MutualFundsPage() {
               createdAt: now,
               updatedAt: now,
               name: values.name,
+              currency: values.currency,
               currentValue,
               monthlySip,
             },
@@ -109,8 +131,6 @@ export function MutualFundsPage() {
     }
   }
 
-  // ── Delete handler ────────────────────────────────────────────────────────
-
   async function handleDelete(id: string) {
     const now = nowIso()
     const updatedPlatforms = data.assets.mutualFunds.platforms.filter(p => p.id !== id)
@@ -133,16 +153,16 @@ export function MutualFundsPage() {
     setSheetOpen(false)
   }
 
-  // ── Section total (D-07: sum of currentValue only — SIP is informational) ──
-
-  const sectionTotal = data.assets.mutualFunds.platforms.reduce(
-    (sum, p) => roundCurrency(sum + p.currentValue),
-    0
-  )
-
   const platforms = data.assets.mutualFunds.platforms
 
-  // ── Render ────────────────────────────────────────────────────────────────
+  const sectionTotal = useMemo(() => {
+    return platforms.reduce((sum, p) => {
+      const from = p.currency ?? reportingCurrency
+      const c = toReportingCurrency(p.currentValue, from, reportingCurrency, rateSnapshot)
+      if (!c.ok) return sum
+      return roundCurrency(sum + roundCurrency(c.amount))
+    }, 0)
+  }, [platforms, reportingCurrency, rateSnapshot])
 
   return (
     <>
@@ -153,7 +173,7 @@ export function MutualFundsPage() {
             <output aria-live="polite" className="text-2xl font-semibold block mt-1">
               {sectionTotal.toLocaleString('en-IN', {
                 style: 'currency',
-                currency: 'INR',
+                currency: reportingCurrency,
                 maximumFractionDigits: 0,
               })}
             </output>
@@ -170,11 +190,9 @@ export function MutualFundsPage() {
           }
         />
 
-        {/* List card */}
         <Card>
           <CardContent className="p-0">
             {platforms.length === 0 ? (
-              /* Empty state */
               <div className="py-12 text-center">
                 <p className="text-sm font-semibold text-foreground">No platforms added</p>
                 <p className="text-sm text-muted-foreground mt-1">
@@ -182,50 +200,64 @@ export function MutualFundsPage() {
                 </p>
               </div>
             ) : (
-              /* List rows */
-              platforms.map((item, index) => (
-                <div key={item.id}>
-                  <button
-                    className="flex items-center justify-between w-full px-4 py-3 cursor-pointer hover:bg-muted/50 transition-colors text-left"
-                    aria-label={`Edit ${item.name} platform`}
-                    onClick={() => openEdit(item)}
-                  >
-                    <div>
-                      <p className="text-sm font-semibold">{item.name}</p>
-                      {item.monthlySip > 0 && (
-                        <p className="text-sm text-muted-foreground font-normal">
-                          SIP{' '}
-                          {item.monthlySip.toLocaleString('en-IN', {
-                            style: 'currency',
-                            currency: 'INR',
-                            maximumFractionDigits: 0,
-                          })}
-                          /mo
-                        </p>
-                      )}
-                    </div>
-                    <span className="text-sm text-muted-foreground font-normal">
-                      {item.currentValue.toLocaleString('en-IN', {
-                        style: 'currency',
-                        currency: 'INR',
-                        maximumFractionDigits: 0,
-                      })}
-                    </span>
-                  </button>
-                  {index < platforms.length - 1 && <Separator />}
+              <div className="overflow-x-auto">
+                <div className="min-w-[520px]">
+                  <div className="grid grid-cols-[minmax(0,1fr)_72px_minmax(140px,auto)_minmax(100px,auto)] gap-2 px-4 py-2 border-b text-xs font-semibold text-muted-foreground">
+                    <span>Platform</span>
+                    <span className="text-right">CCY</span>
+                    <span className="text-right">Value</span>
+                    <span className="text-right">SIP</span>
+                  </div>
+                  {platforms.map((item, index) => {
+                    const platCcy = item.currency ?? reportingCurrency
+                    return (
+                      <div key={item.id}>
+                        <button
+                          type="button"
+                          className="grid grid-cols-[minmax(0,1fr)_72px_minmax(140px,auto)_minmax(100px,auto)] gap-2 w-full px-4 py-3 cursor-pointer hover:bg-muted/50 transition-colors text-left items-center"
+                          aria-label={`Edit ${item.name} platform`}
+                          onClick={() => openEdit(item)}
+                        >
+                          <div className="min-w-0">
+                            <p className="text-sm font-semibold truncate">{item.name}</p>
+                          </div>
+                          <span className="text-xs text-muted-foreground text-right tabular-nums">
+                            {platCcy}
+                          </span>
+                          <div className="flex justify-end">
+                            <DualCurrencyAmount
+                              amount={item.currentValue}
+                              recordCurrency={platCcy}
+                              reportingCurrency={reportingCurrency}
+                              rates={rateSnapshot}
+                            />
+                          </div>
+                          <span className="text-xs text-muted-foreground text-right tabular-nums shrink-0">
+                            {item.monthlySip > 0
+                              ? `${item.monthlySip.toLocaleString('en-IN', {
+                                  style: 'currency',
+                                  currency: platCcy,
+                                  maximumFractionDigits: 0,
+                                })}/mo`
+                              : '—'}
+                          </span>
+                        </button>
+                        {index < platforms.length - 1 && <Separator />}
+                      </div>
+                    )
+                  })}
                 </div>
-              ))
+              </div>
             )}
           </CardContent>
         </Card>
       </div>
 
-      {/* Sheet — add/edit overlay (D-01) */}
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
         <SheetContent
           className={cn(
             'flex w-full flex-col gap-0 overflow-hidden p-0',
-            'max-h-[100dvh] min-h-0 sm:max-w-lg'
+            'max-h-[100dvh] min-h-0 sm:max-w-lg',
           )}
         >
           <div className="shrink-0 px-6 pt-6">
@@ -254,8 +286,31 @@ export function MutualFundsPage() {
                   </p>
                 )}
               </div>
+              <fieldset className="space-y-2">
+                <legend className="flex items-center gap-1.5 text-sm font-medium">
+                  Currency
+                  <CurrencyFieldHint />
+                </legend>
+                <select
+                  id="mf-currency"
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  {...register('currency')}
+                  aria-invalid={!!errors.currency}
+                >
+                  {CURRENCY_CODES.map(code => (
+                    <option key={code} value={code}>
+                      {code}
+                    </option>
+                  ))}
+                </select>
+                {errors.currency && (
+                  <p role="alert" className="text-sm text-destructive">
+                    {errors.currency.message}
+                  </p>
+                )}
+              </fieldset>
               <div>
-                <Label htmlFor="currentValue">Current Value (₹)</Label>
+                <Label htmlFor="currentValue">Current Value ({currencyWatch})</Label>
                 <Input
                   id="currentValue"
                   type="text"
@@ -272,7 +327,7 @@ export function MutualFundsPage() {
                 )}
               </div>
               <div>
-                <Label htmlFor="monthlySip">SIP / month (₹)</Label>
+                <Label htmlFor="monthlySip">SIP / month ({currencyWatch})</Label>
                 <Input
                   id="monthlySip"
                   type="text"

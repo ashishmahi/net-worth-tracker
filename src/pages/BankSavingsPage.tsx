@@ -20,6 +20,8 @@ import { useAppData } from '@/context/AppDataContext'
 import { useLivePrices } from '@/context/LivePricesContext'
 import { createId, nowIso, parseFinancialInput, roundCurrency } from '@/lib/financials'
 import { toReportingCurrency } from '@/lib/currencyConversion'
+import { DualCurrencyAmount } from '@/components/DualCurrencyAmount'
+import { CurrencyFieldHint } from '@/components/CurrencyFieldHint'
 import { cn } from '@/lib/utils'
 import { CURRENCY_CODES, CurrencySchema } from '@/types/currency'
 import type { BankAccount } from '@/types/data'
@@ -47,7 +49,8 @@ export function BankSavingsPage() {
 
   const { register, handleSubmit, reset, watch, formState: { errors } } = useForm<BankFormValues>({
     resolver: zodResolver(bankFormSchema),
-    defaultValues: { currency: 'INR' },
+    // D-01: default new rows to reporting currency (stable at mount; openAdd resets explicitly).
+    defaultValues: { label: '', currency: reportingCurrency, balance: '' },
   })
 
   const currencyWatch = watch('currency')
@@ -55,7 +58,7 @@ export function BankSavingsPage() {
   function openAdd() {
     setEditingId(null)
     setSaveError(null)
-    reset({ label: '', currency: 'INR', balance: '' })
+    reset({ label: '', currency: reportingCurrency, balance: '' })
     setSheetOpen(true)
   }
 
@@ -202,15 +205,7 @@ export function BankSavingsPage() {
                 </p>
               </div>
             ) : (
-              accounts.map((item, index) => {
-                const reportingEquiv = toReportingCurrency(
-                  item.balance,
-                  item.currency,
-                  reportingCurrency,
-                  rateSnapshot,
-                )
-                const showEquiv = reportingEquiv.ok && item.currency !== reportingCurrency
-                return (
+              accounts.map((item, index) => (
                   <div key={item.id}>
                     <button
                       className="flex items-center justify-between w-full px-4 py-3 cursor-pointer hover:bg-muted/50 transition-colors text-left"
@@ -221,30 +216,16 @@ export function BankSavingsPage() {
                         <span className="text-sm font-semibold block">{item.label}</span>
                         <span className="text-xs text-muted-foreground">{item.currency}</span>
                       </div>
-                      <div className="text-right">
-                        <span className="text-sm text-muted-foreground font-normal block">
-                          {item.balance.toLocaleString('en-IN', {
-                            style: 'currency',
-                            currency: item.currency,
-                            maximumFractionDigits: 0,
-                          })}
-                        </span>
-                        {showEquiv && reportingEquiv.ok && (
-                          <span className="text-xs text-muted-foreground block">
-                            ≈{' '}
-                            {roundCurrency(reportingEquiv.amount).toLocaleString('en-IN', {
-                              style: 'currency',
-                              currency: reportingCurrency,
-                              maximumFractionDigits: 0,
-                            })}
-                          </span>
-                        )}
-                      </div>
+                      <DualCurrencyAmount
+                        amount={item.balance}
+                        recordCurrency={item.currency}
+                        reportingCurrency={reportingCurrency}
+                        rates={rateSnapshot}
+                      />
                     </button>
                     {index < accounts.length - 1 && <Separator />}
                   </div>
-                )
-              })
+                ))
             )}
           </CardContent>
         </Card>
@@ -284,7 +265,10 @@ export function BankSavingsPage() {
                 )}
               </div>
               <fieldset className="space-y-2">
-                <legend className="text-sm font-medium">Currency</legend>
+                <legend className="flex items-center gap-1.5 text-sm font-medium">
+                  Currency
+                  <CurrencyFieldHint />
+                </legend>
                 <select
                   id="bank-currency"
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"

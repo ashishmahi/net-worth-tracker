@@ -1,6 +1,7 @@
 import { Menu, Sun, Moon, House } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import { ReportingCurrencySelect } from '@/components/ReportingCurrencySelect'
+import { CurrencyFieldHint } from '@/components/CurrencyFieldHint'
 import { Button } from '@/components/ui/button'
 import { useSidebar } from '@/components/ui/sidebar'
 import { useAppData } from '@/context/AppDataContext'
@@ -57,11 +58,14 @@ export function MobileTopBar() {
       </div>
       <div className="flex shrink-0 items-center gap-1.5">
         {isDashboard ? (
-          <ReportingCurrencySelect
-            variant="chip"
-            value={reportingCurrency}
-            onChange={handleReportingChange}
-          />
+          <span className="inline-flex items-center gap-0.5">
+            <ReportingCurrencySelect
+              variant="chip"
+              value={reportingCurrency}
+              onChange={handleReportingChange}
+            />
+            <CurrencyFieldHint variant="reporting" aria-label="About reporting currency" />
+          </span>
         ) : null}
         <Button
           type="button"

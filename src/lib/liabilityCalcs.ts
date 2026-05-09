@@ -1,29 +1,63 @@
 import type { AppData } from '@/types/data'
 import { roundCurrency } from '@/lib/financials'
+import { toReportingCurrency, type ForexRateSnapshot } from '@/lib/currencyConversion'
 
-export function sumLiabilitiesInr(data: AppData): number {
-  return data.liabilities.reduce(
-    (sum, item) => roundCurrency(sum + roundCurrency(item.outstandingInr)),
-    0
-  )
+export function sumLiabilitiesInr(data: AppData, rates: ForexRateSnapshot): number {
+  return data.liabilities.reduce((sum, item) => {
+    const from = item.currency ?? 'INR'
+    const conv = toReportingCurrency(item.outstanding, from, 'INR', rates)
+    if (!conv.ok) return sum
+    return roundCurrency(sum + roundCurrency(conv.amount))
+  }, 0)
 }
 
-/** Sums optional `emiInr` across standalone liabilities (skips missing / non-finite / negative). */
-export function sumStandaloneLiabilitiesEmiInr(data: AppData): number {
+/** Sums optional `emi` across standalone liabilities (skips missing / non-finite / negative). */
+export function sumStandaloneLiabilitiesEmiInr(
+  data: AppData,
+  rates: ForexRateSnapshot,
+): number {
   return data.liabilities.reduce((sum, item) => {
-    const emi = item.emiInr
+    const emi = item.emi
     if (emi === undefined) return sum
     if (!Number.isFinite(emi) || emi < 0) return sum
-    return roundCurrency(sum + roundCurrency(emi))
+    const from = item.currency ?? 'INR'
+    const conv = toReportingCurrency(emi, from, 'INR', rates)
+    if (!conv.ok) return sum
+    return roundCurrency(sum + roundCurrency(conv.amount))
   }, 0)
 }
 
-export function sumAllDebtInr(data: AppData): number {
-  const propertyDebt = data.assets.property.items.reduce((sum, item) => {
+/** Outstanding home-loan balances attached to property rows (converted to INR hub). */
+export function sumPropertyOutstandingDebtInr(
+  data: AppData,
+  rates: ForexRateSnapshot,
+): number {
+  return data.assets.property.items.reduce((sum, item) => {
     if (!item.hasLiability) return sum
-    return roundCurrency(sum + roundCurrency(item.outstandingLoanInr ?? 0))
+    const raw = item.outstandingLoan ?? 0
+    const from = item.currency ?? 'INR'
+    const conv = toReportingCurrency(raw, from, 'INR', rates)
+    if (!conv.ok) return sum
+    return roundCurrency(sum + roundCurrency(conv.amount))
   }, 0)
-  return roundCurrency(propertyDebt + sumLiabilitiesInr(data))
+}
+
+export function sumAllDebtInr(data: AppData, rates: ForexRateSnapshot): number {
+  return roundCurrency(sumPropertyOutstandingDebtInr(data, rates) + sumLiabilitiesInr(data, rates))
+}
+
+/**
+ * Denominator for debt-to-assets on the dashboard: `grossAssets` counts mortgaged property at
+ * equity (agreement − loan), so add property loans back so ratio ≈ total debt ÷ gross exposure.
+ */
+export function grossAssetsForDebtToAssetRatio(
+  grossAssetsFromCategories: number,
+  data: AppData,
+  rates: ForexRateSnapshot,
+): number {
+  return roundCurrency(
+    grossAssetsFromCategories + sumPropertyOutstandingDebtInr(data, rates),
+  )
 }
 
 export function calcNetWorth(grossAssets: number, liabilitiesTotal: number): number {

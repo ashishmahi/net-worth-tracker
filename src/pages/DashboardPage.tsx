@@ -13,7 +13,6 @@ import { useLivePrices } from '@/context/LivePricesContext'
 import {
   DASHBOARD_CATEGORY_ORDER,
   calcCategoryTotals,
-  computeBreakdownOriginalLine as breakdownOriginalMeta,
   hasAedAccountsWithMissingRate,
   percentOfTotal,
   sumForNetWorth,
@@ -22,6 +21,7 @@ import {
 import {
   calcNetWorth,
   debtToAssetRatio,
+  grossAssetsForDebtToAssetRatio,
   sumAllDebtInr,
   sumLiabilitiesInr,
 } from '@/lib/liabilityCalcs'
@@ -110,7 +110,7 @@ function rowSub(
         : undefined
     case 'otherCommodities':
       return data.assets.otherCommodities.items.length
-        ? `${data.assets.otherCommodities.items.length} line${data.assets.otherCommodities.items.length > 1 ? 's' : ''}`
+        ? `${data.assets.otherCommodities.items.length} holding${data.assets.otherCommodities.items.length > 1 ? 's' : ''}`
         : undefined
     case 'mutualFunds':
       return data.assets.mutualFunds.platforms.length
@@ -254,11 +254,15 @@ export function DashboardPage({
     ],
   )
   const grossAssets = useMemo(() => sumForNetWorth(totals), [totals])
-  const netWorth = useMemo(
-    () => calcNetWorth(grossAssets, sumLiabilitiesInr(data)),
-    [grossAssets, data]
+  const grossAssetsForDebtRatio = useMemo(
+    () => grossAssetsForDebtToAssetRatio(grossAssets, data, forexSnapshot),
+    [grossAssets, data, forexSnapshot],
   )
-  const totalDebtAll = useMemo(() => sumAllDebtInr(data), [data])
+  const netWorth = useMemo(
+    () => calcNetWorth(grossAssets, sumLiabilitiesInr(data, forexSnapshot)),
+    [grossAssets, data, forexSnapshot],
+  )
+  const totalDebtAll = useMemo(() => sumAllDebtInr(data, forexSnapshot), [data, forexSnapshot])
   const hasBtcHolding = data.assets.bitcoin.quantity > 0
   const hasAed =
     data.assets.bankSavings.accounts.some(a => a.currency === 'AED')
@@ -370,7 +374,7 @@ export function DashboardPage({
     setIsRecording(true)
     try {
       const gross = sumForNetWorth(totals)
-      const nw = calcNetWorth(gross, sumLiabilitiesInr(data))
+      const nw = calcNetWorth(gross, sumLiabilitiesInr(data, forexSnapshot))
       const totalInr = roundCurrency(nw)
       await saveData({
         ...data,
@@ -390,11 +394,11 @@ export function DashboardPage({
     } finally {
       setIsRecording(false)
     }
-  }, [data, saveData, totals])
+  }, [data, saveData, totals, forexSnapshot])
 
   const debtRatioPct =
-    grossAssets > 0
-      ? Math.round(debtToAssetRatio(totalDebtAll, grossAssets))
+    grossAssetsForDebtRatio > 0
+      ? Math.round(debtToAssetRatio(totalDebtAll, grossAssetsForDebtRatio))
       : 0
 
   const netWorthDisplay = useMemo(() => {
@@ -737,10 +741,6 @@ export function DashboardPage({
               v !== null
                 ? formatRowReporting(v, reportingCurrency, forexSnapshot)
                 : null
-            const original =
-              v !== null
-                ? breakdownOriginalMeta(key, data, categoryCalcCtx, v)
-                : null
             const pct = percentOfTotal(v === null ? 0 : v, grossAssets)
             const isGoldRow = key === 'gold'
             const isBtcRow = key === 'bitcoin'
@@ -838,26 +838,8 @@ export function DashboardPage({
                         <span className="text-[11px] font-normal text-muted-foreground">
                           Rate unavailable
                         </span>
-                        {/* 36-CONTEXT D-04: single interpretable foreign tally under blocked reporting lens */}
                         <span className="text-sm font-semibold tabular-nums">
-                          {original != null
-                            ? fmtCompactForReporting(
-                                original.amount,
-                                original.currency,
-                              )
-                            : fmtInr0(v as number)}
-                        </span>
-                      </span>
-                    ) : original != null ? (
-                      <span className="inline-flex flex-col items-end gap-px text-right">
-                        <span className="text-sm font-semibold tabular-nums">
-                          {rowFmt?.primary}
-                        </span>
-                        <span className="text-[11px] text-muted-foreground tabular-nums">
-                          {fmtCompactForReporting(
-                            original.amount,
-                            original.currency,
-                          )}
+                          {fmtInr0(v as number)}
                         </span>
                       </span>
                     ) : (

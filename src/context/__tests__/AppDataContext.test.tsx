@@ -107,7 +107,7 @@ describe('parseAppDataFromImport', () => {
             {
               type: 'manual',
               label: 'X',
-              valueInr: 500,
+              value: 500,
               id: id2,
               createdAt: iso,
               updatedAt: iso,

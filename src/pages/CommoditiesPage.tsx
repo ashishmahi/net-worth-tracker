@@ -25,7 +25,10 @@ import {
 } from '@/lib/financials'
 import { TROY_OZ_TO_GRAMS } from '@/lib/priceApi'
 import { PageHeader } from '@/components/PageHeader'
+import { DualCurrencyAmount } from '@/components/DualCurrencyAmount'
+import { CurrencyFieldHint } from '@/components/CurrencyFieldHint'
 import { cn } from '@/lib/utils'
+import { CURRENCY_CODES, CurrencySchema } from '@/types/currency'
 import type { OtherCommodityItem } from '@/types/data'
 
 type SheetVariant = 'standard' | 'manual'
@@ -38,7 +41,8 @@ type StandardFormValues = z.infer<typeof standardFormSchema>
 
 const manualFormSchema = z.object({
   label: z.string().min(1, 'Label is required.'),
-  valueInr: z.string().min(1, 'This field is required.'),
+  value: z.string().min(1, 'This field is required.'),
+  currency: CurrencySchema,
 })
 
 type ManualFormValues = z.infer<typeof manualFormSchema>
@@ -57,7 +61,12 @@ function parseNonnegativeInr(val: string): { ok: true; inr: number } | { ok: fal
 
 export function CommoditiesPage() {
   const { data, saveData } = useAppData()
-  const { silverUsdPerOz, usdInr } = useLivePrices()
+  const reportingCurrency = data.settings.reportingCurrency ?? 'INR'
+  const { silverUsdPerOz, usdInr, aedInr, eurInr, gbpInr, sgdInr } = useLivePrices()
+  const rateSnapshot = useMemo(
+    () => ({ usdInr, aedInr, eurInr, gbpInr, sgdInr }),
+    [usdInr, aedInr, eurInr, gbpInr, sgdInr],
+  )
 
   const silverInrPerGram = useMemo(() => {
     if (silverUsdPerOz == null || usdInr == null) return null
@@ -99,7 +108,7 @@ export function CommoditiesPage() {
     setEditingItem(null)
     setVariant('manual')
     setSaveError(null)
-    manualForm.reset({ label: '', valueInr: '' })
+    manualForm.reset({ label: '', value: '', currency: reportingCurrency })
     setSheetOpen(true)
   }
 
@@ -113,7 +122,8 @@ export function CommoditiesPage() {
       setVariant('manual')
       manualForm.reset({
         label: item.label,
-        valueInr: String(item.valueInr),
+        value: String(item.value),
+        currency: item.currency ?? reportingCurrency,
       })
     }
     setSheetOpen(true)
@@ -170,9 +180,9 @@ export function CommoditiesPage() {
   }
 
   const onSubmitManual = async (values: ManualFormValues) => {
-    const parsed = parseNonnegativeInr(values.valueInr)
+    const parsed = parseNonnegativeInr(values.value)
     if (!parsed.ok) {
-      manualForm.setError('valueInr', {
+      manualForm.setError('value', {
         type: 'manual',
         message: 'Must be a nonnegative amount.',
       })
@@ -189,7 +199,8 @@ export function CommoditiesPage() {
               ? {
                   ...i,
                   label: values.label.trim(),
-                  valueInr: parsed.inr,
+                  value: parsed.inr,
+                  currency: values.currency,
                   updatedAt: now,
                 }
               : i
@@ -202,7 +213,8 @@ export function CommoditiesPage() {
               updatedAt: now,
               type: 'manual' as const,
               label: values.label.trim(),
-              valueInr: parsed.inr,
+              value: parsed.inr,
+              currency: values.currency,
             },
           ]
       await saveData({
@@ -340,18 +352,21 @@ export function CommoditiesPage() {
                         {item.type === 'standard' ? 'Silver' : item.label}
                       </span>
                       {item.type === 'manual' ? (
-                        <span className="text-xs text-muted-foreground">Manual · ₹</span>
+                        <span className="text-xs text-muted-foreground">Manual</span>
                       ) : null}
                     </span>
-                    <span className="shrink-0 text-sm text-muted-foreground">
-                      {item.type === 'standard'
-                        ? `${item.grams} g`
-                        : item.valueInr.toLocaleString('en-IN', {
-                            style: 'currency',
-                            currency: 'INR',
-                            maximumFractionDigits: 0,
-                          })}
-                    </span>
+                    <div className="shrink-0 text-right text-sm text-muted-foreground">
+                      {item.type === 'standard' ? (
+                        `${item.grams} g`
+                      ) : (
+                        <DualCurrencyAmount
+                          amount={item.value}
+                          recordCurrency={item.currency ?? reportingCurrency}
+                          reportingCurrency={reportingCurrency}
+                          rates={rateSnapshot}
+                        />
+                      )}
+                    </div>
                   </button>
                   {index < items.length - 1 && <Separator />}
                 </div>
@@ -461,22 +476,45 @@ export function CommoditiesPage() {
                     </p>
                   ) : null}
                 </div>
+                <fieldset className="space-y-2">
+                  <legend className="flex items-center gap-1.5 text-sm font-medium">
+                    Currency
+                    <CurrencyFieldHint />
+                  </legend>
+                  <select
+                    id="commodity-manual-currency"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    {...manualForm.register('currency')}
+                    aria-invalid={!!manualForm.formState.errors.currency}
+                  >
+                    {CURRENCY_CODES.map(code => (
+                      <option key={code} value={code}>
+                        {code}
+                      </option>
+                    ))}
+                  </select>
+                  {manualForm.formState.errors.currency ? (
+                    <p role="alert" className="text-sm text-destructive">
+                      {manualForm.formState.errors.currency.message}
+                    </p>
+                  ) : null}
+                </fieldset>
                 <div>
-                  <Label htmlFor="commodity-value-inr">Value (₹)</Label>
+                  <Label htmlFor="commodity-value">Value</Label>
                   <Input
-                    id="commodity-value-inr"
+                    id="commodity-value"
                     type="text"
                     inputMode="decimal"
                     placeholder="e.g. 25,000"
-                    {...manualForm.register('valueInr')}
-                    aria-invalid={!!manualForm.formState.errors.valueInr}
+                    {...manualForm.register('value')}
+                    aria-invalid={!!manualForm.formState.errors.value}
                     className={
-                      manualForm.formState.errors.valueInr ? 'border-destructive' : ''
+                      manualForm.formState.errors.value ? 'border-destructive' : ''
                     }
                   />
-                  {manualForm.formState.errors.valueInr ? (
+                  {manualForm.formState.errors.value ? (
                     <p role="alert" className="mt-1 text-sm text-destructive">
-                      {manualForm.formState.errors.valueInr.message}
+                      {manualForm.formState.errors.value.message}
                     </p>
                   ) : null}
                 </div>

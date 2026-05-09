@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -17,48 +17,64 @@ import { PageHeader } from '@/components/PageHeader'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { useAppData } from '@/context/AppDataContext'
+import { useLivePrices } from '@/context/LivePricesContext'
+import { DualCurrencyAmount } from '@/components/DualCurrencyAmount'
+import { CurrencyFieldHint } from '@/components/CurrencyFieldHint'
 import { cn } from '@/lib/utils'
 import { createId, nowIso, parseFinancialInput, roundCurrency } from '@/lib/financials'
+import { toReportingCurrency } from '@/lib/currencyConversion'
+import { CURRENCY_CODES, CurrencySchema } from '@/types/currency'
 import type { StockPlatform } from '@/types/data'
-
-// ── Form schema ───────────────────────────────────────────────────────────────
 
 const stocksFormSchema = z.object({
   name: z.string().min(1, 'This field is required.'),
+  currency: CurrencySchema,
   currentValue: z.string().min(1, 'This field is required.'),
 })
 type StocksFormValues = z.infer<typeof stocksFormSchema>
 
-// ── Component ─────────────────────────────────────────────────────────────────
-
 export function StocksPage() {
   const { data, saveData } = useAppData()
+  const { usdInr, aedInr, eurInr, gbpInr, sgdInr } = useLivePrices()
+  const reportingCurrency = data.settings.reportingCurrency ?? 'INR'
+  const rateSnapshot = useMemo(
+    () => ({ usdInr, aedInr, eurInr, gbpInr, sgdInr }),
+    [usdInr, aedInr, eurInr, gbpInr, sgdInr],
+  )
+
   const [sheetOpen, setSheetOpen] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [saveError, setSaveError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
 
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<StocksFormValues>({
-    resolver: zodResolver(stocksFormSchema),
-  })
+  const { register, handleSubmit, reset, watch, formState: { errors } } =
+    useForm<StocksFormValues>({
+      resolver: zodResolver(stocksFormSchema),
+    })
 
-  // ── Sheet open handlers ───────────────────────────────────────────────────
+  const currencyWatch = watch('currency')
 
   function openAdd() {
     setEditingId(null)
     setSaveError(null)
-    reset({ name: '', currentValue: '' })
+    reset({
+      name: '',
+      currency: reportingCurrency,
+      currentValue: '',
+    })
     setSheetOpen(true)
   }
 
   function openEdit(item: StockPlatform) {
     setEditingId(item.id)
     setSaveError(null)
-    reset({ name: item.name, currentValue: String(item.currentValue) })
+    reset({
+      name: item.name,
+      currency: item.currency ?? reportingCurrency,
+      currentValue: String(item.currentValue),
+    })
     setSheetOpen(true)
   }
-
-  // ── Save handler ──────────────────────────────────────────────────────────
 
   const onSubmit = async (values: StocksFormValues) => {
     setSaveError(null)
@@ -70,8 +86,14 @@ export function StocksPage() {
       const updatedPlatforms = editingId
         ? platforms.map(p =>
             p.id === editingId
-              ? { ...p, name: values.name, currentValue, updatedAt: now }
-              : p
+              ? {
+                  ...p,
+                  name: values.name,
+                  currency: values.currency,
+                  currentValue,
+                  updatedAt: now,
+                }
+              : p,
           )
         : [
             ...platforms,
@@ -80,6 +102,7 @@ export function StocksPage() {
               createdAt: now,
               updatedAt: now,
               name: values.name,
+              currency: values.currency,
               currentValue,
             },
           ]
@@ -101,8 +124,6 @@ export function StocksPage() {
       setSaving(false)
     }
   }
-
-  // ── Delete handler ────────────────────────────────────────────────────────
 
   async function handleDelete(id: string) {
     const now = nowIso()
@@ -126,16 +147,16 @@ export function StocksPage() {
     setSheetOpen(false)
   }
 
-  // ── Section total (D-09: sum of currentValue) ─────────────────────────────
-
-  const sectionTotal = data.assets.stocks.platforms.reduce(
-    (sum, p) => roundCurrency(sum + p.currentValue),
-    0
-  )
-
   const platforms = data.assets.stocks.platforms
 
-  // ── Render ────────────────────────────────────────────────────────────────
+  const sectionTotal = useMemo(() => {
+    return platforms.reduce((sum, p) => {
+      const from = p.currency ?? reportingCurrency
+      const c = toReportingCurrency(p.currentValue, from, reportingCurrency, rateSnapshot)
+      if (!c.ok) return sum
+      return roundCurrency(sum + roundCurrency(c.amount))
+    }, 0)
+  }, [platforms, reportingCurrency, rateSnapshot])
 
   return (
     <>
@@ -146,7 +167,7 @@ export function StocksPage() {
             <output aria-live="polite" className="text-2xl font-semibold block mt-1">
               {sectionTotal.toLocaleString('en-IN', {
                 style: 'currency',
-                currency: 'INR',
+                currency: reportingCurrency,
                 maximumFractionDigits: 0,
               })}
             </output>
@@ -173,25 +194,42 @@ export function StocksPage() {
                 </p>
               </div>
             ) : (
-              platforms.map((item, index) => (
-                <div key={item.id}>
-                  <button
-                    className="flex items-center justify-between w-full px-4 py-3 cursor-pointer hover:bg-muted/50 transition-colors text-left"
-                    aria-label={`Edit ${item.name} platform`}
-                    onClick={() => openEdit(item)}
-                  >
-                    <span className="text-sm font-semibold">{item.name}</span>
-                    <span className="text-sm text-muted-foreground font-normal">
-                      {item.currentValue.toLocaleString('en-IN', {
-                        style: 'currency',
-                        currency: 'INR',
-                        maximumFractionDigits: 0,
-                      })}
-                    </span>
-                  </button>
-                  {index < platforms.length - 1 && <Separator />}
+              <div className="overflow-x-auto">
+                <div className="min-w-[420px]">
+                  <div className="grid grid-cols-[minmax(0,1fr)_72px_minmax(140px,auto)] gap-2 px-4 py-2 border-b text-xs font-semibold text-muted-foreground">
+                    <span>Platform</span>
+                    <span className="text-right">CCY</span>
+                    <span className="text-right">Value</span>
+                  </div>
+                  {platforms.map((item, index) => {
+                    const platCcy = item.currency ?? reportingCurrency
+                    return (
+                      <div key={item.id}>
+                        <button
+                          type="button"
+                          className="grid grid-cols-[minmax(0,1fr)_72px_minmax(140px,auto)] gap-2 w-full px-4 py-3 cursor-pointer hover:bg-muted/50 transition-colors text-left items-center"
+                          aria-label={`Edit ${item.name} platform`}
+                          onClick={() => openEdit(item)}
+                        >
+                          <span className="text-sm font-semibold truncate">{item.name}</span>
+                          <span className="text-xs text-muted-foreground text-right tabular-nums">
+                            {platCcy}
+                          </span>
+                          <div className="flex justify-end">
+                            <DualCurrencyAmount
+                              amount={item.currentValue}
+                              recordCurrency={platCcy}
+                              reportingCurrency={reportingCurrency}
+                              rates={rateSnapshot}
+                            />
+                          </div>
+                        </button>
+                        {index < platforms.length - 1 && <Separator />}
+                      </div>
+                    )
+                  })}
                 </div>
-              ))
+              </div>
             )}
           </CardContent>
         </Card>
@@ -201,7 +239,7 @@ export function StocksPage() {
         <SheetContent
           className={cn(
             'flex w-full flex-col gap-0 overflow-hidden p-0',
-            'max-h-[100dvh] min-h-0 sm:max-w-lg'
+            'max-h-[100dvh] min-h-0 sm:max-w-lg',
           )}
         >
           <div className="shrink-0 px-6 pt-6">
@@ -230,8 +268,31 @@ export function StocksPage() {
                   </p>
                 )}
               </div>
+              <fieldset className="space-y-2">
+                <legend className="flex items-center gap-1.5 text-sm font-medium">
+                  Currency
+                  <CurrencyFieldHint />
+                </legend>
+                <select
+                  id="stock-currency"
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  {...register('currency')}
+                  aria-invalid={!!errors.currency}
+                >
+                  {CURRENCY_CODES.map(code => (
+                    <option key={code} value={code}>
+                      {code}
+                    </option>
+                  ))}
+                </select>
+                {errors.currency && (
+                  <p role="alert" className="text-sm text-destructive">
+                    {errors.currency.message}
+                  </p>
+                )}
+              </fieldset>
               <div>
-                <Label htmlFor="currentValue">Current Value (₹)</Label>
+                <Label htmlFor="currentValue">Current Value ({currencyWatch})</Label>
                 <Input
                   id="currentValue"
                   type="text"

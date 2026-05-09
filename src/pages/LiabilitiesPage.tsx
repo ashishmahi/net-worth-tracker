@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -17,7 +17,13 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { useAppData } from '@/context/AppDataContext'
 import { createId, nowIso, parseFinancialInput, roundCurrency } from '@/lib/financials'
-import { sumLiabilitiesInr, sumStandaloneLiabilitiesEmiInr } from '@/lib/liabilityCalcs'
+import { DualCurrencyAmount } from '@/components/DualCurrencyAmount'
+import { CurrencyFieldHint } from '@/components/CurrencyFieldHint'
+import { useLivePrices } from '@/context/LivePricesContext'
+import { toReportingCurrency } from '@/lib/currencyConversion'
+import { fmtCompactForReporting } from '@/lib/wealthFormat'
+import { CURRENCY_CODES, CurrencySchema } from '@/types/currency'
+import { sumStandaloneLiabilitiesEmiInr } from '@/lib/liabilityCalcs'
 import { PageHeader } from '@/components/PageHeader'
 import { cn } from '@/lib/utils'
 import type { LiabilityItem } from '@/types/data'
@@ -25,9 +31,10 @@ import type { LiabilityItem } from '@/types/data'
 const loanFormSchema = z.object({
   label: z.string().min(1, 'This field is required.'),
   loanType: z.enum(['home', 'car', 'personal', 'other']),
-  outstandingInr: z.string().min(1, 'This field is required.'),
+  currency: CurrencySchema,
+  outstanding: z.string().min(1, 'This field is required.'),
   lender: z.string().optional(),
-  emiInr: z.string().optional(),
+  emi: z.string().optional(),
 })
 
 type LoanFormValues = z.infer<typeof loanFormSchema>
@@ -39,16 +46,15 @@ const LOAN_TYPE_LABEL: Record<LiabilityItem['loanType'], string> = {
   other: 'Other',
 }
 
-function formatInr(n: number) {
-  return n.toLocaleString('en-IN', {
-    style: 'currency',
-    currency: 'INR',
-    maximumFractionDigits: 0,
-  })
-}
-
 export function LiabilitiesPage() {
   const { data, saveData } = useAppData()
+  const { usdInr, aedInr, eurInr, gbpInr, sgdInr } = useLivePrices()
+  const rateSnapshot = useMemo(
+    () => ({ usdInr, aedInr, eurInr, gbpInr, sgdInr }),
+    [usdInr, aedInr, eurInr, gbpInr, sgdInr],
+  )
+  const reportingCurrency = data.settings.reportingCurrency ?? 'INR'
+
   const [sheetOpen, setSheetOpen] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [saveError, setSaveError] = useState<string | null>(null)
@@ -56,10 +62,13 @@ export function LiabilitiesPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [deleteError, setDeleteError] = useState<string | null>(null)
 
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<LoanFormValues>({
-    resolver: zodResolver(loanFormSchema),
-    defaultValues: { loanType: 'personal' },
-  })
+  const { register, handleSubmit, reset, watch, formState: { errors } } =
+    useForm<LoanFormValues>({
+      resolver: zodResolver(loanFormSchema),
+      defaultValues: { loanType: 'personal' },
+    })
+
+  const currencyWatch = watch('currency')
 
   function openAdd() {
     setEditingId(null)
@@ -67,9 +76,10 @@ export function LiabilitiesPage() {
     reset({
       label: '',
       loanType: 'personal',
-      outstandingInr: '',
+      currency: reportingCurrency,
+      outstanding: '',
       lender: '',
-      emiInr: '',
+      emi: '',
     })
     setSheetOpen(true)
   }
@@ -80,9 +90,10 @@ export function LiabilitiesPage() {
     reset({
       label: item.label,
       loanType: item.loanType,
-      outstandingInr: String(item.outstandingInr),
+      currency: item.currency ?? reportingCurrency,
+      outstanding: String(item.outstanding),
       lender: item.lender ?? '',
-      emiInr: item.emiInr != null ? String(item.emiInr) : '',
+      emi: item.emi != null ? String(item.emi) : '',
     })
     setSheetOpen(true)
   }
@@ -92,9 +103,9 @@ export function LiabilitiesPage() {
     setSaving(true)
     try {
       const now = nowIso()
-      const outstandingInr = roundCurrency(parseFinancialInput(values.outstandingInr))
-      const emiParsed = values.emiInr?.trim()
-        ? roundCurrency(parseFinancialInput(values.emiInr))
+      const outstanding = roundCurrency(parseFinancialInput(values.outstanding))
+      const emiParsed = values.emi?.trim()
+        ? roundCurrency(parseFinancialInput(values.emi))
         : undefined
       const lender = values.lender?.trim() || undefined
 
@@ -106,12 +117,13 @@ export function LiabilitiesPage() {
                 ...l,
                 label: values.label.trim(),
                 loanType: values.loanType,
-                outstandingInr,
+                currency: values.currency,
+                outstanding,
                 lender,
-                emiInr: emiParsed,
+                emi: emiParsed,
                 updatedAt: now,
               }
-            : l
+            : l,
         )
         await saveData({ ...data, liabilities: updated })
       } else {
@@ -125,9 +137,10 @@ export function LiabilitiesPage() {
               updatedAt: now,
               label: values.label.trim(),
               loanType: values.loanType,
-              outstandingInr,
+              currency: values.currency,
+              outstanding,
               lender,
-              emiInr: emiParsed,
+              emi: emiParsed,
             },
           ],
         })
@@ -162,8 +175,22 @@ export function LiabilitiesPage() {
   }
 
   const items = data.liabilities
-  const totalOut = sumLiabilitiesInr(data)
-  const totalEmi = sumStandaloneLiabilitiesEmiInr(data)
+
+  const totalOut = useMemo(() => {
+    return items.reduce((sum, item) => {
+      const from = item.currency ?? reportingCurrency
+      const c = toReportingCurrency(item.outstanding, from, reportingCurrency, rateSnapshot)
+      if (!c.ok) return sum
+      return roundCurrency(sum + roundCurrency(c.amount))
+    }, 0)
+  }, [items, reportingCurrency, rateSnapshot])
+
+  const totalEmiInr = sumStandaloneLiabilitiesEmiInr(data, rateSnapshot)
+  const totalEmiDisplay = useMemo(() => {
+    if (reportingCurrency === 'INR') return totalEmiInr
+    const c = toReportingCurrency(totalEmiInr, 'INR', reportingCurrency, rateSnapshot)
+    return c.ok ? c.amount : totalEmiInr
+  }, [totalEmiInr, reportingCurrency, rateSnapshot])
 
   return (
     <>
@@ -177,7 +204,7 @@ export function LiabilitiesPage() {
                 <output aria-live="polite" className="text-2xl font-semibold block">
                   {totalOut.toLocaleString('en-IN', {
                     style: 'currency',
-                    currency: 'INR',
+                    currency: reportingCurrency,
                     maximumFractionDigits: 0,
                   })}
                 </output>
@@ -185,9 +212,9 @@ export function LiabilitiesPage() {
               <div>
                 <p className="text-sm text-muted-foreground">Total EMI</p>
                 <output aria-live="polite" className="text-2xl font-semibold block">
-                  {`${totalEmi.toLocaleString('en-IN', {
+                  {`${totalEmiDisplay.toLocaleString('en-IN', {
                     style: 'currency',
-                    currency: 'INR',
+                    currency: reportingCurrency,
                     maximumFractionDigits: 0,
                   })}/month`}
                 </output>
@@ -246,21 +273,29 @@ export function LiabilitiesPage() {
                         <Badge variant="secondary">{LOAN_TYPE_LABEL[item.loanType]}</Badge>
                         <span className="text-sm font-semibold">{item.label}</span>
                       </div>
-                      {(item.lender || item.emiInr != null) && (
+                      {(item.lender || item.emi != null) && (
                         <p className="text-sm text-muted-foreground">
                           {[
                             item.lender,
-                            item.emiInr != null && Number.isFinite(item.emiInr)
-                              ? `${formatInr(item.emiInr)}/month`
+                            item.emi != null && Number.isFinite(item.emi)
+                              ? `${fmtCompactForReporting(
+                                  roundCurrency(item.emi),
+                                  item.currency ?? reportingCurrency,
+                                )}/month`
                               : null,
                           ]
                             .filter(Boolean)
                             .join(' · ')}
                         </p>
                       )}
-                      <p className="text-lg font-semibold pt-1">
-                        {formatInr(item.outstandingInr)}
-                      </p>
+                      <div className="pt-1 text-lg font-semibold">
+                        <DualCurrencyAmount
+                          amount={item.outstanding}
+                          recordCurrency={item.currency ?? reportingCurrency}
+                          reportingCurrency={reportingCurrency}
+                          rates={rateSnapshot}
+                        />
+                      </div>
                     </div>
 
                     {deletingId === item.id ? (
@@ -326,7 +361,7 @@ export function LiabilitiesPage() {
         <SheetContent
           className={cn(
             'flex w-full flex-col gap-0 overflow-hidden p-0',
-            'max-h-[100dvh] min-h-0 sm:max-w-lg'
+            'max-h-[100dvh] min-h-0 sm:max-w-lg',
           )}
         >
           <div className="shrink-0 px-6 pt-6">
@@ -363,7 +398,7 @@ export function LiabilitiesPage() {
                   {...register('loanType')}
                   className={cn(
                     'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2',
-                    'text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2'
+                    'text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
                   )}
                 >
                   <option value="home">Home</option>
@@ -378,20 +413,47 @@ export function LiabilitiesPage() {
                 )}
               </div>
 
+              <fieldset className="space-y-2">
+                <legend className="flex items-center gap-1.5 text-sm font-medium">
+                  Currency
+                  <CurrencyFieldHint />
+                </legend>
+                <p className="text-xs text-muted-foreground">
+                  All amounts on this record are in the selected currency.
+                </p>
+                <select
+                  id="loan-currency"
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  {...register('currency')}
+                  aria-invalid={!!errors.currency}
+                >
+                  {CURRENCY_CODES.map(code => (
+                    <option key={code} value={code}>
+                      {code}
+                    </option>
+                  ))}
+                </select>
+                {errors.currency && (
+                  <p role="alert" className="text-sm text-destructive">
+                    {errors.currency.message}
+                  </p>
+                )}
+              </fieldset>
+
               <div>
-                <Label htmlFor="outstanding-inr">Outstanding balance (₹)</Label>
+                <Label htmlFor="outstanding">Outstanding balance ({currencyWatch})</Label>
                 <Input
-                  id="outstanding-inr"
+                  id="outstanding"
                   type="text"
                   inputMode="decimal"
                   placeholder="e.g. 5,00,000"
-                  {...register('outstandingInr')}
-                  aria-invalid={!!errors.outstandingInr}
-                  className={errors.outstandingInr ? 'border-destructive' : ''}
+                  {...register('outstanding')}
+                  aria-invalid={!!errors.outstanding}
+                  className={errors.outstanding ? 'border-destructive' : ''}
                 />
-                {errors.outstandingInr && (
+                {errors.outstanding && (
                   <p role="alert" className="text-sm text-destructive mt-1">
-                    {errors.outstandingInr.message}
+                    {errors.outstanding.message}
                   </p>
                 )}
               </div>
@@ -407,13 +469,13 @@ export function LiabilitiesPage() {
               </div>
 
               <div>
-                <Label htmlFor="emi-inr">EMI (optional, ₹/month)</Label>
+                <Label htmlFor="emi">EMI (optional, /month)</Label>
                 <Input
-                  id="emi-inr"
+                  id="emi"
                   type="text"
                   inputMode="decimal"
                   placeholder="e.g. 32,000"
-                  {...register('emiInr')}
+                  {...register('emi')}
                 />
               </div>
             </div>

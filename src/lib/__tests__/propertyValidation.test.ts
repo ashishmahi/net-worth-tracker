@@ -12,7 +12,7 @@ function baseItem(over: Partial<PropertyItem> = {}): PropertyItem {
     createdAt: now,
     updatedAt: now,
     label: 'Test property',
-    agreementInr: 1_000_000,
+    agreementAmount: 1_000_000,
     milestones: [],
     hasLiability: false,
     ...over,
@@ -30,10 +30,10 @@ describe('getPropertyValidationIssues', () => {
 
   it('PRV-01: milestone total equal to agreement passes', () => {
     const item = baseItem({
-      agreementInr: 500_000,
+      agreementAmount: 500_000,
       milestones: [
-        { id: crypto.randomUUID(), label: 'A', amountInr: 250_000, isPaid: false },
-        { id: crypto.randomUUID(), label: 'B', amountInr: 250_000, isPaid: false },
+        { id: crypto.randomUUID(), label: 'A', amount: 250_000, isPaid: false },
+        { id: crypto.randomUUID(), label: 'B', amount: 250_000, isPaid: false },
       ],
     })
     expect(getPropertyValidationIssues(item)).toEqual([])
@@ -41,10 +41,10 @@ describe('getPropertyValidationIssues', () => {
 
   it('PRV-01: milestone total above agreement fails', () => {
     const item = baseItem({
-      agreementInr: 400_000,
+      agreementAmount: 400_000,
       milestones: [
-        { id: crypto.randomUUID(), label: 'A', amountInr: 250_000, isPaid: false },
-        { id: crypto.randomUUID(), label: 'B', amountInr: 250_000, isPaid: false },
+        { id: crypto.randomUUID(), label: 'A', amount: 250_000, isPaid: false },
+        { id: crypto.randomUUID(), label: 'B', amount: 250_000, isPaid: false },
       ],
     })
     expect(getPropertyValidationIssues(item)).toEqual([
@@ -55,10 +55,25 @@ describe('getPropertyValidationIssues', () => {
     ])
   })
 
+  it('PRV-03: milestone amount zero fails', () => {
+    const item = baseItem({
+      agreementAmount: 500_000,
+      milestones: [
+        { id: crypto.randomUUID(), label: 'A', amount: 0, isPaid: false },
+      ],
+    })
+    expect(getPropertyValidationIssues(item)).toEqual([
+      {
+        code: PROPERTY_VALIDATION_CODES.MILESTONE_AMOUNT_NONPOSITIVE,
+        message: 'Each milestone amount must be greater than zero.',
+      },
+    ])
+  })
+
   it('PRV-02: outstanding required when liability on and outstanding missing', () => {
     const item = baseItem({
       hasLiability: true,
-      outstandingLoanInr: undefined,
+      outstandingLoan: undefined,
     })
     expect(getPropertyValidationIssues(item)).toEqual([
       {
@@ -71,7 +86,7 @@ describe('getPropertyValidationIssues', () => {
   it('PRV-02: outstanding required when liability on and outstanding is zero', () => {
     const item = baseItem({
       hasLiability: true,
-      outstandingLoanInr: 0,
+      outstandingLoan: 0,
     })
     expect(getPropertyValidationIssues(item)).toEqual([
       {
@@ -83,18 +98,18 @@ describe('getPropertyValidationIssues', () => {
 
   it('PRV-02: outstanding equal to agreement passes', () => {
     const item = baseItem({
-      agreementInr: 900_000,
+      agreementAmount: 900_000,
       hasLiability: true,
-      outstandingLoanInr: 900_000,
+      outstandingLoan: 900_000,
     })
     expect(getPropertyValidationIssues(item)).toEqual([])
   })
 
   it('PRV-02: outstanding exceeds agreement fails', () => {
     const item = baseItem({
-      agreementInr: 800_000,
+      agreementAmount: 800_000,
       hasLiability: true,
-      outstandingLoanInr: 800_001,
+      outstandingLoan: 800_001,
     })
     expect(getPropertyValidationIssues(item)).toEqual([
       {
@@ -107,7 +122,7 @@ describe('getPropertyValidationIssues', () => {
   it('PRV-03: optional EMI omitted passes when outstanding ok', () => {
     const item = baseItem({
       hasLiability: true,
-      outstandingLoanInr: 400_000,
+      outstandingLoan: 400_000,
     })
     expect(getPropertyValidationIssues(item)).toEqual([])
   })
@@ -115,8 +130,8 @@ describe('getPropertyValidationIssues', () => {
   it('PRV-03: EMI zero is permissive', () => {
     const item = baseItem({
       hasLiability: true,
-      outstandingLoanInr: 400_000,
-      emiInr: 0,
+      outstandingLoan: 400_000,
+      emi: 0,
     })
     expect(getPropertyValidationIssues(item)).toEqual([])
   })
@@ -124,8 +139,8 @@ describe('getPropertyValidationIssues', () => {
   it('PRV-03: EMI must be strictly less than outstanding when both positive', () => {
     const item = baseItem({
       hasLiability: true,
-      outstandingLoanInr: 300_000,
-      emiInr: 300_000,
+      outstandingLoan: 300_000,
+      emi: 300_000,
     })
     expect(getPropertyValidationIssues(item)).toEqual([
       {
@@ -138,20 +153,20 @@ describe('getPropertyValidationIssues', () => {
   it('PRV-03: EMI just below outstanding passes', () => {
     const item = baseItem({
       hasLiability: true,
-      outstandingLoanInr: 300_000,
-      emiInr: 299_999.99,
+      outstandingLoan: 300_000,
+      emi: 299_999.99,
     })
     expect(getPropertyValidationIssues(item)).toEqual([])
   })
 
   it('can surface milestone issue alongside liability when both apply', () => {
     const item = baseItem({
-      agreementInr: 100_000,
+      agreementAmount: 100_000,
       milestones: [
-        { id: crypto.randomUUID(), label: 'A', amountInr: 200_000, isPaid: false },
+        { id: crypto.randomUUID(), label: 'A', amount: 200_000, isPaid: false },
       ],
       hasLiability: true,
-      outstandingLoanInr: 0,
+      outstandingLoan: 0,
     })
     const issues = getPropertyValidationIssues(item)
     expect(issues.some(i => i.code === PROPERTY_VALIDATION_CODES.MILESTONE_TOTAL_EXCEEDS_AGREEMENT)).toBe(

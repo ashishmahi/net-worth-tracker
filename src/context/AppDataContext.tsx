@@ -171,6 +171,100 @@ export function migrateV1ToV2(raw: unknown): unknown {
   return next
 }
 
+/** Phase 37: legacy `*Inr` / `valueInr` keys → neutral names before Zod parse. */
+export function migrateNeutralAmountKeys(raw: unknown): unknown {
+  if (raw === null || typeof raw !== 'object') return raw
+  const root = JSON.parse(JSON.stringify(raw)) as Record<string, unknown>
+
+  const assets = root.assets
+  if (assets && typeof assets === 'object') {
+    const a = assets as Record<string, unknown>
+    const prop = a.property
+    if (
+      prop &&
+      typeof prop === 'object' &&
+      Array.isArray((prop as { items?: unknown }).items)
+    ) {
+      const p = prop as Record<string, unknown>
+      p.items = (p.items as unknown[]).map(migratePropertyItemNeutralKeys)
+    }
+    const oc = a.otherCommodities
+    if (
+      oc &&
+      typeof oc === 'object' &&
+      Array.isArray((oc as { items?: unknown }).items)
+    ) {
+      const o = oc as Record<string, unknown>
+      o.items = (o.items as unknown[]).map(migrateCommodityItemNeutralKeys)
+    }
+  }
+
+  if (Array.isArray(root.liabilities)) {
+    root.liabilities = root.liabilities.map(migrateLiabilityNeutralKeys)
+  }
+
+  return root
+}
+
+function migratePropertyItemNeutralKeys(entry: unknown): unknown {
+  if (!entry || typeof entry !== 'object') return entry
+  const o = entry as Record<string, unknown>
+  const next: Record<string, unknown> = { ...o }
+  if ('agreementInr' in next && next.agreementAmount === undefined) {
+    next.agreementAmount = next.agreementInr
+    delete next.agreementInr
+  }
+  if ('outstandingLoanInr' in next && next.outstandingLoan === undefined) {
+    next.outstandingLoan = next.outstandingLoanInr
+    delete next.outstandingLoanInr
+  }
+  if ('emiInr' in next && next.emi === undefined) {
+    next.emi = next.emiInr
+    delete next.emiInr
+  }
+  if (Array.isArray(next.milestones)) {
+    next.milestones = next.milestones.map((m: unknown) => {
+      if (!m || typeof m !== 'object') return m
+      const row = m as Record<string, unknown>
+      const nr: Record<string, unknown> = { ...row }
+      if ('amountInr' in nr && nr.amount === undefined) {
+        nr.amount = nr.amountInr
+        delete nr.amountInr
+      }
+      return nr
+    })
+  }
+  return next
+}
+
+function migrateLiabilityNeutralKeys(entry: unknown): unknown {
+  if (!entry || typeof entry !== 'object') return entry
+  const o = entry as Record<string, unknown>
+  const next: Record<string, unknown> = { ...o }
+  if ('outstandingInr' in next && next.outstanding === undefined) {
+    next.outstanding = next.outstandingInr
+    delete next.outstandingInr
+  }
+  if ('emiInr' in next && next.emi === undefined) {
+    next.emi = next.emiInr
+    delete next.emiInr
+  }
+  return next
+}
+
+function migrateCommodityItemNeutralKeys(entry: unknown): unknown {
+  if (!entry || typeof entry !== 'object') return entry
+  const o = entry as Record<string, unknown>
+  if (o.type !== 'manual') return entry
+  const next: Record<string, unknown> = { ...o }
+  if ('valueInr' in next && next.value === undefined) {
+    next.value = next.valueInr
+    delete next.valueInr
+    if (next.currency === undefined) next.currency = 'INR'
+  }
+  return next
+}
+
 /** Import uplift defaults (BLN-03): applied before parse when keys absent on `settings`. */
 export function ensureImportUpliftRates(raw: unknown): unknown {
   if (raw === null || typeof raw !== 'object') return raw
@@ -192,7 +286,7 @@ export function ensureImportUpliftRates(raw: unknown): unknown {
 }
 
 /** Same migrate + `DataSchema` path as initial stored wealth load — for import and boot.
- *  Chain: migrateLegacyBankAccounts → ensureNetWorthHistory → ensureOtherCommodities → ensureLiabilities → ensureImportUpliftRates → migrateV1ToV2 → safeParse
+ *  Chain: migrateLegacyBankAccounts → ensureNetWorthHistory → ensureOtherCommodities → ensureLiabilities → ensureImportUpliftRates → migrateV1ToV2 → migrateNeutralAmountKeys → safeParse
  */
 export function parseAppDataFromImport(
   raw: unknown,
@@ -203,7 +297,8 @@ export function parseAppDataFromImport(
   const withLiabilities = ensureLiabilities(withCommodities)
   const withImportUplift = ensureImportUpliftRates(withLiabilities)
   const v2Ready = migrateV1ToV2(withImportUplift)
-  const result = DataSchema.safeParse(v2Ready)
+  const neutralKeys = migrateNeutralAmountKeys(v2Ready)
+  const result = DataSchema.safeParse(neutralKeys)
   if (result.success) {
     return { success: true, data: result.data }
   }

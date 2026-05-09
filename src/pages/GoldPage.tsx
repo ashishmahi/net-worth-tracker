@@ -18,17 +18,23 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { useAppData } from '@/context/AppDataContext'
 import { useLivePrices } from '@/context/LivePricesContext'
+import { DualCurrencyAmount } from '@/components/DualCurrencyAmount'
+import { CurrencyFieldHint } from '@/components/CurrencyFieldHint'
 import { createId, nowIso, parseFinancialInput, roundCurrency } from '@/lib/financials'
+import { toReportingCurrency } from '@/lib/currencyConversion'
+import { CURRENCY_CODES, CurrencySchema } from '@/types/currency'
 import { liveInrPerGramForKarat, resolveGoldImportUpliftRate } from '@/lib/goldLiveHints'
 import { PageHeader } from '@/components/PageHeader'
 import { cn } from '@/lib/utils'
 import type { GoldItem } from '@/types/data'
+import type { CurrencyCode } from '@/types/currency'
 
 // ── Form schema (strings — parse to typed values on submit) ───────────────────
 
 const goldFormSchema = z.object({
   karat: z.enum(['24', '22', '18']),
   grams: z.string().min(1, 'This field is required.'),
+  currency: CurrencySchema,
 })
 type GoldFormValues = z.infer<typeof goldFormSchema>
 
@@ -36,22 +42,29 @@ type GoldFormValues = z.infer<typeof goldFormSchema>
 
 export function GoldPage() {
   const { data, saveData } = useAppData()
-  const { goldUsdPerOz, usdInr } = useLivePrices()
+  const reportingCurrency = data.settings.reportingCurrency ?? 'INR'
+  const { goldUsdPerOz, usdInr, aedInr, eurInr, gbpInr, sgdInr } = useLivePrices()
+  const rateSnapshot = useMemo(
+    () => ({ usdInr, aedInr, eurInr, gbpInr, sgdInr }),
+    [usdInr, aedInr, eurInr, gbpInr, sgdInr],
+  )
   const [sheetOpen, setSheetOpen] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [saveError, setSaveError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
 
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<GoldFormValues>({
+  const { register, handleSubmit, reset, watch, formState: { errors } } = useForm<GoldFormValues>({
     resolver: zodResolver(goldFormSchema),
   })
+
+  const currencyWatch = watch('currency')
 
   // ── Sheet open handlers (reset before open — RESEARCH.md Pitfall 3) ───────
 
   function openAdd() {
     setEditingId(null)
     setSaveError(null)
-    reset({ karat: '22', grams: '' })
+    reset({ karat: '22', grams: '', currency: reportingCurrency })
     setSheetOpen(true)
   }
 
@@ -61,6 +74,7 @@ export function GoldPage() {
     reset({
       karat: String(item.karat) as '24' | '22' | '18',
       grams: String(item.grams),
+      currency: item.currency ?? reportingCurrency,
     })
     setSheetOpen(true)
   }
@@ -77,11 +91,20 @@ export function GoldPage() {
       const items = data.assets.gold.items
       const updatedItems = editingId
         ? items.map(i =>
-            i.id === editingId ? { ...i, karat, grams, updatedAt: now } : i
+            i.id === editingId
+              ? { ...i, karat, grams, currency: values.currency, updatedAt: now }
+              : i
           )
         : [
             ...items,
-            { id: createId(), createdAt: now, updatedAt: now, karat, grams },
+            {
+              id: createId(),
+              createdAt: now,
+              updatedAt: now,
+              karat,
+              grams,
+              currency: values.currency,
+            },
           ]
       await saveData({
         ...data,
@@ -144,6 +167,13 @@ export function GoldPage() {
 
   const items = data.assets.gold.items
 
+  const goldTotalReporting = useMemo(() => {
+    if (goldTotal == null) return null
+    if (reportingCurrency === 'INR') return goldTotal
+    const c = toReportingCurrency(goldTotal, 'INR', reportingCurrency, rateSnapshot)
+    return c.ok ? roundCurrency(c.amount) : goldTotal
+  }, [goldTotal, reportingCurrency, rateSnapshot])
+
   // ── Render ────────────────────────────────────────────────────────────────
 
   return (
@@ -154,10 +184,10 @@ export function GoldPage() {
           meta={
             <>
               <output aria-live="polite" className="text-2xl font-semibold block mt-1">
-                {goldTotal !== null
-                  ? goldTotal.toLocaleString('en-IN', {
+                {goldTotalReporting !== null
+                  ? goldTotalReporting.toLocaleString('en-IN', {
                       style: 'currency',
-                      currency: 'INR',
+                      currency: reportingCurrency,
                       maximumFractionDigits: 0,
                     })
                   : '₹0'}
@@ -204,24 +234,51 @@ export function GoldPage() {
               </div>
             ) : (
               /* List rows */
-              items.map((item, index) => (
-                <div key={item.id}>
-                  <button
-                    className="flex items-center justify-between w-full px-4 py-3 cursor-pointer hover:bg-muted/50 transition-colors text-left"
-                    aria-label={`Edit ${item.karat}K gold item`}
-                    onClick={() => openEdit(item)}
-                  >
-                    <span className="flex items-center gap-2">
-                      <Badge variant="secondary">{item.karat}K</Badge>
-                      <span className="text-sm font-semibold">{item.karat}K Gold</span>
-                    </span>
-                    <span className="text-sm text-muted-foreground font-normal">
-                      {item.grams} g
-                    </span>
-                  </button>
-                  {index < items.length - 1 && <Separator />}
-                </div>
-              ))
+              items.map((item, index) => {
+                const priceKey = ({ 24: 'k24', 22: 'k22', 18: 'k18' } as const)[item.karat]
+                const inrFiat =
+                  goldPrices != null
+                    ? roundCurrency(item.grams * goldPrices[priceKey])
+                    : null
+                const recordCcy = item.currency ?? reportingCurrency
+                let nativeAmt = inrFiat ?? 0
+                let nativeCcy: CurrencyCode = 'INR'
+                if (inrFiat != null && recordCcy !== 'INR') {
+                  const cv = toReportingCurrency(inrFiat, 'INR', recordCcy, rateSnapshot)
+                  if (cv.ok) {
+                    nativeAmt = roundCurrency(cv.amount)
+                    nativeCcy = recordCcy
+                  }
+                }
+                return (
+                  <div key={item.id}>
+                    <button
+                      type="button"
+                      className="flex items-center justify-between w-full px-4 py-3 cursor-pointer hover:bg-muted/50 transition-colors text-left gap-3"
+                      aria-label={`Edit ${item.karat}K gold item`}
+                      onClick={() => openEdit(item)}
+                    >
+                      <span className="flex items-center gap-2 min-w-0">
+                        <Badge variant="secondary">{item.karat}K</Badge>
+                        <span className="text-sm font-semibold truncate">
+                          {item.karat}K Gold · {item.grams} g
+                        </span>
+                      </span>
+                      {inrFiat != null ? (
+                        <DualCurrencyAmount
+                          amount={nativeAmt}
+                          recordCurrency={nativeCcy}
+                          reportingCurrency={reportingCurrency}
+                          rates={rateSnapshot}
+                        />
+                      ) : (
+                        <span className="text-sm text-muted-foreground">{item.grams} g</span>
+                      )}
+                    </button>
+                    {index < items.length - 1 && <Separator />}
+                  </div>
+                )
+              })
             )}
           </CardContent>
         </Card>
@@ -285,6 +342,33 @@ export function GoldPage() {
                   </p>
                 )}
               </div>
+              <fieldset className="space-y-2">
+                <legend className="flex items-center gap-1.5 text-sm font-medium">
+                  Currency
+                  <CurrencyFieldHint />
+                </legend>
+                <select
+                  id="gold-currency"
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  {...register('currency')}
+                  aria-invalid={!!errors.currency}
+                  aria-label="Currency for valuation display"
+                >
+                  {CURRENCY_CODES.map(code => (
+                    <option key={code} value={code}>
+                      {code}
+                    </option>
+                  ))}
+                </select>
+                {errors.currency && (
+                  <p role="alert" className="text-sm text-destructive">
+                    {errors.currency.message}
+                  </p>
+                )}
+                <p className="text-xs text-muted-foreground">
+                  Used for dual-currency spot value; grams and saved prices stay native ({currencyWatch}).
+                </p>
+              </fieldset>
             </div>
             <SheetFooter className="shrink-0 flex-col gap-2 border-t px-6 pb-6 pt-2 sm:flex-col">
               {saveError && (

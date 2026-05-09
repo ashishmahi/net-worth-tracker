@@ -1,4 +1,4 @@
-import type { AppData } from '@/types/data'
+import type { AppData, PropertyItem } from '@/types/data'
 import type { CurrencyCode } from '@/types/currency'
 import { roundCurrency } from '@/lib/financials'
 import { effectiveGoldInrPerGramForKarat } from '@/lib/goldLiveHints'
@@ -57,7 +57,8 @@ function sumGoldInr(
 /** Sum INR for the 'otherCommodities' dashboard row (manual always; silver when priced). */
 export function sumCommoditiesInr(
   data: AppData,
-  silverInrPerGram: number | null
+  silverInrPerGram: number | null,
+  rates: ForexRateSnapshot,
 ): number | null {
   const items = data.assets.otherCommodities.items
   if (items.length === 0) return 0
@@ -67,7 +68,10 @@ export function sumCommoditiesInr(
 
   for (const item of items) {
     if (item.type === 'manual') {
-      sum = roundCurrency(sum + roundCurrency(item.valueInr))
+      const from = item.currency ?? 'INR'
+      const conv = toReportingCurrency(item.value, from, 'INR', rates)
+      if (!conv.ok) continue
+      sum = roundCurrency(sum + roundCurrency(conv.amount))
       hasPricedItems = true
     } else if (item.type === 'standard') {
       if (silverInrPerGram != null && item.grams > 0) {
@@ -120,11 +124,29 @@ function sumBitcoinInr(
   return roundCurrency(q * live.btcUsd * live.usdInr)
 }
 
+/**
+ * Net-worth equity for one property: mortgage → agreement minus loan; no mortgage but
+ * milestone rows → sum of paid milestone amounts only (builder instalments without double-counting
+ * cash still in bank); no mortgage and no milestones → full agreement.
+ */
+export function propertyEquityForNetWorth(item: PropertyItem): number {
+  if (item.hasLiability) {
+    return roundCurrency(item.agreementAmount - (item.outstandingLoan ?? 0))
+  }
+  if (item.milestones.length > 0) {
+    let paid = 0
+    for (const m of item.milestones) {
+      if (!m.isPaid) continue
+      paid = roundCurrency(paid + m.amount)
+    }
+    return roundCurrency(paid)
+  }
+  return item.agreementAmount
+}
+
 function sumPropertyInr(data: AppData, ctx: CategoryTotalsCalcContext): number {
   return data.assets.property.items.reduce((sum, item) => {
-    const equity = item.hasLiability
-      ? roundCurrency(item.agreementInr - (item.outstandingLoanInr ?? 0))
-      : item.agreementInr
+    const equity = propertyEquityForNetWorth(item)
     const c = item.currency ?? ctx.reportingLens
     if (c === 'INR') {
       return roundCurrency(sum + roundCurrency(equity))
@@ -195,7 +217,7 @@ export function calcCategoryTotals(
       goldUsdPerOz: live.goldUsdPerOz,
       usdInr: live.usdInr,
     }),
-    otherCommodities: sumCommoditiesInr(data, silverInrPerGram),
+    otherCommodities: sumCommoditiesInr(data, silverInrPerGram, ctx.rates),
     mutualFunds: sumMutualFunds(data, ctx),
     stocks: sumStocks(data, ctx),
     bitcoin: sumBitcoinInr(data, live),
@@ -299,9 +321,7 @@ export function computeBreakdownOriginalLine(
       break
     case 'property':
       for (const item of data.assets.property.items) {
-        const equity = item.hasLiability
-          ? roundCurrency(item.agreementInr - (item.outstandingLoanInr ?? 0))
-          : item.agreementInr
+        const equity = propertyEquityForNetWorth(item)
         const eff = item.currency ?? ctx.reportingLens
         if (eff === 'INR') {
           contribs.push({ eff, raw: equity })
