@@ -1,18 +1,14 @@
 ---
-status: testing
+status: complete
 phase: 36-dashboard-dual-currency-display
 source: [36-01-SUMMARY.md]
 started: "2026-05-09T14:30:00.000Z"
-updated: "2026-05-09T15:45:00.000Z"
+updated: "2026-05-09T16:10:00.000Z"
 ---
 
 ## Current Test
 
-number: 2
-name: No muted line when all amounts match reporting currency
-expected: |
-  When every contributing record in a breakdown category uses the same currency as the selected reporting currency (e.g. reporting USD and only USD platforms in Mutual Funds), that category row shows a single amount line only — no smaller muted subline under it.
-awaiting: user response
+[testing complete]
 
 ## Tests
 
@@ -27,20 +23,22 @@ severity: minor
 ### 2. No muted line when all amounts match reporting currency
 expected: |
   When every contributing record in a breakdown category uses the same currency as the selected reporting currency (e.g. reporting USD and only USD platforms in Mutual Funds), that category row shows a single amount line only — no smaller muted subline under it.
-result: [pending]
+result: skipped
+reason: Asset MF UI does not expose per-platform currency yet (Phase 37). Cannot isolate this scenario independently of Test 1 without editing stored JSON or waiting for currency dropdown; user chose to defer manual verification until UI exists.
 
 ### 3. Rate unavailable on breakdown row
 expected: |
   When the app cannot convert to your reporting currency for a breakdown row (missing FX / rate unavailable), the amount column shows a small muted “Rate unavailable” hint and a sensible primary figure (existing INR-style fallback, or a single interpretable foreign total when that applies) — not a silent wrong number.
-result: [pending]
+result: skipped
+reason: Requires forcing missing FX legs while dashboard rows still have convertible INR totals (e.g. DevTools / offline API simulation). Deferred with Tests 2–3 until clearer harness or Phase 37 flows.
 
 ## Summary
 
 total: 3
 passed: 0
 issues: 1
-pending: 2
-skipped: 0
+pending: 0
+skipped: 2
 
 ## Gaps
 
@@ -58,3 +56,7 @@ skipped: 0
   missing:
     - "Optional: document in UAT/README that Phase 36 dual-line needs stored currency diversity; Phase 37 adds MF currency dropdown."
   debug_session: ""
+
+## Optional retest notes (no MF currency UI)
+
+To manually validate dual-line behaviour before Phase 37: export or edit `localStorage` key `wealth-tracker-data`, under `assets.mutualFunds.platforms[]` set `"currency":"INR"` on one platform and `"currency":"USD"` on another with plausible amounts, reload, set reporting currency to INR in the app, open Dashboard → Breakdown — Mutual Funds row should show primary in INR reporting plus muted USD subline when rates exist.
