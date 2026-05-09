@@ -170,6 +170,10 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.3-ROADMAP.md` and matc
 
 - [x] **PRA-01** — narrow-viewport path radiogroup stack + milestone horizontal-scroll hint; arrow-key navigation and initial focus on sheet open; no Save-specific ARIA escalation — Phase **33** ([`33-VERIFICATION.md`](phases/33-property-sheet-responsive-accessibility/33-VERIFICATION.md)).
 
+### Validated (v2.4 — Phase 36)
+
+- [x] **DSP-01**, **DSP-03** — dashboard breakdown dual-currency stacks; INR hub totals via `CategoryTotalsCalcContext` + optional muted original line per D-02 — Phase **36** ([`36-VERIFICATION.md`](phases/36-dashboard-dual-currency-display/36-VERIFICATION.md)).
+
 ### Deferred (backlog / future)
 
 - [ ] Export / reports — PDF or CSV (JSON export exists; richer formats later)  
@@ -188,7 +192,7 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.3-ROADMAP.md` and matc
 
 - **Stack:** React 18, Vite 5, TypeScript, shadcn/ui, Tailwind, RHF + Zod  
 - **Persistence:** Browser **`localStorage`** key **`wealth-tracker-data`** (`AppDataContext`); theme uses separate **`theme`** key  
-- **Prices:** `priceApi` + `useLivePrices()` — **BTC**, **USD→INR**, **silver (XAG)**, **gold (XAU)**; **`goldLiveHints`** / **`silverLiveHints`** (import uplift on parity ₹/g); **`calcCategoryTotals`** threads **`goldUsdPerOz`** for effective gold on the dashboard  
+- **Prices:** `priceApi` + `useLivePrices()` — **BTC**, **USD→INR**, **silver (XAG)**, **gold (XAU)**; **`goldLiveHints`** / **`silverLiveHints`** (import uplift on parity ₹/g); **`calcCategoryTotals`** threads **`goldUsdPerOz`** and converts MF/stocks/bank/property/retirement through **`toReportingCurrency`** → INR hub  
 - **Theme:** `localStorage` `theme` (`light` | `dark`); FOUC script in `index.html`  
 - **Layout:** `AppSidebar` offcanvas on mobile; `MobileTopBar`; `PageHeader` on section pages; asset sheets with scroll regions + property milestone horizontal scroll on narrow widths  
 - **Data reset (v1.2):** `createInitialData()` in `AppDataContext`; shadcn `AlertDialog` in Settings danger zone  
@@ -240,4 +244,4 @@ This file is updated at **milestone completion** to avoid drift between plans an
 </details>  
 
 ---
-*Last updated: 2026-05-08 — **v2.4** started (`/gsd-new-milestone`); requirements at [`.planning/REQUIREMENTS.md`](REQUIREMENTS.md); roadmap at [`.planning/ROADMAP.md`](ROADMAP.md).*
+*Last updated: 2026-05-09 — Phase **36** complete (dashboard breakdown dual currency); requirements at [`.planning/REQUIREMENTS.md`](REQUIREMENTS.md); roadmap at [`.planning/ROADMAP.md`](ROADMAP.md).*
