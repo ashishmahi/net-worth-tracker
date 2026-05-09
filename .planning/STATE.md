@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.4
 milestone_name: — Multi-Currency Reporting
-status: planning
-last_updated: "2026-05-09T09:54:17.631Z"
-last_activity: 2026-05-08
+status: ready_to_plan
+last_updated: "2026-05-09T09:57:34.014Z"
+last_activity: 2026-05-09
 progress:
   total_phases: 8
-  completed_phases: 5
+  completed_phases: 6
   total_plans: 6
-  completed_plans: 5
-  percent: 83
+  completed_plans: 6
+  percent: 75
 ---
 
 ## Project
@@ -19,13 +19,13 @@ progress:
 
 ## Current Position
 
-Phase: 36
+Phase: 37
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-05-08
+Last activity: 2026-05-09
 
 ```
-Progress: [████░░░░░░] 40% — 2/5 v2.4 phases — Phase 36 next
+Progress: [██████░░░░] 60% — 3/5 v2.4 phases — Phase 37 next
 ```
 
 ## Project reference
@@ -67,7 +67,7 @@ See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](
 
 **Last completed milestone:** **v2.3** — Property entry flow & validation — Phases **31–33** — **SEED-006**
 
-**Next:** **`/gsd-plan-phase 36`** (or `/gsd-discuss-phase 36`)
+**Next:** **`/gsd-discuss-phase 37`** / **`/gsd-plan-phase 37`**
 
 **Resume file:** --resume-file
 
@@ -75,6 +75,4 @@ See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](
 
 **Completed phases (v2.3):** **31** — [31-01-SUMMARY](phases/31-guided-property-entry-ux/31-01-SUMMARY.md) · [31-VERIFICATION](phases/31-guided-property-entry-ux/31-VERIFICATION.md) · **32** — [32-01-SUMMARY](phases/32-property-save-validation-schema/32-01-SUMMARY.md) · [32-VERIFICATION](phases/32-property-save-validation-schema/32-VERIFICATION.md) · **33** — [33-01-SUMMARY](phases/33-property-sheet-responsive-accessibility/33-01-SUMMARY.md) · [33-VERIFICATION](phases/33-property-sheet-responsive-accessibility/33-VERIFICATION.md)
 
-**Completed (v2.4):** **34** — [34-01-SUMMARY](phases/34-fx-infrastructure-data-model/34-01-SUMMARY.md) · **35** — [35-01-SUMMARY](phases/35-reporting-currency-selector/35-01-SUMMARY.md) · [35-VERIFICATION](phases/35-reporting-currency-selector/35-VERIFICATION.md)
-
-**Planned Phase:** 36 (Dashboard Dual-Currency Display) — 1 plans — 2026-05-09T09:54:17.621Z
+**Completed (v2.4):** **34** — [34-01-SUMMARY](phases/34-fx-infrastructure-data-model/34-01-SUMMARY.md) · **35** — [35-01-SUMMARY](phases/35-reporting-currency-selector/35-01-SUMMARY.md) · [35-VERIFICATION](phases/35-reporting-currency-selector/35-VERIFICATION.md) · **36** — [36-01-SUMMARY](phases/36-dashboard-dual-currency-display/36-01-SUMMARY.md)

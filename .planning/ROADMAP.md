@@ -94,7 +94,7 @@
 
 - [x] Phase 34 — [34-01](phases/34-fx-infrastructure-data-model/34-01-PLAN.md) (`/gsd-execute-phase 34`)
 - [x] Phase 35 — [35-01](phases/35-reporting-currency-selector/35-01-PLAN.md) (`/gsd-execute-phase 35`) — **2026-05-08**
-- [ ] Phase 36 — [36-01](phases/36-dashboard-dual-currency-display/36-01-PLAN.md) (`/gsd-execute-phase 36`)
+- [x] Phase 36 — [36-01](phases/36-dashboard-dual-currency-display/36-01-PLAN.md) (`/gsd-execute-phase 36`) — **2026-05-09**
 - [ ] Phase 37 — (`/gsd-plan-phase 37`)
 - [ ] Phase 38 — (`/gsd-plan-phase 38`)
 

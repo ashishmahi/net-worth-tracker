@@ -35,9 +35,9 @@
 
 ### Display
 
-- [ ] **DSP-01**: Dashboard breakdown rows show reporting currency value as the primary number (bold); when the underlying record uses a different currency, the original amount appears below in smaller muted text
+- [x] **DSP-01**: Dashboard breakdown rows show reporting currency value as the primary number (bold); when the underlying record uses a different currency, the original amount appears below in smaller muted text
 - [ ] **DSP-02**: Asset detail pages (MF platforms, stock brokers, bank accounts, gold holdings table, etc.) follow the same dual-currency display pattern as the dashboard
-- [ ] **DSP-03**: When record currency equals reporting currency, the secondary muted line is hidden entirely
+- [x] **DSP-03**: When record currency equals reporting currency, the secondary muted line is hidden entirely
 
 ### Settings Live Rates
 
