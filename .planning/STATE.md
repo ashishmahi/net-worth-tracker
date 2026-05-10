@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.4
 milestone_name: — Multi-Currency Reporting
 status: executing
-last_updated: "2026-05-10T07:53:55.999Z"
+last_updated: "2026-05-10T08:02:04.605Z"
 last_activity: 2026-05-09 -- Phase --phase execution started
 progress:
   total_phases: 8
   completed_phases: 6
-  total_plans: 7
+  total_plans: 8
   completed_plans: 6
-  percent: 86
+  percent: 75
 ---
 
 ## Project
@@ -77,4 +77,4 @@ See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](
 
 **Completed (v2.4):** **34** — [34-01-SUMMARY](phases/34-fx-infrastructure-data-model/34-01-SUMMARY.md) · **35** — [35-01-SUMMARY](phases/35-reporting-currency-selector/35-01-SUMMARY.md) · [35-VERIFICATION](phases/35-reporting-currency-selector/35-VERIFICATION.md) · **36** — [36-01-SUMMARY](phases/36-dashboard-dual-currency-display/36-01-SUMMARY.md)
 
-**Planned Phase:** 37 (asset-pages-currency-fields-display) — 1 plans — 2026-05-09T11:21:27.310Z
+**Planned Phase:** 38 (settings-snapshots-export-import) — 1 plans — 2026-05-10T08:02:04.578Z

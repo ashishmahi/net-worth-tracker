@@ -21,10 +21,10 @@ import {
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { createInitialData, parseAppDataFromImport, useAppData } from '@/context/AppDataContext'
-import { useLivePrices } from '@/context/LivePricesContext'
 import { parseFinancialInput, nowIso } from '@/lib/financials'
 import { SettingsGoldPricingCard } from '@/components/settings/SettingsGoldPricingCard'
 import { SettingsSilverPricingCard } from '@/components/settings/SettingsSilverPricingCard'
+import { SettingsLiveRatesCard } from '@/components/settings/SettingsLiveRatesCard'
 import {
   createWealthExportZip,
   extractDataJsonFromZip,
@@ -102,40 +102,6 @@ type RetirementValues = z.infer<typeof retirementSchema>
 
 export function SettingsPage() {
   const { data, saveData } = useAppData()
-  const {
-    btcUsd,
-    usdInr,
-    aedInr,
-    btcLoading,
-    forexLoading,
-    btcError,
-    forexError,
-    silverUsdPerOz,
-    silverLoading,
-    silverError,
-    goldUsdPerOz,
-    goldLoading,
-    goldError,
-    setSessionRates,
-    clearSessionRates,
-  } = useLivePrices()
-
-  const [sessionUsdInr, setSessionUsdInr] = useState('')
-  const [sessionAedInr, setSessionAedInr] = useState('')
-  const [sessionBtcUsd, setSessionBtcUsd] = useState('')
-
-  const applySessionRates = () => {
-    const partial: {
-      usdInr?: number
-      aedInr?: number
-      btcUsd?: number
-    } = {}
-    if (sessionUsdInr.trim()) partial.usdInr = parseFinancialInput(sessionUsdInr)
-    if (sessionAedInr.trim()) partial.aedInr = parseFinancialInput(sessionAedInr)
-    if (sessionBtcUsd.trim()) partial.btcUsd = parseFinancialInput(sessionBtcUsd)
-    setSessionRates(partial)
-  }
-
   // Per-block save state (D-19 — separate Save buttons, not one global Save)
   const [retirementSaving, setRetirementSaving] = useState(false)
   const [retirementSaveError, setRetirementSaveError] = useState<string | null>(null)
@@ -509,166 +475,7 @@ export function SettingsPage() {
 
       {settingsTab === 'rates' && (
       <div className="space-y-6">
-      <Card>
-        <CardContent className="space-y-4 pt-6">
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-              Live market rates
-            </p>
-            <p className="mt-1 text-sm text-muted-foreground">
-            Read-only quotes for forex, Bitcoin, gold (XAU), and silver (XAG) spot USD per troy
-            ounce. Refreshed automatically.
-          </p>
-          </div>
-          <dl className="space-y-2 text-sm" aria-live="polite">
-            <div className="flex justify-between gap-4">
-              <dt className="text-muted-foreground">USD → INR (₹ per $1)</dt>
-              <dd className="font-medium tabular-nums flex items-center gap-2">
-                {forexLoading && !usdInr ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin shrink-0" aria-hidden />
-                    <span className="text-muted-foreground">Loading…</span>
-                  </>
-                ) : usdInr != null ? (
-                  usdInr.toLocaleString('en-IN', { maximumFractionDigits: 4 })
-                ) : (
-                  <span className="text-muted-foreground">—</span>
-                )}
-              </dd>
-            </div>
-            <div className="flex justify-between gap-4">
-              <dt className="text-muted-foreground">AED → INR (₹ per 1 AED)</dt>
-              <dd className="font-medium tabular-nums flex items-center gap-2">
-                {forexLoading && !aedInr ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin shrink-0" aria-hidden />
-                    <span className="text-muted-foreground">Loading…</span>
-                  </>
-                ) : aedInr != null ? (
-                  aedInr.toLocaleString('en-IN', { maximumFractionDigits: 4 })
-                ) : (
-                  <span className="text-muted-foreground">—</span>
-                )}
-              </dd>
-            </div>
-            <div className="flex justify-between gap-4">
-              <dt className="text-muted-foreground">BTC / USD</dt>
-              <dd className="font-medium tabular-nums flex items-center gap-2">
-                {btcLoading && !btcUsd ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin shrink-0" aria-hidden />
-                    <span className="text-muted-foreground">Loading…</span>
-                  </>
-                ) : btcUsd != null ? (
-                  btcUsd.toLocaleString('en-IN', { maximumFractionDigits: 2 })
-                ) : (
-                  <span className="text-muted-foreground">—</span>
-                )}
-              </dd>
-            </div>
-            <div className="flex justify-between gap-4">
-              <dt className="text-muted-foreground">Gold (XAU) — USD per troy oz</dt>
-              <dd className="font-medium tabular-nums flex items-center gap-2">
-                {goldLoading && goldUsdPerOz == null ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin shrink-0" aria-hidden />
-                    <span className="text-muted-foreground">Loading…</span>
-                  </>
-                ) : goldUsdPerOz != null ? (
-                  goldUsdPerOz.toLocaleString('en-IN', { maximumFractionDigits: 2 })
-                ) : (
-                  <span className="text-muted-foreground">—</span>
-                )}
-              </dd>
-            </div>
-            <div className="flex justify-between gap-4">
-              <dt className="text-muted-foreground">Silver (XAG) — USD per troy oz</dt>
-              <dd className="font-medium tabular-nums flex items-center gap-2">
-                {silverLoading && silverUsdPerOz == null ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin shrink-0" aria-hidden />
-                    <span className="text-muted-foreground">Loading…</span>
-                  </>
-                ) : silverUsdPerOz != null ? (
-                  silverUsdPerOz.toLocaleString('en-IN', { maximumFractionDigits: 2 })
-                ) : (
-                  <span className="text-muted-foreground">—</span>
-                )}
-              </dd>
-            </div>
-          </dl>
-          {(btcError || forexError || goldError || silverError) && (
-            <p role="alert" className="text-sm text-destructive">
-              Could not load market rates. You can enter session-only rates below.
-              {btcError ? ` BTC: ${btcError}` : ''}
-              {forexError ? ` Forex: ${forexError}` : ''}
-              {goldError ? ` Gold: ${goldError}` : ''}
-              {silverError ? ` Silver: ${silverError}` : ''}
-            </p>
-          )}
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardContent className="space-y-4 pt-6">
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-              Session-only manual rates
-            </p>
-            <p id="session-rates-explainer" className="mt-1 text-sm text-muted-foreground">
-              These values stay in memory only. They are not saved to your data file or export,
-              and they clear when you reload the page. When live feeds succeed again, session
-              overrides for that channel are dropped automatically.
-            </p>
-          </div>
-          <div className="space-y-3">
-            <div>
-              <Label htmlFor="session-usd-inr">USD → INR (manual)</Label>
-              <Input
-                id="session-usd-inr"
-                type="text"
-                inputMode="decimal"
-                placeholder="e.g. 83.12"
-                value={sessionUsdInr}
-                onChange={e => setSessionUsdInr(e.target.value)}
-                aria-describedby="session-rates-explainer"
-              />
-            </div>
-            <div>
-              <Label htmlFor="session-aed-inr">AED → INR (manual)</Label>
-              <Input
-                id="session-aed-inr"
-                type="text"
-                inputMode="decimal"
-                placeholder="e.g. 22.65"
-                value={sessionAedInr}
-                onChange={e => setSessionAedInr(e.target.value)}
-                aria-describedby="session-rates-explainer"
-              />
-            </div>
-            <div>
-              <Label htmlFor="session-btc-usd">BTC / USD (manual)</Label>
-              <Input
-                id="session-btc-usd"
-                type="text"
-                inputMode="decimal"
-                placeholder="e.g. 98,000"
-                value={sessionBtcUsd}
-                onChange={e => setSessionBtcUsd(e.target.value)}
-                aria-describedby="session-rates-explainer"
-              />
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Button type="button" variant="secondary" onClick={applySessionRates}>
-                Apply session rates
-              </Button>
-              <Button type="button" variant="outline" onClick={clearSessionRates}>
-                Clear session rates
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+        <SettingsLiveRatesCard />
       </div>
       )}
 

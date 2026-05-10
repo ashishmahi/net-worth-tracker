@@ -30,7 +30,7 @@ import {
   type ForexRateSnapshot,
 } from '@/lib/currencyConversion'
 import { roundCurrency } from '@/lib/financials'
-import type { AppData } from '@/types/data'
+import type { AppData, NetWorthPoint } from '@/types/data'
 import type { CurrencyCode } from '@/types/currency'
 import { NetWorthOverTimeCard } from '@/components/NetWorthOverTimeCard'
 import { AllocationRing } from '@/components/AllocationRing'
@@ -376,15 +376,38 @@ export function DashboardPage({
       const gross = sumForNetWorth(totals)
       const nw = calcNetWorth(gross, sumLiabilitiesInr(data, forexSnapshot))
       const totalInr = roundCurrency(nw)
+      const reportingCurrency: CurrencyCode =
+        data.settings.reportingCurrency ?? 'INR'
+      let totalReporting: number | undefined
+      if (reportingCurrency === 'INR') {
+        totalReporting = totalInr
+      } else {
+        const conv = toReportingCurrency(nw, 'INR', reportingCurrency, forexSnapshot)
+        totalReporting = conv.ok ? roundCurrency(conv.amount) : undefined
+      }
+
+      const rates: NonNullable<NetWorthPoint['rates']> = {}
+      if (usdInr != null) rates.usdInr = usdInr
+      if (aedInr != null) rates.aedInr = aedInr
+      if (eurInr != null) rates.eurInr = eurInr
+      if (gbpInr != null) rates.gbpInr = gbpInr
+      if (sgdInr != null) rates.sgdInr = sgdInr
+      if (btcUsd != null) rates.btcUsd = btcUsd
+      if (goldUsdPerOz != null) rates.goldUsdPerOz = goldUsdPerOz
+      if (silverUsdPerOz != null) rates.silverUsdPerOz = silverUsdPerOz
+      const hasRates = Object.keys(rates).length > 0
+
+      const point: NetWorthPoint = {
+        recordedAt: new Date().toISOString(),
+        totalInr,
+        reportingCurrency,
+        ...(totalReporting !== undefined ? { totalReporting } : {}),
+        ...(hasRates ? { rates } : {}),
+      }
+
       await saveData({
         ...data,
-        netWorthHistory: [
-          ...data.netWorthHistory,
-          {
-            recordedAt: new Date().toISOString(),
-            totalInr,
-          },
-        ],
+        netWorthHistory: [...data.netWorthHistory, point],
       })
       setSnapshotSaved(true)
     } catch {
@@ -394,7 +417,20 @@ export function DashboardPage({
     } finally {
       setIsRecording(false)
     }
-  }, [data, saveData, totals, forexSnapshot])
+  }, [
+    data,
+    saveData,
+    totals,
+    forexSnapshot,
+    usdInr,
+    aedInr,
+    eurInr,
+    gbpInr,
+    sgdInr,
+    btcUsd,
+    goldUsdPerOz,
+    silverUsdPerOz,
+  ])
 
   const debtRatioPct =
     grossAssetsForDebtRatio > 0

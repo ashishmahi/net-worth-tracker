@@ -185,10 +185,25 @@ const SettingsSchema = z
   })
   .passthrough() // settings may gain further fields in later phases
 
+/** Optional quote legs captured with a net worth snapshot (Phase 38 — all keys optional inside). */
+export const SnapshotRatesSchema = z.object({
+  usdInr: z.number().optional(),
+  aedInr: z.number().optional(),
+  eurInr: z.number().optional(),
+  gbpInr: z.number().optional(),
+  sgdInr: z.number().optional(),
+  btcUsd: z.number().optional(),
+  goldUsdPerOz: z.number().optional(),
+  silverUsdPerOz: z.number().optional(),
+})
+
 // ── Net worth history (Phase 10: point-in-time snapshots; not the live computed total)
 export const NetWorthPointSchema = z.object({
   recordedAt: z.string().datetime(),
   totalInr: z.number(),
+  reportingCurrency: CurrencySchema.optional(),
+  totalReporting: z.number().optional(),
+  rates: SnapshotRatesSchema.optional(),
 })
 
 // ── Root schema ───────────────────────────────────────────────────────────────

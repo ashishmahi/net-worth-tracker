@@ -96,7 +96,7 @@
 - [x] Phase 35 — [35-01](phases/35-reporting-currency-selector/35-01-PLAN.md) (`/gsd-execute-phase 35`) — **2026-05-08**
 - [x] Phase 36 — [36-01](phases/36-dashboard-dual-currency-display/36-01-PLAN.md) (`/gsd-execute-phase 36`) — **2026-05-09**
 - [x] Phase 37 — [37-01](phases/37-asset-pages-currency-fields-display/37-01-PLAN.md) (`/gsd-execute-phase 37`) — **2026-05-09**
-- [ ] Phase 38 — (`/gsd-plan-phase 38`)
+- [x] Phase 38 — [38-01](phases/38-settings-snapshots-export-import/38-01-PLAN.md) (`/gsd-execute-phase 38`) — **2026-05-10**
 
 ---
 
