@@ -27,6 +27,8 @@ jobs:
       - run: npm run build
       - name: Verify dist uses Pages base
         run: grep -q "net-worth-tracker" dist/index.html
+      - name: Verify SPA 404 fallback present
+        run: test -f dist/404.html && grep -q "pathSegmentsToKeep" dist/404.html
       - uses: actions/upload-artifact@v4
         with:
           name: dist

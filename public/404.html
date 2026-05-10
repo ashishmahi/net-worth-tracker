@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wealth Tracker</title>
+    <script>
+      // GitHub Pages SPA fallback (https://github.com/rafgraph/spa-github-pages).
+      // Pages serves this file for any unknown path under the project base
+      // (e.g. /net-worth-tracker/settings on hard refresh). We rewrite the URL
+      // to the app root with the original path encoded as a query string,
+      // then index.html restores it via history.replaceState before React
+      // Router boots.
+      //
+      // pathSegmentsToKeep must equal the number of path segments in the
+      // GitHub Pages base URL. For a project page at
+      // https://<user>.github.io/net-worth-tracker/ this is 1. Update this if
+      // BASE_URL in .github/workflows/ci-pages.yml ever changes depth.
+      var pathSegmentsToKeep = 1;
+      var l = window.location;
+      l.replace(
+        l.protocol +
+          '//' +
+          l.hostname +
+          (l.port ? ':' + l.port : '') +
+          l.pathname
+            .split('/')
+            .slice(0, 1 + pathSegmentsToKeep)
+            .join('/') +
+          '/?/' +
+          l.pathname
+            .slice(1)
+            .split('/')
+            .slice(pathSegmentsToKeep)
+            .join('/')
+            .replace(/&/g, '~and~') +
+          (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+          l.hash
+      );
+    </script>
+  </head>
+  <body></body>
+</html>
