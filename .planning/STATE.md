@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.4
 milestone_name: — Multi-Currency Reporting
-status: executing
-last_updated: "2026-05-10T08:02:04.605Z"
-last_activity: 2026-05-09 -- Phase --phase execution started
+status: milestone_complete
+last_updated: "2026-05-10T14:50:00Z"
+last_activity: 2026-05-10 — Phase 38 UAT complete; milestone v2.4 complete
 progress:
   total_phases: 8
-  completed_phases: 6
+  completed_phases: 7
   total_plans: 8
   completed_plans: 6
-  percent: 75
+  percent: 88
 ---
 
 ## Project
@@ -19,18 +19,18 @@ progress:
 
 ## Current Position
 
-Phase: --phase (37) — EXECUTING
-Plan: 1 of --name
-Status: Executing Phase --phase
-Last activity: 2026-05-09 -- Phase --phase execution started
+Phase: 38
+Plan: Not started
+Status: Milestone complete
+Last activity: 2026-05-10
 
 ```
-Progress: [██████░░░░] 60% — 3/5 v2.4 phases — Phase 37 next
+Progress: [██████████] 100% — v2.4 Multi-Currency Reporting — Phases 34–38 verified
 ```
 
 ## Project reference
 
-See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](ROADMAP.md) — **v2.4** in planning.
+See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](ROADMAP.md) — **v2.4** milestone verification complete.
 
 **Core value:** Total net worth in INR — liabilities deducted from gross assets, live prices where applicable, minimal repeated data entry.
 
@@ -67,7 +67,7 @@ See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](
 
 **Last completed milestone:** **v2.3** — Property entry flow & validation — Phases **31–33** — **SEED-006**
 
-**Next:** **`/gsd-discuss-phase 37`** / **`/gsd-plan-phase 37`**
+**Next:** **`/gsd-new-milestone`** or **`/gsd-complete-milestone`** — v2.4 scope finished (Phases 34–38).
 
 **Resume file:** --resume-file
 
@@ -75,6 +75,4 @@ See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](
 
 **Completed phases (v2.3):** **31** — [31-01-SUMMARY](phases/31-guided-property-entry-ux/31-01-SUMMARY.md) · [31-VERIFICATION](phases/31-guided-property-entry-ux/31-VERIFICATION.md) · **32** — [32-01-SUMMARY](phases/32-property-save-validation-schema/32-01-SUMMARY.md) · [32-VERIFICATION](phases/32-property-save-validation-schema/32-VERIFICATION.md) · **33** — [33-01-SUMMARY](phases/33-property-sheet-responsive-accessibility/33-01-SUMMARY.md) · [33-VERIFICATION](phases/33-property-sheet-responsive-accessibility/33-VERIFICATION.md)
 
-**Completed (v2.4):** **34** — [34-01-SUMMARY](phases/34-fx-infrastructure-data-model/34-01-SUMMARY.md) · **35** — [35-01-SUMMARY](phases/35-reporting-currency-selector/35-01-SUMMARY.md) · [35-VERIFICATION](phases/35-reporting-currency-selector/35-VERIFICATION.md) · **36** — [36-01-SUMMARY](phases/36-dashboard-dual-currency-display/36-01-SUMMARY.md)
-
-**Planned Phase:** 38 (settings-snapshots-export-import) — 1 plans — 2026-05-10T08:02:04.578Z
+**Completed (v2.4):** **34** — [34-01-SUMMARY](phases/34-fx-infrastructure-data-model/34-01-SUMMARY.md) · **35** — [35-01-SUMMARY](phases/35-reporting-currency-selector/35-01-SUMMARY.md) · [35-VERIFICATION](phases/35-reporting-currency-selector/35-VERIFICATION.md) · **36** — [36-01-SUMMARY](phases/36-dashboard-dual-currency-display/36-01-SUMMARY.md) · **37** — [37-UAT](phases/37-asset-pages-currency-fields-display/37-UAT.md) · **38** — [38-UAT](phases/38-settings-snapshots-export-import/38-UAT.md)

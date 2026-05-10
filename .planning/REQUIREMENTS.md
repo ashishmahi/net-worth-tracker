@@ -41,18 +41,18 @@
 
 ### Settings Live Rates
 
-- [ ] **SET-01**: The Settings live rates card extends to show all supported FX pairs (EUR/INR, GBP/INR, SGD/INR alongside existing USD/INR, AED/INR)
-- [ ] **SET-02**: Session-only manual rate override covers the new EUR, GBP, and SGD currency pairs
+- [x] **SET-01**: The Settings live rates card extends to show all supported FX pairs (EUR/INR, GBP/INR, SGD/INR alongside existing USD/INR, AED/INR)
+- [x] **SET-02**: Session-only manual rate override covers the new EUR, GBP, and SGD currency pairs
 
 ### Snapshots
 
-- [ ] **SNP-01**: Net worth snapshots record the active reporting currency at time of capture
-- [ ] **SNP-02**: Net worth snapshots record the FX rates used at capture time so historical snapshot values remain meaningful when rates change later
+- [x] **SNP-01**: Net worth snapshots record the active reporting currency at time of capture
+- [x] **SNP-02**: Net worth snapshots record the FX rates used at capture time so historical snapshot values remain meaningful when rates change later
 
 ### Export / Import
 
-- [ ] **EXP-01**: Zip export preserves the `currency` field on all asset and liability records
-- [ ] **EXP-02**: Zip import respects `currency` fields on all records (does not strip or overwrite them on load)
+- [x] **EXP-01**: Zip export preserves the `currency` field on all asset and liability records
+- [x] **EXP-02**: Zip import respects `currency` fields on all records (does not strip or overwrite them on load)
 
 ---
 
