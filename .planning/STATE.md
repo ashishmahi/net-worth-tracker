@@ -1,10 +1,10 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.4
-milestone_name: — Multi-Currency Reporting
-status: milestone_complete
-last_updated: "2026-05-10T14:50:00Z"
-last_activity: 2026-05-10 — Phase 38 UAT complete; milestone v2.4 complete
+milestone: —
+milestone_name: —
+status: idle
+last_updated: "2026-05-10T15:30:00Z"
+last_activity: 2026-05-10 — v2.4 milestone archived; REQUIREMENTS placeholder for next milestone
 progress:
   total_phases: 8
   completed_phases: 7
@@ -19,18 +19,18 @@ progress:
 
 ## Current Position
 
-Phase: 38
-Plan: Not started
-Status: Milestone complete
+Phase: —
+Plan: —
+Status: Idle — **last shipped:** **v2.4** (2026-05-10)
 Last activity: 2026-05-10
 
 ```
-Progress: [██████████] 100% — v2.4 Multi-Currency Reporting — Phases 34–38 verified
+Progress: [██████████] 100% — v2.4 shipped — define next milestone with /gsd-new-milestone
 ```
 
 ## Project reference
 
-See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](ROADMAP.md) — **v2.4** milestone verification complete.
+See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](ROADMAP.md) — **v2.4** archived; active **`REQUIREMENTS.md`** is a placeholder.
 
 **Core value:** Total net worth in INR — liabilities deducted from gross assets, live prices where applicable, minimal repeated data entry.
 
@@ -42,7 +42,7 @@ See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](
 
 ### Roadmap evolution
 
-- **v2.4** started 2026-05-08: multi-currency reporting ([SEED-005](seeds/SEED-005-multi-currency-reporting.md)) — Phases **34+** — requirements + roadmap in progress.
+- **v2.4** shipped 2026-05-10: multi-currency reporting ([SEED-005](seeds/SEED-005-multi-currency-reporting.md)) — Phases **34–38** — archived [`milestones/v2.4-ROADMAP.md`](milestones/v2.4-ROADMAP.md) · [`milestones/v2.4-REQUIREMENTS.md`](milestones/v2.4-REQUIREMENTS.md).
 - **v2.3** archived 2026-05-06: property guided entry + save validation + responsive sheet ([SEED-006](seeds/SEED-006-property-entry-flow-validation.md)) — [`milestones/v2.3-ROADMAP.md`](milestones/v2.3-ROADMAP.md) · [`milestones/v2.3-REQUIREMENTS.md`](milestones/v2.3-REQUIREMENTS.md).
 - **v2.2** shipped 2026-05-06: bullion import uplift Phases **29–30** — archives [`v2.2-ROADMAP.md`](milestones/v2.2-ROADMAP.md) · [`v2.2-REQUIREMENTS.md`](milestones/v2.2-REQUIREMENTS.md).
 
@@ -63,11 +63,13 @@ See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](
 
 ## Session continuity
 
-**Current milestone:** **v2.4** — Multi-Currency Reporting — Phases **34+** — **SEED-005**
+**Current milestone:** *(none — run **`/gsd-new-milestone`**)*
 
-**Last completed milestone:** **v2.3** — Property entry flow & validation — Phases **31–33** — **SEED-006**
+**Last shipped milestone:** **v2.4** — Multi-Currency Reporting — Phases **34–38** — **SEED-005**
 
-**Next:** **`/gsd-new-milestone`** or **`/gsd-complete-milestone`** — v2.4 scope finished (Phases 34–38).
+**Previously:** **v2.3** — Property entry flow & validation — Phases **31–33** — **SEED-006**
+
+**Next:** **`/gsd-new-milestone`**
 
 **Resume file:** --resume-file
 

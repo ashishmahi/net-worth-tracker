@@ -1,5 +1,31 @@
 # Milestone history — Personal Wealth Tracker
 
+**Pre-ship audit (v2.4):** No `v2.4-MILESTONE-AUDIT.md` on file — optional `/gsd-audit-milestone` before high-stakes releases.  
+**Open-artifact audit:** `gsd-sdk query audit-open` unavailable in this SDK — skipped (same as prior closes); deferred items unchanged in `STATE.md`.
+
+## v2.4 Multi-Currency Reporting (Shipped: 2026-05-10)
+
+**Scope:** Phases **34–38**.  
+**Phase directories (current location):** [`.planning/phases/34-fx-infrastructure-data-model/`](phases/34-fx-infrastructure-data-model/) · [`.planning/phases/35-reporting-currency-selector/`](phases/35-reporting-currency-selector/) · [`.planning/phases/36-dashboard-dual-currency-display/`](phases/36-dashboard-dual-currency-display/) · [`.planning/phases/37-asset-pages-currency-fields-display/`](phases/37-asset-pages-currency-fields-display/) · [`.planning/phases/38-settings-snapshots-export-import/`](phases/38-settings-snapshots-export-import/)
+
+**Phases completed:** 5 phases, 5 plans
+
+**Key accomplishments:**
+
+- **Phase 34:** EUR/GBP/SGD FX legs, `toReportingCurrency`, record-level `currency`, settings `reportingCurrency`, migrations — [`34-01-SUMMARY.md`](phases/34-fx-infrastructure-data-model/34-01-SUMMARY.md).
+- **Phase 35:** Topbar reporting currency `<select>`, instant recalculation, persistence — [`35-01-SUMMARY.md`](phases/35-reporting-currency-selector/35-01-SUMMARY.md).
+- **Phase 36:** Dashboard breakdown dual-currency stacks — [`36-01-SUMMARY.md`](phases/36-dashboard-dual-currency-display/36-01-SUMMARY.md) · [`36-VERIFICATION.md`](phases/36-dashboard-dual-currency-display/36-VERIFICATION.md).
+- **Phase 37:** Currency dropdown + dual display across asset/liability pages — UAT [`37-UAT.md`](phases/37-asset-pages-currency-fields-display/37-UAT.md).
+- **Phase 38:** Merged **Market & session rates** card; snapshot `reportingCurrency` / `totalReporting` / `rates`; Vitest zip round-trip — [`38-01-PLAN.md`](phases/38-settings-snapshots-export-import/38-01-PLAN.md) · UAT [`38-UAT.md`](phases/38-settings-snapshots-export-import/38-UAT.md).
+
+**Roadmap / requirements:** [`.planning/milestones/v2.4-ROADMAP.md`](milestones/v2.4-ROADMAP.md), [`v2.4-REQUIREMENTS.md`](milestones/v2.4-REQUIREMENTS.md)
+
+**Tooling note:** `gsd-sdk query milestone.complete` still calls `phasesArchive` without a version (SDK bug); **v2.4** close used the **manual** archive path (same as **v2.3**). Phase dirs **34–38** left under **`.planning/phases/`** (optional **`/gsd-cleanup`** later).
+
+**Known deferred (unchanged):** Phase 05 UAT, Phase 01 `human_needed` — see `STATE.md` **Deferred items**.
+
+---
+
 **Pre-ship audit (v2.3):** No `v2.3-MILESTONE-AUDIT.md` on file — optional `/gsd-audit-milestone` before high-stakes releases.  
 **Open-artifact audit:** `gsd-sdk query audit-open` unavailable in this SDK — skipped (same as prior closes); deferred items unchanged in `STATE.md`.
 

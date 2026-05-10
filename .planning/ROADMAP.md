@@ -12,93 +12,30 @@
 - ✅ **v2.1 — Section routing & home nav** — Shipped 2026-05-04 — [full snapshot](milestones/v2.1-ROADMAP.md)
 - ✅ **v2.2 — Import-adjusted bullion pricing** — Shipped 2026-05-06 — [full snapshot](milestones/v2.2-ROADMAP.md)
 - ✅ **v2.3 — Property entry flow & validation** — Shipped 2026-05-06 (Phases **31–33**) — [full snapshot](milestones/v2.3-ROADMAP.md) · [requirements](milestones/v2.3-REQUIREMENTS.md)
-- 🚧 **v2.4 — Multi-Currency Reporting** — In progress (Phases **34–38**) — [requirements](REQUIREMENTS.md)
+- ✅ **v2.4 — Multi-Currency Reporting** — Shipped 2026-05-10 (Phases **34–38**) — [full snapshot](milestones/v2.4-ROADMAP.md) · [requirements](milestones/v2.4-REQUIREMENTS.md)
 
-**Phase numbering:** **v2.3** ended at Phase **33** ([SEED-006](seeds/SEED-006-property-entry-flow-validation.md)). **v2.4** continues from Phase **34** ([SEED-005](seeds/SEED-005-multi-currency-reporting.md)).
+**Phase numbering:** **v2.4** ended at Phase **38** ([SEED-005](seeds/SEED-005-multi-currency-reporting.md)). **Next milestone:** **`/gsd-new-milestone`**.
 
 ---
 
-## v2.4 — Multi-Currency Reporting (Phases 34–38)
+<details>
+<summary>✅ v2.4 — Multi-Currency Reporting (Phases 34–38) — SHIPPED 2026-05-10</summary>
 
 **Goal:** Allow users to hold assets in any currency (INR, USD, AED, EUR, GBP, SGD) and view all totals in a user-selected reporting currency, converted at live FX rates.
 
-**Requirements:** [REQUIREMENTS.md](REQUIREMENTS.md) | **Spec:** `docs/multi-currency.md`
+| Phase | Name | Goal (summary) | Requirements |
+|-------|------|----------------|--------------|
+| **34** | FX infrastructure & data model | Feeds, conversion, record `currency`, migrations | FX-01–03, DM-01–03 |
+| **35** | Reporting currency selector | Topbar picker, instant recalculation, persistence | RC-01–03 |
+| **36** | Dashboard dual-currency display | Breakdown rows: reporting + muted original | DSP-01, DSP-03 |
+| **37** | Asset pages — currency fields & display | All pages: currency dropdown + dual display | AP-01–02, DSP-02 |
+| **38** | Settings, snapshots & export/import | Merged live rates card; snapshot metadata; zip parity | SET-01–02, SNP-01–02, EXP-01–02 |
 
-| Phase | Name | Goal | Requirements | Success Criteria |
-|-------|------|------|--------------|-----------------|
-| **34** | FX infrastructure & data model | Extend FX feeds, conversion utility, data model migration | FX-01–03, DM-01–03 | 5 |
-| **35** | Reporting currency selector | Topbar picker, real-time recalculation, settings persistence | RC-01–03 | 3 |
-| **36** | Dashboard dual-currency display | Dashboard rows: primary reporting + secondary original (muted) | DSP-01, DSP-03 | 3 |
-| **37** | Asset pages — currency fields & display | All 9 asset/liability pages: currency dropdown + dual-currency display | AP-01–02, DSP-02 | 3 |
-| **38** | Settings, snapshots & export/import | Settings rates card, manual overrides, snapshot rate capture, zip portability | SET-01–02, SNP-01–02, EXP-01–02 | 4 |
+**Roadmap / requirements:** [`milestones/v2.4-ROADMAP.md`](milestones/v2.4-ROADMAP.md) · [`milestones/v2.4-REQUIREMENTS.md`](milestones/v2.4-REQUIREMENTS.md)
 
-### Phase 34: FX Infrastructure & Data Model
+**Phase directories (current location):** [`.planning/phases/34-fx-infrastructure-data-model/`](phases/34-fx-infrastructure-data-model/) · [`.planning/phases/35-reporting-currency-selector/`](phases/35-reporting-currency-selector/) · [`.planning/phases/36-dashboard-dual-currency-display/`](phases/36-dashboard-dual-currency-display/) · [`.planning/phases/37-asset-pages-currency-fields-display/`](phases/37-asset-pages-currency-fields-display/) · [`.planning/phases/38-settings-snapshots-export-import/`](phases/38-settings-snapshots-export-import/) — optional **`/gsd-cleanup`** later.
 
-**Goal:** Establish the FX data layer and record-level currency schema before any UI changes.
-
-**Requirements:** FX-01, FX-02, FX-03, DM-01, DM-02, DM-03
-
-**Success criteria:**
-1. `priceApi.ts` fetches EUR/INR, GBP/INR, SGD/INR; `LivePricesContext` exposes them alongside existing pairs
-2. `toReportingCurrency()` utility returns correct converted values; Vitest coverage ≥ 80%
-3. When a rate is absent, the utility returns a sentinel and the "Rate unavailable" fallback path is tested
-4. All record schemas in `data.ts` accept an optional `currency` field without breaking existing stored data
-5. `reportingCurrency` exists on settings schema; schema version bumped; migration tested with a pre-migration fixture
-
-### Phase 35: Reporting Currency Selector
-
-**Goal:** Topbar dropdown lets user pick reporting currency, recalculates all aggregates instantly, persists choice.
-
-**Requirements:** RC-01, RC-02, RC-03
-
-**Success criteria:**
-1. Topbar shows a `<select>` with INR, USD, AED, EUR, GBP, SGD; selected value matches stored `reportingCurrency`
-2. Switching currency recalculates dashboard net worth and category totals without page reload
-3. `reportingCurrency` persists in settings after page reload
-
-### Phase 36: Dashboard Dual-Currency Display
-
-**Goal:** Dashboard breakdown rows adopt the spec's dual-currency display pattern.
-
-**Requirements:** DSP-01, DSP-03
-
-**Success criteria:**
-1. A dashboard row whose underlying records use a different currency shows the reporting-currency figure bold + original below in muted small text
-2. A dashboard row whose records are all in reporting currency shows only the primary figure (no muted line)
-3. "Rate unavailable" state shows original amount only with a hint label
-
-### Phase 37: Asset Pages — Currency Fields & Display
-
-**Goal:** All 9 asset/liability pages store and display per-record currency correctly.
-
-**Requirements:** AP-01, AP-02, DSP-02
-
-**Success criteria:**
-1. Add/edit forms on Gold, MF, Stocks, Bank, Retirement, Bitcoin, Commodities, Property, and Liabilities include a currency dropdown defaulting to the current reporting currency
-2. Saving a record in USD stores the original USD amount; the stored JSON contains `currency: "USD"` not the INR equivalent
-3. Detail views on each asset page show the dual-currency pattern matching the dashboard spec
-
-### Phase 38: Settings, Snapshots & Export/Import
-
-**Goal:** Close the loop on live rates visibility, historical accuracy, and data portability.
-
-**Requirements:** SET-01, SET-02, SNP-01, SNP-02, EXP-01, EXP-02
-
-**Success criteria:**
-1. Settings live rates card lists all 5 FX pairs (USD/INR, AED/INR, EUR/INR, GBP/INR, SGD/INR)
-2. Session-only manual override inputs are available for EUR, GBP, and SGD pairs
-3. Recording a net worth snapshot captures `reportingCurrency` and a rate map in the snapshot record
-4. Zip export includes `currency` fields on all records; re-importing that zip preserves them
-
-### Plans
-
-- [x] Phase 34 — [34-01](phases/34-fx-infrastructure-data-model/34-01-PLAN.md) (`/gsd-execute-phase 34`)
-- [x] Phase 35 — [35-01](phases/35-reporting-currency-selector/35-01-PLAN.md) (`/gsd-execute-phase 35`) — **2026-05-08**
-- [x] Phase 36 — [36-01](phases/36-dashboard-dual-currency-display/36-01-PLAN.md) (`/gsd-execute-phase 36`) — **2026-05-09**
-- [x] Phase 37 — [37-01](phases/37-asset-pages-currency-fields-display/37-01-PLAN.md) (`/gsd-execute-phase 37`) — **2026-05-09**
-- [x] Phase 38 — [38-01](phases/38-settings-snapshots-export-import/38-01-PLAN.md) (`/gsd-execute-phase 38`) — **2026-05-10**
-
----
+</details>
 
 <details>
 <summary>✅ v2.3 — Property entry flow & validation (Phases 31–33) — SHIPPED 2026-05-06</summary>
@@ -264,4 +201,4 @@
 
 ---
 
-_Milestone archives: `.planning/milestones/` · **Last shipped:** **v2.3** (2026-05-06). **Active:** **v2.4 Multi-Currency Reporting** — Phases **34–38** — [requirements](REQUIREMENTS.md)._
+_Milestone archives: `.planning/milestones/` · **Last shipped:** **v2.4** (2026-05-10). **Next:** define requirements via **`/gsd-new-milestone`** (live [`.planning/REQUIREMENTS.md`](REQUIREMENTS.md) is a placeholder until then)._

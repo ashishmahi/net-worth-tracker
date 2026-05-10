@@ -1,5 +1,41 @@
 # Project retrospective — Personal Wealth Tracker
 
+## Milestone: v2.4 — Multi-Currency Reporting
+
+**Shipped:** 2026-05-10  
+**Phases:** 34–38 | **Plans:** 5  
+
+### What was built
+
+- **Phase 34:** Extended FX (`EUR`/`GBP`/`SGD` INR legs), `toReportingCurrency`, optional **`currency`** on records, migrations — [`34-01-SUMMARY.md`](phases/34-fx-infrastructure-data-model/34-01-SUMMARY.md).  
+- **Phase 35:** Topbar reporting `<select>`, persisted **`reportingCurrency`** — [`35-01-SUMMARY.md`](phases/35-reporting-currency-selector/35-01-SUMMARY.md).  
+- **Phase 36:** Dashboard dual-currency breakdown rows — [`36-01-SUMMARY.md`](phases/36-dashboard-dual-currency-display/36-01-SUMMARY.md).  
+- **Phase 37:** Currency fields + dual display across asset pages — [`37-UAT.md`](phases/37-asset-pages-currency-fields-display/37-UAT.md).  
+- **Phase 38:** Merged Settings live rates card; snapshot **`reportingCurrency`** / **`rates`** / **`totalReporting`**; Vitest zip round-trip — [`38-UAT.md`](phases/38-settings-snapshots-export-import/38-UAT.md).  
+
+### What worked
+
+- **`docs/multi-currency.md`** + phase CONTEXT/UI-SPEC contracts kept cross-cutting FX/UI aligned across five phases.  
+- UAT on **37** and **38** caught portability and Settings UX without blocking on missing SUMMARY files for late phases.  
+
+### What was inefficient
+
+- **`gsd-sdk query milestone.complete`** still invokes **`phasesArchive`** without passing **`version`** (SDK regression); milestone close remained **manual** (`v2.4-ROADMAP` / `v2.4-REQUIREMENTS` + ROADMAP fold).  
+
+### Patterns established
+
+- Read-only + **Edit** card pattern reused from gold/silver pricing for merged FX/session rates (**SettingsLiveRatesCard**).  
+
+### Key lessons
+
+- Snapshot schema stays additive-optional: legacy **`totalInr`** chart path unchanged while storing richer capture metadata for later UX.  
+
+### Cost observations
+
+- Not recorded.  
+
+---
+
 ## Milestone: v2.3 — Property entry flow & validation
 
 **Shipped:** 2026-05-06  

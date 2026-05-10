@@ -25,40 +25,31 @@ See **total net worth in INR** at a glance (**debt-adjusted** headline minus sta
 | **v2.1** | **Section routing & home nav** — **`react-router-dom`**, **`sectionRoutes`** + Vitest, **`Routes`**/**`Outlet`**, sidebar **`NavLink`**, mobile **Home**, **`Navigate`** catch-all; **`basename`** from **`import.meta.env.BASE_URL`** | 2026-05-04 |
 | **v2.2** | **Import-adjusted bullion pricing** — persisted uplift on live ₹/g; Settings gold/silver disclosure (**BLN-04**) | 2026-05-06 |
 | **v2.3** | **Property entry flow & validation** — guided Property paths; save-blocking validation + Zod parity; responsive sheet + **`radiogroup`** a11y (**PRA-01**) | 2026-05-06 |
+| **v2.4** | **Multi-currency reporting** — per-record `currency`, topbar reporting selector, dual-currency dashboard + asset pages, merged Settings FX/BTC card, snapshot metadata, zip `currency` parity | 2026-05-10 |
 
-Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.3-ROADMAP.md` and matching `*-REQUIREMENTS.md` archives. Executed phase artifacts for shipped milestones live under [`.planning/milestones/`](milestones/) (e.g. `v1.5-phases/`). Phase dirs **19–33** remain under [`.planning/phases/`](phases/) until optional **`/gsd-cleanup`**.
+Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.4-ROADMAP.md` and matching `*-REQUIREMENTS.md` archives. Executed phase artifacts for shipped milestones live under [`.planning/milestones/`](milestones/) (e.g. `v1.5-phases/`). Phase dirs **19–38** remain under [`.planning/phases/`](phases/) until optional **`/gsd-cleanup`**.
 
-## Current Milestone: v2.4 — Multi-Currency Reporting
+## Next milestone
 
-**Goal:** Allow users to hold assets in any currency (INR, USD, AED, EUR, GBP, SGD) and view all totals in a single user-selected reporting currency, converted at live FX rates.
+*(Not defined.)* Run **`/gsd-new-milestone`** to discover goals, research, requirements, and roadmap for **v2.5+**. Live [`.planning/REQUIREMENTS.md`](REQUIREMENTS.md) is a placeholder until then.
 
-**Target features:**
-- Reporting currency selector in topbar (persisted to settings, default INR)
-- Per-record currency field on every asset and liability type
-- Dual-currency display pattern — reporting value primary, original secondary (muted)
-- Expanded FX coverage — EUR, GBP, SGD pairs added to `LivePricesContext` / `priceApi`
-- Data model migration — `currency?` on all records; `reportingCurrency` on settings
-- Conversion logic utility — `displayValue = originalValue × rate_to_reporting_currency`
-- Settings live rates card extended with all supported FX pairs
-- Export/import currency fields preserved in zip export
-- Snapshots record reporting currency + rates active at time of capture
+## Last completed milestone: v2.4 — Multi-Currency Reporting (2026-05-10)
 
-**Seed:** [SEED-005 — multi-currency-reporting](seeds/SEED-005-multi-currency-reporting.md) | **Full spec:** `docs/multi-currency.md`
+**Goal:** Allow users to hold assets in any supported currency and view totals in a user-selected reporting currency, converted at live FX rates.
 
-## Last completed milestone: v2.3 — Property entry flow & validation (2026-05-06)
+**Seed:** [SEED-005 — multi-currency-reporting](seeds/SEED-005-multi-currency-reporting.md) | **Full spec:** [`docs/multi-currency.md`](../docs/multi-currency.md)
 
-**Goal:** Improve Property add/edit so common situations (fully paid resale, builder milestone schedules, mortgaged homes) get **clearer guided paths**, strengthen **save-time validation**, and keep the sheet **usable on narrow widths** with sensible keyboard/focus behavior.
+**Shipped:** Phases **34–38** — FX infrastructure + migrations (**34**); reporting currency selector (**35**); dashboard dual-currency (**36**); currency fields + dual display on asset pages (**37**, UAT [`37-UAT.md`](phases/37-asset-pages-currency-fields-display/37-UAT.md)); merged Settings live rates + snapshot metadata + export/import verification (**38**, UAT [`38-UAT.md`](phases/38-settings-snapshots-export-import/38-UAT.md)).
 
-**Selected seed:** [SEED-006 — Easier property entry paths + validation](seeds/SEED-006-property-entry-flow-validation.md)
+**Archived:** [`.planning/milestones/v2.4-ROADMAP.md`](milestones/v2.4-ROADMAP.md) · [`.planning/milestones/v2.4-REQUIREMENTS.md`](milestones/v2.4-REQUIREMENTS.md)
 
-**Shipped:** Phases **31–33** — guided paths ([`31-VERIFICATION.md`](phases/31-guided-property-entry-ux/31-VERIFICATION.md)); save-blocking validation + Zod parity ([`32-VERIFICATION.md`](phases/32-property-save-validation-schema/32-VERIFICATION.md)); responsive path controls + milestone scroll hint + radiogroup keyboard ([`33-VERIFICATION.md`](phases/33-property-sheet-responsive-accessibility/33-VERIFICATION.md)).
+## Previous milestone: v2.3 — Property entry flow & validation (2026-05-06)
 
 **Archived:** [`.planning/milestones/v2.3-ROADMAP.md`](milestones/v2.3-ROADMAP.md) · [`.planning/milestones/v2.3-REQUIREMENTS.md`](milestones/v2.3-REQUIREMENTS.md)
 
-**Next:** **`/gsd-new-milestone`** — define **v2.4** requirements and roadmap (live `.planning/REQUIREMENTS.md` removed at **v2.3** milestone close).
+## Current state (shipped through **v2.4** — 2026-05-10)
 
-## Current state (shipped through **v2.3** — 2026-05-06)
-
+- **Multi-currency reporting (v2.4 — Phases 34–38):** optional **`currency`** on records; **`reportingCurrency`** in settings; **`toReportingCurrency`** + live EUR/GBP/SGD legs; topbar selector; dual-currency dashboard and asset/liability surfaces; merged **Market & session rates** card (5 FX + BTC); net worth snapshots store **`reportingCurrency`**, **`totalReporting`**, optional **`rates`**; zip export/import preserves **`currency`** and snapshot fields per [`v2.4-REQUIREMENTS.md`](milestones/v2.4-REQUIREMENTS.md).  
 - **Import-adjusted bullion (v2.2 — Phases 29–30):** persisted **`goldImportUpliftRate`** / **`silverImportUpliftRate`**; uplifted **`goldLiveHints`** / **`silverLiveHints`** and dashboard gold; Settings **`bullionUpliftDisclosure`** copy on **`SettingsGoldPricingCard`** / **`SettingsSilverPricingCard`**.  
 - **Property entry UX (v2.3 — Phases 31–33):** guided **`PATH_KEYS`** paths + conditional **`PropertyPage`** sections; **`getPropertyValidationIssues`** + **`PropertyItemSchema`** parity; responsive path **`radiogroup`** (stack on xs, arrow keys by breakpoint), milestone table horizontal-scroll hint, sheet-open focus to first path — [`33-VERIFICATION.md`](phases/33-property-sheet-responsive-accessibility/33-VERIFICATION.md).  
 - **Section URLs & routing (v2.1 — Phase 28):** **`react-router-dom`** with **`BrowserRouter`** **`basename={import.meta.env.BASE_URL}`**; canonical paths in **`src/lib/sectionRoutes.ts`**; sidebar **`NavLink`**; mobile **Home** on non-dashboard routes; unknown paths **`Navigate`** to **`/`**. UAT complete ([`28-UAT.md`](phases/28-section-routing-home-header/28-UAT.md)).
@@ -170,9 +161,14 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.3-ROADMAP.md` and matc
 
 - [x] **PRA-01** — narrow-viewport path radiogroup stack + milestone horizontal-scroll hint; arrow-key navigation and initial focus on sheet open; no Save-specific ARIA escalation — Phase **33** ([`33-VERIFICATION.md`](phases/33-property-sheet-responsive-accessibility/33-VERIFICATION.md)).
 
-### Validated (v2.4 — Phase 36)
+### Validated (v2.4 — Phases 34–38)
 
-- [x] **DSP-01**, **DSP-03** — dashboard breakdown dual-currency stacks; INR hub totals via `CategoryTotalsCalcContext` + optional muted original line per D-02 — Phase **36** ([`36-VERIFICATION.md`](phases/36-dashboard-dual-currency-display/36-VERIFICATION.md)).
+- [x] **FX-01–03**, **DM-01–03** — Phase **34** ([`34-01-SUMMARY.md`](phases/34-fx-infrastructure-data-model/34-01-SUMMARY.md)).  
+- [x] **RC-01–03** — Phase **35** ([`35-01-SUMMARY.md`](phases/35-reporting-currency-selector/35-01-SUMMARY.md)).  
+- [x] **DSP-01**, **DSP-03** — Phase **36** ([`36-01-SUMMARY.md`](phases/36-dashboard-dual-currency-display/36-01-SUMMARY.md)) · [`36-VERIFICATION.md`](phases/36-dashboard-dual-currency-display/36-VERIFICATION.md).  
+- [x] **AP-01–02**, **DSP-02** — Phase **37** — UAT [`37-UAT.md`](phases/37-asset-pages-currency-fields-display/37-UAT.md).  
+- [x] **SET-01–02**, **SNP-01–02**, **EXP-01–02** — Phase **38** — UAT [`38-UAT.md`](phases/38-settings-snapshots-export-import/38-UAT.md).  
+- Full list: [`.planning/milestones/v2.4-REQUIREMENTS.md`](milestones/v2.4-REQUIREMENTS.md).
 
 ### Deferred (backlog / future)
 
@@ -192,7 +188,7 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.3-ROADMAP.md` and matc
 
 - **Stack:** React 18, Vite 5, TypeScript, shadcn/ui, Tailwind, RHF + Zod  
 - **Persistence:** Browser **`localStorage`** key **`wealth-tracker-data`** (`AppDataContext`); theme uses separate **`theme`** key  
-- **Prices:** `priceApi` + `useLivePrices()` — **BTC**, **USD→INR**, **silver (XAG)**, **gold (XAU)**; **`goldLiveHints`** / **`silverLiveHints`** (import uplift on parity ₹/g); **`calcCategoryTotals`** threads **`goldUsdPerOz`** and converts MF/stocks/bank/property/retirement through **`toReportingCurrency`** → INR hub  
+- **Prices / FX:** `priceApi` + `useLivePrices()` — **BTC**, **USD→INR**, **AED→INR**, **EUR→INR**, **GBP→INR**, **SGD→INR**, **silver (XAG)**, **gold (XAU)**; **`goldLiveHints`** / **`silverLiveHints`** (import uplift on parity ₹/g); **`calcCategoryTotals`** + **`toReportingCurrency`** for reporting-currency display and INR hub aggregation  
 - **Theme:** `localStorage` `theme` (`light` | `dark`); FOUC script in `index.html`  
 - **Layout:** `AppSidebar` offcanvas on mobile; `MobileTopBar`; `PageHeader` on section pages; asset sheets with scroll regions + property milestone horizontal scroll on narrow widths  
 - **Data reset (v1.2):** `createInitialData()` in `AppDataContext`; shadcn `AlertDialog` in Settings danger zone  
@@ -222,6 +218,7 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.3-ROADMAP.md` and matc
 | v1.7 | **`localStorage`**-only wealth persistence; remove Vite **`dataPlugin`**; sync boot; Settings copy; **happy-dom** tests | ✓ Shipped 2026-05-02 |  
 | v2.0 | Docker + **`BASE_URL`** + GitHub Actions CI/Pages; static hosting only; README beta URL + client-only data | ✓ Shipped 2026-05-03 |  
 | v2.0.1 | Live **gold** spot (gold-api **XAU**) + **`GoldSpotPricesSync`**; Settings **gold/silver** pricing cards + **`SilverSpotPricesSync`**; effective silver in **`dashboardCalcs`** | ✓ Shipped 2026-05-03 |  
+| v2.4 | Per-record **`currency`**, reporting **`toReportingCurrency`**, topbar selector, dual-currency UI, merged Settings FX card, snapshot metadata, zip parity — Phases **34–38** | ✓ Shipped 2026-05-10 |  
 
 ## Evolution
 
@@ -240,8 +237,9 @@ This file is updated at **milestone completion** to avoid drift between plans an
 - *v2.0.1: requirements archived at [`v2.0.1-REQUIREMENTS.md`](milestones/v2.0.1-REQUIREMENTS.md); live **`REQUIREMENTS.md`** removed at close — **`/gsd-new-milestone`** next.*
 - *v2.2: requirements archived at [`v2.2-REQUIREMENTS.md`](milestones/v2.2-REQUIREMENTS.md); live **`REQUIREMENTS.md`** removed at milestone close — **`/gsd-new-milestone`** next.*
 - *v2.3: requirements archived at [`v2.3-REQUIREMENTS.md`](milestones/v2.3-REQUIREMENTS.md); live **`REQUIREMENTS.md`** removed at milestone close — **`/gsd-new-milestone`** next.*
+- *v2.4: requirements archived at [`v2.4-REQUIREMENTS.md`](milestones/v2.4-REQUIREMENTS.md); live **`REQUIREMENTS.md`** reset to placeholder — **`/gsd-new-milestone`** next.*
 
 </details>  
 
 ---
-*Last updated: 2026-05-09 — Phase **36** complete (dashboard breakdown dual currency); requirements at [`.planning/REQUIREMENTS.md`](REQUIREMENTS.md); roadmap at [`.planning/ROADMAP.md`](ROADMAP.md).*
+*Last updated: 2026-05-10 — **v2.4** milestone complete (multi-currency reporting); placeholder requirements at [`.planning/REQUIREMENTS.md`](REQUIREMENTS.md); roadmap at [`.planning/ROADMAP.md`](ROADMAP.md).*
