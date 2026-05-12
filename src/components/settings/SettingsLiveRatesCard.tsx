@@ -7,6 +7,17 @@ import { Card, CardContent } from '@/components/ui/card'
 import { useLivePrices } from '@/context/LivePricesContext'
 import { parseFinancialInput } from '@/lib/financials'
 
+/** Match read‑only display; `parseFinancialInput` accepts grouping commas on Apply. */
+function formatFxDraft(value: number | null): string {
+  if (value == null) return ''
+  return value.toLocaleString('en-IN', { maximumFractionDigits: 4 })
+}
+
+function formatBtcDraft(value: number | null): string {
+  if (value == null) return ''
+  return value.toLocaleString('en-IN', { maximumFractionDigits: 2 })
+}
+
 /**
  * Settings → Live rates: merged live quotes + session-only overrides (Phase 38).
  * FX + BTC only — gold/silver spot live on the Gold & Silver tab.
@@ -42,6 +53,16 @@ export function SettingsLiveRatesCard() {
     setSessionGbpInr('')
     setSessionSgdInr('')
     setSessionBtcUsd('')
+  }
+
+  /** Seeds manual inputs with effective rates (live ∪ session) — same numbers as read-only rows. */
+  const prefillDraftsFromEffectiveRates = () => {
+    setSessionUsdInr(formatFxDraft(usdInr))
+    setSessionAedInr(formatFxDraft(aedInr))
+    setSessionEurInr(formatFxDraft(eurInr))
+    setSessionGbpInr(formatFxDraft(gbpInr))
+    setSessionSgdInr(formatFxDraft(sgdInr))
+    setSessionBtcUsd(formatBtcDraft(btcUsd))
   }
 
   const applySessionRates = () => {
@@ -81,7 +102,10 @@ export function SettingsLiveRatesCard() {
               variant="outline"
               size="sm"
               className="shrink-0 self-start"
-              onClick={() => setLiveRatesEditing(true)}
+              onClick={() => {
+                prefillDraftsFromEffectiveRates()
+                setLiveRatesEditing(true)
+              }}
             >
               Edit
             </Button>

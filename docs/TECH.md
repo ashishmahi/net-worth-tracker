@@ -2,117 +2,110 @@
 
 ## Architecture
 
-**Type:** Local-only single-page web app (SPA). No backend server. Runs entirely on `localhost` via the Vite dev server.
+**Type:** Local-only single-page app (**React 18 + Vite 5**). **No backend.** All wealth data persists in the browser via **`localStorage`** (`AppDataContext`). External HTTP is used only for **live market quotes** (optional paths allow session-only manual overrides).
 
 ```
 Browser (React SPA)
       │
-      ├── GET/POST /api/data  ──►  Vite dev-server plugin  ──►  data.json  (disk)
+      ├── localStorage  ──►  key `wealth-tracker-data`  (JSON, Zod-validated `AppData`)
       │
-      └── fetch()  ──►  External price APIs (internet)
+      └── fetch()  ──►  External price APIs (CoinGecko, open.er-api.com, gold-api.com)
 ```
 
----
+**Routing:** `react-router-dom` with **`basename`** from **`import.meta.env.BASE_URL`** (GitHub Pages–safe). Canonical paths live in `src/lib/sectionRoutes.ts`.
 
-## Local Data API
-
-The app exposes a minimal two-endpoint REST API via a custom Vite plugin (`plugins/dataPlugin.ts`). This only runs during `npm run dev` — there is no production server.
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/data` | Returns the full `data.json` file as JSON |
-| `POST` | `/api/data` | Accepts a JSON body and writes it to `data.json` on disk |
-
-**Read flow:** App loads → `GET /api/data` → parse + validate → render  
-**Write flow:** User edits data → app builds updated object → `POST /api/data` with full JSON body → overwrite `data.json`
-
-There is no partial update / PATCH. Every save sends the complete data object.
+**Production build:** `npm run build` emits static **`dist/`** (Docker/nginx or GitHub Pages). CI runs tests + build (see `.github/workflows/`).
 
 ---
 
-## Data File
+## Persistence
 
-All user data is stored in `data.json` at the project root. Schema version is `1`.
+| Aspect | Detail |
+|--------|--------|
+| **Storage key** | `wealth-tracker-data` |
+| **Format** | Single JSON object validated by **`DataSchema`** in `src/types/data.ts` |
+| **Schema version** | **`version: 2`** — cold load runs migrations (stamps **`reportingCurrency`**, per-record **`currency`**, bank balance shape, etc.) |
+| **Theme** | Separate key for dark/light (not part of wealth JSON) |
 
-**Top-level shape:**
-```json
-{
-  "version": 1,
-  "settings": { ... },
-  "assets": {
-    "gold": { ... },
-    "otherCommodities": { ... },
-    "mutualFunds": { ... },
-    "stocks": { ... },
-    "bitcoin": { ... },
-    "property": { ... },
-    "bankSavings": { ... },
-    "retirement": { ... }
-  },
-  "liabilities": [ { "id": "...", "label": "...", "loanType": "home", "outstandingInr": 0, "lender": "...", "emiInr": 0, "createdAt": "...", "updatedAt": "..." } ],
-  "netWorthHistory": [ { "recordedAt": "...", "totalInr": 0 } ]
-}
-```
-
-`liabilities` is a **root-level** array (peer of `assets`), introduced in **v1.5**. Older files without it are migrated to `liabilities: []` on load.
-
-All persisted rows carry `id` (UUID v4), `createdAt`, and `updatedAt` ISO timestamps where applicable.  
-Schema is validated on load using Zod (`src/types/data.ts`). Snapshot points (`totalInr`) allow negative values when debt exceeds assets.
+There is **no** dev-only `/api/data` disk plugin in the current tree; persistence is **not** `data.json` at repo root.
 
 ---
 
-## External Price APIs
+## Data model (summary)
 
-All external HTTP calls go through `src/lib/priceApi.ts`. No API keys required.
+- **`settings`** — retirement assumptions, gold/silver pricing locks and uplift rates, optional **`reportingCurrency`** (defaults handled at runtime).
+- **`assets`** / **`liabilities`** — record types carry optional **`currency`** (**INR | USD | AED | EUR | GBP | SGD**); bank accounts require **`currency`** + **`balance`**.
+- **`netWorthHistory`** — points include **`recordedAt`**, **`totalInr`** (chart + compatibility), and optional **`reportingCurrency`**, **`totalReporting`**, **`rates`** (partial FX/BTC/metal snapshot for portability).
 
-| Data | API | URL | Cache TTL |
-|---|---|---|---|
-| BTC/USD | CoinGecko (public) | `https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd` | 5 minutes |
-| USD/INR + AED/INR | open.er-api.com | `https://open.er-api.com/v6/latest/USD` | 1 hour |
-| Silver (XAG/USD) | gold-api.com | `https://api.gold-api.com/price/XAG` | 1 hour |
-
-**AED/INR derivation:** `rates.INR / rates.AED` (both on USD base from the same forex response).  
-**Silver INR/gram:** `(silverUsdPerOz / TROY_OZ_TO_GRAMS) × usdInr` where `TROY_OZ_TO_GRAMS = 31.1035`.
-
-If any fetch fails, the app surfaces an error and lets the user continue with manual overrides.
+Full Zod definitions: `src/types/data.ts`. Product-facing behavior: [`multi-currency.md`](multi-currency.md).
 
 ---
 
-## Net Worth & Debt Calculation
+## External price APIs
 
-Asset category totals and **gross assets** are computed at render time in `src/lib/dashboardCalcs.ts` (`calcCategoryTotals`, `sumForNetWorth`). Those totals are **not** persisted.
+All remote quotes go through **`src/lib/priceApi.ts`** (`fetchForex`, `fetchBtcUsd`, silver/gold spot helpers). No API keys.
 
-Standalone debt math lives in `src/lib/liabilityCalcs.ts`:
+| Data | Source | Notes |
+|------|--------|--------|
+| BTC/USD | CoinGecko public | `BTC_TTL_MS` ≈ 5 min |
+| USD→INR, AED/EUR/GBP/SGD legs | open.er-api.com `/v6/latest/USD` | INR/AED/EUR/GBP/SGD pairs derived per **`ForexRates`**; EUR/GBP/SGD may be **`null`** if missing (**best-effort**) |
+| Silver XAG/USD, Gold XAU/USD | gold-api.com | Used for spot-derived ₹/g hints and snapshot **`rates`** |
 
-| Function | Role |
-|----------|------|
-| `sumLiabilitiesInr(data)` | Sum of standalone loan outstanding balances |
-| `calcNetWorth(grossAssets, liabilitiesTotal)` | Gross assets − standalone liabilities (rounded); headline net worth and new snapshots use this |
-| `sumAllDebtInr(data)` | Property `outstandingLoanInr` (where liability on) **plus** standalone liabilities — used for **Total Debt** on the dashboard only |
-| `debtToAssetRatio(totalDebt, grossAssets)` | Dashboard debt-to-asset line; returns **0** when `grossAssets === 0` |
-
-Gross assets include each property as **equity** (`agreementInr − outstandingLoanInr` when mortgaged). **Standalone** entries in `liabilities[]` are subtracted on the headline net worth line via `calcNetWorth` / `sumLiabilitiesInr` (they are not part of property rows).
-
-- All arithmetic is rounded to 2 decimal places after every multiplication to avoid floating-point drift (`roundCurrency` / helpers).
-- Categories that depend on a live price (gold, bitcoin, silver) return `null` until the price is available, shown as "—" in the UI.
-- Bank balances in AED are converted to INR using the live AED/INR rate before summing.
-- Dashboard **percentage column** uses **gross assets** as denominator so shares sum to ~100%; headline net worth still reflects liabilities.
-
-**UI:** `src/pages/DashboardPage.tsx` wires the helpers above; `src/pages/LiabilitiesPage.tsx` manages `liabilities`; property lender/EMI fields live under `src/pages/PropertyPage.tsx`.
+**Session overrides:** UI can set temporary FX/BTC legs (**memory-only** until live fetch succeeds — see Settings **Market & session rates**).
 
 ---
 
-## Running the App
+## Reporting currency & conversion
+
+- **`src/lib/currencyConversion.ts`** — **`toReportingCurrency(amount, from, to, snapshot)`** returns **`{ ok, value }`** or failure when a leg is missing (**“Rate unavailable”** in UI).
+- **`DualCurrencyAmount`** and dashboard/category helpers show **primary reporting value** plus **muted original** when record currency differs.
+- INR remains the internal hub for many aggregates; headline snapshots still write **`totalInr`** for the existing chart.
+
+---
+
+## Net worth & debt
+
+- **`src/lib/dashboardCalcs.ts`** — category totals, gross assets, metals uplift hints.
+- **`src/lib/liabilityCalcs.ts`** — **`sumLiabilitiesInr`**, **`calcNetWorth`**, **`sumAllDebtInr`**, **`debtToAssetRatio`** (same semantics as product docs: standalone liabilities vs property-linked debt).
+
+Rounding uses **`roundCurrency`** / shared helpers to limit float drift.
+
+---
+
+## Backup & import
+
+- **Zip export/import** — `src/lib/wealthDataZip.ts` builds **`wealth-tracker-YYYY-MM-DD.zip`** containing **`data.json`**; import validates through the same **`parseAppDataFromImport`** path as boot.
+- **Optional AES** — Web Crypto helpers in **`src/lib/cryptoUtils.ts`** when passphrase flows are used on export/import.
+
+---
+
+## Key source locations
+
+| Area | Path |
+|------|------|
+| Types / schema | `src/types/data.ts`, `src/types/currency.ts` |
+| App state | `src/context/AppDataContext.tsx` |
+| Live prices | `src/context/LivePricesContext.tsx`, `src/lib/priceApi.ts` |
+| Dashboard | `src/pages/DashboardPage.tsx` |
+| Settings | `src/pages/SettingsPage.tsx`, `src/components/settings/*` |
+
+---
+
+## Running & tooling
 
 ```bash
-npm run dev     # start local dev server (default: http://localhost:5173)
-npm test        # run unit tests (Vitest)
+npm run dev      # Vite dev server (default http://localhost:5173)
+npm run build    # production bundle → dist/
+npm run preview  # serve dist locally
+npm test         # Vitest
 ```
 
-No build step or deployment. The app is dev-server-only by design.
+**Docker:** `Dockerfile` + `docker/default.conf` serve **`dist/`** as static SPA.
+
+**Config:** `vite.config.ts` reads **`BASE_URL`** for asset paths (e.g. GitHub Project Pages).
 
 ---
 
-## Studio UI redesign (optional branch)
+## Optional design branch
 
-A **May 2026** visual/IA pass (Claude Design “Studio” direction) lives on branch **`feature/studio-design-redesign`**. See **[`STUDIO-UI-REDESIGN.md`](STUDIO-UI-REDESIGN.md)** for scope, file list, and merge notes.
+A **Studio** visual/IA exploration may live on **`feature/studio-design-redesign`** — see [`STUDIO-UI-REDESIGN.md`](STUDIO-UI-REDESIGN.md) if present.
