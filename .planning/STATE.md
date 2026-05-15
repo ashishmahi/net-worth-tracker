@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: —
 milestone_name: —
 status: idle
-last_updated: "2026-05-11T18:40:00Z"
-last_activity: 2026-05-11 — todo: Nestworth branding / logos
+last_updated: "2026-05-10T15:30:00Z"
+last_activity: 2026-05-10 — v2.4 milestone archived; REQUIREMENTS placeholder for next milestone
 progress:
   total_phases: 8
   completed_phases: 7
@@ -48,7 +48,7 @@ See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](
 
 ### Pending todos
 
-- **Apply Nestworth branding and app logos** — [`todos/pending/2026-05-11-apply-nestworth-branding-and-app-logos.md`](todos/pending/2026-05-11-apply-nestworth-branding-and-app-logos.md) (`ui`)
+*None.*
 
 ### Blockers / concerns
 
