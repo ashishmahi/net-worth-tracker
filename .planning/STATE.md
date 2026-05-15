@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: —
-milestone_name: —
-status: idle
-last_updated: "2026-05-10T15:30:00Z"
-last_activity: 2026-05-10 — v2.4 milestone archived; REQUIREMENTS placeholder for next milestone
+milestone: v1.0
+milestone_name: milestone
+status: "Idle — **last shipped:** **v2.4** (2026-05-10)"
+last_updated: "2026-05-15T19:26:16.098Z"
+last_activity: 2026-05-10
 progress:
-  total_phases: 8
-  completed_phases: 7
-  total_plans: 8
-  completed_plans: 6
-  percent: 88
+  total_phases: 4
+  completed_phases: 3
+  total_plans: 3
+  completed_plans: 3
+  percent: 100
 ---
 
 ## Project
