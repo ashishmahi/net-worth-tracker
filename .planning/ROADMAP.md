@@ -201,13 +201,14 @@
 
 ### Phase 39: Nwrth branding — rename app to nwrth, update favicons, PWA manifest, sidebar brand component, meta tags; assets ready in nwrth-icons/
 
-**Goal:** [To be planned]
+**Goal:** Visual rebrand from "Wealth Tracker" to "nwrth" across all UI surfaces, favicons, PWA manifest, and HTML meta tags. No data model or functional changes.
 **Requirements**: TBD
 **Depends on:** Phase 38
-**Plans:** 0 plans
+**Plans:** 2 plans
 
 Plans:
-- [ ] TBD (run /gsd-plan-phase 39 to break down)
+- [ ] [39-01-PLAN.md](phases/39-nwrth-branding-rename-app-to-nwrth-update-favicons-pwa-manif/39-01-PLAN.md) — Copy icon assets to public/, create PWA manifest, update index.html head tags
+- [ ] [39-02-PLAN.md](phases/39-nwrth-branding-rename-app-to-nwrth-update-favicons-pwa-manif/39-02-PLAN.md) — Update sidebar brand mark + name in AppSidebar.tsx, rename export filename in SettingsPage.tsx
 
 ---
 
