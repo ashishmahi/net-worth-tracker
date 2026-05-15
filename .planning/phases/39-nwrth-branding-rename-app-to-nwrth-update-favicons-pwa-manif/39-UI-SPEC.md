@@ -46,7 +46,9 @@ Declared values (must be multiples of 4). These values are inherited from the ex
 
 Exceptions:
 - Sidebar header brand container: 28×28px (size-7) — existing pattern, retained exactly
-- Sidebar header padding: `px-[22px] pb-[18px] pt-[22px]` — existing pattern, retained exactly
+
+> **Pre-existing Overrides (Not Modified This Phase)**
+> The sidebar header currently uses `px-[22px] pt-[22px] pb-[18px]` — these are arbitrary values from the original implementation, outside the 4px grid, and are explicitly NOT changed in this phase. They are documented here for traceability only.
 
 ---
 
