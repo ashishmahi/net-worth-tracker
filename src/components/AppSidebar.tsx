@@ -104,14 +104,22 @@ export function AppSidebar() {
       <SidebarHeader className="gap-0 border-b border-sidebar-border px-[22px] pb-[18px] pt-[22px]">
         <div className="flex items-center gap-2.5">
           <div
-            className="grid size-7 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-primary to-[hsl(var(--studio-saffron))] text-sm font-semibold text-primary-foreground shadow-sm"
+            className="grid size-7 shrink-0 place-items-center rounded-[8px] shadow-sm"
+            style={{
+              background: 'linear-gradient(135deg, var(--accent), oklch(0.55 0.18 270))',
+              color: 'var(--accent-fg)',
+            }}
             aria-hidden
           >
-            W
+            <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" className="size-4">
+              <rect x="5" y="16" width="4" height="8" rx="1" fill="currentColor" opacity="0.4" />
+              <rect x="12" y="10" width="4" height="14" rx="1" fill="currentColor" opacity="0.7" />
+              <rect x="19" y="4" width="4" height="20" rx="1" fill="currentColor" />
+            </svg>
           </div>
           <div className="min-w-0">
             <div className="truncate text-[15px] font-semibold leading-tight tracking-tight text-sidebar-foreground">
-              Wealth Tracker
+              nwrth
             </div>
             <div className="mt-0.5 text-[11px] text-muted-foreground">
               Net worth · local only
