@@ -46,6 +46,10 @@ See [`.planning/PROJECT.md`](PROJECT.md). **Roadmap:** [`.planning/ROADMAP.md`](
 - **v2.3** archived 2026-05-06: property guided entry + save validation + responsive sheet ([SEED-006](seeds/SEED-006-property-entry-flow-validation.md)) — [`milestones/v2.3-ROADMAP.md`](milestones/v2.3-ROADMAP.md) · [`milestones/v2.3-REQUIREMENTS.md`](milestones/v2.3-REQUIREMENTS.md).
 - **v2.2** shipped 2026-05-06: bullion import uplift Phases **29–30** — archives [`v2.2-ROADMAP.md`](milestones/v2.2-ROADMAP.md) · [`v2.2-REQUIREMENTS.md`](milestones/v2.2-REQUIREMENTS.md).
 
+### Roadmap evolution
+
+- Phase 39 added: Nwrth branding — rename app to nwrth, update favicons, PWA manifest, sidebar brand component, meta tags
+
 ### Pending todos
 
 *None.*

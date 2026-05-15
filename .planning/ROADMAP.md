@@ -199,6 +199,16 @@
 
 </details>
 
+### Phase 39: Nwrth branding — rename app to nwrth, update favicons, PWA manifest, sidebar brand component, meta tags; assets ready in nwrth-icons/
+
+**Goal:** [To be planned]
+**Requirements**: TBD
+**Depends on:** Phase 38
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd-plan-phase 39 to break down)
+
 ---
 
 _Milestone archives: `.planning/milestones/` · **Last shipped:** **v2.4** (2026-05-10). **Next:** define requirements via **`/gsd-new-milestone`** (live [`.planning/REQUIREMENTS.md`](REQUIREMENTS.md) is a placeholder until then)._
