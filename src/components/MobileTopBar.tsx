@@ -1,4 +1,4 @@
-import { Menu, Sun, Moon, House } from 'lucide-react'
+import { Menu, Sun, Moon } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import { ReportingCurrencySelect } from '@/components/ReportingCurrencySelect'
 import { CurrencyFieldHint } from '@/components/CurrencyFieldHint'
@@ -16,7 +16,6 @@ export function MobileTopBar() {
   const { theme, setTheme } = useTheme()
   const location = useLocation()
   const section = pathToSection(location.pathname)
-  const showHome = section !== 'dashboard'
   const isDashboard = section === 'dashboard'
   const reportingCurrency = data.settings.reportingCurrency ?? 'INR'
   const handleReportingChange = (code: CurrencyCode) => {
@@ -44,17 +43,27 @@ export function MobileTopBar() {
         <Menu className="size-5 shrink-0" aria-hidden />
       </Button>
       <div className="flex min-h-[44px] flex-1 items-center justify-center">
-        {showHome ? (
-          <Button
-            asChild
-            variant="ghost"
-            className="min-h-[44px] min-w-[44px]"
+        <Link
+          to={sectionToPath('dashboard')}
+          className="flex items-center gap-2 rounded-md px-2 py-1"
+          aria-label="nwrth — go to dashboard"
+        >
+          <div
+            className="grid size-6 shrink-0 place-items-center rounded-[6px] shadow-sm"
+            style={{
+              background: 'linear-gradient(135deg, #5b5bd6, #3d3480)',
+              color: 'white',
+            }}
+            aria-hidden
           >
-            <Link to={sectionToPath('dashboard')} aria-label="Go to dashboard">
-              <House className="size-5 shrink-0" aria-hidden />
-            </Link>
-          </Button>
-        ) : null}
+            <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" className="size-3.5">
+              <rect x="5" y="16" width="4" height="8" rx="1" fill="currentColor" opacity="0.4" />
+              <rect x="12" y="10" width="4" height="14" rx="1" fill="currentColor" opacity="0.7" />
+              <rect x="19" y="4" width="4" height="20" rx="1" fill="currentColor" />
+            </svg>
+          </div>
+          <span className="text-[15px] font-semibold tracking-tight text-foreground">nwrth</span>
+        </Link>
       </div>
       <div className="flex shrink-0 items-center gap-1.5">
         {isDashboard ? (
