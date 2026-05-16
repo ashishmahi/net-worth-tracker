@@ -1,8 +1,8 @@
-# Personal Wealth Tracker
+# nwrth
 
 ## What this is
 
-A local-only **React + Vite** app for tracking personal net worth across **gold, non-gold commodities (e.g. silver + manual ₹ lines), mutual funds, stocks, Bitcoin, property, bank savings (INR/AED), retirement (NPS/EPF), and standalone liabilities (Liabilities page)**. It replaces a manual Excel workflow: wealth data persists in the browser (`localStorage` key **`wealth-tracker-data`** via `AppDataContext`). There is no backend, auth, or cloud sync in the shipped local product.
+**nwrth** — a local-only **React + Vite** app for tracking personal net worth across **gold, non-gold commodities (e.g. silver + manual ₹ lines), mutual funds, stocks, Bitcoin, property, bank savings (INR/AED), retirement (NPS/EPF), and standalone liabilities (Liabilities page)**. It replaces a manual Excel workflow: wealth data persists in the browser (`localStorage` key **`wealth-tracker-data`** via `AppDataContext`). There is no backend, auth, or cloud sync in the shipped local product.
 
 ## Core value
 
@@ -26,6 +26,7 @@ See **total net worth in INR** at a glance (**debt-adjusted** headline minus sta
 | **v2.2** | **Import-adjusted bullion pricing** — persisted uplift on live ₹/g; Settings gold/silver disclosure (**BLN-04**) | 2026-05-06 |
 | **v2.3** | **Property entry flow & validation** — guided Property paths; save-blocking validation + Zod parity; responsive sheet + **`radiogroup`** a11y (**PRA-01**) | 2026-05-06 |
 | **v2.4** | **Multi-currency reporting** — per-record `currency`, topbar reporting selector, dual-currency dashboard + asset pages, merged Settings FX/BTC card, snapshot metadata, zip `currency` parity | 2026-05-10 |
+| **v2.4+** | **nwrth branding** — app renamed to nwrth; SVG favicon + 10-icon set; PWA manifest (`name`, `theme_color #3d3480`, maskable icon); sidebar 3-bar brand mark; export filename → `nwrth-YYYY-MM-DD.zip` | 2026-05-16 |
 
 Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.4-ROADMAP.md` and matching `*-REQUIREMENTS.md` archives. Executed phase artifacts for shipped milestones live under [`.planning/milestones/`](milestones/) (e.g. `v1.5-phases/`). Phase dirs **19–38** remain under [`.planning/phases/`](phases/) until optional **`/gsd-cleanup`**.
 
@@ -161,6 +162,13 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.4-ROADMAP.md` and matc
 
 - [x] **PRA-01** — narrow-viewport path radiogroup stack + milestone horizontal-scroll hint; arrow-key navigation and initial focus on sheet open; no Save-specific ARIA escalation — Phase **33** ([`33-VERIFICATION.md`](phases/33-property-sheet-responsive-accessibility/33-VERIFICATION.md)).
 
+### Validated (Phase 39 — nwrth branding)
+
+- [x] **BRAND-01** — App renamed to "nwrth"; browser title and all UI-visible "Wealth Tracker" strings replaced — Phase **39** ([`39-01-SUMMARY.md`](phases/39-nwrth-branding-rename-app-to-nwrth-update-favicons-pwa-manif/39-01-SUMMARY.md)).
+- [x] **BRAND-02** — PWA manifest with name "nwrth", theme_color #3d3480, maskable 512px icon — Phase **39**.
+- [x] **BRAND-03** — nwrth favicon SVG + 10-icon set (32px, apple-touch, 192px, 512px, dark/light variants, wordmark) — Phase **39**.
+- [x] **BRAND-04** — Sidebar 3-bar ascending brand mark SVG replaces "W" letter mark; theme-adaptive via `var(--accent-fg)` — Phase **39** ([`39-02-SUMMARY.md`](phases/39-nwrth-branding-rename-app-to-nwrth-update-favicons-pwa-manif/39-02-SUMMARY.md)).
+
 ### Validated (v2.4 — Phases 34–38)
 
 - [x] **FX-01–03**, **DM-01–03** — Phase **34** ([`34-01-SUMMARY.md`](phases/34-fx-infrastructure-data-model/34-01-SUMMARY.md)).  
@@ -218,7 +226,8 @@ Snapshots: `.planning/milestones/v1.0-ROADMAP.md` … `v2.4-ROADMAP.md` and matc
 | v1.7 | **`localStorage`**-only wealth persistence; remove Vite **`dataPlugin`**; sync boot; Settings copy; **happy-dom** tests | ✓ Shipped 2026-05-02 |  
 | v2.0 | Docker + **`BASE_URL`** + GitHub Actions CI/Pages; static hosting only; README beta URL + client-only data | ✓ Shipped 2026-05-03 |  
 | v2.0.1 | Live **gold** spot (gold-api **XAU**) + **`GoldSpotPricesSync`**; Settings **gold/silver** pricing cards + **`SilverSpotPricesSync`**; effective silver in **`dashboardCalcs`** | ✓ Shipped 2026-05-03 |  
-| v2.4 | Per-record **`currency`**, reporting **`toReportingCurrency`**, topbar selector, dual-currency UI, merged Settings FX card, snapshot metadata, zip parity — Phases **34–38** | ✓ Shipped 2026-05-10 |  
+| v2.4 | Per-record **`currency`**, reporting **`toReportingCurrency`**, topbar selector, dual-currency UI, merged Settings FX card, snapshot metadata, zip parity — Phases **34–38** | ✓ Shipped 2026-05-10 |
+| nwrth brand (Phase 39) | Inline SVG brand mark in gradient container; `WEALTH_STORAGE_KEY` preserved intentionally (changing it breaks existing `localStorage` data); inline `style` for oklch gradient values (Tailwind can't express them) | ✓ Shipped 2026-05-16 |
 
 ## Evolution
 
@@ -242,4 +251,4 @@ This file is updated at **milestone completion** to avoid drift between plans an
 </details>  
 
 ---
-*Last updated: 2026-05-10 — **v2.4** milestone complete (multi-currency reporting); placeholder requirements at [`.planning/REQUIREMENTS.md`](REQUIREMENTS.md); roadmap at [`.planning/ROADMAP.md`](ROADMAP.md).*
+*Last updated: 2026-05-16 — Phase 39 complete (nwrth branding); app renamed, favicon, PWA manifest, sidebar brand mark; placeholder requirements at [`.planning/REQUIREMENTS.md`](REQUIREMENTS.md); roadmap at [`.planning/ROADMAP.md`](ROADMAP.md).*
