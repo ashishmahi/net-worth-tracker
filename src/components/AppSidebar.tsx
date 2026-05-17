@@ -106,7 +106,7 @@ export function AppSidebar() {
           <div
             className="grid size-7 shrink-0 place-items-center rounded-[8px] shadow-sm"
             style={{
-              background: 'linear-gradient(135deg, #5b5bd6, #3d3480)',
+              background: 'linear-gradient(135deg, oklch(0.46 0.2 270), oklch(0.55 0.18 270))',
               color: 'white',
             }}
             aria-hidden
